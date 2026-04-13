@@ -1,0 +1,600 @@
+# AltCare — Alternative Medicine Practice Management System
+
+> A multi-tenant SaaS platform for Homeopathy, Ayurveda, Unani, and Herbal practitioners to manage patients, prescriptions, payments, clinical knowledge, and AI-assisted reference — all in one place.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Screenshots & Prototype](#screenshots--prototype)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Core Modules](#core-modules)
+- [Database Schema](#database-schema)
+- [API Design](#api-design)
+- [Authentication & Security](#authentication--security)
+- [Multi-Tenancy](#multi-tenancy)
+- [AI / RAG Pipeline](#ai--rag-pipeline)
+- [Pricing Plans](#pricing-plans)
+- [Development Phases](#development-phases)
+- [User Roles](#user-roles)
+- [Deployment](#deployment)
+- [Project Status](#project-status)
+- [Folder Structure](#folder-structure)
+
+---
+
+## Overview
+
+AltCare is a full-featured **clinic operating system** built specifically for alternative medicine practitioners. It goes beyond simple record-keeping — it combines patient management, prescription generation, a curated medicine knowledge base, a medical book reader, symptom-based search, and a RAG-powered AI assistant grounded in classical texts.
+
+The platform is designed as a **multi-tenant SaaS** — each doctor or clinic operates in a fully isolated data space under a shared infrastructure. It is built to evolve incrementally: from an MVP clinic tool in Phase 1 through to a comprehensive knowledge and AI intelligence platform by Phase 4.
+
+---
+
+## Screenshots & Prototype
+
+> UI prototype located at [`/prototype/altcare_dashboard.html`](./prototype/altcare_dashboard.html)
+> Open in any browser — no build step, no dependencies required.
+
+The prototype is a complete single-file HTML/CSS/JS mock covering all major screens. It is used for stakeholder review, client feedback, and as a front-end specification for the production build.
+
+**Screens included:**
+
+| Screen         | What it shows                                                                                                                                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard      | KPI cards, monthly patient calendar with load heatmap, booked appointments, patient growth chart, most common diagnoses, most prescribed medicines, recent patients with diagnosis column, upcoming follow-ups |
+| Patients       | Searchable/filterable table with diagnosis column, special case / chronic / treatment / allergy tags, slide-out patient detail panel with full visit timeline                                                  |
+| Prescriptions  | Prescription builder with medicine selection, dosage/duration, doctor's notes, live PDF preview                                                                                                                |
+| Payments       | Revenue KPIs, transaction table, invoice tracking, bKash/cash/card support                                                                                                                                     |
+| Medicines      | Searchable medicine database across all traditions with symptom tags                                                                                                                                           |
+| Symptom search | Multi-tradition symptom-to-remedy matching with match percentage                                                                                                                                               |
+| Library        | Medical book browser with reading progress bars                                                                                                                                                                |
+| AI Assistant   | RAG-based clinical reference chat with quick prompts and disclaimer                                                                                                                                            |
+| Pricing & Plan | Free / Plus / Pro with monthly/annual billing toggle and full feature comparison table                                                                                                                         |
+| Settings       | Doctor profile, clinic info, subscription management                                                                                                                                                           |
+
+---
+
+## Tech Stack
+
+### Backend
+
+| Technology           | Purpose                                                                                 |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| **Python 3.12**      | Primary backend language                                                                |
+| **FastAPI**          | Async REST API framework — auto OpenAPI docs, Pydantic validation, dependency injection |
+| **SQLAlchemy 2.0**   | Async ORM                                                                               |
+| **Alembic**          | Database migrations                                                                     |
+| **Pydantic v2**      | Request/response validation and settings management                                     |
+| **passlib (bcrypt)** | Password hashing                                                                        |
+| **python-jose**      | JWT creation and verification                                                           |
+| **Celery**           | Background task queue — PDF generation, emails, AI embedding jobs                       |
+| **WeasyPrint**       | Prescription and invoice PDF generation                                                 |
+| **ebooklib**         | EPUB parsing for the book library                                                       |
+
+### Frontend
+
+| Technology                 | Purpose                                               |
+| -------------------------- | ----------------------------------------------------- |
+| **Next.js 14**             | React framework with App Router and Server Components |
+| **Tailwind CSS**           | Utility-first styling                                 |
+| **shadcn/ui**              | Accessible, unstyled component library                |
+| **React Query (TanStack)** | Server state management, caching, background refetch  |
+
+### Infrastructure
+
+| Technology                  | Purpose                                                                   |
+| --------------------------- | ------------------------------------------------------------------------- |
+| **PostgreSQL 16**           | Primary relational database                                               |
+| **pgvector**                | Vector embeddings stored inside PostgreSQL — no separate vector DB needed |
+| **Redis**                   | Cache, session store, Celery task broker                                  |
+| **MinIO**                   | S3-compatible file storage for EPUBs, PDFs, and attachments               |
+| **Docker + Docker Compose** | Containerised local and production deployment                             |
+| **Caddy**                   | Reverse proxy with automatic HTTPS                                        |
+
+### AI Layer
+
+| Technology     | Purpose                                                                  |
+| -------------- | ------------------------------------------------------------------------ |
+| **LangChain**  | RAG pipeline — document loading, chunking, retrieval chain orchestration |
+| **OpenAI API** | Embeddings (`text-embedding-3-small`) and completions (`gpt-4o`)         |
+| **pgvector**   | Cosine similarity search over embedded book sections                     |
+
+---
+
+## Architecture
+
+AltCare is structured as a **modular monolith** — one FastAPI application with cleanly separated feature packages. This gives the development speed of a monolith with the internal boundaries needed to extract individual services later if scale demands it.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                        CLIENTS                           │
+│            Next.js 14 (App Router) + Tailwind            │
+│            shadcn/ui components + React Query            │
+└───────────────────────────┬──────────────────────────────┘
+                            │ HTTPS / REST + JSON
+┌───────────────────────────▼──────────────────────────────┐
+│                       API LAYER                          │
+│                 FastAPI (Python 3.12)                    │
+│             Uvicorn + Gunicorn (async workers)           │
+│                                                          │
+│  auth │ doctor │ patient │ prescription │ payment        │
+│  medicine │ library │ ai │ notification                  │
+└──────┬──────────┬──────────┬─────────────┬───────────────┘
+       │          │          │             │
+ ┌─────▼──┐ ┌────▼────┐ ┌───▼───┐ ┌──────▼────────────┐
+ │Postgres│ │  Redis  │ │ MinIO │ │  Celery Workers   │
+ │+pgvect.│ │Cache +  │ │ Files │ │  PDF, Email,      │
+ │        │ │  Queue  │ │ EPUBs │ │  Embeddings       │
+ └────────┘ └─────────┘ └───────┘ └───────────────────┘
+```
+
+### Backend module structure
+
+```
+app/
+  main.py                    ← FastAPI app init, router registration, CORS
+  core/
+    config.py                ← Settings via pydantic-settings (.env)
+    database.py              ← Async SQLAlchemy engine + session factory
+    security.py              ← JWT encode/decode, bcrypt hashing
+    dependencies.py          ← get_db, get_current_user, require_role, tenant scope
+  modules/
+    auth/                    ← Login, register, token refresh
+    doctor/                  ← Profile, clinic setup, subscription
+    patient/                 ← Patient CRUD, tags, diagnoses, attachments
+    prescription/            ← Builder, medicine items, PDF export
+    payment/                 ← Fees, invoices, revenue reports
+    medicine/                ← Medicine DB, symptom mapping, search
+    library/                 ← EPUB upload, chapter parsing, reading progress
+    ai/                      ← RAG pipeline, embedding, retrieval, chat
+    notification/            ← Email and SMS dispatch (async via Celery)
+  shared/
+    models/
+      base.py                ← BaseAuditModel with tenant_id, timestamps, created_by
+    schemas/                 ← Shared Pydantic response/request models
+    exceptions.py            ← Custom HTTP exception handlers
+    pagination.py            ← Reusable paginated response wrapper
+alembic/                     ← Database migration scripts
+tests/
+  unit/
+  integration/
+pyproject.toml
+docker-compose.yml
+.env.example
+```
+
+---
+
+## Core Modules
+
+### Auth
+
+JWT-based authentication using `passlib` (bcrypt) for password hashing and `python-jose` for token management. Self-issued JWTs embed `user_id`, `tenant_id`, `role`, and `plan` — no external auth service required. Role guards are reusable FastAPI dependencies injected per route.
+
+### Doctor & Clinic Management
+
+Registration with admin approval flow. Doctor profile stores specialisation (Homeopathy / Ayurveda / Unani / Herbal), license number, and clinic details. Subscription plan is stored on the tenant record and enforced at the service layer on every write operation.
+
+### Patient Management
+
+Full patient profiles with visit history, chief complaints, examination notes, follow-up scheduling, and file attachments. Flexible tag system: special case flags, chronic condition markers, treatment protocol tags (Panchakarma, Rasayana, Constitutional Rx), and allergy/sensitivity notes. Diagnosis records store free-text description and optional ICD code.
+
+### Prescription System
+
+Structured prescription builder with medicine selection from the database or free-text entry (for medicines not yet in the DB — `medicine_id` is nullable). Stores dosage, frequency, duration, and doctor's notes per item. Asynchronous PDF generation via Celery + WeasyPrint. Full prescription history per patient per visit.
+
+### Payment System
+
+Consultation fee recording with support for bKash, Nagad, cash, and card. Invoice generation with PDF export. Payment status tracking (paid / pending / overdue). Monthly revenue reports with per-day breakdown.
+
+### Medicine Database
+
+Curated medicine records across all four traditions. Each entry stores name, system, category, description, symptom tags, and dosage guidance. Supports both global admin-curated records (`is_global = true`) and tenant-specific additions (`is_global = false`).
+
+### Symptom-Based Search
+
+Input one or more symptoms, get ranked medicine matches grouped by tradition with match score and modality notes. Full-text search via PostgreSQL `tsvector` on symptom tags and descriptions. Assists during consultation — never replaces clinical judgment.
+
+### Book Library & Reader
+
+EPUB upload stored in MinIO. Server-side chapter and section extraction via `ebooklib`. Parsed content stored in PostgreSQL for fast retrieval. In-browser reader with per-user reading progress, bookmarks, and highlights.
+
+### AI Assistant (RAG)
+
+Books are chunked into overlapping sections, embedded via OpenAI, and stored in pgvector. At query time, the top-k most relevant sections are retrieved by cosine similarity and assembled into a grounded prompt. Every response includes the source section reference. The AI never makes prescriptive medical decisions.
+
+### Notifications
+
+Asynchronous email and SMS dispatch via Celery workers. Triggered on: follow-up reminders, prescription PDF ready, payment receipt, and admin approval.
+
+---
+
+## Database Schema
+
+### Entity relationships
+
+```
+TENANTS (clinics / doctors)
+  └─ USERS (doctors, assistants, admins)
+  └─ PATIENTS
+       ├─ PATIENT_TAGS          (special_case, chronic, treatment, allergy, custom)
+       ├─ PATIENT_DIAGNOSES     (description, ICD code, visit reference)
+       └─ VISITS
+            ├─ PRESCRIPTIONS
+            │    └─ PRESCRIPTION_ITEMS → MEDICINES
+            └─ PAYMENTS
+                 └─ INVOICES
+
+MEDICINES (global pool, is_global = true)
+  └─ MEDICINE_SYMPTOMS          (symptom mapping, many-to-many)
+
+BOOKS
+  └─ CHAPTERS
+       └─ SECTIONS
+            └─ EMBEDDINGS       (pgvector — 1536 dimensions)
+
+READING_PROGRESS                (user_id, book_id, percentage, last_section_id)
+BOOKMARKS                       (user_id, section_id, note)
+HIGHLIGHTS                      (user_id, section_id, start_offset, end_offset)
+```
+
+### Key design decisions
+
+- Every entity carries `tenant_id` — all queries are scoped, cross-tenant data access is architecturally impossible
+- `prescription_items.medicine_id` is nullable — allows free-text medicine entry. Either `medicine_id` or `custom_medicine` must be present (enforced at the API layer)
+- `medicines.is_global` — distinguishes admin-curated global medicines from tenant-specific additions
+- All entities extend `BaseAuditModel` — `created_at`, `updated_at`, `created_by`, `updated_by` populated automatically
+- Embeddings stored in PostgreSQL via pgvector — no separate vector database needed at this scale
+
+---
+
+## API Design
+
+REST, resource-oriented, versioned under `/api/v1/`. FastAPI auto-generates interactive Swagger docs at `/docs` and ReDoc at `/redoc`.
+
+### Response envelope
+
+All responses follow a consistent structure:
+
+```json
+{
+  "data": {},
+  "meta": {
+    "page": 1,
+    "size": 20,
+    "total": 284
+  },
+  "errors": []
+}
+```
+
+### Key endpoints
+
+| Method | Endpoint                          | Description                           |
+| ------ | --------------------------------- | ------------------------------------- |
+| POST   | `/api/v1/auth/register`           | Doctor registration                   |
+| POST   | `/api/v1/auth/login`              | Login → returns JWT                   |
+| POST   | `/api/v1/auth/refresh`            | Refresh access token                  |
+| GET    | `/api/v1/patients`                | List patients (paginated, filterable) |
+| POST   | `/api/v1/patients`                | Create patient                        |
+| GET    | `/api/v1/patients/{id}`           | Patient detail with visit history     |
+| PATCH  | `/api/v1/patients/{id}/tags`      | Add / remove patient tags             |
+| POST   | `/api/v1/visits`                  | Create visit                          |
+| POST   | `/api/v1/prescriptions`           | Create prescription                   |
+| GET    | `/api/v1/prescriptions/{id}/pdf`  | Download PDF (binary stream)          |
+| GET    | `/api/v1/medicines`               | Search medicines                      |
+| GET    | `/api/v1/medicines/symptoms`      | Symptom-based remedy search           |
+| POST   | `/api/v1/payments`                | Record payment                        |
+| GET    | `/api/v1/invoices/{id}/pdf`       | Download invoice PDF                  |
+| POST   | `/api/v1/books`                   | Upload EPUB                           |
+| GET    | `/api/v1/books/{id}/chapters`     | List parsed chapters                  |
+| PATCH  | `/api/v1/books/{id}/progress`     | Update reading progress               |
+| POST   | `/api/v1/ai/query`                | RAG query with citations              |
+| GET    | `/api/v1/dashboard/summary`       | KPI cards data                        |
+| GET    | `/api/v1/dashboard/calendar`      | Monthly patient calendar data         |
+| GET    | `/api/v1/dashboard/top-diagnoses` | Most common diagnoses chart           |
+| GET    | `/api/v1/dashboard/top-medicines` | Most prescribed medicines chart       |
+
+Tenant resolution happens from the JWT `tenant_id` claim — never from the URL. All list endpoints accept `?page=`, `?size=`, and `?q=` query params.
+
+---
+
+## Authentication & Security
+
+AltCare uses a **self-contained JWT authentication system** built with FastAPI-native libraries. No external auth service is required — keeping infrastructure lean and the team's operational burden minimal.
+
+### Libraries
+
+```
+passlib[bcrypt]              — secure password hashing
+python-jose[cryptography]    — JWT signing (HS256) and verification
+```
+
+### JWT payload
+
+```json
+{
+  "sub": "user-uuid",
+  "tenant_id": "clinic-uuid",
+  "role": "doctor",
+  "email": "dr.rahman@altcare.health",
+  "plan": "pro",
+  "exp": 1744000000
+}
+```
+
+Role and tenant context are embedded in every token. No database lookup is needed per request for authorization — the middleware extracts everything from the JWT.
+
+### Route protection pattern
+
+```python
+# Open route — any authenticated user
+@router.get("/patients")
+async def list_patients(user = Depends(get_current_user)):
+    ...
+
+# Role-restricted route
+@router.post("/medicines")
+async def create_medicine(user = Depends(require_role("doctor", "admin"))):
+    ...
+
+# Plan-restricted route
+@router.post("/ai/query")
+async def ai_query(user = Depends(require_plan("pro"))):
+    ...
+```
+
+### When to adopt Keycloak
+
+Migrate to Keycloak only when a concrete need arises: an enterprise client requires SSO (Google/Microsoft login), SAML federation, or a compliance audit demands centralised IAM. The JWT structure is identical — migration is a configuration change, not a code rewrite.
+
+---
+
+## Multi-Tenancy
+
+AltCare uses a **shared database, tenant-per-row** model. Every table carries a `tenant_id` column. A FastAPI middleware extracts `tenant_id` from the JWT on every request and sets it on a Python `ContextVar`. All repository queries filter by this context automatically.
+
+```python
+# Every service layer query is automatically scoped
+async def list_patients(db: AsyncSession) -> list[Patient]:
+    result = await db.execute(
+        select(Patient)
+        .where(Patient.tenant_id == tenant_id_ctx.get())
+        .order_by(Patient.created_at.desc())
+    )
+    return result.scalars().all()
+```
+
+Cross-tenant data access is architecturally impossible — a missing tenant filter returns zero rows, not another clinic's data.
+
+**Future migration path:** If a large enterprise client requires full data isolation, the schema can be migrated to PostgreSQL schema-per-tenant with minimal application changes.
+
+---
+
+## AI / RAG Pipeline
+
+```
+INGEST  (background Celery job — runs once per book upload)
+
+  EPUB upload
+    └─ ebooklib → extract chapters and sections
+    └─ LangChain RecursiveCharacterTextSplitter
+         chunk_size = 800 tokens, chunk_overlap = 100 tokens
+    └─ OpenAI text-embedding-3-small (1536 dimensions)
+    └─ Store chunks in pgvector
+         columns: book_id, section_id, embedding, text, metadata
+
+
+QUERY  (synchronous — runs per AI assistant message)
+
+  User question
+    └─ Embed question → OpenAI text-embedding-3-small
+    └─ pgvector cosine similarity search → top 5 sections
+    └─ Assemble grounded prompt:
+         System: "You are a clinical reference assistant for alternative
+                  medicine. Answer only from the provided source sections.
+                  Always cite the book title and section.
+                  Never make prescriptive medical decisions."
+         Context: [5 retrieved sections with citations]
+         User question: [...]
+    └─ OpenAI gpt-4o → structured response
+    └─ Return: { answer, sources: [ { book, chapter, section } ] }
+```
+
+### Guardrails
+
+- Responses are always grounded in retrieved source text — no hallucination
+- Every response cites the source section (book + chapter)
+- The system prompt explicitly prohibits prescriptive advice
+- A clinical disclaimer is displayed on every AI response in the UI
+- AI query count is tracked per tenant per month and enforced per subscription plan (Pro: 200 / month)
+
+---
+
+## Pricing Plans
+
+| Feature                       | Free       | Plus         | Pro                 |
+| ----------------------------- | ---------- | ------------ | ------------------- |
+| Patients                      | 30         | 500          | Unlimited           |
+| Prescriptions                 | 10 / month | Unlimited    | Unlimited           |
+| PDF prescription export       | —          | ✓            | ✓                   |
+| Invoice generation            | —          | ✓            | ✓                   |
+| Revenue reports & analytics   | —          | —            | ✓                   |
+| Medicine database             | Read-only  | ✓            | ✓                   |
+| Symptom search                | —          | ✓            | ✓                   |
+| Book library                  | —          | 5 books      | Unlimited + upload  |
+| AI assistant                  | —          | —            | 200 queries / month |
+| Assistant / receptionist seat | —          | —            | 1 included          |
+| Support                       | Email      | Email + chat | Priority            |
+| **Monthly price**             | ৳0         | ৳799         | ৳1,799              |
+| **Annual price**              | ৳0         | ৳639 / mo    | ৳1,439 / mo         |
+
+All paid plans include a **14-day free trial**, no credit card required. On downgrade, existing records are never deleted — they become read-only until the account is within plan limits.
+
+---
+
+## Development Phases
+
+### Phase 1 — Core clinic MVP `current focus`
+
+Doctor registration and approval, patient CRUD with visit history and tags, prescription builder with PDF export, payment tracking and invoice generation, dashboard with KPI cards, patient calendar, and analytics charts.
+
+**Deliverable:** A working clinic management tool a real practitioner can use every day.
+
+### Phase 2 — Knowledge base
+
+Medicine database with tradition categorisation and symptom tags, symptom-to-medicine mapping, symptom search endpoint, search integrated directly into the prescription builder.
+
+**Deliverable:** A doctor can search by symptom during consultation and add matched medicines to a prescription in one click.
+
+### Phase 3 — Book library
+
+EPUB upload and MinIO storage, server-side chapter/section parsing via `ebooklib`, in-browser reader with progress tracking, per-user bookmarks and highlights, reading progress widget on dashboard.
+
+**Deliverable:** A doctor can read Organon of Medicine or Charaka Samhita inside the platform with progress saved across sessions.
+
+### Phase 4 — AI / RAG
+
+Embedding pipeline (Celery job triggered on book upload), pgvector storage, cosine similarity retrieval, grounded prompt assembly with citations, AI assistant UI, per-tenant query count tracking, plan enforcement.
+
+**Deliverable:** A doctor can ask "What are the Ayurvedic remedies for Vata-induced fatigue?" and receive a grounded answer citing the exact section of Charaka Samhita.
+
+---
+
+## User Roles
+
+| Role                             | Capabilities                                                                                                |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Admin**                        | Approve doctor accounts, manage global medicine database, manage books and content, platform-wide analytics |
+| **Doctor**                       | Full patient and prescription management, payments, book library, AI assistant, symptom search              |
+| **Assistant / Receptionist**     | Patient management, billing, payment recording, appointment scheduling                                      |
+| **Patient** _(future — Phase 5)_ | View own prescriptions and visit history, access educational content                                        |
+
+---
+
+## Deployment
+
+### Local development
+
+```bash
+# Clone and configure
+git clone https://github.com/your-org/altcare.git
+cd altcare
+cp .env.example .env        # fill in SECRET_KEY, OPENAI_API_KEY, DB passwords
+
+# Start all services
+docker compose up -d
+
+# Run database migrations
+docker compose exec api alembic upgrade head
+
+# Access points:
+#   API + Swagger docs  →  http://localhost:8000/docs
+#   Frontend            →  http://localhost:3000
+#   MinIO console       →  http://localhost:9001
+```
+
+### Production (single VPS — recommended starting point)
+
+```
+Services (Docker Compose):
+  caddy       — reverse proxy + automatic HTTPS (ports 80 / 443)
+  api         — FastAPI, Uvicorn, 4 async workers
+  worker      — Celery worker for PDF, email, and embedding jobs
+  frontend    — Next.js standalone build
+  postgres    — PostgreSQL 16 with pgvector extension
+  redis       — cache + Celery broker
+  minio       — file storage
+
+Recommended minimum VPS:
+  4 vCPU / 8 GB RAM / 80 GB SSD
+  Estimated cost: $20–40 / month (DigitalOcean, Hetzner, Contabo)
+  Comfortable capacity: 50–200 concurrent clinic users
+```
+
+### Scaling path (when needed)
+
+1. Move PostgreSQL to a managed database (DigitalOcean Managed PG, Neon, Supabase)
+2. Move Redis to a managed instance
+3. Add a second API container behind a load balancer
+4. Move MinIO to Cloudflare R2 or AWS S3 — one config line change, same boto3 SDK
+5. Scale Celery workers independently for embedding/PDF workloads
+
+---
+
+## Project Status
+
+| Component           | Status                                            |
+| ------------------- | ------------------------------------------------- |
+| UI prototype        | ✅ Complete — `/prototype/altcare_dashboard.html` |
+| System architecture | ✅ Defined                                        |
+| Database schema     | ✅ Designed                                       |
+| API structure       | ✅ Defined                                        |
+| Backend — FastAPI   | 🔄 In progress (Phase 1)                          |
+| Frontend — Next.js  | 🔄 In progress (Phase 1)                          |
+| Medicine database   | 📋 Planned (Phase 2)                              |
+| Book library        | 📋 Planned (Phase 3)                              |
+| AI / RAG pipeline   | 📋 Planned (Phase 4)                              |
+
+---
+
+## Folder Structure
+
+```
+altcare/
+  prototype/
+    altcare_dashboard.html        ← Single-file UI prototype (current)
+  backend/
+    app/
+      main.py
+      core/
+        config.py
+        database.py
+        security.py
+        dependencies.py
+      modules/
+        auth/
+        doctor/
+        patient/
+        prescription/
+        payment/
+        medicine/
+        library/
+        ai/
+        notification/
+      shared/
+        models/
+        schemas/
+        exceptions.py
+        pagination.py
+    alembic/
+    tests/
+    pyproject.toml
+    Dockerfile
+  frontend/
+    app/                          ← Next.js App Router pages
+    components/
+    lib/
+    tailwind.config.ts
+    Dockerfile
+  docker-compose.yml
+  docker-compose.prod.yml
+  Caddyfile
+  .env.example
+  README.md
+```
+
+---
+
+## Contributing
+
+Work against feature branches named `feature/module-name` or `fix/short-description`. Open a pull request with a clear description of what changed, which module it belongs to, and whether a database migration is included. All PRs require at least one review before merge to `main`.
+
+---
+
+## License
+
+Private — all rights reserved. Contact the project owner for licensing inquiries.
