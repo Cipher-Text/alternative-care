@@ -169,8 +169,12 @@ tr:hover td { background: var(--color-background-secondary); }
 .settings-content { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 24px; }
 .settings-section { margin-bottom: 24px; }
 .settings-section h3 { font-size: 14px; font-weight: 500; margin-bottom: 14px; }
+.settings-section h4 { font-size: 13px; font-weight: 500; margin-bottom: 12px; color: var(--color-text-secondary); }
+.settings-tab { display: block; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
 .form-row .input, .form-group .input { width: 100%; }
+input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--g5); }
+label { user-select: none; }
 
 /* ── Calendar ── */
 .cal-wrap { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 16px; }
@@ -1019,30 +1023,201 @@ tr:hover td { background: var(--color-background-secondary); }
         <div class="page-header"><h1>Settings</h1><p>Manage your profile, clinic, and preferences.</p></div>
         <div class="settings-grid">
           <div class="settings-nav">
-            <div class="settings-nav-item active">Profile</div>
-            <div class="settings-nav-item">Clinic info</div>
-            <div class="settings-nav-item">Subscription</div>
-            <div class="settings-nav-item">Preferences</div>
-            <div class="settings-nav-item">Notifications</div>
+            <div class="settings-nav-item active" onclick="switchSettingsTab(this, 'profile')">Profile</div>
+            <div class="settings-nav-item" onclick="switchSettingsTab(this, 'clinic')">Clinic info</div>
+            <div class="settings-nav-item" onclick="switchSettingsTab(this, 'subscription')">Subscription</div>
+            <div class="settings-nav-item" onclick="switchSettingsTab(this, 'preferences')">Preferences</div>
+            <div class="settings-nav-item" onclick="switchSettingsTab(this, 'notifications')">Notifications</div>
           </div>
-          <div class="settings-content">
-            <div class="settings-section">
-              <h3>Personal profile</h3>
-              <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
-                <div class="avatar-lg" style="background:var(--g1);color:var(--g6);font-size:18px">DR</div>
-                <div><button class="btn btn-ghost" style="font-size:12px">Change photo</button></div>
+          <div class="settings-content" id="settings-content">
+            <!-- Profile Tab -->
+            <div class="settings-tab" id="settings-profile">
+              <div class="settings-section">
+                <h3>Personal profile</h3>
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+                  <div class="avatar-lg" style="background:var(--g1);color:var(--g6);font-size:18px">DR</div>
+                  <div><button class="btn btn-ghost" style="font-size:12px" onclick="alert('Photo upload would open here')">Change photo</button></div>
+                </div>
+                <div class="form-row">
+                  <div><div class="form-label">First name</div><input class="input" value="Dr. Ahmad"></div>
+                  <div><div class="form-label">Last name</div><input class="input" value="Rahman"></div>
+                </div>
+                <div class="form-row">
+                  <div><div class="form-label">Specialization(s)</div>
+                    <select class="input" multiple size="4">
+                      <option selected>Homeopathy</option>
+                      <option selected>Ayurveda</option>
+                      <option>Unani</option>
+                      <option>Herbal</option>
+                    </select>
+                    <small style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;display:block">Hold Ctrl/Cmd to select multiple</small>
+                  </div>
+                  <div><div class="form-label">License number</div><input class="input" value="BDH-2019-0042"></div>
+                </div>
+                <div class="form-group"><div class="form-label">Email</div><input class="input" value="dr.rahman@altcare.health" style="width:100%"></div>
+                <div class="form-row">
+                  <div><div class="form-label">Phone</div><input class="input" value="+880 171-234-5678"></div>
+                  <div><div class="form-label">City</div><input class="input" value="Dhaka"></div>
+                </div>
               </div>
-              <div class="form-row">
-                <div><div class="form-label">First name</div><input class="input" value="Dr. Ahmad"></div>
-                <div><div class="form-label">Last name</div><input class="input" value="Rahman"></div>
-              </div>
-              <div class="form-row">
-                <div><div class="form-label">Specialization</div><select class="input"><option>Homeopathy</option><option>Ayurveda</option><option>Unani</option></select></div>
-                <div><div class="form-label">License number</div><input class="input" value="BDH-2019-0042"></div>
-              </div>
-              <div class="form-group"><div class="form-label">Email</div><input class="input" value="dr.rahman@altcare.health" style="width:100%"></div>
+              <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
             </div>
-            <div style="display:flex;gap:10px"><button class="btn btn-primary">Save changes</button><button class="btn btn-ghost">Cancel</button></div>
+
+            <!-- Clinic Info Tab -->
+            <div class="settings-tab" id="settings-clinic" style="display:none">
+              <div class="settings-section">
+                <h3>Clinic information</h3>
+                <div class="form-group">
+                  <div class="form-label">Clinic name</div>
+                  <input class="input" value="AltCare Wellness Clinic" style="width:100%">
+                </div>
+                <div class="form-row">
+                  <div><div class="form-label">Establishment year</div><input class="input" type="number" value="2019"></div>
+                  <div><div class="form-label">Registration number</div><input class="input" value="DHK-2019-4567"></div>
+                </div>
+                <div class="form-group">
+                  <div class="form-label">Address</div>
+                  <textarea class="input" rows="2" style="width:100%">House 42, Road 12, Dhanmondi
+Dhaka - 1209, Bangladesh</textarea>
+                </div>
+                <div class="form-row">
+                  <div><div class="form-label">Contact phone</div><input class="input" value="+880 2-9876543"></div>
+                  <div><div class="form-label">Contact email</div><input class="input" value="info@altcareclinic.com"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
+            </div>
+
+            <!-- Subscription Tab -->
+            <div class="settings-tab" id="settings-subscription" style="display:none">
+              <div class="settings-section">
+                <h3>Current subscription</h3>
+                <div style="background:var(--pu1);border:1px solid var(--pu4);border-radius:12px;padding:18px;margin-bottom:20px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:16px;font-weight:600;color:var(--pu5)">Pro Plan</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px">Active • Renews on May 15, 2026</div>
+                    </div>
+                    <div style="text-align:right">
+                      <div style="font-size:22px;font-weight:600">৳1,799</div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary)">per month</div>
+                    </div>
+                  </div>
+                  <div style="font-size:11px;color:var(--color-text-secondary)">Next billing: May 15, 2026 • Payment method: bKash (***5678)</div>
+                </div>
+                <h4 style="font-size:13px;font-weight:500;margin-bottom:12px">Usage this month</h4>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+                  <div style="background:var(--color-background-secondary);padding:14px;border-radius:10px">
+                    <div style="font-size:20px;font-weight:600">247</div>
+                    <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">Patients (Unlimited)</div>
+                  </div>
+                  <div style="background:var(--color-background-secondary);padding:14px;border-radius:10px">
+                    <div style="font-size:20px;font-weight:600">142 / 200</div>
+                    <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px">AI Queries used</div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button class="btn btn-ghost" onclick="nav('pricing',null)">View all plans</button>
+                <button class="btn btn-ghost" onclick="alert('Update payment method')">Update payment method</button>
+              </div>
+            </div>
+
+            <!-- Preferences Tab -->
+            <div class="settings-tab" id="settings-preferences" style="display:none">
+              <div class="settings-section">
+                <h3>Preferences</h3>
+                <div style="margin-bottom:18px">
+                  <div class="form-label">Language</div>
+                  <select class="input" style="max-width:250px">
+                    <option>English</option>
+                    <option>বাংলা (Bengali)</option>
+                    <option>हिन्दी (Hindi)</option>
+                  </select>
+                </div>
+                <div style="margin-bottom:18px">
+                  <div class="form-label">Timezone</div>
+                  <select class="input" style="max-width:250px">
+                    <option>Asia/Dhaka (GMT+6)</option>
+                    <option>Asia/Kolkata (GMT+5:30)</option>
+                    <option>UTC</option>
+                  </select>
+                </div>
+                <div style="margin-bottom:18px">
+                  <div class="form-label">Default prescription template</div>
+                  <select class="input" style="max-width:250px">
+                    <option>Standard</option>
+                    <option>Detailed (with symbols)</option>
+                    <option>Minimal</option>
+                  </select>
+                </div>
+                <h4 style="font-size:13px;font-weight:500;margin-bottom:12px;margin-top:24px">Display settings</h4>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox" checked>
+                    <span style="font-size:13px">Show patient diagnosis in table view</span>
+                  </label>
+                </div>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox" checked>
+                    <span style="font-size:13px">Enable calendar heatmap on dashboard</span>
+                  </label>
+                </div>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox">
+                    <span style="font-size:13px">Compact table view</span>
+                  </label>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div class="settings-tab" id="settings-notifications" style="display:none">
+              <div class="settings-section">
+                <h3>Notification preferences</h3>
+                <h4 style="font-size:13px;font-weight:500;margin-bottom:12px">Email notifications</h4>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox" checked>
+                    <span style="font-size:13px">Patient follow-up reminders</span>
+                  </label>
+                </div>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox" checked>
+                    <span style="font-size:13px">Daily patient summary</span>
+                  </label>
+                </div>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox">
+                    <span style="font-size:13px">Weekly analytics report</span>
+                  </label>
+                </div>
+                <h4 style="font-size:13px;font-weight:500;margin-bottom:12px;margin-top:24px">SMS notifications</h4>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox" checked>
+                    <span style="font-size:13px">Send appointment reminders to patients</span>
+                  </label>
+                </div>
+                <div style="margin-bottom:14px">
+                  <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                    <input type="checkbox" checked>
+                    <span style="font-size:13px">Prescription ready notifications</span>
+                  </label>
+                </div>
+                <div style="background:var(--b1);border:1px solid var(--b4);border-radius:10px;padding:14px;margin-top:20px">
+                  <div style="font-size:12px;font-weight:500;color:var(--b5);margin-bottom:6px">💡 Integration Setup Required</div>
+                  <div style="font-size:12px;color:var(--color-text-secondary)">To enable SMS notifications, please configure your SMS provider in the integrations section.</div>
+                  <button class="btn btn-ghost" style="margin-top:10px;font-size:11px" onclick="alert('Navigate to SMS integration setup')">Setup SMS Integration</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1232,5 +1407,33 @@ function addAIMsg(text){
   const d=document.createElement('div'); d.className='msg ai';
   d.innerHTML=`<div class="msg-avatar">AI</div><div class="msg-bubble">${text}</div>`;
   c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+
+// Settings tab switching
+function switchSettingsTab(element, tabId) {
+  // Remove active class from all nav items
+  document.querySelectorAll('.settings-nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // Add active class to clicked item
+  element.classList.add('active');
+
+  // Hide all tabs
+  document.querySelectorAll('.settings-tab').forEach(tab => {
+    tab.style.display = 'none';
+  });
+
+  // Show selected tab
+  const selectedTab = document.getElementById('settings-' + tabId);
+  if (selectedTab) {
+    selectedTab.style.display = 'block';
+  }
+}
+
+// Save settings
+function saveSettings() {
+  // In a real app, this would make an API call
+  alert('✓ Settings saved successfully!\n\nIn the production app, this would:\n- Validate all form fields\n- Send data to the backend API\n- Update the user session\n- Show a success notification');
 }
 </script>
