@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AltCare — UI Mockups</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.container {
+  max-width: 900px;
+  width: 100%;
+}
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 48px;
+}
+.header h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.header p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.16);
+}
+.card-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #E1F5EE 0%, #9FE1CB 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.card-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #0F6E56;
+}
+.card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+}
+.card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 16px;
+}
+.card-features {
+  list-style: none;
+  margin-bottom: 20px;
+}
+.card-features li {
+  font-size: 13px;
+  color: #888;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-features li::before {
+  content: '✓';
+  color: #1D9E75;
+  font-weight: 600;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0F6E56;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn:hover {
+  background: #0d5d48;
+}
+.btn svg {
+  width: 16px;
+  height: 16px;
+}
+.footer {
+  text-align: center;
+  margin-top: 48px;
+  color: white;
+  opacity: 0.8;
+  font-size: 13px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🌿 AltCare UI Mockups</h1>
+    <p>Interactive prototypes for alternative medicine practice management</p>
+  </div>
+
+  <div class="grid">
+    <a href="admin-view.html" class="card">
+      <div class="card-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <h2>Platform Admin</h2>
+      <p>Platform-wide administration and management interface</p>
+      <ul class="card-features">
+        <li>Doctor registration approvals</li>
+        <li>Global medicine & book management</li>
+        <li>Platform analytics & monitoring</li>
+        <li>Integration provider catalog</li>
+      </ul>
+      <div class="btn">
+        Open Admin View
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+      </div>
+    </a>
+
+    <a href="doctor-view.html" class="card">
+      <div class="card-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <h2>Doctor / Practitioner</h2>
+      <p>Complete clinic management system for practitioners</p>
+      <ul class="card-features">
+        <li>Patient & visit management</li>
+        <li>Prescription builder with PDF export</li>
+        <li>Payment & invoice tracking</li>
+        <li>AI-powered clinical assistant</li>
+      </ul>
+      <div class="btn">
+        Open Doctor View
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <p>Multi-tenant SaaS for Homeopathy, Ayurveda, Unani & Herbal Medicine</p>
+  </div>
+</div>
+</body>
+</html>

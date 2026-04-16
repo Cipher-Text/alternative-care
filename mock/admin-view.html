@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AltCare — Platform Admin</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --g6: #0F6E56; --g5: #1D9E75; --g4: #5DCAA5; --g1: #E1F5EE;
+  --t5: #0F6E56; --t4: #1D9E75; --t2: #9FE1CB; --t1: #E1F5EE;
+  --b5: #185FA5; --b4: #378ADD; --b1: #E6F1FB;
+  --a5: #854F0B; --a4: #BA7517; --a2: #FAC775; --a1: #FAEEDA;
+  --r5: #A32D2D; --r4: #E24B4A; --r1: #FCEBEB;
+  --pu5: #534AB7; --pu4: #6B5FDB; --pu1: #EEEDFE;
+  --o5: #C55016; --o4: #E77F4E; --o1: #FDF1EC;
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F8F9FA;
+  --color-background-tertiary: #F1F3F5;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #666;
+  --color-text-tertiary: #999;
+  --color-border-primary: #ddd;
+  --color-border-secondary: #e5e5e5;
+  --color-border-tertiary: #eee;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 13px;
+  background: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* Shell */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: var(--color-background-primary);
+  border-right: 1px solid var(--color-border-tertiary);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--g5) 0%, var(--g6) 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 18px; height: 18px; color: white; }
+.logo-text { font-size: 16px; font-weight: 600; color: var(--color-text-primary); }
+.logo-sub { font-size: 11px; color: var(--pu5); font-weight: 500; }
+
+.nav-section { padding: 12px 14px 6px; }
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 6px 6px 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 2px 0;
+  transition: background .12s, color .12s;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+.nav-item:hover {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+.nav-item.active {
+  background: var(--pu1);
+  color: var(--pu5);
+  font-weight: 500;
+}
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  background: var(--r4);
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 7px;
+  font-weight: 600;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 26px;
+  height: 60px;
+  background: var(--color-background-primary);
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+.topbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 9px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  min-width: 200px;
+}
+.search-bar svg { width: 15px; height: 15px; }
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--pu1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pu5);
+  border: 1px solid var(--color-border-tertiary);
+  cursor: pointer;
+}
+.notif {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-background-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid var(--color-border-tertiary);
+  position: relative;
+}
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: var(--r4);
+  border-radius: 50%;
+  border: 2px solid var(--color-background-primary);
+}
+
+/* Content */
+.content { flex: 1; overflow-y: auto; padding: 26px; }
+.page { display: none; }
+.page.active { display: block; }
+.page-header {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.page-header h1 { font-size: 20px; font-weight: 600; }
+.page-header p {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 26px;
+}
+.kpi-card {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 14px;
+  padding: 18px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.kpi-card:hover {
+  border-color: var(--color-border-secondary);
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.kpi-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.kpi-label svg { width: 14px; height: 14px; }
+.kpi-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+.kpi-change {
+  font-size: 11px;
+  margin-top: 7px;
+}
+.kpi-change.up { color: var(--g5); }
+.kpi-change.down { color: var(--r4); }
+
+/* Table */
+.table-card {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-header h3 { font-size: 14px; font-weight: 600; }
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-weight: 600;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  color: var(--color-text-secondary);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--color-background-secondary); }
+
+/* Badges */
+.badge {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.badge.pending { background: var(--a1); color: var(--a5); }
+.badge.approved { background: var(--g1); color: var(--g6); }
+.badge.suspended { background: var(--r1); color: var(--r5); }
+.badge.active { background: var(--g1); color: var(--g6); }
+.badge.inactive { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+.badge.free { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.badge.plus { background: var(--b1); color: var(--b5); }
+.badge.pro { background: var(--pu1); color: var(--pu5); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid;
+  transition: background .12s, transform .08s;
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary {
+  background: var(--pu5);
+  color: #fff;
+  border-color: var(--pu5);
+}
+.btn-primary:hover { background: #4539a0; }
+.btn-success {
+  background: var(--g5);
+  color: #fff;
+  border-color: var(--g5);
+}
+.btn-success:hover { background: var(--g6); }
+.btn-danger {
+  background: var(--r4);
+  color: #fff;
+  border-color: var(--r4);
+}
+.btn-danger:hover { background: var(--r5); }
+.btn-ghost {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-secondary);
+}
+.btn-ghost:hover { background: var(--color-background-tertiary); }
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+/* Filters */
+.filter-select {
+  appearance: none;
+  padding: 7px 32px 7px 12px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+}
+.input {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  outline: none;
+  font-family: inherit;
+}
+.input:focus { border-color: var(--pu5); }
+
+/* Charts */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 14px;
+  padding: 18px;
+}
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 140px;
+  padding-top: 10px;
+}
+.bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.bar {
+  width: 100%;
+  border-radius: 5px 5px 0 0;
+  transition: opacity .15s;
+  cursor: pointer;
+}
+.bar:hover { opacity: .8; }
+.bar-label {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}
+
+/* Stat Cards */
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--color-background-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--color-border-tertiary);
+}
+.stat-item-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stat-item-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Medicine Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 7px;
+  display: block;
+}
+textarea.input {
+  min-height: 80px;
+  resize: vertical;
+}
+.tag-input-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 8px;
+  min-height: 40px;
+}
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--pu1);
+  color: var(--pu5);
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.tag-chip-remove {
+  background: none;
+  border: none;
+  color: var(--pu5);
+  cursor: pointer;
+  padding: 0;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Integration Provider Card */
+.provider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.provider-card {
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color .15s, box-shadow .15s;
+  cursor: pointer;
+}
+.provider-card:hover {
+  border-color: var(--color-border-secondary);
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.provider-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.provider-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--color-background-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.provider-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.provider-type {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.provider-stats {
+  display: flex;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-tertiary);
+}
+.provider-stat {
+  flex: 1;
+}
+.provider-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+.provider-stat-label {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  margin-top: 2px;
+}
+
+/* Activity Log */
+.activity-log {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-tertiary);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.activity-icon.success { background: var(--g1); color: var(--g6); }
+.activity-icon.warning { background: var(--a1); color: var(--a5); }
+.activity-icon.error { background: var(--r1); color: var(--r5); }
+.activity-content { flex: 1; }
+.activity-text {
+  font-size: 12px;
+  color: var(--color-text-primary);
+  margin-bottom: 3px;
+}
+.activity-time {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,.4);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--color-background-primary);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.15);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.modal-close:hover {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-tertiary);
+}
+
+/* Util */
+.ml-auto { margin-left: auto; }
+.text-center { text-align: center; }
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-tertiary);
+}
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: .5;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">AltCare</div>
+        <div class="logo-sub">Platform Admin</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-label">Overview</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="nav('registrations',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span>Doctor Approvals</span>
+        <span class="nav-badge">7</span>
+      </div>
+      <div class="nav-item" onclick="nav('tenants',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        <span>Tenants / Clinics</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-label">Content</div>
+      <div class="nav-item" onclick="nav('medicines',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+        </svg>
+        <span>Global Medicines</span>
+      </div>
+      <div class="nav-item" onclick="nav('books',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+        <span>Global Books</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-label">Integrations</div>
+      <div class="nav-item" onclick="nav('providers',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"/>
+        </svg>
+        <span>Providers</span>
+      </div>
+      <div class="nav-item" onclick="nav('logs',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span>Activity Logs</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-label">Team</div>
+      <div class="nav-item" onclick="nav('operators',this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span>Platform Operators</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title">Platform Dashboard</div>
+      <div class="topbar-right">
+        <div class="search-bar">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Search...</span>
+        </div>
+        <div class="notif">
+          <div class="notif-dot"></div>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+        </div>
+        <div class="avatar">PA</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Dashboard Page -->
+      <div class="page active" id="dashboard">
+        <div class="page-header">
+          <div>
+            <h1>Platform Dashboard</h1>
+            <p>Overview of all clinics and platform metrics</p>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              Total Tenants
+            </div>
+            <div class="kpi-value">284</div>
+            <div class="kpi-change up">↑ 12% from last month</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Pending Approvals
+            </div>
+            <div class="kpi-value">7</div>
+            <div class="kpi-change" style="color: var(--a5);">⏱ Awaiting review</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              Active Users
+            </div>
+            <div class="kpi-value">1,247</div>
+            <div class="kpi-change up">↑ 8% from last month</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Monthly Revenue (MRR)
+            </div>
+            <div class="kpi-value">৳3.2L</div>
+            <div class="kpi-change up">↑ 18% from last month</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">
+              <span>Tenant Growth (Last 6 Months)</span>
+              <span style="color: var(--color-text-tertiary)">Total: 284 tenants</span>
+            </div>
+            <div class="bar-chart">
+              <div class="bar-wrap">
+                <div class="bar" style="height:60%;background:var(--pu4)"></div>
+                <div class="bar-label">Oct</div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar" style="height:68%;background:var(--pu4)"></div>
+                <div class="bar-label">Nov</div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar" style="height:75%;background:var(--pu4)"></div>
+                <div class="bar-label">Dec</div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar" style="height:70%;background:var(--pu4)"></div>
+                <div class="bar-label">Jan</div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar" style="height:84%;background:var(--pu4)"></div>
+                <div class="bar-label">Feb</div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar" style="height:100%;background:var(--pu5)"></div>
+                <div class="bar-label">Mar</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">
+              <span>Subscription Distribution</span>
+            </div>
+            <div class="stat-list">
+              <div class="stat-item">
+                <div class="stat-item-label">
+                  <span class="badge free">Free</span>
+                  <span>Trial & Free Plan</span>
+                </div>
+                <div class="stat-item-value">142</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-item-label">
+                  <span class="badge plus">Plus</span>
+                  <span>Plus Plan</span>
+                </div>
+                <div class="stat-item-value">98</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-item-label">
+                  <span class="badge pro">Pro</span>
+                  <span>Pro Plan</span>
+                </div>
+                <div class="stat-item-value">44</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="table-card">
+          <div class="card-header">
+            <h3>Recent Platform Activity</h3>
+            <button class="btn btn-ghost btn-sm">View All</button>
+          </div>
+          <div class="activity-log">
+            <div class="activity-item">
+              <div class="activity-icon success">✓</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Dr. Rahman Ahmed</strong> registration approved</div>
+                <div class="activity-time">2 minutes ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon warning">⚠</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Homeo Clinic BD</strong> reached 90% of patient limit</div>
+                <div class="activity-time">15 minutes ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon success">+</div>
+              <div class="activity-content">
+                <div class="activity-text">New integration provider <strong>Robi SMS</strong> added</div>
+                <div class="activity-time">1 hour ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon success">✓</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Dr. Fatima Khan</strong> upgraded to Pro plan</div>
+                <div class="activity-time">3 hours ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon error">✕</div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Ayurveda Center</strong> subscription payment failed</div>
+                <div class="activity-time">5 hours ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor Approvals Page -->
+      <div class="page" id="registrations">
+        <div class="page-header">
+          <div>
+            <h1>Doctor Registration Approvals</h1>
+            <p>Review and approve new doctor registrations</p>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="toolbar">
+            <div class="filter-select">
+              <select class="filter-select">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Approved</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+            <input type="text" class="input" placeholder="Search by name, email..." style="flex:1;max-width:300px;">
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Doctor Name</th>
+                <th>Specialization(s)</th>
+                <th>License #</th>
+                <th>Email / Phone</th>
+                <th>Registered</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Dr. Rahman Ahmed</td>
+                <td>
+                  <span class="badge" style="background:var(--g1);color:var(--g6);margin-right:4px">Homeopathy</span>
+                  <span class="badge" style="background:var(--a1);color:var(--a5)">Ayurveda</span>
+                </td>
+                <td style="font-family:monospace;font-size:11px">BM-123456</td>
+                <td>rahman@example.com<br><span style="font-size:11px;color:var(--color-text-tertiary)">+880 171-234-5678</span></td>
+                <td>2h ago</td>
+                <td><span class="badge pending">Pending</span></td>
+                <td>
+                  <button class="btn btn-success btn-sm" onclick="approve(this)">Approve</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Dr. Fatima Khan</td>
+                <td>
+                  <span class="badge" style="background:var(--o1);color:var(--o5)">Unani</span>
+                </td>
+                <td style="font-family:monospace;font-size:11px">BM-789012</td>
+                <td>fatima.khan@example.com<br><span style="font-size:11px;color:var(--color-text-tertiary)">+880 181-987-6543</span></td>
+                <td>5h ago</td>
+                <td><span class="badge pending">Pending</span></td>
+                <td>
+                  <button class="btn btn-success btn-sm" onclick="approve(this)">Approve</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Dr. Kamal Hossain</td>
+                <td>
+                  <span class="badge" style="background:var(--g1);color:var(--g6);margin-right:4px">Homeopathy</span>
+                  <span class="badge" style="background:var(--pu1);color:var(--pu5)">Herbal</span>
+                </td>
+                <td style="font-family:monospace;font-size:11px">BM-345678</td>
+                <td>kamal.h@example.com<br><span style="font-size:11px;color:var(--color-text-tertiary)">+880 191-555-1234</span></td>
+                <td>1d ago</td>
+                <td><span class="badge pending">Pending</span></td>
+                <td>
+                  <button class="btn btn-success btn-sm" onclick="approve(this)">Approve</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Dr. Nusrat Jahan</td>
+                <td>
+                  <span class="badge" style="background:var(--a1);color:var(--a5)">Ayurveda</span>
+                </td>
+                <td style="font-family:monospace;font-size:11px">BM-901234</td>
+                <td>nusrat@example.com<br><span style="font-size:11px;color:var(--color-text-tertiary)">+880 171-888-9999</span></td>
+                <td>2d ago</td>
+                <td><span class="badge pending">Pending</span></td>
+                <td>
+                  <button class="btn btn-success btn-sm" onclick="approve(this)">Approve</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tenants Page -->
+      <div class="page" id="tenants">
+        <div class="page-header">
+          <div>
+            <h1>Tenants / Clinics</h1>
+            <p>Manage all registered clinics and practitioners</p>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="toolbar">
+            <select class="filter-select">
+              <option>All Plans</option>
+              <option>Free</option>
+              <option>Plus</option>
+              <option>Pro</option>
+            </select>
+            <select class="filter-select">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Trial</option>
+              <option>Suspended</option>
+            </select>
+            <input type="text" class="input" placeholder="Search..." style="flex:1;max-width:300px;">
+            <button class="btn btn-ghost btn-sm ml-auto">Export CSV</button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Clinic Name</th>
+                <th>Doctor</th>
+                <th>Specialization</th>
+                <th>Plan</th>
+                <th>Patients</th>
+                <th>MRR</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Homeo Care Dhaka</td>
+                <td>Dr. Rahman Ahmed</td>
+                <td><span class="badge" style="background:var(--g1);color:var(--g6)">Homeopathy</span></td>
+                <td><span class="badge pro">Pro</span></td>
+                <td>247</td>
+                <td>৳1,799</td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Ayurveda Wellness Center</td>
+                <td>Dr. Priya Das</td>
+                <td><span class="badge" style="background:var(--a1);color:var(--a5)">Ayurveda</span></td>
+                <td><span class="badge plus">Plus</span></td>
+                <td>142</td>
+                <td>৳799</td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Unani Herbal Clinic</td>
+                <td>Dr. Fatima Khan</td>
+                <td><span class="badge" style="background:var(--o1);color:var(--o5)">Unani</span></td>
+                <td><span class="badge free">Free</span></td>
+                <td>18</td>
+                <td>৳0</td>
+                <td><span class="badge" style="background:var(--a1);color:var(--a5)">Trial</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">View</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Global Medicines Page -->
+      <div class="page" id="medicines">
+        <div class="page-header">
+          <div>
+            <h1>Global Medicine Database</h1>
+            <p>Curated medicines available to all practitioners</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('medicineModal')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Medicine
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="toolbar">
+            <select class="filter-select">
+              <option>All Systems</option>
+              <option>Homeopathy</option>
+              <option>Ayurveda</option>
+              <option>Unani</option>
+              <option>Herbal</option>
+            </select>
+            <input type="text" class="input" placeholder="Search medicines..." style="flex:1;max-width:350px;">
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Medicine Name</th>
+                <th>System</th>
+                <th>Category</th>
+                <th>Potency</th>
+                <th>Symptoms</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Arnica Montana</td>
+                <td><span class="badge" style="background:var(--g1);color:var(--g6)">Homeopathy</span></td>
+                <td>Remedy</td>
+                <td>30C, 200C, 1M</td>
+                <td><span style="font-size:11px;color:var(--color-text-tertiary)">Trauma, Bruising, Pain</span></td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Ashwagandha</td>
+                <td><span class="badge" style="background:var(--a1);color:var(--a5)">Ayurveda</span></td>
+                <td>Powder</td>
+                <td>—</td>
+                <td><span style="font-size:11px;color:var(--color-text-tertiary)">Stress, Fatigue, Immunity</span></td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Arq-e-Gulab</td>
+                <td><span class="badge" style="background:var(--o1);color:var(--o5)">Unani</span></td>
+                <td>Syrup</td>
+                <td>—</td>
+                <td><span style="font-size:11px;color:var(--color-text-tertiary)">Cooling, Digestive</span></td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Turmeric Root Extract</td>
+                <td><span class="badge" style="background:var(--pu1);color:var(--pu5)">Herbal</span></td>
+                <td>Extract</td>
+                <td>—</td>
+                <td><span style="font-size:11px;color:var(--color-text-tertiary)">Inflammation, Immunity</span></td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Global Books Page -->
+      <div class="page" id="books">
+        <div class="page-header">
+          <div>
+            <h1>Global Book Library</h1>
+            <p>Classical texts and reference materials</p>
+          </div>
+          <button class="btn btn-primary">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Upload EPUB
+          </button>
+        </div>
+
+        <div class="table-card">
+          <div class="toolbar">
+            <select class="filter-select">
+              <option>All Systems</option>
+              <option>Homeopathy</option>
+              <option>Ayurveda</option>
+              <option>Unani</option>
+              <option>Herbal</option>
+            </select>
+            <select class="filter-select">
+              <option>All Status</option>
+              <option>Parsed</option>
+              <option>Processing</option>
+              <option>Failed</option>
+            </select>
+            <input type="text" class="input" placeholder="Search books..." style="flex:1;max-width:300px;">
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>System</th>
+                <th>Chapters</th>
+                <th>Embeddings</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Organon of Medicine</td>
+                <td>Samuel Hahnemann</td>
+                <td><span class="badge" style="background:var(--g1);color:var(--g6)">Homeopathy</span></td>
+                <td>291</td>
+                <td>4,127</td>
+                <td><span class="badge active">Parsed</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Charaka Samhita</td>
+                <td>Charaka</td>
+                <td><span class="badge" style="background:var(--a1);color:var(--a5)">Ayurveda</span></td>
+                <td>120</td>
+                <td>6,842</td>
+                <td><span class="badge active">Parsed</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Materia Medica</td>
+                <td>William Boericke</td>
+                <td><span class="badge" style="background:var(--g1);color:var(--g6)">Homeopathy</span></td>
+                <td>650</td>
+                <td>9,234</td>
+                <td><span class="badge active">Parsed</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">View</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Integration Providers Page -->
+      <div class="page" id="providers">
+        <div class="page-header">
+          <div>
+            <h1>Integration Providers</h1>
+            <p>SMS, Email, and Payment gateway providers</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('providerModal')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Provider
+          </button>
+        </div>
+
+        <!-- Providers Grid -->
+        <div style="margin-bottom:24px">
+          <h3 style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--color-text-secondary)">SMS PROVIDERS</h3>
+          <div class="provider-grid">
+            <div class="provider-card">
+              <div class="provider-header">
+                <div class="provider-icon">📱</div>
+                <div>
+                  <div class="provider-name">Twilio SMS</div>
+                  <div class="provider-type">SMS • International</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Cloud communications platform</p>
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <div class="provider-stat-value">42</div>
+                  <div class="provider-stat-label">Tenants</div>
+                </div>
+                <div class="provider-stat">
+                  <div class="provider-stat-value">12.4K</div>
+                  <div class="provider-stat-label">SMS Sent</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="provider-card">
+              <div class="provider-header">
+                <div class="provider-icon">📲</div>
+                <div>
+                  <div class="provider-name">Banglalink SMS</div>
+                  <div class="provider-type">SMS • Bangladesh</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Local SMS gateway for Bangladesh</p>
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <div class="provider-stat-value">128</div>
+                  <div class="provider-stat-label">Tenants</div>
+                </div>
+                <div class="provider-stat">
+                  <div class="provider-stat-value">68.2K</div>
+                  <div class="provider-stat-label">SMS Sent</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="provider-card">
+              <div class="provider-header">
+                <div class="provider-icon">📡</div>
+                <div>
+                  <div class="provider-name">Robi SMS</div>
+                  <div class="provider-type">SMS • Bangladesh</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Robi Axiata SMS API</p>
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <div class="provider-stat-value">94</div>
+                  <div class="provider-stat-label">Tenants</div>
+                </div>
+                <div class="provider-stat">
+                  <div class="provider-stat-value">51.6K</div>
+                  <div class="provider-stat-label">SMS Sent</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px">
+          <h3 style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--color-text-secondary)">PAYMENT GATEWAYS</h3>
+          <div class="provider-grid">
+            <div class="provider-card">
+              <div class="provider-header">
+                <div class="provider-icon" style="background:linear-gradient(135deg,#E11E77,#D0115F)">
+                  <span style="color:white;font-weight:600;font-size:14px">bK</span>
+                </div>
+                <div>
+                  <div class="provider-name">bKash</div>
+                  <div class="provider-type">Payment • Bangladesh</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Bangladesh's leading mobile financial service</p>
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <div class="provider-stat-value">186</div>
+                  <div class="provider-stat-label">Tenants</div>
+                </div>
+                <div class="provider-stat">
+                  <div class="provider-stat-value">৳24.8L</div>
+                  <div class="provider-stat-label">Processed</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="provider-card">
+              <div class="provider-header">
+                <div class="provider-icon" style="background:linear-gradient(135deg,#EC5728,#D44617)">
+                  <span style="color:white;font-weight:600;font-size:14px">nG</span>
+                </div>
+                <div>
+                  <div class="provider-name">Nagad</div>
+                  <div class="provider-type">Payment • Bangladesh</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Digital financial service in Bangladesh</p>
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <div class="provider-stat-value">142</div>
+                  <div class="provider-stat-label">Tenants</div>
+                </div>
+                <div class="provider-stat">
+                  <div class="provider-stat-value">৳18.4L</div>
+                  <div class="provider-stat-label">Processed</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="provider-card">
+              <div class="provider-header">
+                <div class="provider-icon" style="background:linear-gradient(135deg,#635BFF,#4F46E5)">
+                  <span style="color:white;font-weight:600;font-size:14px">S</span>
+                </div>
+                <div>
+                  <div class="provider-name">Stripe</div>
+                  <div class="provider-type">Payment • International</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px">Global payment processing platform</p>
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <div class="provider-stat-value">34</div>
+                  <div class="provider-stat-label">Tenants</div>
+                </div>
+                <div class="provider-stat">
+                  <div class="provider-stat-value">$8.2K</div>
+                  <div class="provider-stat-label">Processed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Logs Page -->
+      <div class="page" id="logs">
+        <div class="page-header">
+          <div>
+            <h1>Platform Activity Logs</h1>
+            <p>System-wide audit trail and activity monitoring</p>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="toolbar">
+            <select class="filter-select">
+              <option>All Events</option>
+              <option>User Actions</option>
+              <option>System Events</option>
+              <option>Errors</option>
+            </select>
+            <select class="filter-select">
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+              <option>Last 90 Days</option>
+            </select>
+            <input type="text" class="input" placeholder="Search logs..." style="flex:1;max-width:300px;">
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Event Type</th>
+                <th>User / Tenant</th>
+                <th>Description</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">2024-04-16 14:32</td>
+                <td><span class="badge approved">Registration</span></td>
+                <td>Dr. Rahman Ahmed</td>
+                <td>Doctor registration approved by admin</td>
+                <td><span class="badge active">Success</span></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">2024-04-16 13:18</td>
+                <td><span class="badge" style="background:var(--pu1);color:var(--pu5)">Upgrade</span></td>
+                <td>Homeo Clinic BD</td>
+                <td>Plan upgraded from Plus to Pro</td>
+                <td><span class="badge active">Success</span></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">2024-04-16 11:45</td>
+                <td><span class="badge" style="background:var(--b1);color:var(--b5)">Integration</span></td>
+                <td>Platform Admin</td>
+                <td>New provider "Robi SMS" added to catalog</td>
+                <td><span class="badge active">Success</span></td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">2024-04-16 10:22</td>
+                <td><span class="badge" style="background:var(--r1);color:var(--r5)">Payment</span></td>
+                <td>Ayurveda Wellness</td>
+                <td>Monthly subscription payment failed</td>
+                <td><span class="badge" style="background:var(--r1);color:var(--r5)">Failed</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Platform Operators Page -->
+      <div class="page" id="operators">
+        <div class="page-header">
+          <div>
+            <h1>Platform Operators</h1>
+            <p>Admin assistants and support team members</p>
+          </div>
+          <button class="btn btn-primary">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Operator
+          </button>
+        </div>
+
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Last Active</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Sadman Sobhan</td>
+                <td>sadman@altcare.health</td>
+                <td><span class="badge" style="background:var(--pu1);color:var(--pu5)">Admin</span></td>
+                <td>Just now</td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;color:var(--color-text-primary)">Imran Hossain</td>
+                <td>imran@altcare.health</td>
+                <td><span class="badge" style="background:var(--b1);color:var(--b5)">Operator</span></td>
+                <td>2h ago</td>
+                <td><span class="badge active">Active</span></td>
+                <td>
+                  <button class="btn btn-ghost btn-sm">Edit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal: Add Medicine -->
+<div class="modal-overlay" id="medicineModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Add Global Medicine</h2>
+      <button class="modal-close" onclick="closeModal('medicineModal')">×</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Medicine Name</label>
+        <input type="text" class="input" placeholder="e.g., Arnica Montana">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Medical System</label>
+        <select class="input">
+          <option>Homeopathy</option>
+          <option>Ayurveda</option>
+          <option>Unani</option>
+          <option>Herbal</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input type="text" class="input" placeholder="Remedy, Powder, Tablet...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Potency (Optional)</label>
+        <input type="text" class="input" placeholder="30C, 200C, 1M">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="input" placeholder="Detailed description of the medicine..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Indications</label>
+      <textarea class="input" placeholder="What conditions this medicine treats..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Symptom Tags</label>
+      <div class="tag-input-wrap">
+        <div class="tag-chip">
+          Trauma
+          <button class="tag-chip-remove">×</button>
+        </div>
+        <div class="tag-chip">
+          Bruising
+          <button class="tag-chip-remove">×</button>
+        </div>
+        <div class="tag-chip">
+          Pain
+          <button class="tag-chip-remove">×</button>
+        </div>
+        <input type="text" placeholder="Add tag..." style="border:none;background:none;outline:none;padding:4px 8px;font-size:12px;flex:1;min-width:120px">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('medicineModal')">Cancel</button>
+      <button class="btn btn-primary">Add Medicine</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Provider -->
+<div class="modal-overlay" id="providerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Add Integration Provider</h2>
+      <button class="modal-close" onclick="closeModal('providerModal')">×</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Provider Name</label>
+        <input type="text" class="input" placeholder="e.g., Grameenphone SMS">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input type="text" class="input" placeholder="e.g., GP SMS Gateway">
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Integration Type</label>
+        <select class="input">
+          <option>SMS</option>
+          <option>Email</option>
+          <option>Payment</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="input">
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Configuration Schema (JSON)</label>
+      <textarea class="input" placeholder='{"required": ["api_key", "sender_id"]}'></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Documentation URL (Optional)</label>
+      <input type="url" class="input" placeholder="https://...">
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('providerModal')">Cancel</button>
+      <button class="btn btn-primary">Add Provider</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function nav(pageId, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+
+  const titles = {
+    dashboard: 'Platform Dashboard',
+    registrations: 'Doctor Approvals',
+    tenants: 'Tenants / Clinics',
+    medicines: 'Global Medicines',
+    books: 'Global Books',
+    providers: 'Integration Providers',
+    logs: 'Activity Logs',
+    operators: 'Platform Operators'
+  };
+  document.querySelector('.topbar-title').textContent = titles[pageId] || 'Platform Admin';
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function approve(btn) {
+  btn.textContent = 'Approved ✓';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'not-allowed';
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>

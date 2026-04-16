@@ -29,16 +29,25 @@
 
 AltCare is a full-featured **clinic operating system** built specifically for alternative medicine practitioners. It goes beyond simple record-keeping — it combines patient management, prescription generation, a curated medicine knowledge base, a medical book reader, symptom-based search, and a RAG-powered AI assistant grounded in classical texts.
 
+**Key differentiators:**
+- **Multi-specialization support** — practitioners can work with 1-4 systems (Homeopathy, Ayurveda, Unani, Herbal), with resources auto-filtered based on their active specializations
+- **Integrated communications & payments** — built-in SMS/Email providers (Twilio, Banglalink, Robi, SendGrid) and payment gateways (bKash, Nagad, Rocket, Stripe)
+- **Complete audit trail** — every SMS, email, and payment transaction logged with full request/response details
+
 The platform is designed as a **multi-tenant SaaS** — each doctor or clinic operates in a fully isolated data space under a shared infrastructure. It is built to evolve incrementally: from an MVP clinic tool in Phase 1 through to a comprehensive knowledge and AI intelligence platform by Phase 4.
 
 ---
 
-## Screenshots & Prototype
+## Screenshots & Prototypes
 
-> UI prototype located at [`/prototype/altcare_dashboard.html`](./prototype/altcare_dashboard.html)
-> Open in any browser — no build step, no dependencies required.
+> UI prototypes located in [`/mock/`](./mock/) folder
+> Open any HTML file in a browser — no build step, no dependencies required.
 
-The prototype is a complete single-file HTML/CSS/JS mock covering all major screens. It is used for stakeholder review, client feedback, and as a front-end specification for the production build.
+**Available mockups:**
+- **[Admin View](./mock/admin-view.html)** — Platform administration interface for admins and operators
+- **[Doctor View](./mock/doctor-view.html)** — Complete clinic management system for practitioners
+
+The prototypes are complete single-file HTML/CSS/JS mocks covering all major screens. They are used for stakeholder review, client feedback, and as front-end specifications for the production build.
 
 **Screens included:**
 
@@ -47,13 +56,13 @@ The prototype is a complete single-file HTML/CSS/JS mock covering all major scre
 | Dashboard      | KPI cards, monthly patient calendar with load heatmap, booked appointments, patient growth chart, most common diagnoses, most prescribed medicines, recent patients with diagnosis column, upcoming follow-ups |
 | Patients       | Searchable/filterable table with diagnosis column, special case / chronic / treatment / allergy tags, slide-out patient detail panel with full visit timeline                                                  |
 | Prescriptions  | Prescription builder with medicine selection, dosage/duration, doctor's notes, live PDF preview                                                                                                                |
-| Payments       | Revenue KPIs, transaction table, invoice tracking, bKash/cash/card support                                                                                                                                     |
+| Payments       | Revenue KPIs, transaction table, invoice tracking, bKash/Nagad/Rocket/cash/card support                                                                                                                        |
 | Medicines      | Searchable medicine database across all traditions with symptom tags                                                                                                                                           |
 | Symptom search | Multi-tradition symptom-to-remedy matching with match percentage                                                                                                                                               |
 | Library        | Medical book browser with reading progress bars                                                                                                                                                                |
 | AI Assistant   | RAG-based clinical reference chat with quick prompts and disclaimer                                                                                                                                            |
 | Pricing & Plan | Free / Plus / Pro with monthly/annual billing toggle and full feature comparison table                                                                                                                         |
-| Settings       | Doctor profile, clinic info, subscription management                                                                                                                                                           |
+| Settings       | Doctor profile, clinic info, specializations, subscription management, integration setup (SMS/Email/Payment)                                                                                                   |
 
 ---
 
@@ -70,9 +79,10 @@ The prototype is a complete single-file HTML/CSS/JS mock covering all major scre
 | **Pydantic v2**      | Request/response validation and settings management                                     |
 | **passlib (bcrypt)** | Password hashing                                                                        |
 | **python-jose**      | JWT creation and verification                                                           |
-| **Celery**           | Background task queue — PDF generation, emails, AI embedding jobs                       |
+| **Celery**           | Background task queue — PDF generation, emails, SMS, AI embedding jobs                  |
 | **WeasyPrint**       | Prescription and invoice PDF generation                                                 |
 | **ebooklib**         | EPUB parsing for the book library                                                       |
+| **cryptography**     | Fernet encryption for integration credentials (API keys, merchant secrets)              |
 
 ### Frontend
 
@@ -206,48 +216,66 @@ EPUB upload stored in MinIO. Server-side chapter and section extraction via `ebo
 
 Books are chunked into overlapping sections, embedded via OpenAI, and stored in pgvector. At query time, the top-k most relevant sections are retrieved by cosine similarity and assembled into a grounded prompt. Every response includes the source section reference. The AI never makes prescriptive medical decisions.
 
-### Notifications
+### Notifications & Integrations
 
-Asynchronous email and SMS dispatch via Celery workers. Triggered on: follow-up reminders, prescription PDF ready, payment receipt, and admin approval.
+**Integration framework** with pluggable SMS, Email, and Payment providers. Doctors configure their preferred providers (Banglalink SMS, SendGrid Email, bKash Payment) with encrypted credentials. All transactions are logged with full audit trail.
+
+**Notification triggers:** Follow-up reminders, prescription PDF ready, payment receipt, admin approval.
+
+**Supported providers:**
+- **SMS:** Twilio, Banglalink, Robi, Grameenphone
+- **Email:** SMTP, SendGrid, AWS SES
+- **Payment:** bKash, Nagad, Rocket, Upay (Bangladesh), Stripe, Razorpay (International)
 
 ---
 
 ## Database Schema
 
+> **Full schema documentation:** [DATABASE.md](./DATABASE.md)
+
 ### Entity relationships
 
 ```
 TENANTS (clinics / doctors)
-  └─ USERS (doctors, assistants, admins)
+  ├─ specializations[]                    — 1-4 medical systems
+  ├─ USERS (doctors, receptionists)
+  ├─ TENANT_INTEGRATIONS                  — encrypted SMS/Email/Payment credentials
+  │    └─ INTEGRATION_LOGS                — transaction audit trail
   └─ PATIENTS
-       ├─ PATIENT_TAGS          (special_case, chronic, treatment, allergy, custom)
-       ├─ PATIENT_DIAGNOSES     (description, ICD code, visit reference)
+       ├─ PATIENT_TAGS                    (special_case, chronic, treatment, allergy)
+       ├─ PATIENT_DIAGNOSES               (description, ICD code, visit reference)
        └─ VISITS
             ├─ PRESCRIPTIONS
-            │    └─ PRESCRIPTION_ITEMS → MEDICINES
-            └─ PAYMENTS
+            │    └─ PRESCRIPTION_ITEMS → MEDICINES (filtered by specializations)
+            └─ PAYMENTS                   (links to integration_logs for digital payments)
                  └─ INVOICES
 
-MEDICINES (global pool, is_global = true)
-  └─ MEDICINE_SYMPTOMS          (symptom mapping, many-to-many)
+MEDICINES (global + tenant-specific, filtered by doctor's specializations)
+  └─ MEDICINE_SYMPTOMS                    (symptom mapping, many-to-many)
 
-BOOKS
+BOOKS (filtered by doctor's specializations)
   └─ CHAPTERS
        └─ SECTIONS
-            └─ EMBEDDINGS       (pgvector — 1536 dimensions)
+            └─ EMBEDDINGS                 (pgvector — 1536 dimensions)
 
-READING_PROGRESS                (user_id, book_id, percentage, last_section_id)
-BOOKMARKS                       (user_id, section_id, note)
-HIGHLIGHTS                      (user_id, section_id, start_offset, end_offset)
+READING_PROGRESS, BOOKMARKS, HIGHLIGHTS
+
+PLATFORM LEVEL (no tenant_id):
+  USERS (admins, operators)
+  INTEGRATION_PROVIDERS                   (SMS/Email/Payment catalog)
 ```
 
 ### Key design decisions
 
+- **24 tables total** — core clinic (14) + knowledge base (6) + integrations (3) + usage tracking (1)
 - Every entity carries `tenant_id` — all queries are scoped, cross-tenant data access is architecturally impossible
-- `prescription_items.medicine_id` is nullable — allows free-text medicine entry. Either `medicine_id` or `custom_medicine` must be present (enforced at the API layer)
-- `medicines.is_global` — distinguishes admin-curated global medicines from tenant-specific additions
+- **Multi-specialization filtering** — medicines, books, and AI responses auto-filter by doctor's `specializations[]`
+- **Platform vs tenant users** — admins/operators have `tenant_id = NULL`, doctors/receptionists are tenant-scoped
+- `prescription_items.medicine_id` is nullable — allows free-text medicine entry
+- `medicines.is_global` and `books.is_global` — distinguishes admin-curated content from tenant additions
 - All entities extend `BaseAuditModel` — `created_at`, `updated_at`, `created_by`, `updated_by` populated automatically
-- Embeddings stored in PostgreSQL via pgvector — no separate vector database needed at this scale
+- **Integration credentials encrypted** at application level using Fernet before storage
+- Embeddings stored in PostgreSQL via pgvector — no separate vector database needed
 
 ---
 
@@ -297,6 +325,10 @@ All responses follow a consistent structure:
 | GET    | `/api/v1/dashboard/calendar`      | Monthly patient calendar data         |
 | GET    | `/api/v1/dashboard/top-diagnoses` | Most common diagnoses chart           |
 | GET    | `/api/v1/dashboard/top-medicines` | Most prescribed medicines chart       |
+| GET    | `/api/v1/integrations/providers`  | List available integration providers  |
+| POST   | `/api/v1/integrations`            | Configure tenant integration          |
+| POST   | `/api/v1/integrations/{id}/test`  | Test integration credentials          |
+| GET    | `/api/v1/integrations/logs`       | Integration transaction history       |
 
 Tenant resolution happens from the JWT `tenant_id` claim — never from the URL. All list endpoints accept `?page=`, `?size=`, and `?q=` query params.
 
@@ -440,15 +472,15 @@ All paid plans include a **14-day free trial**, no credit card required. On down
 
 ### Phase 1 — Core clinic MVP `current focus`
 
-Doctor registration and approval, patient CRUD with visit history and tags, prescription builder with PDF export, payment tracking and invoice generation, dashboard with KPI cards, patient calendar, and analytics charts.
+Doctor registration with multi-specialization selection (1-4 systems), patient CRUD with visit history and tags, prescription builder with PDF export, payment tracking and invoice generation, dashboard with KPI cards, patient calendar, and analytics charts. Integration framework setup (SMS/Email/Payment provider configuration).
 
-**Deliverable:** A working clinic management tool a real practitioner can use every day.
+**Deliverable:** A working clinic management tool a real practitioner can use every day, with integrated communications and payment processing.
 
 ### Phase 2 — Knowledge base
 
-Medicine database with tradition categorisation and symptom tags, symptom-to-medicine mapping, symptom search endpoint, search integrated directly into the prescription builder.
+Medicine database with tradition categorisation and symptom tags (filtered by doctor's specializations), symptom-to-medicine mapping, symptom search endpoint, search integrated directly into the prescription builder. A Homeopathy-only doctor sees only homeopathic medicines; a multi-system practitioner sees all their chosen traditions.
 
-**Deliverable:** A doctor can search by symptom during consultation and add matched medicines to a prescription in one click.
+**Deliverable:** A doctor can search by symptom during consultation and add matched medicines to a prescription in one click, with results automatically filtered to their practice areas.
 
 ### Phase 3 — Book library
 
@@ -466,12 +498,18 @@ Embedding pipeline (Celery job triggered on book upload), pgvector storage, cosi
 
 ## User Roles
 
-| Role                             | Capabilities                                                                                                |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Admin**                        | Approve doctor accounts, manage global medicine database, manage books and content, platform-wide analytics |
-| **Doctor**                       | Full patient and prescription management, payments, book library, AI assistant, symptom search              |
-| **Assistant / Receptionist**     | Patient management, billing, payment recording, appointment scheduling                                      |
-| **Patient** _(future — Phase 5)_ | View own prescriptions and visit history, access educational content                                        |
+| Role                             | Scope         | Capabilities                                                                                                                   |
+| -------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Platform Admin**               | Platform-wide | Approve doctor registrations, manage global medicines/books, platform analytics, integration provider catalog                  |
+| **Platform Operator**            | Platform-wide | Admin's assistant — support doctor approvals, content moderation, handle support tickets                                       |
+| **Doctor / Practitioner**        | Tenant-scoped | Full patient & prescription management, payments, symptom search, library, AI assistant (resources filtered by specializations) |
+| **Receptionist / Assistant**     | Tenant-scoped | Doctor's assistant — patient management, appointment scheduling, payment recording, invoice generation                         |
+| **Patient** _(future — Phase 5)_ | Self-only     | View own prescriptions and visit history, access educational content                                                           |
+
+**Role hierarchy:**
+- **Platform users** (Admin, Operator): No `tenant_id`, can see all clinics
+- **Tenant users** (Doctor, Receptionist): Scoped to their clinic via `tenant_id`
+- Doctor creates the tenant and can add receptionist seats (Pro plan: 1 included)
 
 ---
 
@@ -483,7 +521,7 @@ Embedding pipeline (Celery job triggered on book upload), pgvector storage, cosi
 # Clone and configure
 git clone https://github.com/your-org/altcare.git
 cd altcare
-cp .env.example .env        # fill in SECRET_KEY, OPENAI_API_KEY, DB passwords
+cp .env.example .env        # fill in SECRET_KEY, OPENAI_API_KEY, INTEGRATION_ENCRYPTION_KEY, DB passwords
 
 # Start all services
 docker compose up -d
@@ -527,17 +565,18 @@ Recommended minimum VPS:
 
 ## Project Status
 
-| Component           | Status                                            |
-| ------------------- | ------------------------------------------------- |
-| UI prototype        | ✅ Complete — `/prototype/altcare_dashboard.html` |
-| System architecture | ✅ Defined                                        |
-| Database schema     | ✅ Designed                                       |
-| API structure       | ✅ Defined                                        |
-| Backend — FastAPI   | 🔄 In progress (Phase 1)                          |
-| Frontend — Next.js  | 🔄 In progress (Phase 1)                          |
-| Medicine database   | 📋 Planned (Phase 2)                              |
-| Book library        | 📋 Planned (Phase 3)                              |
-| AI / RAG pipeline   | 📋 Planned (Phase 4)                              |
+| Component                     | Status                                            |
+| ----------------------------- | ------------------------------------------------- |
+| UI prototypes                 | ✅ Complete — Admin + Doctor views in `/mock/`    |
+| System architecture           | ✅ Defined                                        |
+| Database schema               | ✅ Designed — 24 tables (see DATABASE.md)         |
+| API structure                 | ✅ Defined                                        |
+| Backend — FastAPI             | 🔄 In progress (Phase 1)                          |
+| Frontend — Next.js            | 🔄 In progress (Phase 1)                          |
+| Medicine database             | 📋 Planned (Phase 2)                              |
+| Book library                  | 📋 Planned (Phase 3)                              |
+| AI / RAG pipeline             | 📋 Planned (Phase 4)                              |
+| Integration framework (bonus) | ✅ Designed — 10+ providers ready                 |
 
 ---
 
@@ -545,8 +584,10 @@ Recommended minimum VPS:
 
 ```
 altcare/
-  prototype/
-    altcare_dashboard.html        ← Single-file UI prototype (current)
+  mock/
+    index.html                    ← Mockup index page
+    admin-view.html               ← Platform admin interface
+    doctor-view.html              ← Doctor/practitioner interface
   backend/
     app/
       main.py
@@ -565,6 +606,7 @@ altcare/
         library/
         ai/
         notification/
+        integration/        ← SMS/Email/Payment integration framework
       shared/
         models/
         schemas/
@@ -585,6 +627,7 @@ altcare/
   Caddyfile
   .env.example
   README.md
+  DATABASE.md                       ← Full database schema documentation
 ```
 
 ---
