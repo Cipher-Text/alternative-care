@@ -7,7 +7,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Screenshots & Prototype](#screenshots--prototype)
+- [Screenshots & Prototypes](#screenshots--prototypes)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Core Modules](#core-modules)
@@ -21,6 +21,7 @@
 - [User Roles](#user-roles)
 - [Deployment](#deployment)
 - [Project Status](#project-status)
+- [Roadmap](#roadmap)
 - [Folder Structure](#folder-structure)
 
 ---
@@ -563,6 +564,37 @@ Recommended minimum VPS:
 
 ---
 
+## Roadmap
+
+> **Full roadmap:** [ROADMAP.md](./ROADMAP.md)
+
+**Timeline:** 12 months from MVP to Full Platform
+
+| Phase | Timeline | Status |
+|-------|----------|--------|
+| **Phase 1: Core Clinic MVP** | 12 weeks (Apr-Jun 2026) | 🔄 In Progress |
+| **Phase 2: Knowledge Base** | 8 weeks (Jul-Aug 2026) | 📋 Planned |
+| **Phase 3: Book Library** | 10 weeks (Sep-Nov 2026) | 📋 Planned |
+| **Phase 4: AI/RAG Intelligence** | 12 weeks (Dec 2026-Feb 2027) | 📋 Planned |
+| **Phase 5: Patient Portal** | 8 weeks (Q3 2027) | 💡 Future |
+
+**Key Milestones:**
+- ✅ UI mockups completed
+- ✅ Database schema designed
+- 🔄 Backend foundation (FastAPI + SQLAlchemy)
+- 📋 Beta doctor recruitment (target: 10 doctors)
+- 📋 MVP launch: July 1, 2026
+
+**Success Metrics (Year 1):**
+- 50+ active paying clinics
+- ৳2.5L+ MRR (Monthly Recurring Revenue)
+- 70% retention rate
+- <5% monthly churn
+
+See [ROADMAP.md](./ROADMAP.md) for detailed week-by-week breakdown, team scaling, infrastructure evolution, and go-to-market strategy.
+
+---
+
 ## Project Status
 
 | Component                     | Status                                            |
@@ -626,8 +658,9 @@ altcare/
   docker-compose.prod.yml
   Caddyfile
   .env.example
-  README.md
-  DATABASE.md                       ← Full database schema documentation
+  README.md                         ← You are here
+  DATABASE.md                       ← Full database schema documentation (24 tables)
+  ROADMAP.md                        ← Product roadmap: MVP to full platform (12 months)
 ```
 
 ---
