@@ -7,6 +7,33 @@ Interactive HTML prototypes for the AltCare platform.
 ### 🏠 [index.html](./index.html)
 Landing page to choose between mockup views.
 
+### 🌐 [landing.html](./landing.html)
+**Marketing Landing Page**
+
+Public-facing website for attracting new practitioners and showcasing the platform.
+
+**Sections included:**
+- Hero section with value proposition and CTAs
+- Platform statistics and trust indicators
+- Multi-specialization support showcase (Homeopathy, Ayurveda, Unani, Herbal)
+- 12 feature highlights with icons
+- Benefits of alternative medicine (9 key benefits)
+- Complete pricing comparison (Free, Plus, Pro)
+- Monthly/Annual billing toggle with 20% discount
+- Call-to-action sections
+- Comprehensive footer with navigation
+
+**Features demonstrated:**
+- Smooth scrolling navigation
+- Interactive pricing toggle
+- Responsive grid layouts
+- Gradient hero section
+- Hover effects and animations
+- Clean, modern design system
+- Mobile-responsive structure
+
+---
+
 ### 👨‍⚕️ [doctor-view.html](./doctor-view.html)
 **Doctor / Practitioner Interface**
 

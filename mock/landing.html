@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AltCare — Alternative Medicine Practice Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            padding: 16px 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0F6E56;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0F6E56, #1D9E75);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        nav a {
+            color: #4a4a4a;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #0F6E56;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0F6E56, #1D9E75);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(15, 110, 86, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #0F6E56;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid #0F6E56;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #0F6E56;
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 80px 24px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            color: #0F6E56;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #4a4a4a;
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .badge {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0F6E56;
+            border: 1px solid #d1fae5;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-cta .btn-primary {
+            font-size: 18px;
+            padding: 14px 32px;
+        }
+
+        .hero-cta .btn-secondary {
+            font-size: 18px;
+            padding: 12px 32px;
+        }
+
+        /* Section */
+        section {
+            padding: 80px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-size: 42px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        section .subtitle {
+            font-size: 18px;
+            text-align: center;
+            color: #6b6b6b;
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid #e5e5e5;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            border-color: #1D9E75;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #0F6E56, #1D9E75);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .feature-card p {
+            font-size: 15px;
+            color: #6b6b6b;
+            line-height: 1.7;
+        }
+
+        /* Alternative Medicine Benefits */
+        .alt-benefits {
+            background: #fafafa;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #1D9E75;
+        }
+
+        .benefit-item h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0F6E56;
+        }
+
+        .benefit-item p {
+            font-size: 15px;
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+
+        /* Specializations */
+        .specializations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .spec-card {
+            background: linear-gradient(135deg, #0F6E56, #1D9E75);
+            padding: 32px;
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .spec-card:hover {
+            transform: scale(1.05);
+        }
+
+        .spec-card .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .spec-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .spec-card p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Pricing */
+        .pricing-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e5e5e5;
+            border-radius: 16px;
+            padding: 40px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            border-color: #1D9E75;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px);
+        }
+
+        .pricing-card.popular {
+            border-color: #0F6E56;
+            border-width: 3px;
+            box-shadow: 0 12px 40px rgba(15, 110, 86, 0.15);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            right: 24px;
+            background: linear-gradient(135deg, #0F6E56, #1D9E75);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .pricing-card .price {
+            font-size: 48px;
+            font-weight: 800;
+            color: #0F6E56;
+            margin: 20px 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 18px;
+            color: #6b6b6b;
+            font-weight: 500;
+        }
+
+        .pricing-card .description {
+            font-size: 14px;
+            color: #6b6b6b;
+            margin-bottom: 24px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .features-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            color: #1D9E75;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .cross-icon {
+            color: #d1d5db;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #0F6E56, #1D9E75);
+            color: white;
+            text-align: center;
+            padding: 80px 24px;
+            border-radius: 24px;
+            margin: 80px 24px;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+
+        .cta-section .btn-primary {
+            background: white;
+            color: #0F6E56;
+            font-size: 18px;
+            padding: 14px 40px;
+        }
+
+        .cta-section .btn-primary:hover {
+            background: #f0fdf4;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .stat-item h4 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #0F6E56;
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            font-size: 16px;
+            color: #6b6b6b;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 24px 24px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1D9E75;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-section a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: #1D9E75;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 24px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            section h2 {
+                font-size: 32px;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .features-grid,
+            .pricing-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .billing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .billing-toggle span {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .billing-toggle .discount {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: #e5e5e5;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #1D9E75;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(28px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">⚕️</div>
+                <span>AltCare</span>
+            </a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#benefits">Benefits</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#about">About</a>
+                <a href="doctor-view.html" class="btn-primary">View Demo</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1>Complete Practice Management for Alternative Medicine</h1>
+            <p>Manage patients, prescriptions, payments, and knowledge — all powered by AI. Built specifically for Homeopathy, Ayurveda, Unani, and Herbal practitioners.</p>
+
+            <div class="hero-badges">
+                <span class="badge">🏥 Multi-Specialty Support</span>
+                <span class="badge">🇧🇩 Bangladesh-First</span>
+                <span class="badge">🤖 AI-Powered Assistant</span>
+                <span class="badge">📚 Classical Texts Library</span>
+            </div>
+
+            <div class="hero-cta">
+                <a href="#pricing" class="btn-primary">Start Free Trial</a>
+                <a href="doctor-view.html" class="btn-secondary">View Live Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section>
+        <div class="stats">
+            <div class="stat-item">
+                <h4>1,000+</h4>
+                <p>Curated Medicines</p>
+            </div>
+            <div class="stat-item">
+                <h4>20+</h4>
+                <p>Classical Medical Texts</p>
+            </div>
+            <div class="stat-item">
+                <h4>4</h4>
+                <p>Medical Systems</p>
+            </div>
+            <div class="stat-item">
+                <h4>10+</h4>
+                <p>Payment Integrations</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Specializations -->
+    <section style="background: #fafafa; padding: 80px 24px;">
+        <h2>Supporting All Alternative Medicine Systems</h2>
+        <p class="subtitle">Practice one system or combine multiple traditions. Resources auto-filter based on your specializations.</p>
+
+        <div class="specializations">
+            <div class="spec-card">
+                <div class="icon">🌿</div>
+                <h3>Homeopathy</h3>
+                <p>Complete repertories, materia medica, and classical remedy database</p>
+            </div>
+            <div class="spec-card">
+                <div class="icon">🍃</div>
+                <h3>Ayurveda</h3>
+                <p>Dosha management, Panchakarma protocols, Rasayana formulations</p>
+            </div>
+            <div class="spec-card">
+                <div class="icon">🌾</div>
+                <h3>Unani</h3>
+                <p>Temperament-based treatments, classical formulations from Avicenna</p>
+            </div>
+            <div class="spec-card">
+                <div class="icon">🌱</div>
+                <h3>Herbal Medicine</h3>
+                <p>Botanical database, herbal interactions, dosage guidelines</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+        <h2>Everything Your Practice Needs</h2>
+        <p class="subtitle">From patient intake to AI-assisted clinical reference — all in one place</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Patient Management</h3>
+                <p>Complete patient profiles with visit history, diagnoses, tags, and file attachments. Track chronic conditions and special cases.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Prescription Builder</h3>
+                <p>Build prescriptions with medicine autocomplete, dosage guidance, and instant PDF generation. Print or email to patients.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Payment & Invoicing</h3>
+                <p>Record payments via bKash, Nagad, cash, or card. Auto-generate invoices with professional PDF templates.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💊</div>
+                <h3>Medicine Database</h3>
+                <p>Search 1,000+ curated medicines across all traditions. Filter by symptoms, potency, and indication.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3>Symptom Search</h3>
+                <p>Enter symptoms, get ranked remedy matches with modality notes. Filtered by your specializations.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Book Library</h3>
+                <p>Read classical texts in-browser. Organon of Medicine, Charaka Samhita, and more. Track reading progress.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Assistant</h3>
+                <p>Ask clinical questions, get answers grounded in classical texts. Every response cites the source section.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Analytics Dashboard</h3>
+                <p>Patient trends, revenue reports, top diagnoses, most prescribed medicines — all in visual charts.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>SMS & Email Integration</h3>
+                <p>Send appointment reminders via Banglalink, Robi, Twilio. Email prescriptions with SendGrid, SMTP.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Payment Gateways</h3>
+                <p>Accept payments through bKash, Nagad, Rocket, Upay, Stripe. All transactions logged.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure & Compliant</h3>
+                <p>Bank-level encryption, HIPAA-style data protection, daily backups, and complete audit trails.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👨‍💼</div>
+                <h3>Team Management</h3>
+                <p>Add receptionists to help manage appointments, record payments, and handle patient check-ins.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits of Alternative Medicine -->
+    <section class="alt-benefits" id="benefits">
+        <h2>Why Alternative Medicine?</h2>
+        <p class="subtitle">Ancient wisdom meets modern healthcare — a holistic approach to wellness</p>
+
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <h4>🌿 Holistic Healing</h4>
+                <p>Treats the whole person — mind, body, and spirit — not just isolated symptoms. Addresses root causes for lasting wellness.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>🛡️ Fewer Side Effects</h4>
+                <p>Natural remedies work with the body's healing mechanisms. Gentler on the system with minimal adverse reactions.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>⏱️ Time-Tested Wisdom</h4>
+                <p>Practices refined over thousands of years. Ayurveda dates back 5,000+ years, Unani from 10th century masters.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>🎯 Personalized Treatment</h4>
+                <p>Considers individual constitution, lifestyle, and environment. Same disease, different person = different remedy.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>💰 Cost-Effective Care</h4>
+                <p>Often more affordable than conventional medicine. Natural remedies are accessible and sustainable.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>🔄 Prevention-Focused</h4>
+                <p>Emphasizes prevention over cure. Lifestyle modifications, dietary changes, and immune strengthening.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>🧘 Mind-Body Connection</h4>
+                <p>Recognizes the link between mental and physical health. Stress, emotions, and lifestyle are part of diagnosis.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>🌍 Environmentally Friendly</h4>
+                <p>Plant-based remedies are sustainable. Low environmental impact compared to pharmaceutical manufacturing.</p>
+            </div>
+
+            <div class="benefit-item">
+                <h4>🤝 Complementary to Modern Medicine</h4>
+                <p>Can work alongside conventional treatments. Many patients use integrative approaches successfully.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing">
+        <h2>Simple, Transparent Pricing</h2>
+        <p class="subtitle">Start free, upgrade when you're ready. All plans include a 14-day trial.</p>
+
+        <div class="billing-toggle">
+            <span>Monthly</span>
+            <div class="toggle-switch" id="billingToggle">
+                <div class="toggle-slider"></div>
+            </div>
+            <span>Annual</span>
+            <span class="discount">Save 20%</span>
+        </div>
+
+        <div class="pricing-container">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <h3>Free</h3>
+                <div class="price">৳0<span>/month</span></div>
+                <p class="description">Perfect for trying out AltCare</p>
+
+                <ul class="features-list">
+                    <li><span class="check-icon">✓</span> 30 patients</li>
+                    <li><span class="check-icon">✓</span> 10 prescriptions/month</li>
+                    <li><span class="check-icon">✓</span> Basic patient management</li>
+                    <li><span class="check-icon">✓</span> Visit history tracking</li>
+                    <li><span class="cross-icon">✗</span> PDF prescription export</li>
+                    <li><span class="cross-icon">✗</span> Medicine database (read-only)</li>
+                    <li><span class="cross-icon">✗</span> Symptom search</li>
+                    <li><span class="cross-icon">✗</span> Book library</li>
+                    <li><span class="cross-icon">✗</span> AI assistant</li>
+                    <li><span class="cross-icon">✗</span> Team seats</li>
+                </ul>
+
+                <button class="btn-secondary" style="width: 100%;">Get Started</button>
+            </div>
+
+            <!-- Plus Plan -->
+            <div class="pricing-card popular">
+                <span class="popular-badge">Most Popular</span>
+                <h3>Plus</h3>
+                <div class="price">
+                    <span id="plusPrice">৳799</span><span>/month</span>
+                </div>
+                <p class="description">For established practitioners</p>
+
+                <ul class="features-list">
+                    <li><span class="check-icon">✓</span> 500 patients</li>
+                    <li><span class="check-icon">✓</span> Unlimited prescriptions</li>
+                    <li><span class="check-icon">✓</span> PDF prescription export</li>
+                    <li><span class="check-icon">✓</span> Invoice generation</li>
+                    <li><span class="check-icon">✓</span> Medicine database (full access)</li>
+                    <li><span class="check-icon">✓</span> Symptom search</li>
+                    <li><span class="check-icon">✓</span> 5 books in library</li>
+                    <li><span class="check-icon">✓</span> SMS/Email integration</li>
+                    <li><span class="cross-icon">✗</span> AI assistant</li>
+                    <li><span class="cross-icon">✗</span> Team seats</li>
+                </ul>
+
+                <button class="btn-primary" style="width: 100%;">Start Free Trial</button>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="pricing-card">
+                <h3>Pro</h3>
+                <div class="price">
+                    <span id="proPrice">৳1,799</span><span>/month</span>
+                </div>
+                <p class="description">Complete platform with AI</p>
+
+                <ul class="features-list">
+                    <li><span class="check-icon">✓</span> Unlimited patients</li>
+                    <li><span class="check-icon">✓</span> Unlimited prescriptions</li>
+                    <li><span class="check-icon">✓</span> Everything in Plus, plus:</li>
+                    <li><span class="check-icon">✓</span> Revenue reports & analytics</li>
+                    <li><span class="check-icon">✓</span> Unlimited books + upload</li>
+                    <li><span class="check-icon">✓</span> AI assistant (200 queries/month)</li>
+                    <li><span class="check-icon">✓</span> 1 receptionist seat</li>
+                    <li><span class="check-icon">✓</span> Payment gateway integration</li>
+                    <li><span class="check-icon">✓</span> Priority support</li>
+                    <li><span class="check-icon">✓</span> Custom branding</li>
+                </ul>
+
+                <button class="btn-primary" style="width: 100%;">Start Free Trial</button>
+            </div>
+        </div>
+
+        <p style="text-align: center; margin-top: 40px; color: #6b6b6b;">
+            All plans include 14-day free trial • No credit card required • Cancel anytime
+        </p>
+    </section>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <h2>Ready to Transform Your Practice?</h2>
+        <p>Join alternative medicine practitioners who trust AltCare for their daily operations.</p>
+        <a href="#pricing" class="btn-primary">Start Your Free 14-Day Trial</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>AltCare</h4>
+                <p style="color: #d1d5db; font-size: 14px; line-height: 1.6;">
+                    Complete practice management system for alternative medicine practitioners. Built with care in Bangladesh.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="doctor-view.html">Live Demo</a></li>
+                    <li><a href="#">API Documentation</a></li>
+                    <li><a href="#">Roadmap</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Video Tutorials</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Case Studies</a></li>
+                    <li><a href="#">Medical Texts Library</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Security</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 AltCare. All rights reserved. Built for alternative medicine practitioners with ❤️</p>
+        </div>
+    </footer>
+
+    <script>
+        // Billing toggle
+        const toggle = document.getElementById('billingToggle');
+        const plusPrice = document.getElementById('plusPrice');
+        const proPrice = document.getElementById('proPrice');
+
+        let isAnnual = false;
+
+        toggle.addEventListener('click', function() {
+            isAnnual = !isAnnual;
+            toggle.classList.toggle('active');
+
+            if (isAnnual) {
+                // Annual pricing (20% off)
+                plusPrice.textContent = '৳639';
+                proPrice.textContent = '৳1,439';
+            } else {
+                // Monthly pricing
+                plusPrice.textContent = '৳799';
+                proPrice.textContent = '৳1,799';
+            }
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
