@@ -32,6 +32,7 @@ AltCare is a full-featured **clinic operating system** built specifically for al
 
 **Key differentiators:**
 - **Multi-specialization support** — practitioners can work with 1-4 systems (Homeopathy, Ayurveda, Unani, Herbal), with resources auto-filtered based on their active specializations
+- **Bangladesh-focused location system** — structured Division → District → Upazila hierarchy with Bengali names and geospatial data for precise clinic and patient location tracking
 - **Integrated communications & payments** — built-in SMS/Email providers (Twilio, Banglalink, Robi, SendGrid) and payment gateways (bKash, Nagad, Rocket, Stripe)
 - **Complete audit trail** — every SMS, email, and payment transaction logged with full request/response details
 
@@ -63,7 +64,7 @@ The prototypes are complete single-file HTML/CSS/JS mocks covering all major scr
 | Library        | Medical book browser with reading progress bars                                                                                                                                                                |
 | AI Assistant   | RAG-based clinical reference chat with quick prompts and disclaimer                                                                                                                                            |
 | Pricing & Plan | Free / Plus / Pro with monthly/annual billing toggle and full feature comparison table                                                                                                                         |
-| Settings       | Doctor profile, clinic info, specializations, subscription management, integration setup (SMS/Email/Payment)                                                                                                   |
+| Settings       | Doctor profile with academic degrees and training/certifications, clinic info, specializations, subscription management, integration setup (SMS/Email/Payment)                                                  |
 
 ---
 
@@ -80,10 +81,13 @@ The prototypes are complete single-file HTML/CSS/JS mocks covering all major scr
 | **Pydantic v2**      | Request/response validation and settings management                                     |
 | **passlib (bcrypt)** | Password hashing                                                                        |
 | **python-jose**      | JWT creation and verification                                                           |
+| **pyotp**            | Two-factor authentication (2FA) with TOTP                                               |
 | **Celery**           | Background task queue — PDF generation, emails, SMS, AI embedding jobs                  |
 | **WeasyPrint**       | Prescription and invoice PDF generation                                                 |
 | **ebooklib**         | EPUB parsing for the book library                                                       |
 | **cryptography**     | Fernet encryption for integration credentials (API keys, merchant secrets)              |
+| **structlog**        | Structured JSON logging for production observability                                    |
+| **slowapi**          | Rate limiting middleware with Redis backend                                             |
 
 ### Frontend
 
@@ -110,8 +114,72 @@ The prototypes are complete single-file HTML/CSS/JS mocks covering all major scr
 | Technology     | Purpose                                                                  |
 | -------------- | ------------------------------------------------------------------------ |
 | **LangChain**  | RAG pipeline — document loading, chunking, retrieval chain orchestration |
-| **OpenAI API** | Embeddings (`text-embedding-3-small`) and completions (`gpt-4o`)         |
+| **OpenAI API** | Embeddings (`text-embedding-3-small`) and completions (`gpt-4o-mini`, `gpt-4o`) |
 | **pgvector**   | Cosine similarity search over embedded book sections                     |
+
+**Cost optimization:**
+- Use `gpt-4o-mini` for simple queries and embeddings (80% cheaper)
+- Reserve `gpt-4o` for complex clinical reasoning
+- Cache embeddings aggressively (books are static)
+- Set monthly budget limits via OpenAI dashboard
+
+### Security & Monitoring
+
+| Technology                      | Purpose                                                    |
+| ------------------------------- | ---------------------------------------------------------- |
+| **Sentry**                      | Error tracking, performance monitoring, release tracking   |
+| **Grafana + Prometheus**        | Metrics dashboards — API latency, DB queries, queue depth  |
+| **slowapi + Redis**             | Distributed rate limiting (per-user, per-endpoint)         |
+| **structlog**                   | Structured logging with correlation IDs                    |
+| **pg_stat_statements**          | PostgreSQL query performance analysis                      |
+| **OWASP security headers**      | CSP, HSTS, X-Frame-Options via FastAPI middleware         |
+
+### Testing
+
+| Technology              | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
+| **pytest**              | Unit and integration testing framework               |
+| **pytest-asyncio**      | Async test support for FastAPI routes               |
+| **pytest-cov**          | Code coverage reporting                              |
+| **httpx**               | FastAPI test client (async)                          |
+| **faker**               | Generate realistic test data (patients, medicines)   |
+| **Vitest**              | Frontend unit testing (faster than Jest)             |
+| **React Testing Library** | Component testing with user-centric queries        |
+| **Playwright**          | End-to-end testing for critical flows                |
+
+**Critical test coverage:**
+- Multi-tenant data isolation (tenants cannot access each other's data)
+- Auth flows (login, token refresh, password reset)
+- Payment webhook handling
+- Prescription PDF generation
+- AI query sanitization and rate limiting
+
+### Payment Integration
+
+| Provider         | Markets      | Purpose                                      |
+| ---------------- | ------------ | -------------------------------------------- |
+| **SSLCommerz**   | Bangladesh   | Payment aggregator (bKash, Nagad, Rocket, cards) |
+| **Stripe**       | International| Credit/debit cards, subscriptions worldwide  |
+
+**Implementation notes:**
+- SSLCommerz handles PCI compliance for Bangladesh
+- Never store raw card numbers — use tokenization
+- All transactions logged in `integration_logs` table with full audit trail
+- Webhook signature verification required (prevent fraud)
+
+### Communication Services
+
+| Provider      | Type  | Purpose                                           |
+| ------------- | ----- | ------------------------------------------------- |
+| **Twilio**    | SMS   | Primary SMS provider (99%+ delivery, works in BD) |
+| **Banglalink** | SMS   | Secondary provider (local rates, backup)          |
+| **SendGrid**  | Email | Transactional emails with DMARC/SPF/DKIM         |
+| **AWS SES**   | Email | Backup email provider (cost-effective scaling)    |
+
+**Fallback strategy:**
+- Primary provider fails → automatic retry with secondary
+- Exponential backoff via Celery (1s, 5s, 30s, 5m)
+- Dead letter queue for permanent failures
 
 ---
 
@@ -146,12 +214,15 @@ AltCare is structured as a **modular monolith** — one FastAPI application with
 
 ```
 app/
-  main.py                    ← FastAPI app init, router registration, CORS
+  main.py                    ← FastAPI app init, router registration, CORS, middleware
   core/
     config.py                ← Settings via pydantic-settings (.env)
     database.py              ← Async SQLAlchemy engine + session factory
-    security.py              ← JWT encode/decode, bcrypt hashing
+    security.py              ← JWT encode/decode, bcrypt hashing, 2FA (pyotp)
     dependencies.py          ← get_db, get_current_user, require_role, tenant scope
+    logging.py               ← structlog configuration
+    monitoring.py            ← Sentry init, Prometheus metrics
+    rate_limit.py            ← slowapi rate limiter with Redis backend
   modules/
     auth/                    ← Login, register, token refresh
     doctor/                  ← Profile, clinic setup, subscription
@@ -187,7 +258,7 @@ JWT-based authentication using `passlib` (bcrypt) for password hashing and `pyth
 
 ### Doctor & Clinic Management
 
-Registration with admin approval flow. Doctor profile stores specialisation (Homeopathy / Ayurveda / Unani / Herbal), license number, and clinic details. Subscription plan is stored on the tenant record and enforced at the service layer on every write operation.
+Registration with admin approval flow. Doctor profile stores specialisation (Homeopathy / Ayurveda / Unani / Herbal), license number, and clinic details. Doctors can add multiple academic degrees (from universities/colleges) and professional training/certifications with verification support. Subscription plan is stored on the tenant record and enforced at the service layer on every write operation.
 
 ### Patient Management
 
@@ -268,7 +339,7 @@ PLATFORM LEVEL (no tenant_id):
 
 ### Key design decisions
 
-- **24 tables total** — core clinic (14) + knowledge base (6) + integrations (3) + usage tracking (1)
+- **29 tables total** — core clinic (14) + doctor credentials (2) + geographic data (3) + knowledge base (6) + integrations (3) + usage tracking (1)
 - Every entity carries `tenant_id` — all queries are scoped, cross-tenant data access is architecturally impossible
 - **Multi-specialization filtering** — medicines, books, and AI responses auto-filter by doctor's `specializations[]`
 - **Platform vs tenant users** — admins/operators have `tenant_id = NULL`, doctors/receptionists are tenant-scoped
@@ -545,22 +616,84 @@ Services (Docker Compose):
   worker      — Celery worker for PDF, email, and embedding jobs
   frontend    — Next.js standalone build
   postgres    — PostgreSQL 16 with pgvector extension
-  redis       — cache + Celery broker
+  redis       — cache + Celery broker + rate limiting
   minio       — file storage
+  prometheus  — metrics collection
+  grafana     — monitoring dashboards
 
 Recommended minimum VPS:
-  4 vCPU / 8 GB RAM / 80 GB SSD
-  Estimated cost: $20–40 / month (DigitalOcean, Hetzner, Contabo)
+  4 vCPU / 8 GB RAM / 100 GB SSD
+  Estimated cost: $25–40 / month (DigitalOcean, Hetzner, Contabo)
   Comfortable capacity: 50–200 concurrent clinic users
+
+Environment variables (.env):
+  DATABASE_URL, REDIS_URL, MINIO_URL
+  SECRET_KEY (JWT signing)
+  OPENAI_API_KEY
+  SENTRY_DSN
+  INTEGRATION_ENCRYPTION_KEY (Fernet)
+  SSLCOMMERZ_STORE_ID, SSLCOMMERZ_STORE_PASS
+  TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
+  SENDGRID_API_KEY
 ```
 
 ### Scaling path (when needed)
 
+**Phase 1 (500+ users):**
 1. Move PostgreSQL to a managed database (DigitalOcean Managed PG, Neon, Supabase)
-2. Move Redis to a managed instance
-3. Add a second API container behind a load balancer
-4. Move MinIO to Cloudflare R2 or AWS S3 — one config line change, same boto3 SDK
-5. Scale Celery workers independently for embedding/PDF workloads
+2. Move Redis to a managed instance (Redis Cloud, AWS ElastiCache)
+3. Add CDN (Cloudflare) for static assets and Next.js pages
+4. Horizontal scaling: 2-3 API containers behind Caddy load balancer
+
+**Phase 2 (2,000+ users):**
+1. Move MinIO to Cloudflare R2 or AWS S3 — one config line change, same boto3 SDK
+2. Separate Celery workers by task type:
+   - `worker-pdf` — prescription/invoice generation
+   - `worker-email` — email sending
+   - `worker-ai` — embedding and RAG queries
+3. Add read replicas for PostgreSQL (reporting queries)
+4. Implement query caching layer (Redis + TTL)
+
+**Phase 3 (10,000+ users):**
+1. Migrate to Kubernetes (GKE, EKS, or DigitalOcean Kubernetes)
+2. Implement microservices extraction:
+   - Auth service (if switching to Keycloak)
+   - AI service (separate deployment with GPU for fine-tuning)
+   - Payment service (PCI compliance isolation)
+3. Add message queue (RabbitMQ or Kafka) for event-driven architecture
+4. Multi-region deployment (Bangladesh + India)
+
+### Production Checklist
+
+**Before launch:**
+- [ ] Enable Sentry error tracking
+- [ ] Set up Grafana dashboards (API latency, DB queries, Celery queue depth)
+- [ ] Configure rate limiting (per-user, per-endpoint)
+- [ ] Set up automated backups (PostgreSQL daily, MinIO weekly)
+- [ ] Enable HTTPS with Caddy automatic certificates
+- [ ] Configure CORS (only allow your domain)
+- [ ] Set up monitoring alerts (Prometheus Alertmanager)
+- [ ] Run security audit (`pip-audit`, OWASP headers check)
+- [ ] Load testing (k6 or Locust — target 100 concurrent users)
+- [ ] Test multi-tenant data isolation (critical!)
+- [ ] Configure log aggregation (Papertrail or Loki)
+- [ ] Set up uptime monitoring (UptimeRobot, Pingdom)
+- [ ] Document incident response plan
+- [ ] Set OpenAI API budget limits ($500/month initially)
+- [ ] Configure database connection pooling (20 connections)
+- [ ] Enable PostgreSQL slow query logging (> 100ms)
+
+**Security hardening:**
+- [ ] Change default PostgreSQL/Redis passwords
+- [ ] Enable UFW firewall (only ports 80, 443, 22 open)
+- [ ] Configure fail2ban (SSH brute force protection)
+- [ ] Set up SSH key-only authentication (disable password login)
+- [ ] Enable automatic security updates (unattended-upgrades)
+- [ ] Configure DMARC/SPF/DKIM for email domain
+- [ ] Implement webhook signature verification (SSLCommerz, Stripe)
+- [ ] Enable PostgreSQL SSL connections
+- [ ] Rotate encryption keys quarterly (INTEGRATION_ENCRYPTION_KEY)
+- [ ] Set up WAF rules (Cloudflare if using CDN)
 
 ---
 
@@ -601,7 +734,7 @@ See [ROADMAP.md](./ROADMAP.md) for detailed week-by-week breakdown, team scaling
 | ----------------------------- | ------------------------------------------------- |
 | UI prototypes                 | ✅ Complete — Admin + Doctor views in `/mock/`    |
 | System architecture           | ✅ Defined                                        |
-| Database schema               | ✅ Designed — 24 tables (see DATABASE.md)         |
+| Database schema               | ✅ Designed — 29 tables (see DATABASE.md)         |
 | API structure                 | ✅ Defined                                        |
 | Backend — FastAPI             | 🔄 In progress (Phase 1)                          |
 | Frontend — Next.js            | 🔄 In progress (Phase 1)                          |
@@ -659,9 +792,57 @@ altcare/
   Caddyfile
   .env.example
   README.md                         ← You are here
-  DATABASE.md                       ← Full database schema documentation (24 tables)
+  DATABASE.md                       ← Full database schema documentation (29 tables)
   ROADMAP.md                        ← Product roadmap: MVP to full platform (12 months)
 ```
+
+---
+
+## Cost Estimates
+
+### MVP Phase (10-50 active clinics)
+
+| Service | Provider | Monthly Cost |
+|---------|----------|--------------|
+| VPS (4 vCPU, 8GB RAM, 100GB SSD) | Hetzner/DigitalOcean | $25-40 |
+| Domain + DNS | Namecheap/Cloudflare | $1-2 |
+| SSL Certificates | Caddy (automatic) | $0 |
+| OpenAI API (200 queries/month) | OpenAI | $15-30 |
+| Error Tracking | Sentry | $29 |
+| Email (40k emails/month) | SendGrid | $15 |
+| SMS (1,000 SMS/month) | Twilio | $50 |
+| Payment Gateway | SSLCommerz | 2-3% per transaction |
+| Backups | Automated snapshots | $5 |
+| **Total** | | **~$140-170/month** |
+
+### Growth Phase (200-500 active clinics)
+
+| Service | Provider | Monthly Cost |
+|---------|----------|--------------|
+| Managed PostgreSQL | DigitalOcean/Neon | $100-150 |
+| Managed Redis | Redis Cloud | $40-60 |
+| CDN + DDoS protection | Cloudflare Pro | $20 |
+| Increased OpenAI API | OpenAI | $100-200 |
+| Sentry (more events) | Sentry | $99 |
+| Email (200k emails/month) | SendGrid | $50 |
+| SMS (5,000 SMS/month) | Twilio | $250 |
+| File storage | Cloudflare R2 | $15 |
+| Monitoring | Grafana Cloud | $29 |
+| **Total** | | **~$700-900/month** |
+
+### Enterprise Phase (1,000+ clinics)
+
+Costs scale to **$2,000-3,000/month** with:
+- Kubernetes cluster ($500-800)
+- Multi-region deployment
+- Dedicated AI inference servers
+- Enhanced security (WAF, advanced DDoS)
+- Priority support contracts
+
+**Revenue targets:**
+- 50 clinics @ ৳1,200 avg = ৳60,000/month ($600) → **Break-even at MVP**
+- 500 clinics @ ৳1,200 avg = ৳6,00,000/month ($6,000) → **Profitable at Growth**
+- 1,000 clinics @ ৳1,200 avg = ৳12,00,000/month ($12,000) → **Sustainable at Enterprise**
 
 ---
 
@@ -669,8 +850,25 @@ altcare/
 
 Work against feature branches named `feature/module-name` or `fix/short-description`. Open a pull request with a clear description of what changed, which module it belongs to, and whether a database migration is included. All PRs require at least one review before merge to `main`.
 
+**Development guidelines:**
+- Write tests for all new features (target: 80% coverage)
+- Follow PEP 8 for Python (use `black` formatter)
+- Use Conventional Commits format: `feat:`, `fix:`, `docs:`, `test:`
+- Update API documentation (`/docs`) when adding endpoints
+- Run security checks before PR: `pip-audit`, `bandit`
+- Test multi-tenant isolation for all new queries
+
 ---
 
 ## License
 
 Private — all rights reserved. Contact the project owner for licensing inquiries.
+
+---
+
+## Support & Contact
+
+- **Documentation:** [docs.altcare.health](https://docs.altcare.health) (future)
+- **Issues:** GitHub Issues for bug reports and feature requests
+- **Email:** support@altcare.health
+- **Emergency:** For production outages, contact via incident.io (once set up)

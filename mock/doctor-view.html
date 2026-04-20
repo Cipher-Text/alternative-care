@@ -1060,7 +1060,71 @@ label { user-select: none; }
                   <div><div class="form-label">City</div><input class="input" value="Dhaka"></div>
                 </div>
               </div>
-              <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
+
+              <!-- Degrees Section -->
+              <div class="settings-section" style="margin-top:32px">
+                <h3>Academic degrees</h3>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">BHMS (Bachelor of Homeopathic Medicine & Surgery)</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">National Institute of Homoeopathy, Kolkata</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">2015 - 2019 • Cert: BDH-2019-0042</div>
+                    </div>
+                    <span class="badge green" style="font-size:10px">✓ Verified</span>
+                  </div>
+                </div>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">MD (Doctor of Medicine) - Homeopathy</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">University of Dhaka</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">2020 - 2022 • Cert: DU-MD-2022-156</div>
+                    </div>
+                    <span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:10px">Pending</span>
+                  </div>
+                </div>
+                <button class="btn btn-ghost" style="font-size:12px" onclick="alert('Add degree dialog would open\n\nFields:\n- Degree name (e.g., BHMS, BAMS, MD)\n- Field of study\n- Institution name\n- Location\n- Start year\n- Completion year\n- Certificate number')">+ Add degree</button>
+              </div>
+
+              <!-- Training & Certifications Section -->
+              <div class="settings-section" style="margin-top:32px">
+                <h3>Training & certifications</h3>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">Advanced Constitutional Prescribing</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">International Academy of Classical Homeopathy</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">Jan 2023 - Mar 2023 • 120 hours • Online</div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px">Skills: Constitutional analysis, Miasmatic prescribing, Case taking</div>
+                    </div>
+                    <span class="badge green" style="font-size:10px">✓ Verified</span>
+                  </div>
+                </div>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">Panchakarma Therapy Workshop</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">Bangladesh Ayurvedic Medical Association</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">Sep 2022 • 16 hours • Dhaka, Bangladesh</div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px">Skills: Panchakarma techniques, Detoxification protocols</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="background:var(--b1);border:1px solid var(--b4);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">Advanced Repertorization Methods</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">Bangladesh Homeopathic Board</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">Expires: Dec 2026 • Cert: BHB-ARP-2024-089</div>
+                    </div>
+                    <span class="badge" style="background:#FEF3C7;color:#92400E;font-size:10px">⏱ Expires soon</span>
+                  </div>
+                </div>
+                <button class="btn btn-ghost" style="font-size:12px" onclick="alert('Add training dialog would open\n\nFields:\n- Training/Certificate name\n- Type (Certificate, Diploma, Workshop, Seminar)\n- Issuing organization\n- Location (or Online)\n- Start date\n- Completion date\n- Expiry date (optional)\n- Duration (hours)\n- Certificate number\n- Description\n- Skills acquired')">+ Add training</button>
+              </div>
+
+              <div style="display:flex;gap:10px;margin-top:24px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
             </div>
 
             <!-- Clinic Info Tab -->
@@ -1075,10 +1139,44 @@ label { user-select: none; }
                   <div><div class="form-label">Establishment year</div><input class="input" type="number" value="2019"></div>
                   <div><div class="form-label">Registration number</div><input class="input" value="DHK-2019-4567"></div>
                 </div>
+                <div class="form-row">
+                  <div>
+                    <div class="form-label">Division (বিভাগ)</div>
+                    <select class="input">
+                      <option>Dhaka (ঢাকা)</option>
+                      <option>Chittagong (চট্টগ্রাম)</option>
+                      <option>Rajshahi (রাজশাহী)</option>
+                      <option>Khulna (খুলনা)</option>
+                      <option>Barisal (বরিশাল)</option>
+                      <option>Sylhet (সিলেট)</option>
+                      <option>Rangpur (রংপুর)</option>
+                      <option>Mymensingh (ময়মনসিংহ)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div class="form-label">District (জেলা)</div>
+                    <select class="input">
+                      <option>Dhaka (ঢাকা)</option>
+                      <option>Gazipur (গাজীপুর)</option>
+                      <option>Narayanganj (নারায়ণগঞ্জ)</option>
+                      <option>Manikganj (মানিকগঞ্জ)</option>
+                    </select>
+                  </div>
+                </div>
                 <div class="form-group">
-                  <div class="form-label">Address</div>
-                  <textarea class="input" rows="2" style="width:100%">House 42, Road 12, Dhanmondi
-Dhaka - 1209, Bangladesh</textarea>
+                  <div class="form-label">Upazila (উপজেলা)</div>
+                  <select class="input" style="width:100%">
+                    <option>Dhanmondi (ধানমন্ডি)</option>
+                    <option>Mohammadpur (মোহাম্মদপুর)</option>
+                    <option>Gulshan (গুলশান)</option>
+                    <option>Mirpur (মিরপুর)</option>
+                    <option>Uttara (উত্তরা)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <div class="form-label">Detailed address</div>
+                  <textarea class="input" rows="2" style="width:100%">House 42, Road 12, Dhanmondi</textarea>
+                  <small style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;display:block">Street address only (Division, District, Upazila selected above)</small>
                 </div>
                 <div class="form-row">
                   <div><div class="form-label">Contact phone</div><input class="input" value="+880 2-9876543"></div>
@@ -1235,7 +1333,8 @@ Dhaka - 1209, Bangladesh</textarea>
         <div>
           <div class="profile-name">Fatima Ahmed</div>
           <div class="profile-sub">Female, 38 years • Ayurveda</div>
-          <div class="profile-sub">017xx-xxxx01 • Dhaka</div>
+          <div class="profile-sub">017xx-xxxx01</div>
+          <div class="profile-sub">Dhanmondi, Dhaka (ধানমন্ডি, ঢাকা)</div>
         </div>
       </div>
       <div class="meta-row">

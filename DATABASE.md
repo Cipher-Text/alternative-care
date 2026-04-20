@@ -32,8 +32,10 @@
 ✅ **Vector search with pgvector** — Native PostgreSQL embeddings for RAG/AI assistant  
 ✅ **Immutable clinical records** — Prescriptions and payments are append-only  
 ✅ **Flexible tagging system** — JSONB-based extensible metadata  
+✅ **Doctor credentials** — Multiple degrees and training/certifications with verification support  
+✅ **Bangladesh geographic system** — Division, District, Upazila hierarchy with Bengali names and geospatial data  
 
-**Total tables:** 24 (core entities + integration framework)
+**Total tables:** 29 (core entities + doctor credentials + geographic data + integration framework)
 
 ---
 
@@ -106,6 +108,10 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id) WHERE deleted_at IS NUL
        │
        ├─── USERS (Doctor, Receptionists)
        │     id, tenant_id, role, email, hashed_password
+       │       ├─── DOCTOR_DEGREES (academic qualifications)
+       │       │     degree_name, institution, completion_year, certificate_number
+       │       └─── DOCTOR_TRAININGS (certifications, workshops)
+       │             training_name, issuing_organization, completion_date, expiry_date
        │
        ├─── TENANT_INTEGRATIONS (SMS, Email, Payment configs)
        │     id, tenant_id, provider_id, credentials (encrypted)
@@ -149,6 +155,12 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id) WHERE deleted_at IS NUL
 
 USERS (Platform Admin, Platform Operators)
   id, tenant_id = NULL, role = 'admin' | 'operator'
+
+GEOGRAPHIC DATA (Bangladesh administrative divisions)
+  DIVISIONS (বিভাগ) — 8 administrative divisions
+    └─ DISTRICTS (জেলা) — 64 districts
+         └─ UPAZILAS (উপজেলা) — 490+ sub-districts
+  Includes: Bengali names, coordinates, PostGIS geometry
 
 INTEGRATION_PROVIDERS (SMS, Email, Payment provider catalog)
   id, type, provider_name, config_schema, supported_countries
@@ -196,6 +208,11 @@ CREATE TABLE tenants (
   phone VARCHAR(20),
   address TEXT,
   
+  -- Location (Bangladesh administrative divisions)
+  division_id INTEGER REFERENCES divisions(id),
+  district_id INTEGER REFERENCES districts(id),
+  upazila_id INTEGER REFERENCES upazilas(id),
+  
   -- Subscription
   subscription_plan VARCHAR(50) NOT NULL DEFAULT 'free',  -- free, plus, pro
   plan_started_at TIMESTAMP WITH TIME ZONE,
@@ -226,6 +243,7 @@ CREATE TABLE tenants (
 
 CREATE INDEX idx_tenants_subdomain ON tenants(subdomain) WHERE deleted_at IS NULL;
 CREATE INDEX idx_tenants_registration_status ON tenants(registration_status) WHERE deleted_at IS NULL;
+CREATE INDEX idx_tenants_location ON tenants(division_id, district_id, upazila_id) WHERE deleted_at IS NULL;
 ```
 
 ---
@@ -265,6 +283,8 @@ CREATE INDEX idx_users_email ON users(email) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_role ON users(role) WHERE deleted_at IS NULL;
 ```
 
+**Note on geographic references:** The geographic tables (divisions, districts, upazilas) are defined in section "Platform-Level Tables" below. They use INTEGER primary keys as per Bangladesh's standardized geographic coding system.
+
 **Role assignment rules:**
 
 - One `doctor` per tenant (primary account holder, creator of the tenant)
@@ -274,7 +294,98 @@ CREATE INDEX idx_users_role ON users(role) WHERE deleted_at IS NULL;
 
 ---
 
-### 3. `patients`
+### 3. `doctor_degrees`
+
+Academic degrees and qualifications earned by doctors from colleges/universities.
+
+```sql
+CREATE TABLE doctor_degrees (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- Degree information
+  degree_name VARCHAR(255) NOT NULL,  -- e.g., "BHMS", "BAMS", "MD (Homeopathy)"
+  field_of_study VARCHAR(255),        -- e.g., "Homeopathic Medicine", "Ayurvedic Medicine"
+  institution VARCHAR(255) NOT NULL,  -- College/University name
+  location VARCHAR(255),              -- City, Country
+  
+  -- Timeline
+  start_year INTEGER,                 -- Year started
+  completion_year INTEGER NOT NULL,   -- Year completed/awarded
+  
+  -- Verification
+  certificate_number VARCHAR(100),    -- Degree certificate/registration number
+  is_verified BOOLEAN DEFAULT FALSE,  -- Admin-verified credential
+  
+  -- Metadata
+  display_order INTEGER DEFAULT 0,    -- For sorting in profile display
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES users(id),
+  updated_by UUID REFERENCES users(id),
+  deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX idx_doctor_degrees_tenant_id ON doctor_degrees(tenant_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_doctor_degrees_user_id ON doctor_degrees(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_doctor_degrees_display_order ON doctor_degrees(user_id, display_order) WHERE deleted_at IS NULL;
+```
+
+---
+
+### 4. `doctor_trainings`
+
+Professional training, certifications, workshops, and continuing education completed by doctors.
+
+```sql
+CREATE TABLE doctor_trainings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- Training information
+  training_name VARCHAR(255) NOT NULL,     -- e.g., "Advanced Constitutional Prescribing"
+  training_type VARCHAR(100),              -- e.g., "Certificate", "Diploma", "Workshop", "Seminar"
+  issuing_organization VARCHAR(255) NOT NULL,  -- Organization/Institute that issued
+  location VARCHAR(255),                   -- City, Country (or "Online")
+  
+  -- Timeline
+  start_date DATE,                         -- Training start date
+  completion_date DATE,                    -- Training completion date
+  expiry_date DATE,                        -- For certifications that expire
+  duration_hours INTEGER,                  -- Total training hours (if applicable)
+  
+  -- Verification
+  certificate_number VARCHAR(100),         -- Certificate/credential number
+  is_verified BOOLEAN DEFAULT FALSE,       -- Admin-verified credential
+  
+  -- Additional details
+  description TEXT,                        -- Brief description of training content
+  skills_acquired TEXT[],                  -- Array of skills/competencies gained
+  
+  -- Metadata
+  display_order INTEGER DEFAULT 0,         -- For sorting in profile display
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES users(id),
+  updated_by UUID REFERENCES users(id),
+  deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX idx_doctor_trainings_tenant_id ON doctor_trainings(tenant_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_doctor_trainings_user_id ON doctor_trainings(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_doctor_trainings_display_order ON doctor_trainings(user_id, display_order) WHERE deleted_at IS NULL;
+CREATE INDEX idx_doctor_trainings_expiry_date ON doctor_trainings(expiry_date) WHERE deleted_at IS NULL AND expiry_date IS NOT NULL;
+```
+
+---
+
+### 5. `patients`
 
 ```sql
 CREATE TABLE patients (
@@ -291,6 +402,11 @@ CREATE TABLE patients (
   phone VARCHAR(20),
   email VARCHAR(255),
   address TEXT,
+  
+  -- Location (Bangladesh administrative divisions)
+  division_id INTEGER REFERENCES divisions(id),
+  district_id INTEGER REFERENCES districts(id),
+  upazila_id INTEGER REFERENCES upazilas(id),
   
   -- Medical history summary (free text)
   medical_history TEXT,
@@ -312,11 +428,12 @@ CREATE INDEX idx_patients_tenant_id ON patients(tenant_id) WHERE deleted_at IS N
 CREATE INDEX idx_patients_full_name ON patients USING gin(to_tsvector('english', full_name)) WHERE deleted_at IS NULL;
 CREATE INDEX idx_patients_patient_number ON patients(tenant_id, patient_number) WHERE deleted_at IS NULL;
 CREATE INDEX idx_patients_phone ON patients(tenant_id, phone) WHERE deleted_at IS NULL;
+CREATE INDEX idx_patients_location ON patients(division_id, district_id, upazila_id) WHERE deleted_at IS NULL;
 ```
 
 ---
 
-### 4. `patient_tags`
+### 6. `patient_tags`
 
 Flexible tagging system for special cases, chronic conditions, treatment protocols, allergies, and custom flags.
 
@@ -347,7 +464,7 @@ CREATE INDEX idx_patient_tags_category ON patient_tags(category);
 
 ---
 
-### 5. `patient_diagnoses`
+### 7. `patient_diagnoses`
 
 Visit-specific diagnoses with optional ICD code.
 
@@ -370,7 +487,7 @@ CREATE INDEX idx_patient_diagnoses_visit_id ON patient_diagnoses(visit_id);
 
 ---
 
-### 6. `visits`
+### 8. `visits`
 
 Each patient encounter.
 
@@ -411,7 +528,7 @@ CREATE INDEX idx_visits_follow_up_date ON visits(follow_up_date) WHERE follow_up
 
 ---
 
-### 7. `prescriptions`
+### 9. `prescriptions`
 
 Immutable prescription records. Once generated, cannot be edited — only voided and replaced.
 
@@ -456,7 +573,7 @@ CREATE INDEX idx_prescriptions_number ON prescriptions(prescription_number);
 
 ---
 
-### 8. `prescription_items`
+### 10. `prescription_items`
 
 Individual medicines in a prescription. Either references `medicines` table OR contains free-text medicine name.
 
@@ -496,7 +613,7 @@ ALTER TABLE prescription_items ADD CONSTRAINT check_medicine_source
 
 ---
 
-### 9. `medicines`
+### 11. `medicines`
 
 Global admin-curated medicines + tenant-specific additions.
 
@@ -549,7 +666,7 @@ tsvector_update_trigger(search_vector, 'pg_catalog.english', name, description, 
 
 ---
 
-### 10. `medicine_symptoms`
+### 12. `medicine_symptoms`
 
 Many-to-many symptom mapping for symptom-based search.
 
@@ -572,7 +689,7 @@ CREATE UNIQUE INDEX idx_medicine_symptoms_unique ON medicine_symptoms(medicine_i
 
 ---
 
-### 11. `payments`
+### 13. `payments`
 
 Records all patient payments. Digital payments (bKash, Nagad, etc.) are processed via configured `tenant_integrations`.
 
@@ -621,7 +738,7 @@ CREATE INDEX idx_payments_transaction_id ON payments(transaction_id) WHERE trans
 
 ---
 
-### 12. `invoices`
+### 14. `invoices`
 
 ```sql
 CREATE TABLE invoices (
@@ -646,7 +763,7 @@ CREATE INDEX idx_invoices_number ON invoices(invoice_number);
 
 ---
 
-### 13. `books`
+### 15. `books`
 
 Medical book library — EPUB files with parsed chapters and sections.
 
@@ -692,7 +809,7 @@ CREATE INDEX idx_books_title ON books USING gin(to_tsvector('english', title)) W
 
 ---
 
-### 14. `chapters`
+### 16. `chapters`
 
 ```sql
 CREATE TABLE chapters (
@@ -711,7 +828,7 @@ CREATE UNIQUE INDEX idx_chapters_book_number ON chapters(book_id, chapter_number
 
 ---
 
-### 15. `sections`
+### 17. `sections`
 
 Parsed sections within chapters. Used for reading UI and as the chunking unit for embeddings.
 
@@ -737,7 +854,7 @@ CREATE INDEX idx_sections_content ON sections USING gin(to_tsvector('english', c
 
 ---
 
-### 16. `embeddings`
+### 18. `embeddings`
 
 Vector embeddings for RAG — one per section.
 
@@ -765,7 +882,7 @@ CREATE INDEX idx_embeddings_vector ON embeddings USING hnsw (embedding vector_co
 
 ---
 
-### 17. `reading_progress`
+### 19. `reading_progress`
 
 Per-user reading progress tracking.
 
@@ -789,7 +906,7 @@ CREATE UNIQUE INDEX idx_reading_progress_user_book ON reading_progress(user_id, 
 
 ---
 
-### 18. `bookmarks`
+### 20. `bookmarks`
 
 User-created bookmarks within books.
 
@@ -810,7 +927,7 @@ CREATE INDEX idx_bookmarks_section_id ON bookmarks(section_id);
 
 ---
 
-### 19. `highlights`
+### 21. `highlights`
 
 User-created text highlights within sections.
 
@@ -836,7 +953,7 @@ CREATE INDEX idx_highlights_section_id ON highlights(section_id);
 
 ---
 
-### 20. `ai_queries`
+### 22. `ai_queries`
 
 Log of all AI assistant queries for usage tracking and analytics.
 
@@ -866,7 +983,7 @@ CREATE INDEX idx_ai_queries_created_at ON ai_queries(created_at DESC);
 
 ---
 
-### 21. `notifications`
+### 23. `notifications`
 
 Email and SMS notification queue. Notifications are dispatched via tenant's configured integrations.
 
@@ -908,7 +1025,95 @@ CREATE INDEX idx_notifications_integration_id ON notifications(integration_id) W
 
 ---
 
-### 22. `integration_providers`
+## Platform-Level Tables
+
+These tables have no `tenant_id` — they are shared across all tenants.
+
+---
+
+### 24. `divisions`
+
+Bangladesh administrative divisions (বিভাগ). There are 8 divisions in Bangladesh.
+
+```sql
+CREATE TABLE divisions (
+  id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 10),
+  
+  name VARCHAR(100) NOT NULL,        -- English name (e.g., "Dhaka", "Chittagong")
+  bn_name VARCHAR(100) NOT NULL,     -- Bengali name (e.g., "ঢাকা", "চট্টগ্রাম")
+  url VARCHAR(100),                  -- URL slug for division page
+  
+  -- Geospatial data (PostGIS)
+  geom GEOMETRY(MultiPolygon, 4326)  -- Division boundary polygon
+);
+
+CREATE INDEX idx_divisions_name ON divisions(name);
+CREATE INDEX idx_divisions_geom ON divisions USING GIST(geom);
+```
+
+**Sample data:** Dhaka (ঢাকা), Chittagong (চট্টগ্রাম), Rajshahi (রাজশাহী), Khulna (খুলনা), Barisal (বরিশাল), Sylhet (সিলেট), Rangpur (রংপুর), Mymensingh (ময়মনসিংহ)
+
+---
+
+### 25. `districts`
+
+Bangladesh districts (জেলা). There are 64 districts under the 8 divisions.
+
+```sql
+CREATE TABLE districts (
+  id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 66),
+  division_id INTEGER NOT NULL REFERENCES divisions(id) ON UPDATE CASCADE,
+  
+  name VARCHAR(100) NOT NULL,        -- English name
+  bn_name VARCHAR(100) NOT NULL,     -- Bengali name
+  lat NUMERIC(12, 9),                -- Latitude of district center
+  lon NUMERIC(12, 9),                -- Longitude of district center
+  url VARCHAR(100),                  -- URL slug
+  
+  -- Geospatial data (PostGIS)
+  geom GEOMETRY(MultiPolygon, 4326)  -- District boundary polygon
+);
+
+CREATE INDEX idx_districts_division_id ON districts(division_id);
+CREATE INDEX idx_districts_name ON districts(name);
+CREATE INDEX idx_districts_geom ON districts USING GIST(geom);
+```
+
+**Example:** Dhaka district (ঢাকা জেলা) under Dhaka division, Chittagong district (চট্টগ্রাম জেলা) under Chittagong division.
+
+---
+
+### 26. `upazilas`
+
+Bangladesh sub-districts (উপজেলা). There are 490+ upazilas under the 64 districts.
+
+```sql
+CREATE TABLE upazilas (
+  id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 493),
+  district_id INTEGER NOT NULL REFERENCES districts(id) ON UPDATE CASCADE,
+  
+  name VARCHAR(100) NOT NULL,        -- English name
+  bn_name VARCHAR(100) NOT NULL,     -- Bengali name
+  lat NUMERIC(12, 9),                -- Latitude of upazila center
+  lon NUMERIC(12, 9),                -- Longitude of upazila center
+  url VARCHAR(100),                  -- URL slug
+  
+  -- Geospatial data (PostGIS)
+  geom GEOMETRY(MultiPolygon, 4326)  -- Upazila boundary polygon
+);
+
+CREATE INDEX idx_upazilas_district_id ON upazilas(district_id);
+CREATE INDEX idx_upazilas_name ON upazilas(name);
+CREATE INDEX idx_upazilas_geom ON upazilas USING GIST(geom);
+```
+
+**Example:** Dhanmondi (ধানমন্ডি), Mohammadpur (মোহাম্মদপুর), Gulshan (গুলশান) under Dhaka district.
+
+**Note:** These tables use INTEGER primary keys (not UUID) to match Bangladesh's official geographic coding system. The IDENTITY start values align with existing government data standards.
+
+---
+
+### 27. `integration_providers`
 
 Platform-level configuration for third-party integrations (SMS, Email, Payment gateways).
 
@@ -966,7 +1171,7 @@ INSERT INTO integration_providers (type, provider_name, display_name, config_sch
 
 ---
 
-### 23. `tenant_integrations`
+### 28. `tenant_integrations`
 
 Tenant-specific integration credentials (encrypted).
 
@@ -999,7 +1204,7 @@ CREATE UNIQUE INDEX idx_tenant_integrations_unique ON tenant_integrations(tenant
 
 ---
 
-### 24. `integration_logs`
+### 29. `integration_logs`
 
 Audit log for all integration transactions (SMS sent, emails sent, payments processed).
 

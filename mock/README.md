@@ -53,6 +53,7 @@ Complete clinic management system for alternative medicine practitioners.
 
 **Features demonstrated:**
 - Multi-specialization support (Homeopathy, Ayurveda, Unani, Herbal)
+- Doctor credentials management (academic degrees and professional training/certifications)
 - Patient tagging system (special case, chronic, treatment, allergy)
 - Real-time prescription builder
 - Calendar with patient load visualization
@@ -77,7 +78,7 @@ Platform-wide administration and management for admins and operators.
 
 **Features demonstrated:**
 - Multi-tenant overview and analytics
-- Approval workflow for new doctors
+- Approval workflow for new doctors with detailed credential review (degrees and training)
 - Global content curation (medicines, books)
 - Integration provider management (Twilio, Banglalink, bKash, Nagad, Stripe, etc.)
 - System-wide audit trail

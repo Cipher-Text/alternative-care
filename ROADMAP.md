@@ -2,9 +2,9 @@
 
 > From MVP to comprehensive alternative medicine practice management platform
 
-**Last updated:** April 2026  
-**Current phase:** Phase 1 (Core Clinic MVP)  
-**Target launch:** Q3 2026 (MVP) → Q2 2027 (Full Platform)
+**Last updated:** April 21, 2026  
+**Current phase:** Planning (Pre-Phase 1)  
+**Target launch:** Q3 2026 (MVP) → Q2 2027 (Complete Platform)
 
 ---
 
@@ -16,7 +16,6 @@
 - [Phase 2: Knowledge Base](#phase-2-knowledge-base)
 - [Phase 3: Book Library & Reader](#phase-3-book-library--reader)
 - [Phase 4: AI/RAG Intelligence](#phase-4-airag-intelligence)
-- [Phase 5: Patient Portal](#phase-5-patient-portal-future)
 - [Infrastructure Evolution](#infrastructure-evolution)
 - [Team Scaling](#team-scaling)
 - [Risk Management](#risk-management)
@@ -33,13 +32,13 @@ Build the most comprehensive practice management system for alternative medicine
 - **Practitioner-First:** Solve real clinic management pain points
 - **Knowledge Integration:** Make classical texts accessible and searchable
 - **Multi-System Support:** Serve Homeopathy, Ayurveda, Unani, and Herbal practitioners equally
-- **Bangladesh Focus:** Local payment gateways, SMS providers, and cultural context
+- **Bangladesh Focus:** Local payment gateways, SMS providers, geographic data, and cultural context
 - **Scalable SaaS:** Multi-tenant architecture that can grow to thousands of clinics
 
 ### Success Definition
-- **Year 1:** 50+ active paying clinics, ৳2.5L MRR
-- **Year 2:** 300+ active paying clinics, ৳18L MRR
-- **Year 3:** 1,000+ active paying clinics, ৳60L+ MRR, expand to India
+- **Year 1:** 50+ active paying clinics, ৳2.5L MRR ($2,500) — MVP to AI Platform
+- **Year 2:** 300+ active paying clinics, ৳18L MRR ($18,000) — Growth & optimization
+- **Year 3:** 1,000+ active paying clinics, ৳60L+ MRR ($60,000+) — Expand to India
 
 ---
 
@@ -47,412 +46,728 @@ Build the most comprehensive practice management system for alternative medicine
 
 | Phase | Focus | Duration | Target Launch | Status |
 |-------|-------|----------|---------------|--------|
-| **Phase 1** | Core Clinic MVP | 12 weeks | Q3 2026 | 🔄 In Progress |
+| **Phase 0** | Planning & Design | 2 weeks | Complete | ✅ Done |
+| **Phase 1** | Core Clinic MVP | 14 weeks | Q3 2026 | 📋 Planned |
 | **Phase 2** | Knowledge Base | 8 weeks | Q4 2026 | 📋 Planned |
 | **Phase 3** | Book Library | 10 weeks | Q1 2027 | 📋 Planned |
 | **Phase 4** | AI/RAG | 12 weeks | Q2 2027 | 📋 Planned |
-| **Phase 5** | Patient Portal | 8 weeks | Q3 2027 | 💡 Future |
 
-**Total MVP to Full Platform:** ~50 weeks (~12 months)
+**Total MVP to Full Platform:** ~44 weeks (~11 months)
 
 ---
 
-## Phase 1: Core Clinic MVP `CURRENT`
+## Phase 0: Planning & Design `COMPLETED`
 
-**Timeline:** 12 weeks (April 2026 - June 2026)  
-**Target Launch:** July 1, 2026  
+**Timeline:** 2 weeks (April 7-20, 2026)  
+**Status:** ✅ Complete
+
+### Completed Deliverables
+
+- [x] UI mockups completed (Admin + Doctor views with 8+ screens each)
+- [x] Marketing landing page prototype
+- [x] Database schema designed (29 tables with full relationships)
+- [x] Technology stack finalized and documented
+- [x] API structure defined (REST endpoints)
+- [x] Architecture diagram (modular monolith)
+- [x] Multi-tenancy strategy (row-level isolation)
+- [x] Doctor credentials system (degrees + training)
+- [x] Bangladesh geographic data integration (Division → District → Upazila)
+- [x] Integration framework design (SMS/Email/Payment)
+- [x] Pricing plans defined (Free/Plus/Pro)
+- [x] 12-month roadmap created
+- [x] Cost estimates (MVP to Enterprise)
+- [x] Production checklist created
+- [x] Environment variables defined (.env.example)
+- [x] Dependency list (requirements.txt)
+
+**What's Ready:**
+- Complete system design with 29 database tables
+- Production-ready tech stack with monitoring/security
+- Functional UI prototypes (no build required)
+- Clear implementation path
+
+---
+
+## Phase 1: Core Clinic MVP `NEXT`
+
+**Timeline:** 14 weeks (May 2026 - July 2026)  
+**Target Launch:** August 1, 2026  
 **Goal:** Launch a working clinic management tool that 10 pilot doctors can use daily
 
-### Week 1-2: Foundation
+### Week 1-2: Foundation & Infrastructure
+
 **Backend Setup**
-- [x] FastAPI project structure with modular architecture
-- [x] SQLAlchemy 2.0 async ORM setup
-- [x] Alembic migration framework
-- [x] Pydantic v2 models for validation
-- [x] JWT authentication with passlib + python-jose
-- [x] Multi-tenant middleware with ContextVar
-- [ ] PostgreSQL 16 database setup with initial schema
-- [ ] Redis cache configuration
-- [ ] Celery worker setup for background tasks
+- [ ] Initialize FastAPI project structure with modular architecture
+- [ ] Configure SQLAlchemy 2.0 async ORM
+- [ ] Set up Alembic migration framework
+- [ ] Implement Pydantic v2 models for all endpoints
+- [ ] Build JWT authentication (passlib + python-jose)
+- [ ] Add 2FA support with pyotp and QR code generation
+- [ ] Create multi-tenant middleware with ContextVar
+- [ ] Configure structlog for structured JSON logging
+- [ ] Integrate Sentry for error tracking
+- [ ] Set up slowapi rate limiting with Redis backend
+- [ ] Configure Prometheus metrics collection
+
+**Database Setup**
+- [ ] PostgreSQL 16 installation with pgvector extension
+- [ ] Create initial migration (29 tables)
+- [ ] Populate geographic data (divisions, districts, upazilas)
+- [ ] Seed integration providers (SSLCommerz, Twilio, SendGrid, etc.)
+- [ ] Configure connection pooling (20 connections, 10 overflow)
+- [ ] Enable pg_stat_statements for query monitoring
+- [ ] Set up automated daily backups
 
 **Frontend Setup**
-- [ ] Next.js 14 with App Router
-- [ ] Tailwind CSS + shadcn/ui components
-- [ ] React Query for server state
-- [ ] Axios interceptors with JWT refresh
-- [ ] Responsive layout shell (sidebar, topbar, content)
+- [ ] Initialize Next.js 14 with App Router
+- [ ] Install Tailwind CSS + shadcn/ui components
+- [ ] Configure React Query for server state
+- [ ] Set up Axios instance with JWT interceptors
+- [ ] Create layout shell (sidebar, topbar, content area)
+- [ ] Implement auth context provider
+- [ ] Add Sentry browser SDK
 
-**DevOps**
-- [ ] Docker Compose for local development
-- [ ] Environment variable management (.env.example)
-- [ ] Git workflow (main, develop, feature branches)
-- [ ] CI/CD pipeline setup (GitHub Actions)
+**DevOps & Infrastructure**
+- [ ] Create docker-compose.yml (all services)
+- [ ] Configure MinIO for file storage
+- [ ] Set up Redis (cache + Celery broker + rate limiting)
+- [ ] Configure Celery workers (PDF, email, embeddings queues)
+- [ ] Set up Caddy reverse proxy with auto-HTTPS
+- [ ] Create .env configuration from .env.example
+- [ ] Configure Grafana + Prometheus dashboards
+- [ ] Set up health check endpoints
+
+**Security Hardening**
+- [ ] Configure CORS (restrict to allowed origins)
+- [ ] Add security headers middleware (CSP, HSTS, X-Frame-Options)
+- [ ] Enable OWASP security headers
+- [ ] Set up rate limiting (5/min login, 20/hour AI queries)
+- [ ] Configure Fernet encryption for integration credentials
+- [ ] Set up UFW firewall (ports 80, 443, 22 only)
+- [ ] Configure fail2ban for SSH protection
 
 ### Week 3-4: Authentication & User Management
+
 **Backend**
-- [ ] User registration endpoint (`POST /api/v1/auth/register`)
-- [ ] Admin approval workflow
-- [ ] Login with JWT issuance (`POST /api/v1/auth/login`)
-- [ ] Token refresh endpoint
-- [ ] Password reset flow (email-based)
-- [ ] Role-based access control (RBAC) dependencies
-- [ ] Multi-specialization support in tenant model
+- [ ] User registration endpoint with email validation
+- [ ] Admin approval workflow for doctor registrations
+- [ ] Login endpoint with JWT issuance (access + refresh tokens)
+- [ ] Token refresh endpoint with rotation
+- [ ] Password reset flow (email-based with expiry)
+- [ ] 2FA setup and verification endpoints
+- [ ] Role-based access control dependencies (RBAC)
+- [ ] Logout and token revocation
+- [ ] Session management
 
 **Frontend**
-- [ ] Login page with form validation
-- [ ] Registration page with specialization multi-select
+- [ ] Login page with form validation (Zod schema)
+- [ ] Registration page with:
+  - Multi-specialization selection (1-4 systems)
+  - License number input
+  - Clinic information form
 - [ ] Forgot password flow
-- [ ] Protected route wrapper
-- [ ] User context provider
-- [ ] Profile settings page
+- [ ] 2FA setup page (QR code display)
+- [ ] 2FA verification page
+- [ ] Protected route wrapper component
+- [ ] User context provider (auth state)
+- [ ] Profile settings page with tabs
 
 **Database**
-- [x] `tenants` table with specializations array
-- [x] `users` table with role enum
-- [ ] Migration: Create initial tables
-- [ ] Seed: Create platform admin user
+- [ ] Run migration for auth tables (tenants, users)
+- [ ] Create platform admin seed user
+- [ ] Add indexes for email and role lookups
 
-### Week 5-6: Patient Management
+### Week 5-6: Doctor Credentials & Profile
+
 **Backend**
-- [ ] Patient CRUD endpoints
-- [ ] Patient search with filters (name, phone, diagnosis)
+- [ ] Doctor degrees CRUD endpoints
+- [ ] Doctor trainings/certifications CRUD endpoints
+- [ ] Degree verification workflow (admin)
+- [ ] Training expiry date tracking
+- [ ] Display order management
+- [ ] Bulk degree import (CSV)
+
+**Frontend**
+- [ ] Doctor profile page with tabs:
+  - Personal information
+  - Academic degrees (add/edit/delete)
+  - Training & certifications (add/edit/delete)
+  - Clinic information
+- [ ] Degree form with validation
+- [ ] Training form with expiry date picker
+- [ ] Verification status badges
+- [ ] Skills tags input
+- [ ] Display order drag-and-drop
+
+**Database**
+- [ ] Run migration for doctor_degrees and doctor_trainings tables
+- [ ] Add indexes for user_id and display_order
+
+**Admin Features**
+- [ ] Admin view for doctor approval with credentials review
+- [ ] Degree verification interface
+- [ ] Training verification interface
+- [ ] Bulk approval actions
+
+### Week 7-8: Geographic Location & Patient Management
+
+**Backend**
+- [ ] Patient CRUD endpoints with location support
+- [ ] Geographic location endpoints:
+  - GET /api/v1/locations/divisions
+  - GET /api/v1/locations/districts?division_id=X
+  - GET /api/v1/locations/upazilas?district_id=Y
+- [ ] Patient search with filters (name, phone, location, diagnosis)
 - [ ] Patient tags system (special case, chronic, treatment, allergy)
-- [ ] Patient diagnosis records
-- [ ] Visit creation and management
-- [ ] File upload for patient attachments (MinIO integration)
+- [ ] Patient diagnosis records management
+- [ ] Visit creation and history
+- [ ] File upload for attachments (MinIO)
 - [ ] Pagination and sorting
 
 **Frontend**
-- [ ] Patient list view with filters
-- [ ] Patient detail slide-out panel
-- [ ] Add/Edit patient form
-- [ ] Tag management UI
-- [ ] Visit history timeline
+- [ ] Geographic location cascading dropdowns component
+- [ ] Patient list view with:
+  - Search and filters
+  - Location display (Division, District, Upazila)
+  - Tag badges
+  - Diagnosis column
+- [ ] Patient detail slide-out panel with:
+  - Demographics
+  - Location (Bengali + English names)
+  - Tags management UI
+  - Diagnosis history
+  - Visit timeline
+  - File attachments
+- [ ] Add/Edit patient form with location selectors
 - [ ] Patient search autocomplete
 
 **Database**
-- [x] `patients` table
-- [x] `patient_tags` table
-- [x] `patient_diagnoses` table
-- [x] `visits` table
-- [ ] Indexes for search performance
+- [ ] Verify geographic data seeded (8 divisions, 64 districts, 490+ upazilas)
+- [ ] Run migration for patients, patient_tags, patient_diagnoses tables
+- [ ] Add indexes for location and search fields
 
-### Week 7-8: Prescription System
+### Week 9-10: Prescription System
+
 **Backend**
 - [ ] Prescription creation endpoint
-- [ ] Prescription items management (medicines)
-- [ ] Support for both DB medicines and free-text entries
-- [ ] PDF generation with WeasyPrint (Celery task)
+- [ ] Prescription items management (medicines + free-text)
+- [ ] Support for nullable medicine_id (custom entries)
+- [ ] PDF generation with WeasyPrint (Celery background task)
 - [ ] Prescription history retrieval
 - [ ] Prescription void/replacement logic
+- [ ] Prescription status tracking (draft, issued, voided)
+- [ ] Email prescription PDF to patient
 
 **Frontend**
-- [ ] Prescription builder UI
-- [ ] Medicine autocomplete (search existing + add custom)
-- [ ] Dosage, frequency, duration inputs
-- [ ] Live PDF preview
-- [ ] Prescription history view
+- [ ] Prescription builder UI:
+  - Patient selector
+  - Medicine autocomplete (search + add custom)
+  - Dosage, frequency, duration inputs
+  - Doctor's notes textarea
+  - Medicine list with remove buttons
+- [ ] Live PDF preview (iframe)
+- [ ] Prescription history view with filters
 - [ ] Print/Download functionality
+- [ ] Status badges (draft, issued, voided)
 
 **Database**
-- [x] `prescriptions` table with status enum
-- [x] `prescription_items` table with nullable medicine_id
-- [ ] Migration: Add prescription tables
+- [ ] Run migration for prescriptions and prescription_items tables
+- [ ] Add indexes for patient_id and created_at
 
-### Week 9: Payment & Invoicing
+**PDF Template**
+- [ ] Design prescription PDF template (WeasyPrint HTML/CSS)
+- [ ] Include clinic header, doctor credentials
+- [ ] Medicine table with dosage instructions
+- [ ] Doctor's signature area
+
+### Week 11: Payment & Invoicing
+
 **Backend**
 - [ ] Payment recording endpoint
+- [ ] SSLCommerz integration (Bangladesh payments)
+  - Initiate payment session
+  - Webhook handler with signature verification
+  - Payment status tracking
+- [ ] Stripe integration (international payments)
 - [ ] Invoice generation (PDF via WeasyPrint)
-- [ ] Payment method support (cash, bKash, Nagad, card)
+- [ ] Payment method support (cash, bKash, Nagad, Rocket, card)
 - [ ] Revenue reports (daily, monthly aggregates)
-- [ ] Payment status tracking
+- [ ] Transaction logging in integration_logs
 
 **Frontend**
-- [ ] Payment recording form
-- [ ] Invoice list view
-- [ ] Revenue dashboard widgets
-- [ ] Payment status badges
-- [ ] Invoice PDF download
+- [ ] Payment recording form with method selector
+- [ ] SSLCommerz payment initiation flow
+- [ ] Payment status tracking page
+- [ ] Invoice list view with download links
+- [ ] Revenue dashboard widgets (charts)
+- [ ] Payment history with filters
 
 **Database**
-- [x] `payments` table with payment_method enum
-- [x] `invoices` table
-- [ ] Indexes for revenue aggregation
+- [ ] Run migration for payments and invoices tables
+- [ ] Add indexes for revenue aggregation queries
 
-### Week 10: Dashboard & Analytics
+**Testing**
+- [ ] SSLCommerz sandbox testing
+- [ ] Webhook signature verification
+- [ ] Payment failure handling
+- [ ] Invoice PDF generation
+
+### Week 12: Dashboard & Analytics
+
 **Backend**
-- [ ] Dashboard KPI endpoints (patients, visits, revenue)
+- [ ] Dashboard KPI endpoints:
+  - Total patients, visits, revenue
+  - Monthly growth metrics
 - [ ] Calendar data aggregation (patient load per day)
 - [ ] Top diagnoses chart data
-- [ ] Top medicines chart data
-- [ ] Growth metrics (month-over-month)
+- [ ] Top prescribed medicines chart data
+- [ ] Recent patients list
+- [ ] Upcoming follow-ups
 
 **Frontend**
-- [ ] Dashboard with KPI cards
-- [ ] Patient calendar with heatmap
-- [ ] Bar charts for diagnoses and medicines
-- [ ] Recent patients table
-- [ ] Upcoming follow-ups widget
+- [ ] Dashboard page with:
+  - KPI cards (animated counters)
+  - Patient calendar with heatmap visualization
+  - Bar charts (diagnoses, medicines)
+  - Recent patients table
+  - Upcoming follow-ups widget
+  - Quick action buttons
+- [ ] Chart components (Recharts or Chart.js)
+- [ ] Calendar component with day cell colors
 
 **Database**
-- [ ] Optimized queries for dashboard aggregations
-- [ ] Partial indexes for performance
+- [ ] Optimize dashboard aggregation queries
+- [ ] Add partial indexes for active patients
+- [ ] Create materialized views if needed
 
-### Week 11: Integration Framework (Bonus)
+### Week 13: Integration Framework & Communications
+
 **Backend**
-- [ ] Integration provider catalog seeding
-- [ ] Tenant integration configuration
-- [ ] Credentials encryption (Fernet)
-- [ ] Test transaction endpoints (SMS, Email, Payment)
-- [ ] Integration logs table population
+- [ ] Integration provider seeding (verify all 10+ providers)
+- [ ] Tenant integration CRUD endpoints
+- [ ] Credentials encryption/decryption (Fernet)
+- [ ] Test transaction endpoints:
+  - POST /api/v1/integrations/{id}/test/sms
+  - POST /api/v1/integrations/{id}/test/email
+  - POST /api/v1/integrations/{id}/test/payment
+- [ ] Integration logs viewer endpoint
+- [ ] SMS sending (Celery task):
+  - Twilio integration
+  - Banglalink fallback
+  - Exponential backoff retry
+- [ ] Email sending (Celery task):
+  - SendGrid integration
+  - AWS SES fallback
+  - Template support
 
 **Frontend**
-- [ ] Integration provider selection UI
-- [ ] Credentials configuration forms
-- [ ] Test integration buttons
-- [ ] Integration logs viewer
+- [ ] Integration providers page:
+  - Provider cards with logos
+  - Configuration forms
+  - Test buttons with status feedback
+- [ ] Integration logs viewer with filters
+- [ ] Notification settings page
+- [ ] Email/SMS template management
 
 **Database**
-- [x] `integration_providers` table (seeded)
-- [x] `tenant_integrations` table
-- [x] `integration_logs` table
+- [ ] Verify integration_providers seeded
+- [ ] Run migration for tenant_integrations and integration_logs
+- [ ] Add indexes for log queries
 
-### Week 12: Testing, Polish & Launch Prep
 **Testing**
-- [ ] Unit tests for core business logic (80% coverage)
-- [ ] Integration tests for API endpoints
-- [ ] E2E tests with Playwright (critical flows)
-- [ ] Load testing with Locust (100 concurrent users)
-- [ ] Security audit (OWASP top 10)
+- [ ] Send test SMS via Twilio
+- [ ] Send test email via SendGrid
+- [ ] Test fallback mechanisms
+- [ ] Verify audit logging
+
+### Week 14: Testing, Polish & Launch Prep
+
+**Testing**
+- [ ] Unit tests (pytest):
+  - Auth flows (login, register, 2FA)
+  - Multi-tenant isolation (CRITICAL!)
+  - RBAC enforcement
+  - Prescription PDF generation
+  - Payment webhook handling
+- [ ] Integration tests (pytest + httpx):
+  - All API endpoints
+  - Database transactions
+  - Celery task execution
+- [ ] E2E tests (Playwright):
+  - Doctor registration → approval → login
+  - Patient creation → visit → prescription → payment
+  - Settings configuration
+- [ ] Load testing (Locust):
+  - Target: 100 concurrent users
+  - Average response time < 500ms
+  - 99th percentile < 2s
+- [ ] Security audit:
+  - pip-audit (dependency vulnerabilities)
+  - OWASP Top 10 checklist
+  - Rate limiting verification
+  - Multi-tenant data isolation test
+
+**Code Coverage**
+- [ ] Achieve 80%+ test coverage
+- [ ] 100% coverage for auth and payment modules
 
 **Polish**
-- [ ] Error handling and user feedback
-- [ ] Loading states and skeletons
-- [ ] Empty states with CTAs
-- [ ] Mobile responsiveness fixes
-- [ ] Accessibility audit (WCAG 2.1 AA)
-- [ ] Performance optimization (Lighthouse > 90)
+- [ ] Error handling and user feedback (toast notifications)
+- [ ] Loading states and skeleton screens
+- [ ] Empty states with helpful CTAs
+- [ ] Mobile responsiveness (all breakpoints)
+- [ ] Accessibility audit (WCAG 2.1 AA):
+  - Keyboard navigation
+  - Screen reader support
+  - Color contrast
+  - ARIA labels
+- [ ] Performance optimization:
+  - Lighthouse score > 90
+  - Code splitting
+  - Image optimization
+  - API response caching
 
 **Documentation**
-- [ ] API documentation (auto-generated via FastAPI)
-- [ ] User guide (help center)
-- [ ] Video tutorials (3-5 mins each)
+- [ ] API documentation (auto-generated via FastAPI /docs)
+- [ ] User guide / help center
+- [ ] Video tutorials:
+  - Getting started (5 min)
+  - Patient management (3 min)
+  - Prescription workflow (4 min)
 - [ ] Deployment guide for production
+- [ ] Admin guide for approvals
 
 **Launch Prep**
 - [ ] Beta testing with 5 pilot doctors (2 weeks)
-- [ ] Bug fixes from beta feedback
-- [ ] Production deployment to VPS
-- [ ] SSL certificate setup (Caddy auto-HTTPS)
-- [ ] Domain configuration (altcare.health)
-- [ ] Monitoring setup (Sentry, Uptime monitoring)
+- [ ] Collect and implement feedback
+- [ ] Bug triage and fixes
+- [ ] Production deployment to VPS:
+  - Configure environment variables
+  - Set up SSL certificates (Caddy)
+  - Configure domain (altcare.health)
+  - Enable monitoring (Sentry, Grafana, Uptime Robot)
+  - Set up log aggregation (Papertrail)
+- [ ] Create incident response plan
+- [ ] Set OpenAI budget limits ($500/month)
+- [ ] Configure automated backups (daily PostgreSQL, weekly MinIO)
+
+**Marketing**
+- [ ] Launch marketing website
+- [ ] Create demo account with sample data
+- [ ] Prepare press release
+- [ ] Social media announcement
+- [ ] Email campaign to practitioner list
 
 ### Phase 1 Deliverables
 
 ✅ **Functional MVP** that includes:
 - Doctor registration with admin approval
 - Multi-specialization support (1-4 systems)
+- Doctor credentials (degrees + training with verification)
+- Bangladesh geographic location (Division → District → Upazila)
 - Patient management with visit history and tagging
-- Prescription builder with PDF export
-- Payment tracking and invoice generation
-- Dashboard with KPIs and analytics
-- Integration framework for SMS/Email/Payment
+- Prescription builder with PDF export and email delivery
+- Payment tracking with SSLCommerz and invoice generation
+- Dashboard with KPIs, calendar, and analytics
+- Integration framework for SMS/Email/Payment with audit trail
+- Security features (2FA, rate limiting, OWASP headers)
 
 ✅ **Technical Foundation:**
-- Multi-tenant architecture (row-level isolation)
+- Multi-tenant architecture (row-level isolation with 29 tables)
 - Role-based access control (Admin, Operator, Doctor, Receptionist)
 - Async backend with Celery for background jobs
 - Responsive frontend with React/Next.js
-- Docker Compose for deployment
-- Automated backups and monitoring
+- Docker Compose for containerized deployment
+- Monitoring (Sentry, Grafana, Prometheus)
+- Structured logging with correlation IDs
+- Automated backups and health checks
+- Production-ready security (encryption, rate limiting, 2FA)
 
 ✅ **Go-to-Market:**
 - 10 pilot doctors onboarded
-- User feedback collected
+- User feedback collected and incorporated
 - Pricing validated (Free/Plus/Pro tiers)
 - Marketing website live
-- Payment gateway integrated (bKash)
+- Payment gateways integrated (SSLCommerz + Stripe)
+- SMS/Email providers configured (Twilio + SendGrid)
 
 ---
 
 ## Phase 2: Knowledge Base
 
-**Timeline:** 8 weeks (July - August 2026)  
+**Timeline:** 8 weeks (August - September 2026)  
 **Goal:** Add medicine database with symptom-based search to help doctors during consultations
 
 ### Week 1-2: Medicine Database Foundation
+
 **Backend**
 - [ ] Global medicine CRUD endpoints (admin only)
 - [ ] Tenant-specific medicine additions
 - [ ] Medicine search with filters (system, category, potency)
-- [ ] Full-text search optimization (tsvector)
+- [ ] Full-text search optimization (tsvector + GIN indexes)
 - [ ] Specialization-based filtering
-- [ ] Import bulk medicines from CSV/Excel
+- [ ] Bulk medicine import (CSV/Excel parser)
 
 **Frontend**
-- [ ] Medicine search UI with autocomplete
-- [ ] Medicine detail view
+- [ ] Medicine database page with search/filter
+- [ ] Medicine detail view (modal or page)
 - [ ] Add/Edit medicine forms (admin)
-- [ ] Filtering by system, category
-- [ ] Bulk import interface
+- [ ] Filtering by system, category, potency
+- [ ] Bulk import interface with progress indicator
+- [ ] Medicine list with pagination
 
 **Database**
-- [x] `medicines` table with is_global flag
-- [ ] Migration: Add medicines table
-- [ ] Seed: Import 500+ common medicines (Homeopathy, Ayurveda, Unani, Herbal)
+- [ ] Run migration for medicines table
+- [ ] Create GIN indexes for full-text search
+- [ ] Seed 500+ common medicines across all systems:
+  - Homeopathy (200+)
+  - Ayurveda (150+)
+  - Unani (100+)
+  - Herbal (50+)
 
 ### Week 3-4: Symptom Mapping
+
 **Backend**
 - [ ] Symptom-to-medicine mapping CRUD
 - [ ] Symptom search algorithm (weighted matching)
 - [ ] Match strength calculation
 - [ ] Modality notes support
-- [ ] Symptom tag management
+- [ ] Symptom tag management (admin)
+- [ ] Multi-symptom query support
 
 **Frontend**
-- [ ] Symptom search page
-- [ ] Multi-symptom input with autocomplete
-- [ ] Match results with percentage scores
-- [ ] Grouped by medical system
-- [ ] Quick add to prescription from search results
+- [ ] Symptom search page with:
+  - Multi-symptom input (autocomplete)
+  - Add/remove symptom chips
+  - Search button
+- [ ] Match results display:
+  - Grouped by medical system
+  - Match percentage scores
+  - Medicine name and description
+  - Quick add to prescription button
+- [ ] Symptom tag management (admin)
 
 **Database**
-- [x] `medicine_symptoms` table with match_strength
-- [ ] GIN indexes for symptom search
-- [ ] Seed: Add symptom mappings (1000+ entries)
+- [ ] Run migration for medicine_symptoms table
+- [ ] Create GIN indexes for symptom search
+- [ ] Seed 1,000+ symptom mappings
 
 ### Week 5-6: Integration with Prescription Builder
+
 **Backend**
 - [ ] Medicine quick search in prescription endpoint
-- [ ] Recently used medicines tracking
+- [ ] Recently used medicines tracking per doctor
 - [ ] Commonly prescribed medicines analytics
 - [ ] Dosage guidance retrieval
+- [ ] Contraindications and interactions API
 
 **Frontend**
-- [ ] Enhanced prescription builder with medicine search
-- [ ] Auto-complete with symptom hints
-- [ ] Dosage suggestions from database
-- [ ] Recently used medicines quick-select
-- [ ] Contraindications warnings
+- [ ] Enhanced prescription builder:
+  - Medicine autocomplete with symptom hints
+  - Dosage suggestions from database
+  - Recently used medicines quick-select
+  - Contraindications warnings (red badge)
+  - Medicine interactions alerts
+- [ ] Add from symptom search (one-click)
+
+**Optimization**
+- [ ] Cache frequently searched medicines
+- [ ] Optimize autocomplete queries
+- [ ] Add debouncing to search inputs
 
 ### Week 7-8: Content Curation & Testing
+
 **Content**
-- [ ] Partner with medical practitioners for validation
+- [ ] Partner with 5 medical practitioners for validation
 - [ ] Curate 1,000+ medicines across all four systems
-- [ ] Add symptom mappings with practitioner review
-- [ ] Add dosage guidelines
-- [ ] Validate contraindications and interactions
+- [ ] Review and validate symptom mappings
+- [ ] Add dosage guidelines for common medicines
+- [ ] Document contraindications and interactions
+- [ ] Create medicine categories and sub-categories
 
 **Testing**
 - [ ] User acceptance testing with 10 doctors
-- [ ] Symptom search accuracy validation
-- [ ] Performance testing (search latency < 100ms)
+- [ ] Symptom search accuracy validation (>85% target)
+- [ ] Performance testing:
+  - Medicine search < 100ms
+  - Symptom search < 200ms
+  - Autocomplete < 50ms
 - [ ] Mobile experience testing
+- [ ] Accessibility testing
+
+**Documentation**
+- [ ] Medicine database user guide
+- [ ] Symptom search tutorial video
+- [ ] Admin guide for medicine curation
 
 ### Phase 2 Deliverables
 
 ✅ **Medicine Database:**
 - 1,000+ curated medicines (global pool)
-- Filterable by specialization
-- Full-text search optimized
-- Bulk import capability
+- Filterable by specialization automatically
+- Full-text search with <100ms latency
+- Bulk import capability for admins
+- Tenant-specific additions
 
 ✅ **Symptom Search:**
 - Multi-symptom input support
 - Weighted matching algorithm
 - Results grouped by medical system
-- Match percentage scoring
+- Match percentage scoring (>85% accuracy)
+- Quick add to prescription
 
 ✅ **Enhanced Prescription Builder:**
 - One-click add from symptom search
 - Dosage auto-suggestions
 - Recently used medicines
 - Contraindications warnings
+- Medicine interactions alerts
 
 ---
 
 ## Phase 3: Book Library & Reader
 
-**Timeline:** 10 weeks (September - November 2026)  
+**Timeline:** 10 weeks (October - December 2026)  
 **Goal:** Give doctors access to classical medical texts within the platform
 
 ### Week 1-2: EPUB Upload & Storage
+
 **Backend**
 - [ ] EPUB file upload endpoint (multipart/form-data)
-- [ ] MinIO integration for file storage
-- [ ] File validation (format, size limits)
-- [ ] Book metadata extraction
-- [ ] Global vs tenant-specific books
+- [ ] MinIO bucket configuration for books
+- [ ] File validation (format, size < 50MB)
+- [ ] Book metadata extraction from EPUB
+- [ ] Global vs tenant-specific book permissions
+- [ ] Book deletion (soft delete)
 
 **Frontend**
-- [ ] Book upload UI with drag-and-drop
+- [ ] Book upload page with drag-and-drop
 - [ ] Upload progress indicator
-- [ ] Book metadata form (title, author, system)
-- [ ] Book library grid view
+- [ ] Book metadata form (title, author, system, language)
+- [ ] Book library grid view with cover images
+- [ ] Filter by system, author, language
 
 **Database**
-- [x] `books` table with epub_url and is_global
-- [ ] MinIO bucket setup
+- [ ] Run migration for books table
+- [ ] Configure MinIO bucket with retention policy
 
-### Week 2-4: EPUB Parsing
+### Week 3-4: EPUB Parsing
+
 **Backend**
-- [ ] EPUB parsing with ebooklib (Celery task)
-- [ ] Chapter extraction
-- [ ] Section parsing with heading detection
-- [ ] Content cleaning (HTML to plain text)
-- [ ] Word count calculation
-- [ ] Parsing error handling and retry logic
+- [ ] EPUB parsing with ebooklib (Celery background task)
+- [ ] Chapter extraction with hierarchy detection
+- [ ] Section parsing with heading levels (h1-h6)
+- [ ] Content cleaning (HTML → plain text)
+- [ ] Word count calculation per section
+- [ ] Progress tracking for parsing job
+- [ ] Error handling and retry logic
+- [ ] Webhook notification on parsing complete
 
 **Database**
-- [x] `chapters` table
-- [x] `sections` table
-- [ ] Migration: Add book-related tables
-- [ ] Indexes for chapter/section navigation
+- [ ] Run migration for chapters and sections tables
+- [ ] Add indexes for navigation queries
+- [ ] Store parsing job status
+
+**Monitoring**
+- [ ] Track parsing success rate
+- [ ] Alert on parsing failures
 
 ### Week 5-7: Book Reader
+
 **Frontend**
-- [ ] Book reader UI with table of contents
-- [ ] Chapter navigation (prev/next)
-- [ ] Section rendering with typography
-- [ ] Reading progress tracking (% completed)
-- [ ] Scroll position persistence
-- [ ] Font size and theme controls
-- [ ] Search within book
+- [ ] Book reader UI:
+  - Table of contents sidebar
+  - Chapter navigation (prev/next buttons)
+  - Section rendering with typography
+  - Reading progress bar (% completed)
+  - Scroll position persistence
+  - Font size controls (sm, md, lg, xl)
+  - Theme toggle (light, dark, sepia)
+  - Search within book
+- [ ] Reader toolbar:
+  - Bookmark button
+  - Highlight selection
+  - Font controls
+  - Theme switcher
+- [ ] Keyboard shortcuts (arrow keys, bookmarks)
 
 **Backend**
-- [ ] Reading progress update endpoint
+- [ ] Reading progress update endpoint (debounced)
 - [ ] Bookmark CRUD endpoints
 - [ ] Highlight CRUD endpoints
 - [ ] Chapter content retrieval (paginated)
+- [ ] Search within book endpoint
 
 **Database**
-- [x] `reading_progress` table
-- [x] `bookmarks` table
-- [x] `highlights` table
+- [ ] Run migration for reading_progress, bookmarks, highlights
+- [ ] Add indexes for user_id and book_id
+
+**UX**
+- [ ] Smooth scrolling
+- [ ] Auto-save reading position
+- [ ] Restore last read position on open
+- [ ] Mobile-optimized reader
 
 ### Week 8-9: Content Curation
-**Content**
+
+**Content Acquisition**
 - [ ] Partner with publishers for legal access
+- [ ] Identify public domain texts
 - [ ] Digitize/acquire 20+ classical texts:
-  - **Homeopathy:** Organon of Medicine, Materia Medica, Repertory
-  - **Ayurveda:** Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya
-  - **Unani:** Al-Qanun fi al-Tibb (Canon of Medicine), Kamil al-Sana'a
-  - **Herbal:** PDR for Herbal Medicines, Chinese Herbal Medicine
-- [ ] Parse all books (validate chapter/section structure)
-- [ ] Quality check (ensure readability)
+
+**Homeopathy (5-7 books):**
+- [ ] Organon of Medicine by Samuel Hahnemann
+- [ ] Materia Medica Pura by Samuel Hahnemann
+- [ ] Boericke's Materia Medica
+- [ ] Kent's Repertory
+- [ ] Philosophy of Homoeopathy
+
+**Ayurveda (5-7 books):**
+- [ ] Charaka Samhita (English translation)
+- [ ] Sushruta Samhita (English translation)
+- [ ] Ashtanga Hridaya
+- [ ] Bhavaprakash Samhita
+- [ ] Rasaratna Samucchaya
+
+**Unani (3-4 books):**
+- [ ] Al-Qanun fi al-Tibb (Canon of Medicine) by Ibn Sina
+- [ ] Kamil al-Sana'a by Al-Majusi
+- [ ] Tashrih-ul-Abdan
+
+**Herbal (3-4 books):**
+- [ ] PDR for Herbal Medicines
+- [ ] Chinese Herbal Medicine: Materia Medica
+- [ ] The Complete German Commission E Monographs
+
+**Processing**
+- [ ] Convert all books to EPUB format (if needed)
+- [ ] Parse all books via Celery pipeline
+- [ ] Validate chapter/section structure
+- [ ] Quality check for readability
+- [ ] Add cover images
+- [ ] Write book descriptions
 
 ### Week 10: Testing & Polish
+
 **Testing**
-- [ ] Reader performance testing (large books > 1000 pages)
-- [ ] Bookmark/highlight sync testing
+- [ ] Reader performance with large books (>1000 pages)
+- [ ] Bookmark/highlight sync across devices
 - [ ] Mobile reader experience
-- [ ] Progress tracking accuracy
+- [ ] Reading progress accuracy
+- [ ] Search within book accuracy
+- [ ] Offline reading capability (PWA)
 
 **Polish**
-- [ ] Smooth scrolling and navigation
-- [ ] Typography optimization (readability)
-- [ ] Dark mode support
-- [ ] Keyboard shortcuts
+- [ ] Smooth page transitions
+- [ ] Typography optimization (line height, letter spacing)
+- [ ] Dark mode color palette
+- [ ] Keyboard shortcuts documentation
+- [ ] Accessibility (screen reader, keyboard navigation)
+
+**Documentation**
+- [ ] Library user guide
+- [ ] Book upload guide (for doctors)
+- [ ] Reader shortcuts reference
 
 ### Phase 3 Deliverables
 
@@ -461,6 +776,7 @@ Build the most comprehensive practice management system for alternative medicine
 - Filterable by system and author
 - Upload capability for doctors (Pro plan)
 - Cover images and metadata
+- Search across library
 
 ✅ **Book Reader:**
 - Clean, readable interface
@@ -468,6 +784,8 @@ Build the most comprehensive practice management system for alternative medicine
 - Reading progress tracking
 - Bookmarks and highlights
 - Search within book
+- Font and theme controls
+- Mobile-optimized
 
 ✅ **Dashboard Integration:**
 - Currently reading widget
@@ -478,227 +796,323 @@ Build the most comprehensive practice management system for alternative medicine
 
 ## Phase 4: AI/RAG Intelligence
 
-**Timeline:** 12 weeks (December 2026 - February 2027)  
+**Timeline:** 12 weeks (January - March 2027)  
 **Goal:** Add AI-powered clinical reference assistant grounded in classical texts
 
 ### Week 1-3: Embedding Pipeline
+
 **Backend**
 - [ ] OpenAI API integration (text-embedding-3-small)
 - [ ] LangChain setup for document processing
-- [ ] Chunking strategy (800 tokens, 100 token overlap)
+- [ ] Chunking strategy implementation:
+  - Chunk size: 800 tokens
+  - Overlap: 100 tokens
+  - Preserve section boundaries
 - [ ] Batch embedding generation (Celery task)
-- [ ] pgvector extension setup
-- [ ] Embedding storage and indexing
-- [ ] Re-embedding on book updates
+- [ ] pgvector extension setup in PostgreSQL
+- [ ] Embedding storage with metadata
+- [ ] HNSW index creation for vector similarity
+- [ ] Re-embedding on book updates (trigger)
+- [ ] Cost tracking (API token usage)
 
 **Database**
-- [x] `embeddings` table with vector(1536)
-- [ ] HNSW index for vector similarity search
-- [ ] Migration: Add pgvector extension
+- [ ] Run migration for embeddings table
+- [ ] Create vector similarity index (IVFFlat or HNSW)
+- [ ] Optimize for cosine similarity search
 
 **Processing**
 - [ ] Embed all existing books (~20 books → ~50K sections)
-- [ ] Validate embedding quality
-- [ ] Performance testing (retrieval latency)
+- [ ] Validate embedding quality (spot checks)
+- [ ] Monitor embedding job progress
+- [ ] Performance testing (retrieval latency < 200ms)
+
+**Cost Management**
+- [ ] Set OpenAI budget limits
+- [ ] Monitor daily API spend
+- [ ] Alert on budget overruns
 
 ### Week 4-6: RAG Retrieval System
+
 **Backend**
-- [ ] Vector similarity search implementation
-- [ ] Top-k retrieval with cosine similarity
-- [ ] Metadata filtering (by medical system)
-- [ ] Context window assembly
-- [ ] Prompt engineering for clinical queries
-- [ ] OpenAI GPT-4o integration
+- [ ] Vector similarity search implementation (pgvector)
+- [ ] Top-k retrieval with cosine similarity (k=5 default)
+- [ ] Metadata filtering:
+  - By medical system (doctor's specializations)
+  - By book (if specified)
+  - By date range (optional)
+- [ ] Context window assembly (max 4000 tokens)
+- [ ] Prompt engineering for clinical queries:
+  - System prompt with guardrails
+  - Few-shot examples
+  - Citation requirements
+- [ ] OpenAI GPT-4o-mini integration (primary)
+- [ ] OpenAI GPT-4o integration (complex queries fallback)
 - [ ] Response formatting with citations
+- [ ] Source section retrieval
 
 **API**
-- [ ] AI query endpoint (`POST /api/v1/ai/query`)
-- [ ] Streaming response support (SSE)
+- [ ] AI query endpoint: POST /api/v1/ai/query
+- [ ] Streaming response support (Server-Sent Events)
 - [ ] Usage tracking per tenant
-- [ ] Rate limiting (200 queries/month for Pro)
+- [ ] Rate limiting enforcement (200 queries/month for Pro)
+- [ ] Query history storage
+- [ ] Feedback collection endpoint
+
+**Optimization**
+- [ ] Cache common queries (Redis, 1-hour TTL)
+- [ ] Retrieval accuracy tuning (k value, similarity threshold)
+- [ ] Prompt optimization based on feedback
 
 ### Week 7-8: AI Assistant UI
+
 **Frontend**
-- [ ] Chat interface (message bubbles)
-- [ ] Quick prompt buttons (common queries)
-- [ ] Streaming response rendering
-- [ ] Source citations display (book, chapter, section)
-- [ ] Copy response button
-- [ ] Query history
-- [ ] Clinical disclaimer banner
+- [ ] AI Assistant page with chat interface:
+  - Message bubbles (user vs AI)
+  - Streaming response rendering (typewriter effect)
+  - Source citations display (expandable)
+  - Copy response button
+  - Query history sidebar
+  - Clear conversation button
+- [ ] Quick prompt buttons (common queries):
+  - "What are the indications for [medicine]?"
+  - "Explain the concept of [term] in Ayurveda"
+  - "Compare homeopathic vs herbal treatment for [condition]"
+- [ ] Clinical disclaimer banner (always visible)
+- [ ] Usage quota display (X/200 queries used this month)
+- [ ] Feedback buttons (thumbs up/down)
 
 **UX**
-- [ ] Professional medical tone
-- [ ] Clear citation format
-- [ ] Loading states
-- [ ] Error handling (quota exceeded, API errors)
+- [ ] Professional medical tone in UI
+- [ ] Clear citation format (Book Title, Chapter, Section)
+- [ ] Loading states (thinking animation)
+- [ ] Error handling:
+  - Quota exceeded (upgrade prompt)
+  - API errors (retry button)
+  - No results found
+  - Inappropriate query (filtered message)
+
+**Accessibility**
+- [ ] Screen reader support
+- [ ] Keyboard navigation
+- [ ] High contrast mode
 
 ### Week 9-10: Guardrails & Safety
+
 **System Prompts**
-- [ ] Explicit instruction: "Never make prescriptive medical decisions"
-- [ ] Grounding requirement: "Answer only from provided sources"
-- [ ] Citation requirement: "Always cite book title and section"
-- [ ] Uncertainty handling: "If answer not in sources, say so"
+- [ ] Explicit instructions:
+  - "Never make prescriptive medical decisions"
+  - "Answer only from provided source sections"
+  - "Always cite book title, chapter, and section"
+  - "If answer not in sources, clearly state: 'I could not find this information in the available texts'"
+  - "Maintain professional medical language"
+- [ ] Few-shot examples in prompt
+- [ ] Temperature: 0.3 (less creative, more factual)
 
 **Content Filtering**
-- [ ] Block inappropriate queries
-- [ ] Flag potentially harmful advice
+- [ ] Block inappropriate queries:
+  - Offensive language
+  - Non-medical topics
+  - Personal medical advice requests
+- [ ] Flag potentially harmful advice:
+  - Dangerous drug interactions
+  - Contraindicated treatments
+  - Medical emergencies
 - [ ] Human review queue for flagged responses
 
 **Testing**
 - [ ] Red teaming (try to get harmful responses)
-- [ ] Accuracy validation (compare responses with source texts)
-- [ ] Hallucination detection
-- [ ] Citation accuracy verification
+- [ ] Accuracy validation:
+  - 100 test queries with known answers
+  - Compare responses with source texts
+  - Target: 95%+ accuracy
+- [ ] Hallucination detection:
+  - Verify all citations exist
+  - Check for fabricated information
+- [ ] Citation accuracy verification (100% required)
+
+**Monitoring**
+- [ ] Track flagged queries
+- [ ] Monitor feedback ratings
+- [ ] Alert on negative feedback spikes
 
 ### Week 11-12: Analytics & Optimization
-**Analytics**
-- [ ] Query intent classification
-- [ ] Popular queries dashboard
-- [ ] Response quality metrics (user feedback)
-- [ ] Source coverage analysis (which books used most)
-- [ ] Token usage tracking (cost monitoring)
+
+**Analytics Dashboard (Admin)**
+- [ ] Query intent classification:
+  - Diagnosis inquiry
+  - Medicine information
+  - Treatment comparison
+  - Theoretical concept
+  - Other
+- [ ] Popular queries leaderboard
+- [ ] Response quality metrics:
+  - Average rating (thumbs up/down)
+  - Feedback comments
+  - Usage by doctor
+- [ ] Source coverage analysis:
+  - Which books used most
+  - Underutilized books
+  - Coverage gaps
+- [ ] Token usage tracking:
+  - Daily/monthly spend
+  - Cost per query
+  - Budget alerts
 
 **Optimization**
-- [ ] Caching for common queries
-- [ ] Embedding dimensionality reduction testing
-- [ ] Retrieval accuracy tuning (k value, similarity threshold)
-- [ ] Prompt optimization for better responses
-- [ ] Cost optimization (batch processing, caching)
+- [ ] Caching for common queries (Redis)
+- [ ] Embedding dimensionality reduction testing (768 vs 1536)
+- [ ] Retrieval accuracy tuning:
+  - Experiment with k values (3, 5, 10)
+  - Test similarity thresholds (0.7, 0.75, 0.8)
+- [ ] Prompt optimization:
+  - A/B test different prompts
+  - Measure response quality
+- [ ] Cost optimization:
+  - Use gpt-4o-mini by default (cheaper)
+  - Escalate to gpt-4o only for complex queries
+  - Aggressive caching
+
+**Documentation**
+- [ ] AI Assistant user guide
+- [ ] Best practices for clinical queries
+- [ ] Limitations and disclaimers
+- [ ] Admin guide for monitoring
 
 ### Phase 4 Deliverables
 
 ✅ **AI Assistant:**
 - Chat interface with streaming responses
-- Grounded in 20+ classical texts
-- Citations for every answer
+- Grounded in 20+ classical texts (50K+ sections)
+- Citations for every answer (book, chapter, section)
 - 200 queries/month for Pro plan
+- Query history and feedback
 
 ✅ **Embedding System:**
 - 50K+ embedded text sections
-- Sub-second vector retrieval
+- Sub-200ms vector retrieval
 - Filtered by doctor's specializations
 - Automated re-embedding on content updates
 
-✅ **Safety:**
+✅ **Safety & Guardrails:**
 - Clinical disclaimer on every response
 - Guardrails against prescriptive advice
+- Content filtering for inappropriate queries
 - Hallucination detection
-- Human review for flagged queries
+- Human review queue for flagged content
 
 ✅ **Analytics:**
 - Query usage tracking
 - Popular topics dashboard
-- Response quality metrics
-- Cost monitoring
-
----
-
-## Phase 5: Patient Portal `FUTURE`
-
-**Timeline:** 8 weeks (Q3 2027)  
-**Goal:** Give patients access to their prescriptions, visit history, and educational content
-
-### Scope
-**Patient Features:**
-- [ ] Patient login (email/phone OTP)
-- [ ] View prescription history with PDFs
-- [ ] View visit history and notes
-- [ ] View upcoming appointments
-- [ ] Educational content library
-- [ ] Appointment booking (request)
-- [ ] Feedback and ratings
-
-**Doctor Features:**
-- [ ] Patient portal toggle (enable/disable)
-- [ ] Control what patients can see
-- [ ] Educational content curation
-- [ ] Appointment approval workflow
-
-**Technical:**
-- [ ] Patient user type in database
-- [ ] OTP-based authentication (SMS/Email)
-- [ ] Patient-scoped data access
-- [ ] Responsive mobile-first design
-- [ ] PWA (installable on phone)
+- Response quality metrics (feedback ratings)
+- Token usage and cost monitoring
+- Source coverage analysis
 
 ---
 
 ## Infrastructure Evolution
 
-### Phase 1: Single VPS
-**Specs:** 4 vCPU, 8 GB RAM, 80 GB SSD  
-**Cost:** $25/month (Hetzner)  
+### Phase 0-1: Single VPS
+**Specs:** 4 vCPU, 8 GB RAM, 100 GB SSD  
+**Cost:** $25-40/month (Hetzner, DigitalOcean, Contabo)  
 **Capacity:** 50-200 concurrent users
 
-**Services:**
+**Services (Docker Compose):**
 - Caddy (reverse proxy + auto HTTPS)
 - FastAPI (4 Uvicorn workers)
-- Celery worker (1 instance)
-- PostgreSQL 16
-- Redis
+- Celery workers (3 queues: pdf, email, ai)
+- PostgreSQL 16 + pgvector
+- Redis (cache + broker + rate limiting)
 - MinIO (local S3)
+- Prometheus + Grafana (monitoring)
 
 ### Phase 2-3: Managed Services
-**Database:** Migrate to managed PostgreSQL (Neon, Supabase, or DigitalOcean Managed DB)  
-**Cache:** Migrate to managed Redis (Upstash, Redis Cloud)  
-**Storage:** Migrate to Cloudflare R2 or AWS S3  
-**Cost:** ~$80/month  
-**Capacity:** 500-1000 concurrent users
+**Migration:**
+- PostgreSQL → Neon or DigitalOcean Managed PostgreSQL
+- Redis → Upstash or Redis Cloud
+- MinIO → Cloudflare R2 or AWS S3
+
+**Cost:** ~$150-200/month  
+**Capacity:** 500-1,000 concurrent users
+
+**Benefits:**
+- Automated backups
+- Point-in-time recovery
+- Better availability
+- Less operational overhead
 
 ### Phase 4: Horizontal Scaling
-**API:** Add 2nd API container behind load balancer  
-**Workers:** 3 Celery workers (PDF, Email, Embeddings)  
-**Database:** Read replicas for analytics queries  
-**CDN:** Cloudflare for static assets  
-**Cost:** ~$200/month  
-**Capacity:** 2000-5000 concurrent users
+**Additions:**
+- 2nd API container (behind Caddy load balancer)
+- 3 Celery workers (by task type: pdf, email, ai)
+- PostgreSQL read replicas (for analytics)
+- CDN (Cloudflare for static assets)
+- Query caching layer (Redis)
 
-### Phase 5: Multi-Region (Future)
-**Regions:** Bangladesh (primary), India (secondary)  
-**Database:** Multi-region replication  
-**CDN:** Edge caching globally  
-**Cost:** $500+/month  
+**Cost:** ~$400-500/month  
+**Capacity:** 2,000-5,000 concurrent users
+
+### Future: Multi-Region Expansion
+**Regions:**
+- Bangladesh (primary)
+- India (secondary)
+
+**Architecture:**
+- Multi-region database replication
+- CDN with edge caching globally
+- Regional API deployments
+- Kubernetes orchestration (GKE, EKS, or DOKS)
+
+**Cost:** $1,000+/month  
 **Capacity:** 10,000+ concurrent users
 
 ---
 
 ## Team Scaling
 
-### Phase 1 (MVP)
+### Phase 0-1 (MVP)
 **Team:** 2-3 people
-- 1 Full-stack developer (Python + React)
-- 1 Designer/Frontend developer
-- 1 Part-time medical advisor (practitioner)
+- 1 Full-stack developer (Python + React) — **Lead**
+- 1 Frontend developer (React/Next.js + Design)
+- 1 Part-time medical advisor (alternative medicine practitioner)
 
-### Phase 2-3
+**Estimated cost:** $6,000-8,000/month
+
+### Phase 2-3 (Knowledge Base + Library)
 **Team:** 4-5 people
 - 2 Backend developers (Python/FastAPI)
 - 1 Frontend developer (React/Next.js)
-- 1 Designer (UI/UX)
-- 1 Medical content curator (full-time)
-- 1 Part-time DevOps
+- 1 UI/UX Designer
+- 1 Medical content curator (full-time practitioner)
+- 1 Part-time DevOps engineer
 
-### Phase 4
+**Estimated cost:** $12,000-15,000/month
+
+### Phase 4 (AI/RAG)
 **Team:** 6-8 people
 - 2 Backend developers
 - 2 Frontend developers
-- 1 ML/AI engineer (RAG optimization)
-- 1 Designer
-- 1 Medical content team (2 people)
-- 1 DevOps engineer
+- 1 ML/AI engineer (RAG optimization, prompt engineering)
+- 1 UI/UX Designer
+- 1 Medical content team (2 practitioners for validation)
+- 1 DevOps engineer (full-time)
+- 1 Part-time QA engineer
 
-### Phase 5+
+**Estimated cost:** $18,000-22,000/month
+
+### Future: Enterprise Scale
 **Team:** 10-15 people
 - 3 Backend developers
 - 3 Frontend developers
 - 1 ML engineer
 - 2 Designers (UI/UX, Product)
-- 1 QA engineer
+- 1 QA engineer (full-time)
 - 2 Medical content team
 - 1 DevOps engineer
 - 1 Product manager
 - 1 Customer success manager
+- 1 Marketing/Growth lead
+
+**Estimated cost:** $30,000-40,000/month
 
 ---
 
@@ -706,196 +1120,354 @@ Build the most comprehensive practice management system for alternative medicine
 
 ### Technical Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Database performance degradation with growth | High | Implement read replicas, query optimization, caching strategy |
-| EPUB parsing failures | Medium | Robust error handling, manual fallback, partner with publishers |
-| AI hallucinations | High | Strict grounding, citation requirements, human review, clear disclaimers |
-| Integration API downtime (bKash, SMS) | Medium | Fallback providers, queue retry logic, status monitoring |
-| Data loss | Critical | Daily automated backups, point-in-time recovery, quarterly restore testing |
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Database performance degradation with growth | High | Medium | Implement read replicas, query optimization, connection pooling, caching strategy |
+| EPUB parsing failures (malformed files) | Medium | Medium | Robust error handling, manual fallback, publisher partnerships, format validation |
+| AI hallucinations (fabricated medical info) | Critical | Medium | Strict grounding, mandatory citations, human review queue, clear disclaimers |
+| Integration API downtime (bKash, SMS) | Medium | High | Multiple providers, fallback mechanisms, queue retry logic, status monitoring |
+| Data loss or corruption | Critical | Low | Daily automated backups, point-in-time recovery, quarterly restore testing, replication |
+| pgvector performance issues (slow queries) | Medium | Medium | HNSW indexing, query optimization, caching, dimensionality reduction |
+| OpenAI API rate limits or cost overruns | High | Medium | Budget alerts, usage caps, caching, fallback to cheaper models (gpt-4o-mini) |
+| Multi-tenant data isolation breach | Critical | Low | Rigorous testing, code reviews, automated tests, security audits |
 
 ### Business Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Low doctor adoption | Critical | Pilot program with 10 doctors, iterate on feedback, strong onboarding |
-| Competition from existing EMR systems | High | Focus on alternative medicine niche, AI differentiator, Bangladesh-first approach |
-| Payment gateway issues in Bangladesh | Medium | Multiple gateway options (bKash, Nagad, Rocket), cash fallback |
-| Content licensing for books | Medium | Partner with publishers early, offer revenue share, focus on public domain initially |
-| Regulatory compliance (medical data) | High | HIPAA-like standards, encryption at rest/transit, regular audits |
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Low doctor adoption | Critical | Medium | Pilot program with 10 doctors, rapid iteration on feedback, strong onboarding, free trial |
+| Competition from existing EMR systems | High | Medium | Focus on alternative medicine niche, AI differentiator, Bangladesh-first approach, superior UX |
+| Payment gateway issues in Bangladesh | Medium | High | SSLCommerz aggregator (handles bKash/Nagad/Rocket), Stripe backup, cash fallback, clear invoicing |
+| Content licensing for books | Medium | Medium | Partner with publishers early, offer revenue share, focus on public domain initially |
+| Regulatory compliance (medical data) | High | Low | HIPAA-like standards, encryption at rest/transit, regular audits, legal consultation |
+| Pricing too high for Bangladesh market | Medium | Medium | Free tier for validation, flexible pricing, annual discounts, local payment methods |
 
 ### Operational Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Key person dependency | High | Documentation, code reviews, knowledge sharing sessions |
-| Scope creep | Medium | Strict phase-based development, feature freeze windows |
-| Budget overrun | Medium | Conservative estimates, 20% buffer, monthly budget reviews |
+| Risk | Impact | Probability | Mitigation |
+|------|--------|-------------|------------|
+| Key person dependency | High | Medium | Documentation, code reviews, knowledge sharing sessions, onboarding processes |
+| Scope creep delaying MVP | Medium | High | Strict phase-based development, feature freeze windows, ruthless prioritization |
+| Budget overrun | Medium | Medium | Conservative estimates, 20% contingency buffer, monthly budget reviews |
+| Burnout from aggressive timeline | Medium | Medium | Realistic sprint planning, code review process, test coverage requirements, work-life balance |
 
 ---
 
 ## Success Metrics
 
-### Phase 1 (MVP)
+### Phase 1 (MVP) — August 2026
 - [ ] 10 pilot doctors onboarded and actively using daily
 - [ ] 500+ patients managed in system
 - [ ] 200+ prescriptions generated
-- [ ] 95%+ uptime
-- [ ] <1s average page load time
+- [ ] 50+ payments recorded
+- [ ] 95%+ uptime (monitored via Uptime Robot)
+- [ ] <1s average page load time (P50)
+- [ ] <3s P95 page load time
 - [ ] 80%+ user satisfaction (NPS > 40)
+- [ ] Zero critical security incidents
+- [ ] Multi-tenant isolation tests: 100% pass rate
 
-### Phase 2 (Knowledge Base)
+### Phase 2 (Knowledge Base) — October 2026
 - [ ] 1,000+ medicines in database
+- [ ] 1,000+ symptom mappings
 - [ ] Symptom search used by 80%+ of active doctors
 - [ ] 30%+ of prescriptions use symptom search workflow
 - [ ] Search accuracy > 85% (validated by practitioners)
+- [ ] Medicine search latency < 100ms (P95)
 
-### Phase 3 (Library)
+### Phase 3 (Library) — December 2026
 - [ ] 20+ books parsed and accessible
+- [ ] 50,000+ sections embedded
 - [ ] 50%+ of doctors use library feature monthly
 - [ ] Average reading session > 10 minutes
 - [ ] 100+ bookmarks created
+- [ ] 50+ highlights created
+- [ ] Zero parsing failures for curated books
 
-### Phase 4 (AI)
+### Phase 4 (AI) — March 2027
 - [ ] 80%+ of Pro plan doctors use AI assistant
 - [ ] Average 15 queries per doctor per month
 - [ ] Response citation accuracy > 95%
 - [ ] Zero prescriptive medical advice violations
+- [ ] User feedback rating > 4.0/5.0
+- [ ] AI query latency < 3s (streaming start)
+- [ ] Monthly OpenAI cost < $300
 
-### Overall (End of Year 1)
-- [ ] 50+ paying clinics (target met)
-- [ ] ৳2.5L+ MRR (Monthly Recurring Revenue)
-- [ ] 70% retention rate (doctors stay subscribed)
+### Overall (End of Phase 4) — March 2027
+- [ ] 50+ paying clinics (target met) ✅
+- [ ] ৳2.5L+ MRR (Monthly Recurring Revenue) — ~$2,500
+- [ ] 70%+ retention rate (doctors stay subscribed)
 - [ ] 40%+ upgrade rate (Free → Plus or Plus → Pro)
 - [ ] <5% churn rate monthly
+- [ ] 100+ concurrent users supported
+- [ ] 99%+ uptime
+- [ ] <10 critical bugs in production
 
 ---
 
 ## Go-to-Market Strategy
 
-### Pre-Launch (Weeks before Phase 1 launch)
-- [ ] Create marketing website (landing page)
-- [ ] Publish 5 blog posts on alternative medicine digitization
-- [ ] Partner with 3 alternative medicine associations in Bangladesh
-- [ ] Create demo video (3 minutes)
+### Pre-Launch (May-July 2026)
+- [ ] Create marketing website (landing page with demo video)
+- [ ] Publish 5 blog posts:
+  - Alternative medicine digitization
+  - Benefits of practice management software
+  - Doctor success stories (case studies)
+  - AI in alternative medicine
+  - Security and compliance
+- [ ] Partner with 3 alternative medicine associations in Bangladesh:
+  - Bangladesh Homoeopathic Board
+  - Bangladesh Ayurveda Medical Association
+  - National Unani Medical Association of Bangladesh
+- [ ] Create demo video (3-5 minutes walkthrough)
 - [ ] Social media presence (Facebook, LinkedIn)
+- [ ] Collect email list (target: 500+ practitioners)
 
-### Launch (Phase 1)
+### Launch (August 2026 - Phase 1)
 - [ ] Press release to healthcare tech media
 - [ ] Product Hunt launch
-- [ ] Free trial for first 50 doctors (90 days)
+- [ ] Free trial for first 50 doctors (14 days, no credit card)
 - [ ] Webinar series: "Digitizing Your Alternative Medicine Practice"
-- [ ] Email campaign to 500+ practitioners (purchased list)
+- [ ] Email campaign to 500+ practitioners
+- [ ] Facebook/Instagram ads targeting Dhaka doctors
+- [ ] Referral program setup (1 month free for referrer and referee)
 
 ### Growth (Phase 2-3)
-- [ ] Referral program (1 month free for both referrer and referee)
 - [ ] Content marketing (2 blog posts per week)
-- [ ] SEO optimization (rank for "homeopathy software bangladesh")
-- [ ] Facebook ads targeting doctors in Dhaka
-- [ ] Partnership with medical colleges
+- [ ] SEO optimization:
+  - "homeopathy software bangladesh"
+  - "ayurveda practice management"
+  - "clinic management software dhaka"
+- [ ] Facebook ads targeting doctors in Dhaka, Chittagong, Sylhet
+- [ ] Partnership with medical colleges (guest lectures)
+- [ ] Case studies and testimonials
+- [ ] YouTube channel (tutorials, tips)
 
 ### Scale (Phase 4+)
-- [ ] Expand to India (localization)
+- [ ] Expand to India (localization for Rupee, Hindi/regional languages)
 - [ ] Partnerships with pharmacy chains
-- [ ] White-label offering for large clinics
+- [ ] White-label offering for large clinics (10+ doctors)
 - [ ] Mobile app (iOS + Android)
 - [ ] Annual conference for users
+- [ ] Affiliate program for influencers
 
 ---
 
 ## Technology Roadmap
 
-### Immediate (Phase 1-2)
-- Python 3.12, FastAPI, SQLAlchemy 2.0
-- PostgreSQL 16, Redis, MinIO
-- Next.js 14, React Query, Tailwind CSS
-- Docker Compose deployment
+### Current Stack (Phase 0-1)
+**Backend:**
+- Python 3.12, FastAPI, SQLAlchemy 2.0 async
+- PostgreSQL 16 + pgvector, Redis
+- Celery for background tasks
+- JWT auth + 2FA (pyotp)
+- Sentry, Grafana, Prometheus (monitoring)
+- structlog (structured logging)
+- slowapi (rate limiting)
 
-### Near-term (Phase 3-4)
-- Add pgvector for embeddings
-- LangChain for RAG pipeline
-- OpenAI API (embeddings + GPT-4o)
-- Kubernetes for orchestration (if scaling needed)
+**Frontend:**
+- Next.js 14 (App Router), React Query
+- Tailwind CSS + shadcn/ui
+- TypeScript strict mode
 
-### Future (Phase 5+)
-- GraphQL API (in addition to REST)
-- React Native mobile app
-- Real-time collaboration (WebSockets)
-- Advanced analytics (BigQuery or ClickHouse)
-- Machine learning for prescription recommendations
-- Blockchain for prescription verification (explore)
+**Infrastructure:**
+- Docker Compose
+- MinIO (S3-compatible)
+- Caddy (reverse proxy + auto-HTTPS)
+
+**Integrations:**
+- SSLCommerz (Bangladesh payments)
+- Stripe (international payments)
+- Twilio (SMS)
+- SendGrid (email)
+
+### Near-term (Phase 2-4)
+- [ ] Add pgvector for embeddings (Phase 3-4)
+- [ ] LangChain for RAG pipeline (Phase 4)
+- [ ] OpenAI API (embeddings + GPT-4o-mini/gpt-4o) (Phase 4)
+- [ ] Migrate to managed PostgreSQL (Phase 2-3)
+- [ ] Migrate to Cloudflare R2 (Phase 3-4)
+- [ ] Add CDN (Cloudflare) (Phase 3)
+- [ ] WebSockets for real-time notifications (Phase 4)
+
+### Future Enhancements
+- [ ] GraphQL API (in addition to REST)
+- [ ] React Native mobile app (iOS + Android)
+- [ ] Real-time collaboration (WebSockets, operational transforms)
+- [ ] Advanced analytics (BigQuery or ClickHouse)
+- [ ] Machine learning for prescription recommendations
+- [ ] Keycloak for enterprise SSO (if needed)
+- [ ] Kubernetes for orchestration (if scaling to 10,000+ users)
 
 ---
 
 ## Pricing Evolution
 
-### Phase 1 Launch Pricing
-- **Free:** 30 patients, 10 prescriptions/month
-- **Plus:** ৳799/month (500 patients, unlimited prescriptions, PDF export)
-- **Pro:** ৳1,799/month (unlimited patients, AI assistant, 1 receptionist seat)
+### Phase 1 Launch Pricing (August 2026)
+- **Free:** 30 patients, 10 prescriptions/month, email support
+- **Plus:** ৳799/month ($8/month)
+  - 500 patients
+  - Unlimited prescriptions
+  - PDF export
+  - Invoice generation
+  - Email + chat support
+- **Pro:** ৳1,799/month ($18/month)
+  - Unlimited patients
+  - AI assistant (200 queries/month)
+  - 1 receptionist seat
+  - Priority support
+  - Custom branding
 
-### Phase 2-3 Pricing (Knowledge Base + Library)
+**14-day free trial** for all paid plans (no credit card required)  
+**20% off** when billed annually
+
+### Phase 2-3 Pricing (October 2026)
 - **Free:** Unchanged
-- **Plus:** ৳899/month (+100, adds medicine DB + 5 books)
-- **Pro:** ৳1,999/month (+200, adds unlimited books + AI assistant)
+- **Plus:** ৳899/month (+৳100)
+  - Adds: Medicine database + symptom search + 5 books
+- **Pro:** ৳1,999/month (+৳200)
+  - Adds: Unlimited books + book upload + AI assistant
 
-### Phase 4+ Pricing (Full Platform)
+### Phase 4+ Pricing (March 2027)
 - **Free:** Unchanged (acquisition tool)
 - **Plus:** ৳999/month
 - **Pro:** ৳2,299/month
-- **Enterprise:** Custom (10+ doctors, dedicated support, SLA)
+- **Enterprise:** Custom pricing
+  - 10+ doctor accounts
+  - Dedicated support
+  - Custom SLA
+  - Onboarding assistance
+  - Custom integrations
 
 ### Annual Discount
 - 20% off all plans when billed annually
+- Example: Pro ৳2,299/month → ৳1,839/month annual
 
 ---
 
 ## Dependencies & Blockers
 
 ### Critical Dependencies
-- ✅ UI mockups completed (Admin + Doctor views)
-- ✅ Database schema designed (24 tables)
-- ⏳ Beta doctor recruitment (target: 10 doctors)
-- ⏳ bKash merchant account approval (2-3 weeks)
-- ⏳ Content licensing agreements (for books)
-- ⏳ OpenAI API key and budget allocation
+- [x] UI mockups completed (Admin + Doctor views) ✅
+- [x] Database schema designed (29 tables) ✅
+- [x] Technology stack finalized ✅
+- [x] Environment variables documented ✅
+- [x] Requirements.txt created ✅
+- [ ] Beta doctor recruitment (target: 10 doctors) — **PRIORITY**
+- [ ] SSLCommerz merchant account approval (2-3 weeks) — **IN PROGRESS**
+- [ ] Content licensing agreements (for books) — **Phase 3**
+- [ ] OpenAI API key and budget allocation ($500/month) — **Phase 4**
+- [ ] VPS provisioning and setup — **Week 1**
 
 ### Potential Blockers
-- Medical content validation (need practitioner partnerships)
-- EPUB book acquisition (public domain vs licensed)
-- Payment gateway integration delays
-- AI model API rate limits or cost overruns
-- Regulatory compliance requirements (if any)
+- **Medical content validation:** Need practitioner partnerships (target: 5 advisors)
+- **EPUB book acquisition:** Public domain vs licensed (legal review required)
+- **Payment gateway integration delays:** SSLCommerz approval can take 2-4 weeks
+- **AI model API rate limits:** OpenAI may throttle during high usage
+- **Regulatory compliance:** Need legal consultation for medical data handling
+- **Team hiring:** Finding experienced FastAPI + React developers in Bangladesh
+
+### Mitigation Strategies
+- Start beta recruitment immediately (before Phase 1 begins)
+- Apply for SSLCommerz merchant account now (parallel track)
+- Begin book partnership discussions early (Phase 0)
+- Set OpenAI budget alerts to avoid overruns
+- Consult legal expert on medical data compliance (Week 1)
+- Consider remote hiring if local talent scarce
 
 ---
 
 ## Conclusion
 
-This roadmap represents a **12-month journey** from MVP to a comprehensive AI-powered alternative medicine practice management platform. The phased approach allows us to:
+This roadmap represents a **44-week journey** (~11 months) from planning to a comprehensive AI-powered alternative medicine practice management platform. The phased approach allows us to:
 
-1. **Validate early** with a working MVP (Phase 1)
-2. **Add value incrementally** (Phases 2-4)
+1. **Validate early** with a working MVP (Phase 1) — 10 pilot doctors
+2. **Add value incrementally** (Phases 2-4) — medicine DB, library, AI assistant
 3. **Scale sustainably** with proven product-market fit
 4. **Maintain focus** through clear milestones and deliverables
 
-**Next Steps:**
-1. Complete Phase 1 backend foundation (Weeks 1-2)
-2. Recruit 10 beta doctors for pilot program
-3. Begin daily standups and weekly sprint planning
-4. Set up monitoring and alerting
-5. Launch Phase 1 MVP by July 1, 2026
+### Current Status (April 21, 2026)
+✅ **Phase 0 Complete:**
+- System design finalized (29 tables, REST API, modular monolith)
+- UI mockups complete and reviewed
+- Technology stack documented
+- Production checklist created
+- Cost estimates validated
+- Ready to begin implementation
 
-**Success requires:**
-- Strong execution on technical milestones
-- Close collaboration with medical practitioners
-- Rapid iteration based on user feedback
-- Disciplined scope management
-- Sustainable team culture
+### Next Immediate Steps (Week 1-2)
+1. [ ] Provision VPS (Hetzner/DigitalOcean)
+2. [ ] Set up development environment (Docker Compose)
+3. [ ] Initialize FastAPI project structure
+4. [ ] Create initial database migration (29 tables)
+5. [ ] Begin beta doctor recruitment
+6. [ ] Apply for SSLCommerz merchant account
+7. [ ] Set up monitoring (Sentry, Grafana)
+8. [ ] Daily standups and sprint planning
+
+### Success Factors
+- **Strong execution** on technical milestones (test coverage, security)
+- **Close collaboration** with medical practitioners (validation)
+- **Rapid iteration** based on user feedback (weekly demos)
+- **Disciplined scope management** (no feature creep)
+- **Sustainable team culture** (realistic sprint planning, work-life balance)
+
+### Key Risks to Monitor
+1. Multi-tenant data isolation (test rigorously!)
+2. AI hallucinations (strict guardrails + citations)
+3. Payment gateway integration delays (start SSLCommerz process now)
+4. Beta doctor recruitment (target: 10, minimum: 5)
+5. Budget overruns (monthly reviews, 20% buffer)
 
 ---
 
 **Document Owner:** Product Team  
-**Last Review:** April 16, 2026  
-**Next Review:** June 1, 2026 (Pre-launch)
+**Last Updated:** April 21, 2026  
+**Next Review:** May 1, 2026 (Sprint Planning)  
+**Status:** Planning complete, ready for Phase 1 implementation
 
 **Questions or feedback?** Contact the product team or open an issue in the repository.
+
+---
+
+## Appendix: Quick Reference
+
+### Phase Timeline Summary
+```
+Phase 0: Planning & Design        ✅ Complete (April 7-20)
+Phase 1: Core Clinic MVP          📋 Planned (May-July, 14 weeks)
+Phase 2: Knowledge Base           📋 Planned (Aug-Sep, 8 weeks)
+Phase 3: Book Library             📋 Planned (Oct-Dec, 10 weeks)
+Phase 4: AI/RAG                   📋 Planned (Jan-Mar, 12 weeks)
+```
+
+### Budget Summary (Year 1)
+```
+Infrastructure:  $150-170/month × 12 = $1,800-2,040/year
+Team:            $6K-8K/month × 12 = $72K-96K/year
+Total:           ~$75K-100K/year
+
+Revenue Target (50 clinics @ ৳1,200 avg):
+৳60,000/month = ৳7.2L/year = $7,200/year
+
+Note: Break-even requires ~800-1,000 clinics at current pricing
+Consider: Enterprise tier, consulting services, white-label offerings
+```
+
+### Key Metrics Dashboard (Track Weekly)
+- [ ] Active paying clinics
+- [ ] MRR (Monthly Recurring Revenue)
+- [ ] Churn rate (%)
+- [ ] NPS (Net Promoter Score)
+- [ ] Uptime (%)
+- [ ] P95 API latency
+- [ ] Test coverage (%)
+- [ ] Open critical bugs
+
+### Contact Information
+- **Project Lead:** [Name]
+- **Email:** engineering@altcare.health
+- **GitHub:** github.com/altcare/altcare
+- **Slack:** altcare.slack.com (team workspace)
+- **Sentry:** sentry.io/altcare (errors)
+- **Status Page:** status.altcare.health (uptime)

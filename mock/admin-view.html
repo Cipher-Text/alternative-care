@@ -994,6 +994,7 @@ textarea.input {
                 <td>2h ago</td>
                 <td><span class="badge pending">Pending</span></td>
                 <td>
+                  <button class="btn btn-ghost btn-sm" onclick="viewDoctorDetails()" style="margin-right:6px">View Details</button>
                   <button class="btn btn-success btn-sm" onclick="approve(this)">Approve</button>
                 </td>
               </tr>
@@ -1706,6 +1707,120 @@ textarea.input {
   </div>
 </div>
 
+<!-- Modal: Doctor Details -->
+<div class="modal-overlay" id="doctorDetailsModal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <h2 class="modal-title">Doctor Registration Details</h2>
+      <button class="modal-close" onclick="closeModal('doctorDetailsModal')">×</button>
+    </div>
+
+    <!-- Personal Info -->
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:600;color:var(--color-text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Personal Information</div>
+      <div style="background:var(--color-background-secondary);border-radius:8px;padding:16px">
+        <div style="display:grid;grid-template-columns:140px 1fr;gap:12px;font-size:13px">
+          <div style="color:var(--color-text-tertiary)">Full Name:</div>
+          <div style="font-weight:500">Dr. Rahman Ahmed</div>
+          <div style="color:var(--color-text-tertiary)">Email:</div>
+          <div>rahman@example.com</div>
+          <div style="color:var(--color-text-tertiary)">Phone:</div>
+          <div>+880 171-234-5678</div>
+          <div style="color:var(--color-text-tertiary)">License Number:</div>
+          <div style="font-family:monospace">BM-123456</div>
+          <div style="color:var(--color-text-tertiary)">Specializations:</div>
+          <div>
+            <span class="badge" style="background:var(--g1);color:var(--g6);margin-right:4px">Homeopathy</span>
+            <span class="badge" style="background:var(--a1);color:var(--a5)">Ayurveda</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Academic Degrees -->
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:600;color:var(--color-text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Academic Degrees</div>
+      <div style="background:var(--color-background-secondary);border-radius:8px;padding:14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+          <div>
+            <div style="font-weight:500;font-size:13px;margin-bottom:3px">BHMS (Bachelor of Homeopathic Medicine & Surgery)</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">Field: Homeopathic Medicine</div>
+          </div>
+          <span class="badge green" style="font-size:10px">✓ Verified</span>
+        </div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px">National Institute of Homoeopathy, Kolkata</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary)">2015 - 2019 • Certificate: BDH-2019-0042</div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:8px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+          <div>
+            <div style="font-weight:500;font-size:13px;margin-bottom:3px">BAMS (Bachelor of Ayurvedic Medicine & Surgery)</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">Field: Ayurvedic Medicine</div>
+          </div>
+          <span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:10px">Pending Verification</span>
+        </div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px">Dhaka University of Ayurveda</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary)">2016 - 2020 • Certificate: DUA-2020-234</div>
+      </div>
+    </div>
+
+    <!-- Training & Certifications -->
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:600;color:var(--color-text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Training & Certifications</div>
+      <div style="background:var(--color-background-secondary);border-radius:8px;padding:14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+          <div>
+            <div style="font-weight:500;font-size:13px;margin-bottom:3px">Advanced Constitutional Prescribing</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">Type: Certificate Course</div>
+          </div>
+          <span class="badge green" style="font-size:10px">✓ Verified</span>
+        </div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px">International Academy of Classical Homeopathy</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">Jan 2023 - Mar 2023 • 120 hours • Online</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary)">Skills: Constitutional analysis, Miasmatic prescribing, Case taking</div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:8px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+          <div>
+            <div style="font-weight:500;font-size:13px;margin-bottom:3px">Panchakarma Therapy Workshop</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">Type: Workshop</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:2px">Bangladesh Ayurvedic Medical Association</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">Sep 2022 • 16 hours • Dhaka, Bangladesh</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary)">Skills: Panchakarma techniques, Detoxification protocols</div>
+      </div>
+    </div>
+
+    <!-- Clinic Info -->
+    <div style="margin-bottom:24px">
+      <div style="font-size:13px;font-weight:600;color:var(--color-text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">Clinic Information</div>
+      <div style="background:var(--color-background-secondary);border-radius:8px;padding:16px">
+        <div style="display:grid;grid-template-columns:140px 1fr;gap:12px;font-size:13px">
+          <div style="color:var(--color-text-tertiary)">Clinic Name:</div>
+          <div>AltCare Wellness Clinic</div>
+          <div style="color:var(--color-text-tertiary)">Location:</div>
+          <div>
+            <div>Division: Dhaka (ঢাকা)</div>
+            <div style="margin-top:3px">District: Dhaka (ঢাকা)</div>
+            <div style="margin-top:3px">Upazila: Dhanmondi (ধানমন্ডি)</div>
+          </div>
+          <div style="color:var(--color-text-tertiary)">Address:</div>
+          <div>House 42, Road 12, Dhanmondi</div>
+          <div style="color:var(--color-text-tertiary)">Registered:</div>
+          <div>2 hours ago</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('doctorDetailsModal')">Close</button>
+      <button class="btn btn-danger" style="background:#EF4444;border-color:#EF4444">Reject</button>
+      <button class="btn btn-success">Approve Registration</button>
+    </div>
+  </div>
+</div>
+
 <script>
 function nav(pageId, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1739,6 +1854,10 @@ function approve(btn) {
   btn.disabled = true;
   btn.style.opacity = '0.6';
   btn.style.cursor = 'not-allowed';
+}
+
+function viewDoctorDetails() {
+  openModal('doctorDetailsModal');
 }
 
 // Close modal on overlay click
