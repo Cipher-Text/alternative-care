@@ -77,6 +77,10 @@ stripe==9.1.0
 sendgrid==6.11.0
 twilio==9.0.4
 
+# Internationalization
+Babel==2.14.0
+python-gettext==5.0
+
 # Utilities
 python-dotenv==1.0.1
 python-dateutil==2.9.0

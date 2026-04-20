@@ -104,6 +104,7 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Build JWT authentication (passlib + python-jose)
 - [ ] Add 2FA support with pyotp and QR code generation
 - [ ] Create multi-tenant middleware with ContextVar
+- [ ] Configure i18n with Babel (English/Bengali support)
 - [ ] Configure structlog for structured JSON logging
 - [ ] Integrate Sentry for error tracking
 - [ ] Set up slowapi rate limiting with Redis backend
@@ -111,9 +112,10 @@ Build the most comprehensive practice management system for alternative medicine
 
 **Database Setup**
 - [ ] PostgreSQL 16 installation with pgvector extension
-- [ ] Create initial migration (29 tables)
-- [ ] Populate geographic data (divisions, districts, upazilas)
+- [ ] Create initial migration (30 tables including translations)
+- [ ] Populate geographic data (divisions, districts, upazilas with Bengali names)
 - [ ] Seed integration providers (SSLCommerz, Twilio, SendGrid, etc.)
+- [ ] Seed translation keys for all UI strings (English/Bengali)
 - [ ] Configure connection pooling (20 connections, 10 overflow)
 - [ ] Enable pg_stat_statements for query monitoring
 - [ ] Set up automated daily backups
@@ -121,9 +123,11 @@ Build the most comprehensive practice management system for alternative medicine
 **Frontend Setup**
 - [ ] Initialize Next.js 14 with App Router
 - [ ] Install Tailwind CSS + shadcn/ui components
+- [ ] Configure next-intl for i18n (English/Bengali)
+- [ ] Create language switcher component (en/bn toggle)
 - [ ] Configure React Query for server state
-- [ ] Set up Axios instance with JWT interceptors
-- [ ] Create layout shell (sidebar, topbar, content area)
+- [ ] Set up Axios instance with JWT interceptors (include Accept-Language header)
+- [ ] Create layout shell (sidebar, topbar with language switcher, content area)
 - [ ] Implement auth context provider
 - [ ] Add Sentry browser SDK
 
@@ -160,17 +164,18 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Session management
 
 **Frontend**
-- [ ] Login page with form validation (Zod schema)
+- [ ] Login page with form validation (Zod schema) — bilingual labels
 - [ ] Registration page with:
-  - Multi-specialization selection (1-4 systems)
+  - Multi-specialization selection (1-4 systems) — Bengali labels
   - License number input
   - Clinic information form
-- [ ] Forgot password flow
-- [ ] 2FA setup page (QR code display)
+  - Language preference selection (English/Bengali)
+- [ ] Forgot password flow (bilingual emails)
+- [ ] 2FA setup page (QR code display with Bengali instructions)
 - [ ] 2FA verification page
 - [ ] Protected route wrapper component
-- [ ] User context provider (auth state)
-- [ ] Profile settings page with tabs
+- [ ] User context provider (auth state + language preference)
+- [ ] Profile settings page with tabs (including language preference)
 
 **Database**
 - [ ] Run migration for auth tables (tenants, users)
@@ -473,8 +478,9 @@ Build the most comprehensive practice management system for alternative medicine
 - Security features (2FA, rate limiting, OWASP headers)
 
 ✅ **Technical Foundation:**
-- Multi-tenant architecture (row-level isolation with 29 tables)
+- Multi-tenant architecture (row-level isolation with 30 tables)
 - Role-based access control (Admin, Operator, Doctor, Receptionist)
+- Bilingual support (English/Bengali) with language switching
 - Async backend with Celery for background jobs
 - Responsive frontend with React/Next.js
 - Docker Compose for containerized deployment
@@ -501,20 +507,21 @@ Build the most comprehensive practice management system for alternative medicine
 ### Week 1-2: Medicine Database Foundation
 
 **Backend**
-- [ ] Global medicine CRUD endpoints (admin only)
+- [ ] Global medicine CRUD endpoints (admin only) with bilingual fields
 - [ ] Tenant-specific medicine additions
 - [ ] Medicine search with filters (system, category, potency)
-- [ ] Full-text search optimization (tsvector + GIN indexes)
+- [ ] Language-aware search (search in Bengali or English)
+- [ ] Full-text search optimization (tsvector + GIN indexes for both languages)
 - [ ] Specialization-based filtering
-- [ ] Bulk medicine import (CSV/Excel parser)
+- [ ] Bulk medicine import (CSV/Excel parser with Bengali support)
 
 **Frontend**
-- [ ] Medicine database page with search/filter
-- [ ] Medicine detail view (modal or page)
-- [ ] Add/Edit medicine forms (admin)
+- [ ] Medicine database page with search/filter (bilingual)
+- [ ] Medicine detail view showing English + Bengali names
+- [ ] Add/Edit medicine forms (admin) with bilingual input fields
 - [ ] Filtering by system, category, potency
 - [ ] Bulk import interface with progress indicator
-- [ ] Medicine list with pagination
+- [ ] Medicine list with pagination (display based on user language)
 
 **Database**
 - [ ] Run migration for medicines table
@@ -580,10 +587,12 @@ Build the most comprehensive practice management system for alternative medicine
 **Content**
 - [ ] Partner with 5 medical practitioners for validation
 - [ ] Curate 1,000+ medicines across all four systems
-- [ ] Review and validate symptom mappings
-- [ ] Add dosage guidelines for common medicines
-- [ ] Document contraindications and interactions
-- [ ] Create medicine categories and sub-categories
+- [ ] Translate all medicine names to Bengali
+- [ ] Translate descriptions, indications, dosage to Bengali
+- [ ] Review and validate symptom mappings (bilingual)
+- [ ] Add dosage guidelines for common medicines (bilingual)
+- [ ] Document contraindications and interactions (bilingual)
+- [ ] Create medicine categories and sub-categories (bilingual)
 
 **Testing**
 - [ ] User acceptance testing with 10 doctors

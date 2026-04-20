@@ -34,8 +34,9 @@
 ✅ **Flexible tagging system** — JSONB-based extensible metadata  
 ✅ **Doctor credentials** — Multiple degrees and training/certifications with verification support  
 ✅ **Bangladesh geographic system** — Division, District, Upazila hierarchy with Bengali names and geospatial data  
+✅ **Bilingual support** — English/Bengali content for medicines, symptoms, and UI with language preferences  
 
-**Total tables:** 29 (core entities + doctor credentials + geographic data + integration framework)
+**Total tables:** 30 (core entities + doctor credentials + geographic data + i18n + integration framework)
 
 ---
 
@@ -266,6 +267,7 @@ CREATE TABLE users (
   full_name VARCHAR(255) NOT NULL,
   phone VARCHAR(20),
   avatar_url TEXT,
+  preferred_language VARCHAR(5) DEFAULT 'en',  -- 'en' or 'bn' (English/Bengali)
   
   -- Status
   is_active BOOLEAN DEFAULT TRUE,
@@ -1377,6 +1379,47 @@ psql -U postgres -d altcare_restored -c "SELECT COUNT(*) FROM patients;"
 - **Slow query log** for queries > 1000ms
 - **Connection pool exhaustion** alerts
 - **Replication lag** (if using read replicas)
+
+---
+
+### 30. `translations`
+
+UI translations for bilingual English/Bengali support. Stores key-value pairs for all UI strings.
+
+```sql
+CREATE TABLE translations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  
+  translation_key VARCHAR(255) NOT NULL UNIQUE,  -- e.g., 'dashboard.welcome', 'patient.add_new'
+  
+  -- Translations
+  text_en TEXT NOT NULL,  -- English text
+  text_bn TEXT NOT NULL,  -- Bengali text
+  
+  -- Context
+  category VARCHAR(100),  -- 'ui', 'error', 'email', 'sms', 'medicine', etc.
+  description TEXT,       -- Developer note about where this is used
+  
+  -- Metadata
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES users(id),
+  updated_by UUID REFERENCES users(id)
+);
+
+CREATE INDEX idx_translations_key ON translations(translation_key);
+CREATE INDEX idx_translations_category ON translations(category);
+```
+
+**Usage examples:**
+- `dashboard.welcome` → "Welcome to AltCare" / "আলটকেয়ারে স্বাগতম"
+- `patient.add_new` → "Add New Patient" / "নতুন রোগী যোগ করুন"
+- `prescription.generate` → "Generate Prescription" / "প্রেসক্রিপশন তৈরি করুন"
+
+**Implementation:**
+- Backend: Load translations on app start, cache in Redis
+- Frontend: next-intl library with JSON translation files
+- Admin UI: Translation management page for updating text
 
 ---
 

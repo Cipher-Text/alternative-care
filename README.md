@@ -32,6 +32,7 @@ AltCare is a full-featured **clinic operating system** built specifically for al
 
 **Key differentiators:**
 - **Multi-specialization support** — practitioners can work with 1-4 systems (Homeopathy, Ayurveda, Unani, Herbal), with resources auto-filtered based on their active specializations
+- **Bilingual interface (English/Bengali)** — complete UI in both languages with seamless switching, Bengali medicine names, and localized content for Bangladesh market
 - **Bangladesh-focused location system** — structured Division → District → Upazila hierarchy with Bengali names and geospatial data for precise clinic and patient location tracking
 - **Integrated communications & payments** — built-in SMS/Email providers (Twilio, Banglalink, Robi, SendGrid) and payment gateways (bKash, Nagad, Rocket, Stripe)
 - **Complete audit trail** — every SMS, email, and payment transaction logged with full request/response details
@@ -88,6 +89,7 @@ The prototypes are complete single-file HTML/CSS/JS mocks covering all major scr
 | **cryptography**     | Fernet encryption for integration credentials (API keys, merchant secrets)              |
 | **structlog**        | Structured JSON logging for production observability                                    |
 | **slowapi**          | Rate limiting middleware with Redis backend                                             |
+| **Babel**            | Internationalization (i18n) for English/Bengali API responses                           |
 
 ### Frontend
 
@@ -97,6 +99,7 @@ The prototypes are complete single-file HTML/CSS/JS mocks covering all major scr
 | **Tailwind CSS**           | Utility-first styling                                 |
 | **shadcn/ui**              | Accessible, unstyled component library                |
 | **React Query (TanStack)** | Server state management, caching, background refetch  |
+| **next-intl**              | Internationalization (i18n) for English/Bengali       |
 
 ### Infrastructure
 
@@ -734,7 +737,7 @@ See [ROADMAP.md](./ROADMAP.md) for detailed week-by-week breakdown, team scaling
 | ----------------------------- | ------------------------------------------------- |
 | UI prototypes                 | ✅ Complete — Admin + Doctor views in `/mock/`    |
 | System architecture           | ✅ Defined                                        |
-| Database schema               | ✅ Designed — 29 tables (see DATABASE.md)         |
+| Database schema               | ✅ Designed — 30 tables (see DATABASE.md)         |
 | API structure                 | ✅ Defined                                        |
 | Backend — FastAPI             | 🔄 In progress (Phase 1)                          |
 | Frontend — Next.js            | 🔄 In progress (Phase 1)                          |
@@ -792,7 +795,7 @@ altcare/
   Caddyfile
   .env.example
   README.md                         ← You are here
-  DATABASE.md                       ← Full database schema documentation (29 tables)
+  DATABASE.md                       ← Full database schema documentation (30 tables)
   ROADMAP.md                        ← Product roadmap: MVP to full platform (12 months)
 ```
 
