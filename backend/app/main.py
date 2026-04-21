@@ -73,10 +73,10 @@ async def root():
     )
 
 
-# API routes will be added here in future modules
-# Example:
-# from app.modules.auth.routes import router as auth_router
-# app.include_router(auth_router, prefix=settings.API_V1_PREFIX, tags=["Auth"])
+# API routes
+from app.modules.auth import router as auth_router
+
+app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 
 
 if __name__ == "__main__":
