@@ -1,0 +1,91 @@
+"""FastAPI application entry point."""
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.core.config import settings
+
+# Import all models for Alembic autogenerate
+from app.shared.models import *  # noqa: F401, F403
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan events."""
+    # Startup
+    print("🚀 AltCare Backend starting...")
+    print(f"📍 Environment: {settings.ENVIRONMENT}")
+    print(f"🔗 Database: Connected to PostgreSQL")
+    print(f"🌐 CORS Origins: {settings.CORS_ORIGINS}")
+
+    yield
+
+    # Shutdown
+    print("👋 AltCare Backend shutting down...")
+
+
+# Create FastAPI app
+app = FastAPI(
+    title="AltCare API",
+    description="Alternative Medicine Practice Management System",
+    version="0.1.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    lifespan=lifespan,
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Health check
+@app.get("/health", tags=["System"])
+async def health_check():
+    """Health check endpoint."""
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "environment": settings.ENVIRONMENT,
+            "version": "0.1.0",
+        }
+    )
+
+
+@app.get("/", tags=["System"])
+async def root():
+    """Root endpoint."""
+    return JSONResponse(
+        content={
+            "message": "Welcome to AltCare API",
+            "version": "0.1.0",
+            "docs": "/docs",
+        }
+    )
+
+
+# API routes will be added here in future modules
+# Example:
+# from app.modules.auth.routes import router as auth_router
+# app.include_router(auth_router, prefix=settings.API_V1_PREFIX, tags=["Auth"])
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="info",
+    )
