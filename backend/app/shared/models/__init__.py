@@ -7,7 +7,13 @@ from app.shared.models.geographic import Division, District, Upazila
 from app.shared.models.patient import Patient, PatientTag, PatientDiagnosis
 from app.shared.models.prescription import Prescription, PrescriptionItem
 from app.shared.models.payment import Payment, Invoice
-from app.shared.models.medicine import Medicine, MedicineSymptom
+from app.shared.models.medicine import Medicine, MedicineAlias
+from app.shared.models.symptom import (
+    Symptom,
+    SymptomAlias,
+    MedicineSymptomMapping,
+)
+from app.shared.models.appointment import Appointment, Visit
 from app.shared.models.library import (
     Book,
     Chapter,
@@ -45,7 +51,12 @@ __all__ = [
     "Payment",
     "Invoice",
     "Medicine",
-    "MedicineSymptom",
+    "MedicineAlias",
+    "Symptom",
+    "SymptomAlias",
+    "MedicineSymptomMapping",
+    "Appointment",
+    "Visit",
     "Book",
     "Chapter",
     "Section",

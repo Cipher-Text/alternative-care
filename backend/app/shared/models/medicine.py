@@ -57,24 +57,31 @@ class Medicine(TenantScopedModel):
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     # Relationships
-    symptoms: Mapped[list["MedicineSymptom"]] = relationship(
-        "MedicineSymptom",
+    symptom_mappings: Mapped[list["MedicineSymptomMapping"]] = relationship(
+        "MedicineSymptomMapping",
+        back_populates="medicine",
+        cascade="all, delete-orphan",
+    )
+    aliases: Mapped[list["MedicineAlias"]] = relationship(
+        "MedicineAlias",
         back_populates="medicine",
         cascade="all, delete-orphan",
     )
 
     __table_args__ = (
         Index("ix_medicines_name_en_trgm", "name_en", postgresql_using="gin"),
+        Index("ix_medicines_name_bn_trgm", "name_bn", postgresql_using="gin"),
         Index("ix_medicines_system", "system"),
     )
 
 
-class MedicineSymptom(TenantScopedModel):
+class MedicineAlias(TenantScopedModel):
     """
-    Symptom-to-medicine mapping for symptom-based search.
+    Medicine aliases for search (handles transliteration, brand names, common names).
+    CRITICAL for Bangladesh context: Different spellings, local names, brand variations.
     """
 
-    __tablename__ = "medicine_symptoms"
+    __tablename__ = "medicine_aliases"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     medicine_id: Mapped[int] = mapped_column(
@@ -84,20 +91,31 @@ class MedicineSymptom(TenantScopedModel):
         index=True,
     )
 
-    # Symptom text (bilingual)
-    symptom_en: Mapped[str] = mapped_column(String(500), nullable=False)
-    symptom_bn: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    # Alias text (bilingual)
+    alias_en: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    alias_bn: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    # Modality notes (e.g., "worse at night", "better from warmth")
-    modality_en: Mapped[str | None] = mapped_column(Text, nullable=True)
-    modality_bn: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Alias type
+    # transliteration: "arnika" for "Arnica"
+    # common_name: "Indian ginseng" for "Ashwagandha"
+    # brand_name: brand/manufacturer specific names
+    # regional: regional variations
+    alias_type: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="common_name",
+    )
 
-    # Match strength (1-10, for ranking)
-    strength: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
+    # Match priority (higher = better match)
+    priority: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
+
+    # Status
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     # Relationships
-    medicine: Mapped["Medicine"] = relationship("Medicine", back_populates="symptoms")
+    medicine: Mapped["Medicine"] = relationship("Medicine", back_populates="aliases")
 
     __table_args__ = (
-        Index("ix_medicine_symptoms_symptom_en_trgm", "symptom_en", postgresql_using="gin"),
+        Index("ix_medicine_aliases_alias_en_trgm", "alias_en", postgresql_using="gin"),
+        Index("ix_medicine_aliases_alias_bn_trgm", "alias_bn", postgresql_using="gin"),
     )

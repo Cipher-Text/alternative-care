@@ -490,7 +490,3 @@ You ARE building:
 > Build structured data → Build search → Then add intelligence
 
 That’s how this becomes a **market-defining product**, not just another app.
-
-```
-
-```
