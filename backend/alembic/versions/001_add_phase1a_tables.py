@@ -20,16 +20,13 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = '001_phase1a_tables'
-down_revision: Union[str, None] = None
+down_revision: Union[str, None] = '000_initial_schema'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     """Create new tables for Phase 1A."""
-
-    # 0. Drop old medicine_symptoms table (replaced by normalized structure)
-    op.execute('DROP TABLE IF EXISTS medicine_symptoms CASCADE')
 
     # 1. Create appointments table
     op.create_table(
