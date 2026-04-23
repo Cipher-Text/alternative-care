@@ -298,6 +298,10 @@ label { user-select: none; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span class="nav-label">Dashboard</span>
       </div>
+      <div class="nav-item" onclick="nav('appointments',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+        <span class="nav-label">Appointments</span>
+      </div>
       <div class="nav-item" onclick="nav('patients',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         <span class="nav-label">Patients</span>
@@ -385,6 +389,39 @@ label { user-select: none; }
             <div class="kpi-label"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pu5)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Active prescriptions</div>
             <div class="kpi-value">342</div>
             <div class="kpi-change up">↑ 8% from last month</div>
+          </div>
+        </div>
+
+        <!-- Usage & Plan Limits Widget -->
+        <div style="background:linear-gradient(135deg, var(--pu1) 0%, var(--g1) 100%);border:1px solid var(--color-border-tertiary);border-radius:12px;padding:18px;margin-bottom:22px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div>
+              <div style="font-size:14px;font-weight:600;color:var(--pu5)">Pro Plan</div>
+              <div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">Your usage this month • Renews May 15, 2026</div>
+            </div>
+            <button class="btn-link" onclick="nav('pricing',null)" style="font-size:12px">View plans →</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <div>
+              <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px">Patients</div>
+              <div style="font-size:18px;font-weight:600;color:var(--color-text-primary)">247 <span style="font-size:11px;font-weight:400;color:var(--color-text-tertiary)">/ Unlimited</span></div>
+              <div style="height:4px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px;overflow:hidden"><div style="width:100%;height:100%;background:var(--g5);border-radius:2px"></div></div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px">Prescriptions</div>
+              <div style="font-size:18px;font-weight:600;color:var(--color-text-primary)">342 <span style="font-size:11px;font-weight:400;color:var(--color-text-tertiary)">/ 1,000</span></div>
+              <div style="height:4px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px;overflow:hidden"><div style="width:34%;height:100%;background:var(--g5);border-radius:2px"></div></div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px">AI Queries</div>
+              <div style="font-size:18px;font-weight:600;color:var(--color-text-primary)">142 <span style="font-size:11px;font-weight:400;color:var(--color-text-tertiary)">/ 200</span></div>
+              <div style="height:4px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px;overflow:hidden"><div style="width:71%;height:100%;background:var(--a4);border-radius:2px"></div></div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px">Storage</div>
+              <div style="font-size:18px;font-weight:600;color:var(--color-text-primary)">2.4 <span style="font-size:11px;font-weight:400;color:var(--color-text-tertiary)">/ 10 GB</span></div>
+              <div style="height:4px;background:var(--color-background-secondary);border-radius:2px;margin-top:6px;overflow:hidden"><div style="width:24%;height:100%;background:var(--g5);border-radius:2px"></div></div>
+            </div>
           </div>
         </div>
 
@@ -504,6 +541,155 @@ label { user-select: none; }
           </div>
         </div>
       </div>
+
+      <!-- APPOINTMENTS -->
+      <div class="page" id="page-appointments">
+        <div class="page-header"><h1>Appointments</h1><p>Schedule and manage patient appointments.</p></div>
+
+        <!-- Quick stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px">
+          <div class="kpi-card">
+            <div class="kpi-label">Today</div>
+            <div class="kpi-value" style="font-size:22px">18</div>
+            <div class="kpi-sub">14 confirmed • 4 pending</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">This week</div>
+            <div class="kpi-value" style="font-size:22px">84</div>
+            <div class="kpi-sub">72 confirmed • 12 pending</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Next 7 days</div>
+            <div class="kpi-value" style="font-size:22px">92</div>
+            <div class="kpi-sub">68 confirmed • 24 pending</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Cancelled</div>
+            <div class="kpi-value" style="font-size:22px;color:var(--r4)">6</div>
+            <div class="kpi-sub">This month</div>
+          </div>
+        </div>
+
+        <!-- Calendar view (reuse existing calendar component) -->
+        <div class="chart-card" style="margin-bottom:22px">
+          <div class="card-header">
+            <h3>Appointment calendar</h3>
+            <div style="display:flex;gap:8px">
+              <select class="filter-select" style="font-size:11px;padding:5px 24px 5px 10px">
+                <option>Month view</option>
+                <option>Week view</option>
+                <option>Day view</option>
+              </select>
+              <button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="alert('New appointment form:\n\n• Patient (search/select)\n• Date & time\n• Duration\n• Appointment type\n• Notes')">+ New appointment</button>
+            </div>
+          </div>
+          <div class="cal-wrap" style="border:none;padding:0;margin-top:16px">
+            <div class="cal-nav">
+              <button class="cal-nav-btn" onclick="calShift(-1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <span class="cal-month-label">April 2026</span>
+              <button class="cal-nav-btn" onclick="calShift(1)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-dow">Su</div><div class="cal-dow">Mo</div><div class="cal-dow">Tu</div><div class="cal-dow">We</div><div class="cal-dow">Th</div><div class="cal-dow">Fr</div><div class="cal-dow">Sa</div>
+            </div>
+            <div class="cal-legend">
+              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--g5)"></div>1–5 appointments</div>
+              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--a4)"></div>6–12 appointments</div>
+              <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--r4)"></div>13+ appointments</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming appointments list -->
+        <div class="table-card">
+          <div class="card-header">
+            <h3>Upcoming appointments</h3>
+            <div style="display:flex;gap:8px">
+              <select class="filter-select" style="font-size:11px;padding:5px 24px 5px 10px">
+                <option>All status</option>
+                <option>Confirmed</option>
+                <option>Pending</option>
+                <option>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Patient</th>
+                <th>Type</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">Apr 24, 10:00 AM</td>
+                <td>
+                  <div class="cell-name">
+                    <div class="avatar-sm" style="background:var(--r1);color:var(--r5)">FA</div>
+                    Fatima Ahmed
+                  </div>
+                </td>
+                <td><span style="font-size:11px">Follow-up</span></td>
+                <td><span style="font-size:11px">30 min</span></td>
+                <td><span class="badge green">Confirmed</span></td>
+                <td>
+                  <button class="btn-ghost" style="font-size:10px;padding:3px 8px" onclick="alert('View appointment details')">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">Apr 24, 11:00 AM</td>
+                <td>
+                  <div class="cell-name">
+                    <div class="avatar-sm" style="background:var(--b1);color:var(--b5)">RK</div>
+                    Rakib Khan
+                  </div>
+                </td>
+                <td><span style="font-size:11px">New consultation</span></td>
+                <td><span style="font-size:11px">45 min</span></td>
+                <td><span class="badge amber">Pending</span></td>
+                <td>
+                  <button class="btn-ghost" style="font-size:10px;padding:3px 8px" onclick="alert('Confirm appointment')">Confirm</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">Apr 24, 02:00 PM</td>
+                <td>
+                  <div class="cell-name">
+                    <div class="avatar-sm" style="background:var(--g1);color:var(--g6)">SA</div>
+                    Sabrina Akter
+                  </div>
+                </td>
+                <td><span style="font-size:11px">Regular checkup</span></td>
+                <td><span style="font-size:11px">30 min</span></td>
+                <td><span class="badge green">Confirmed</span></td>
+                <td>
+                  <button class="btn-ghost" style="font-size:10px;padding:3px 8px" onclick="alert('View appointment details')">View</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-family:monospace;font-size:11px">Apr 25, 09:30 AM</td>
+                <td>
+                  <div class="cell-name">
+                    <div class="avatar-sm" style="background:var(--pu1);color:var(--pu5)">MH</div>
+                    Mahmud Hasan
+                  </div>
+                </td>
+                <td><span style="font-size:11px">New consultation</span></td>
+                <td><span style="font-size:11px">45 min</span></td>
+                <td><span class="badge green">Confirmed</span></td>
+                <td>
+                  <button class="btn-ghost" style="font-size:10px;padding:3px 8px" onclick="alert('View appointment details')">View</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- PATIENTS -->
       <div class="page" id="page-patients">
         <div class="page-header"><h1>Patients</h1><p>Manage and review all patient records.</p></div>
@@ -1024,7 +1210,9 @@ label { user-select: none; }
         <div class="settings-grid">
           <div class="settings-nav">
             <div class="settings-nav-item active" onclick="switchSettingsTab(this, 'profile')">Profile</div>
+            <div class="settings-nav-item" onclick="switchSettingsTab(this, 'credentials')">Credentials</div>
             <div class="settings-nav-item" onclick="switchSettingsTab(this, 'clinic')">Clinic info</div>
+            <div class="settings-nav-item" onclick="switchSettingsTab(this, 'security')">Security</div>
             <div class="settings-nav-item" onclick="switchSettingsTab(this, 'subscription')">Subscription</div>
             <div class="settings-nav-item" onclick="switchSettingsTab(this, 'preferences')">Preferences</div>
             <div class="settings-nav-item" onclick="switchSettingsTab(this, 'notifications')">Notifications</div>
@@ -1127,6 +1315,74 @@ label { user-select: none; }
               <div style="display:flex;gap:10px;margin-top:24px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
             </div>
 
+            <!-- Credentials Tab -->
+            <div class="settings-tab" id="settings-credentials" style="display:none">
+              <div class="settings-section">
+                <h3>Academic degrees & qualifications</h3>
+                <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px">Manage your academic degrees, professional certifications, and training records. Verified credentials appear on your public profile.</p>
+
+                <h4 style="font-size:13px;font-weight:500;margin:20px 0 12px;color:var(--color-text-primary)">Academic Degrees</h4>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">BHMS (Bachelor of Homeopathic Medicine & Surgery)</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">National Institute of Homoeopathy, Kolkata</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">2015 - 2019 • Certificate: BDH-2019-0042</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <span class="badge green" style="font-size:10px">✓ Verified</span>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px">Edit</button>
+                    </div>
+                  </div>
+                </div>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">MD (Doctor of Medicine) - Homeopathy</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">University of Dhaka</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">2020 - 2022 • Certificate: DU-MD-2022-156</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <span class="badge amber" style="font-size:10px">⏱ Pending verification</span>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px">Edit</button>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-ghost" style="font-size:12px;margin-top:8px" onclick="alert('Add degree form:\n- Degree name\n- Institution\n- Location\n- Start/End year\n- Certificate number\n- Upload document')">+ Add degree</button>
+
+                <h4 style="font-size:13px;font-weight:500;margin:28px 0 12px;color:var(--color-text-primary)">Professional Training & Certifications</h4>
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">Advanced Constitutional Prescribing</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">International Academy of Classical Homeopathy</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">Jan 2023 - Mar 2023 • 120 hours • Online</div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px">Skills: Constitutional analysis, Miasmatic prescribing, Case taking</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <span class="badge green" style="font-size:10px">✓ Verified</span>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px">Edit</button>
+                    </div>
+                  </div>
+                </div>
+                <div style="background:var(--b1);border:1px solid var(--b4);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:8px">
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px">Advanced Repertorization Methods</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">Bangladesh Homeopathic Board</div>
+                      <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px">Expires: Dec 2026 • Certificate: BHB-ARP-2024-089</div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <span class="badge" style="background:#FEF3C7;color:#92400E;font-size:10px">⏱ Expires soon</span>
+                      <button class="btn-ghost" style="padding:4px 8px;font-size:11px">Renew</button>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-ghost" style="font-size:12px;margin-top:8px" onclick="alert('Add training form:\n- Training name\n- Type (Certificate/Diploma/Workshop)\n- Provider\n- Date range\n- Duration\n- Certificate number\n- Skills acquired')">+ Add training</button>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:24px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
+            </div>
+
             <!-- Clinic Info Tab -->
             <div class="settings-tab" id="settings-clinic" style="display:none">
               <div class="settings-section">
@@ -1184,6 +1440,143 @@ label { user-select: none; }
                 </div>
               </div>
               <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="saveSettings()">Save changes</button><button class="btn btn-ghost" onclick="alert('Changes discarded')">Cancel</button></div>
+            </div>
+
+            <!-- Security Tab -->
+            <div class="settings-tab" id="settings-security" style="display:none">
+              <div class="settings-section">
+                <h3>Two-Factor Authentication (2FA)</h3>
+                <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px">Add an extra layer of security to your account with TOTP-based two-factor authentication.</p>
+
+                <div style="background:var(--g1);border:1px solid var(--g4);border-radius:12px;padding:18px;margin-bottom:20px">
+                  <div style="display:flex;align-items:start;gap:14px">
+                    <div style="width:36px;height:36px;background:var(--g5);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    </div>
+                    <div style="flex:1">
+                      <div style="font-weight:500;font-size:14px;margin-bottom:4px;color:var(--g6)">2FA is enabled</div>
+                      <div style="font-size:12px;color:var(--color-text-secondary)">Your account is protected with two-factor authentication. You'll need your authenticator app to sign in.</div>
+                      <div style="margin-top:12px;display:flex;gap:8px">
+                        <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="alert('Regenerate backup codes:\n\n• 8 new codes generated\n• Download or print them\n• Keep in safe place')">View backup codes</button>
+                        <button class="btn-ghost" style="font-size:11px;padding:5px 12px;color:var(--r5)" onclick="alert('Disable 2FA?\n\nWarning: Your account will be less secure.')">Disable 2FA</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section" style="margin-top:32px">
+                <h3>Active sessions</h3>
+                <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px">Devices and locations where you're currently logged in. Revoke access from any device anytime.</p>
+
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between">
+                    <div style="flex:1">
+                      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                        <div style="font-weight:500;font-size:13px">MacBook Pro - Chrome</div>
+                        <span class="badge green" style="font-size:9px;padding:2px 6px">Current session</span>
+                      </div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary)">Dhaka, Bangladesh • 103.109.*.* • Last active: Just now</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between">
+                    <div style="flex:1">
+                      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+                        <div style="font-weight:500;font-size:13px">iPhone 14 - Safari</div>
+                      </div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary)">Dhaka, Bangladesh • 103.109.*.* • Last active: 2 hours ago</div>
+                    </div>
+                    <button class="btn-ghost" style="font-size:11px;padding:5px 12px;color:var(--r5)" onclick="alert('Revoke session?\n\nYou will be logged out on this device.')">Revoke</button>
+                  </div>
+                </div>
+
+                <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:12px">
+                  <div style="display:flex;align-items:start;justify-content:space-between">
+                    <div style="flex:1">
+                      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22h6"/></svg>
+                        <div style="font-weight:500;font-size:13px">iPad Air - Safari</div>
+                      </div>
+                      <div style="font-size:11px;color:var(--color-text-tertiary)">Chittagong, Bangladesh • 58.145.*.* • Last active: Yesterday</div>
+                    </div>
+                    <button class="btn-ghost" style="font-size:11px;padding:5px 12px;color:var(--r5)" onclick="alert('Revoke session?\n\nYou will be logged out on this device.')">Revoke</button>
+                  </div>
+                </div>
+
+                <button class="btn-ghost" style="font-size:12px;margin-top:8px;color:var(--r5)" onclick="alert('Revoke all other sessions?\n\nYou will be logged out on all devices except this one.')">Revoke all other sessions</button>
+              </div>
+
+              <div class="settings-section" style="margin-top:32px">
+                <h3>Login history</h3>
+                <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:16px">Recent login attempts to your account.</p>
+
+                <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;overflow:hidden">
+                  <table style="width:100%;font-size:11px">
+                    <thead>
+                      <tr style="background:var(--color-background-tertiary)">
+                        <th style="padding:8px 12px;text-align:left;font-weight:500">Date & Time</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:500">Device</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:500">Location</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:500">IP Address</th>
+                        <th style="padding:8px 12px;text-align:left;font-weight:500">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-top:0.5px solid var(--color-border-tertiary)">
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Apr 24, 09:15 AM</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">MacBook Pro</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Dhaka, BD</td>
+                        <td style="padding:8px 12px;color:var(--color-text-tertiary);font-family:monospace">103.109.*.*</td>
+                        <td style="padding:8px 12px"><span class="badge green" style="font-size:9px">Success</span></td>
+                      </tr>
+                      <tr style="border-top:0.5px solid var(--color-border-tertiary)">
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Apr 23, 02:30 PM</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">iPhone 14</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Dhaka, BD</td>
+                        <td style="padding:8px 12px;color:var(--color-text-tertiary);font-family:monospace">103.109.*.*</td>
+                        <td style="padding:8px 12px"><span class="badge green" style="font-size:9px">Success</span></td>
+                      </tr>
+                      <tr style="border-top:0.5px solid var(--color-border-tertiary)">
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Apr 22, 11:20 AM</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Unknown</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Mumbai, IN</td>
+                        <td style="padding:8px 12px;color:var(--color-text-tertiary);font-family:monospace">157.48.*.*</td>
+                        <td style="padding:8px 12px"><span class="badge red" style="font-size:9px">Failed</span></td>
+                      </tr>
+                      <tr style="border-top:0.5px solid var(--color-border-tertiary)">
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Apr 21, 06:45 PM</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">iPad Air</td>
+                        <td style="padding:8px 12px;color:var(--color-text-secondary)">Chittagong, BD</td>
+                        <td style="padding:8px 12px;color:var(--color-text-tertiary);font-family:monospace">58.145.*.*</td>
+                        <td style="padding:8px 12px"><span class="badge green" style="font-size:9px">Success</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="settings-section" style="margin-top:32px">
+                <h3>Password</h3>
+                <div class="form-group">
+                  <div class="form-label">Current password</div>
+                  <input class="input" type="password" placeholder="Enter current password" style="width:100%;max-width:400px">
+                </div>
+                <div class="form-group">
+                  <div class="form-label">New password</div>
+                  <input class="input" type="password" placeholder="Enter new password" style="width:100%;max-width:400px">
+                  <small style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;display:block">Minimum 8 characters, at least one number and special character</small>
+                </div>
+                <div class="form-group">
+                  <div class="form-label">Confirm new password</div>
+                  <input class="input" type="password" placeholder="Confirm new password" style="width:100%;max-width:400px">
+                </div>
+                <button class="btn btn-primary" style="margin-top:8px" onclick="alert('Password updated successfully!')">Update password</button>
+              </div>
             </div>
 
             <!-- Subscription Tab -->
