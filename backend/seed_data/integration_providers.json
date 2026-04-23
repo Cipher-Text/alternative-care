@@ -1,0 +1,381 @@
+{
+  "providers": [
+    {
+      "name": "twilio",
+      "display_name": "Twilio",
+      "provider_type": "sms",
+      "description": "Leading cloud communications platform for SMS, voice, and video. Reliable global delivery with 99.95% uptime SLA.",
+      "logo_url": "https://www.twilio.com/content/dam/twilio-com/global/en/logo/logo-twilio-mark-red.png",
+      "config_schema": {
+        "account_sid": {
+          "type": "string",
+          "required": true,
+          "label": "Account SID",
+          "description": "Your Twilio Account SID"
+        },
+        "auth_token": {
+          "type": "string",
+          "required": true,
+          "label": "Auth Token",
+          "description": "Your Twilio Auth Token",
+          "sensitive": true
+        },
+        "from_number": {
+          "type": "string",
+          "required": true,
+          "label": "From Phone Number",
+          "description": "Your Twilio phone number (E.164 format)"
+        }
+      },
+      "supported_countries": ["US", "CA", "GB", "BD", "IN", "PK"],
+      "is_active": true
+    },
+    {
+      "name": "banglalink",
+      "display_name": "Banglalink SMS Gateway",
+      "provider_type": "sms",
+      "description": "Bangladesh local SMS gateway by Banglalink. Best for local delivery with competitive rates.",
+      "logo_url": null,
+      "config_schema": {
+        "api_key": {
+          "type": "string",
+          "required": true,
+          "label": "API Key",
+          "description": "Your Banglalink API Key",
+          "sensitive": true
+        },
+        "sender_id": {
+          "type": "string",
+          "required": true,
+          "label": "Sender ID",
+          "description": "Approved sender ID (e.g., ALTCARE)"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
+      "name": "robi",
+      "display_name": "Robi SMS Gateway",
+      "provider_type": "sms",
+      "description": "Bangladesh local SMS gateway by Robi. High-speed delivery for local numbers.",
+      "logo_url": null,
+      "config_schema": {
+        "username": {
+          "type": "string",
+          "required": true,
+          "label": "Username",
+          "description": "Your Robi API username"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "label": "Password",
+          "description": "Your Robi API password",
+          "sensitive": true
+        },
+        "sender_id": {
+          "type": "string",
+          "required": true,
+          "label": "Sender ID",
+          "description": "Approved sender ID"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
+      "name": "sendgrid",
+      "display_name": "SendGrid",
+      "provider_type": "email",
+      "description": "Twilio SendGrid email delivery platform. Industry-leading deliverability with 99% inbox placement.",
+      "logo_url": "https://sendgrid.com/brand/sg-logo-300.png",
+      "config_schema": {
+        "api_key": {
+          "type": "string",
+          "required": true,
+          "label": "API Key",
+          "description": "Your SendGrid API Key",
+          "sensitive": true
+        },
+        "from_email": {
+          "type": "string",
+          "required": true,
+          "label": "From Email",
+          "description": "Verified sender email address"
+        },
+        "from_name": {
+          "type": "string",
+          "required": false,
+          "label": "From Name",
+          "description": "Sender name (e.g., AltCare)"
+        }
+      },
+      "supported_countries": ["*"],
+      "is_active": true
+    },
+    {
+      "name": "aws_ses",
+      "display_name": "Amazon SES",
+      "provider_type": "email",
+      "description": "Amazon Simple Email Service. Cost-effective email delivery with high reliability.",
+      "logo_url": "https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png",
+      "config_schema": {
+        "aws_access_key_id": {
+          "type": "string",
+          "required": true,
+          "label": "AWS Access Key ID",
+          "description": "Your AWS Access Key ID",
+          "sensitive": true
+        },
+        "aws_secret_access_key": {
+          "type": "string",
+          "required": true,
+          "label": "AWS Secret Access Key",
+          "description": "Your AWS Secret Access Key",
+          "sensitive": true
+        },
+        "region": {
+          "type": "string",
+          "required": true,
+          "label": "AWS Region",
+          "description": "AWS region (e.g., us-east-1, ap-south-1)"
+        },
+        "from_email": {
+          "type": "string",
+          "required": true,
+          "label": "From Email",
+          "description": "Verified sender email address"
+        }
+      },
+      "supported_countries": ["*"],
+      "is_active": true
+    },
+    {
+      "name": "smtp",
+      "display_name": "Generic SMTP",
+      "provider_type": "email",
+      "description": "Standard SMTP server connection. Works with any email provider supporting SMTP.",
+      "logo_url": null,
+      "config_schema": {
+        "host": {
+          "type": "string",
+          "required": true,
+          "label": "SMTP Host",
+          "description": "SMTP server hostname"
+        },
+        "port": {
+          "type": "integer",
+          "required": true,
+          "label": "SMTP Port",
+          "description": "SMTP port (usually 587 for TLS)"
+        },
+        "username": {
+          "type": "string",
+          "required": true,
+          "label": "Username",
+          "description": "SMTP username"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "label": "Password",
+          "description": "SMTP password",
+          "sensitive": true
+        },
+        "use_tls": {
+          "type": "boolean",
+          "required": true,
+          "label": "Use TLS",
+          "description": "Enable TLS encryption"
+        },
+        "from_email": {
+          "type": "string",
+          "required": true,
+          "label": "From Email",
+          "description": "Sender email address"
+        }
+      },
+      "supported_countries": ["*"],
+      "is_active": true
+    },
+    {
+      "name": "bkash",
+      "display_name": "bKash",
+      "provider_type": "payment",
+      "description": "Leading mobile financial service in Bangladesh. Supports merchant payments and tokenization.",
+      "logo_url": "https://www.bkash.com/sites/default/files/bkash-logo.png",
+      "config_schema": {
+        "app_key": {
+          "type": "string",
+          "required": true,
+          "label": "App Key",
+          "description": "Your bKash App Key",
+          "sensitive": true
+        },
+        "app_secret": {
+          "type": "string",
+          "required": true,
+          "label": "App Secret",
+          "description": "Your bKash App Secret",
+          "sensitive": true
+        },
+        "username": {
+          "type": "string",
+          "required": true,
+          "label": "Username",
+          "description": "bKash merchant username"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "label": "Password",
+          "description": "bKash merchant password",
+          "sensitive": true
+        },
+        "environment": {
+          "type": "string",
+          "required": true,
+          "label": "Environment",
+          "description": "sandbox or production"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
+      "name": "nagad",
+      "display_name": "Nagad",
+      "provider_type": "payment",
+      "description": "Government-backed mobile financial service in Bangladesh. Fast and secure payments.",
+      "logo_url": null,
+      "config_schema": {
+        "merchant_id": {
+          "type": "string",
+          "required": true,
+          "label": "Merchant ID",
+          "description": "Your Nagad Merchant ID"
+        },
+        "merchant_number": {
+          "type": "string",
+          "required": true,
+          "label": "Merchant Number",
+          "description": "Your Nagad Merchant Number"
+        },
+        "public_key": {
+          "type": "string",
+          "required": true,
+          "label": "Public Key",
+          "description": "Nagad public key",
+          "sensitive": true
+        },
+        "private_key": {
+          "type": "string",
+          "required": true,
+          "label": "Private Key",
+          "description": "Your private key",
+          "sensitive": true
+        },
+        "environment": {
+          "type": "string",
+          "required": true,
+          "label": "Environment",
+          "description": "sandbox or production"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
+      "name": "rocket",
+      "display_name": "Rocket",
+      "provider_type": "payment",
+      "description": "Dutch-Bangla Bank mobile financial service. Wide acceptance across Bangladesh.",
+      "logo_url": null,
+      "config_schema": {
+        "merchant_id": {
+          "type": "string",
+          "required": true,
+          "label": "Merchant ID",
+          "description": "Your Rocket Merchant ID"
+        },
+        "api_key": {
+          "type": "string",
+          "required": true,
+          "label": "API Key",
+          "description": "Your Rocket API Key",
+          "sensitive": true
+        },
+        "environment": {
+          "type": "string",
+          "required": true,
+          "label": "Environment",
+          "description": "sandbox or production"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
+      "name": "sslcommerz",
+      "display_name": "SSLCommerz",
+      "provider_type": "payment",
+      "description": "Bangladesh's largest payment gateway. Supports cards, mobile banking, and internet banking.",
+      "logo_url": "https://www.sslcommerz.com/wp-content/uploads/2020/05/logo.png",
+      "config_schema": {
+        "store_id": {
+          "type": "string",
+          "required": true,
+          "label": "Store ID",
+          "description": "Your SSLCommerz Store ID"
+        },
+        "store_password": {
+          "type": "string",
+          "required": true,
+          "label": "Store Password",
+          "description": "Your SSLCommerz Store Password",
+          "sensitive": true
+        },
+        "environment": {
+          "type": "string",
+          "required": true,
+          "label": "Environment",
+          "description": "sandbox or live"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
+      "name": "stripe",
+      "display_name": "Stripe",
+      "provider_type": "payment",
+      "description": "Global payment processing platform. Supports cards, wallets, and bank transfers in 135+ currencies.",
+      "logo_url": "https://images.ctfassets.net/fzn2n1nzq965/HTTOloNPhisV9P4hlMPNA/cacf1bb88b9fc492dfad34378d844280/Stripe_icon_-_square.svg",
+      "config_schema": {
+        "publishable_key": {
+          "type": "string",
+          "required": true,
+          "label": "Publishable Key",
+          "description": "Your Stripe Publishable Key"
+        },
+        "secret_key": {
+          "type": "string",
+          "required": true,
+          "label": "Secret Key",
+          "description": "Your Stripe Secret Key",
+          "sensitive": true
+        },
+        "webhook_secret": {
+          "type": "string",
+          "required": false,
+          "label": "Webhook Secret",
+          "description": "Webhook signing secret (for event verification)",
+          "sensitive": true
+        }
+      },
+      "supported_countries": ["*"],
+      "is_active": true
+    }
+  ]
+}

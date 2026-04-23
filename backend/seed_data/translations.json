@@ -1,0 +1,484 @@
+{
+  "translations": [
+    {
+      "key": "common.welcome",
+      "text_en": "Welcome",
+      "text_bn": "স্বাগতম",
+      "category": "common"
+    },
+    {
+      "key": "common.login",
+      "text_en": "Login",
+      "text_bn": "লগইন",
+      "category": "common"
+    },
+    {
+      "key": "common.logout",
+      "text_en": "Logout",
+      "text_bn": "লগআউট",
+      "category": "common"
+    },
+    {
+      "key": "common.register",
+      "text_en": "Register",
+      "text_bn": "নিবন্ধন",
+      "category": "common"
+    },
+    {
+      "key": "common.save",
+      "text_en": "Save",
+      "text_bn": "সংরক্ষণ",
+      "category": "common"
+    },
+    {
+      "key": "common.cancel",
+      "text_en": "Cancel",
+      "text_bn": "বাতিল",
+      "category": "common"
+    },
+    {
+      "key": "common.delete",
+      "text_en": "Delete",
+      "text_bn": "মুছুন",
+      "category": "common"
+    },
+    {
+      "key": "common.edit",
+      "text_en": "Edit",
+      "text_bn": "সম্পাদনা",
+      "category": "common"
+    },
+    {
+      "key": "common.view",
+      "text_en": "View",
+      "text_bn": "দেখুন",
+      "category": "common"
+    },
+    {
+      "key": "common.search",
+      "text_en": "Search",
+      "text_bn": "অনুসন্ধান",
+      "category": "common"
+    },
+    {
+      "key": "common.filter",
+      "text_en": "Filter",
+      "text_bn": "ফিল্টার",
+      "category": "common"
+    },
+    {
+      "key": "common.close",
+      "text_en": "Close",
+      "text_bn": "বন্ধ",
+      "category": "common"
+    },
+    {
+      "key": "common.submit",
+      "text_en": "Submit",
+      "text_bn": "জমা দিন",
+      "category": "common"
+    },
+    {
+      "key": "common.confirm",
+      "text_en": "Confirm",
+      "text_bn": "নিশ্চিত করুন",
+      "category": "common"
+    },
+    {
+      "key": "common.loading",
+      "text_en": "Loading...",
+      "text_bn": "লোড হচ্ছে...",
+      "category": "common"
+    },
+    {
+      "key": "dashboard.title",
+      "text_en": "Dashboard",
+      "text_bn": "ড্যাশবোর্ড",
+      "category": "dashboard"
+    },
+    {
+      "key": "dashboard.welcome_message",
+      "text_en": "Welcome to your clinic management dashboard",
+      "text_bn": "আপনার ক্লিনিক ম্যানেজমেন্ট ড্যাশবোর্ডে স্বাগতম",
+      "category": "dashboard"
+    },
+    {
+      "key": "dashboard.total_patients",
+      "text_en": "Total Patients",
+      "text_bn": "মোট রোগী",
+      "category": "dashboard"
+    },
+    {
+      "key": "dashboard.today_appointments",
+      "text_en": "Today's Appointments",
+      "text_bn": "আজকের অ্যাপয়েন্টমেন্ট",
+      "category": "dashboard"
+    },
+    {
+      "key": "dashboard.monthly_revenue",
+      "text_en": "Monthly Revenue",
+      "text_bn": "মাসিক আয়",
+      "category": "dashboard"
+    },
+    {
+      "key": "dashboard.pending_payments",
+      "text_en": "Pending Payments",
+      "text_bn": "বকেয়া পেমেন্ট",
+      "category": "dashboard"
+    },
+    {
+      "key": "patient.title",
+      "text_en": "Patients",
+      "text_bn": "রোগী",
+      "category": "patient"
+    },
+    {
+      "key": "patient.add_new",
+      "text_en": "Add New Patient",
+      "text_bn": "নতুন রোগী যুক্ত করুন",
+      "category": "patient"
+    },
+    {
+      "key": "patient.full_name",
+      "text_en": "Full Name",
+      "text_bn": "পূর্ণ নাম",
+      "category": "patient"
+    },
+    {
+      "key": "patient.phone",
+      "text_en": "Phone Number",
+      "text_bn": "ফোন নম্বর",
+      "category": "patient"
+    },
+    {
+      "key": "patient.email",
+      "text_en": "Email Address",
+      "text_bn": "ইমেইল ঠিকানা",
+      "category": "patient"
+    },
+    {
+      "key": "patient.date_of_birth",
+      "text_en": "Date of Birth",
+      "text_bn": "জন্ম তারিখ",
+      "category": "patient"
+    },
+    {
+      "key": "patient.gender",
+      "text_en": "Gender",
+      "text_bn": "লিঙ্গ",
+      "category": "patient"
+    },
+    {
+      "key": "patient.address",
+      "text_en": "Address",
+      "text_bn": "ঠিকানা",
+      "category": "patient"
+    },
+    {
+      "key": "patient.medical_history",
+      "text_en": "Medical History",
+      "text_bn": "চিকিৎসা ইতিহাস",
+      "category": "patient"
+    },
+    {
+      "key": "patient.visit_history",
+      "text_en": "Visit History",
+      "text_bn": "ভিজিট ইতিহাস",
+      "category": "patient"
+    },
+    {
+      "key": "prescription.title",
+      "text_en": "Prescriptions",
+      "text_bn": "প্রেসক্রিপশন",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.create_new",
+      "text_en": "Create Prescription",
+      "text_bn": "প্রেসক্রিপশন তৈরি করুন",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.medicine_name",
+      "text_en": "Medicine Name",
+      "text_bn": "ওষুধের নাম",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.dosage",
+      "text_en": "Dosage",
+      "text_bn": "ডোজ",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.frequency",
+      "text_en": "Frequency",
+      "text_bn": "ফ্রিকোয়েন্সি",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.duration",
+      "text_en": "Duration",
+      "text_bn": "সময়কাল",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.instructions",
+      "text_en": "Instructions",
+      "text_bn": "নির্দেশনা",
+      "category": "prescription"
+    },
+    {
+      "key": "prescription.download_pdf",
+      "text_en": "Download PDF",
+      "text_bn": "পিডিএফ ডাউনলোড",
+      "category": "prescription"
+    },
+    {
+      "key": "payment.title",
+      "text_en": "Payments",
+      "text_bn": "পেমেন্ট",
+      "category": "payment"
+    },
+    {
+      "key": "payment.amount",
+      "text_en": "Amount",
+      "text_bn": "পরিমাণ",
+      "category": "payment"
+    },
+    {
+      "key": "payment.method",
+      "text_en": "Payment Method",
+      "text_bn": "পেমেন্ট পদ্ধতি",
+      "category": "payment"
+    },
+    {
+      "key": "payment.status",
+      "text_en": "Status",
+      "text_bn": "স্ট্যাটাস",
+      "category": "payment"
+    },
+    {
+      "key": "payment.date",
+      "text_en": "Payment Date",
+      "text_bn": "পেমেন্ট তারিখ",
+      "category": "payment"
+    },
+    {
+      "key": "payment.cash",
+      "text_en": "Cash",
+      "text_bn": "নগদ",
+      "category": "payment"
+    },
+    {
+      "key": "payment.bkash",
+      "text_en": "bKash",
+      "text_bn": "বিকাশ",
+      "category": "payment"
+    },
+    {
+      "key": "payment.nagad",
+      "text_en": "Nagad",
+      "text_bn": "নগদ",
+      "category": "payment"
+    },
+    {
+      "key": "payment.rocket",
+      "text_en": "Rocket",
+      "text_bn": "রকেট",
+      "category": "payment"
+    },
+    {
+      "key": "payment.card",
+      "text_en": "Card",
+      "text_bn": "কার্ড",
+      "category": "payment"
+    },
+    {
+      "key": "appointment.title",
+      "text_en": "Appointments",
+      "text_bn": "অ্যাপয়েন্টমেন্ট",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.schedule",
+      "text_en": "Schedule Appointment",
+      "text_bn": "অ্যাপয়েন্টমেন্ট নির্ধারণ",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.date",
+      "text_en": "Appointment Date",
+      "text_bn": "অ্যাপয়েন্টমেন্ট তারিখ",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.time",
+      "text_en": "Time",
+      "text_bn": "সময়",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.status_scheduled",
+      "text_en": "Scheduled",
+      "text_bn": "নির্ধারিত",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.status_confirmed",
+      "text_en": "Confirmed",
+      "text_bn": "নিশ্চিত",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.status_completed",
+      "text_en": "Completed",
+      "text_bn": "সম্পন্ন",
+      "category": "appointment"
+    },
+    {
+      "key": "appointment.status_cancelled",
+      "text_en": "Cancelled",
+      "text_bn": "বাতিল",
+      "category": "appointment"
+    },
+    {
+      "key": "medicine.title",
+      "text_en": "Medicines",
+      "text_bn": "ওষুধ",
+      "category": "medicine"
+    },
+    {
+      "key": "medicine.homeopathy",
+      "text_en": "Homeopathy",
+      "text_bn": "হোমিওপ্যাথি",
+      "category": "medicine"
+    },
+    {
+      "key": "medicine.ayurveda",
+      "text_en": "Ayurveda",
+      "text_bn": "আয়ুর্বেদ",
+      "category": "medicine"
+    },
+    {
+      "key": "medicine.unani",
+      "text_en": "Unani",
+      "text_bn": "ইউনানি",
+      "category": "medicine"
+    },
+    {
+      "key": "medicine.herbal",
+      "text_en": "Herbal",
+      "text_bn": "ভেষজ",
+      "category": "medicine"
+    },
+    {
+      "key": "settings.title",
+      "text_en": "Settings",
+      "text_bn": "সেটিংস",
+      "category": "settings"
+    },
+    {
+      "key": "settings.profile",
+      "text_en": "Profile Settings",
+      "text_bn": "প্রোফাইল সেটিংস",
+      "category": "settings"
+    },
+    {
+      "key": "settings.clinic",
+      "text_en": "Clinic Settings",
+      "text_bn": "ক্লিনিক সেটিংস",
+      "category": "settings"
+    },
+    {
+      "key": "settings.security",
+      "text_en": "Security",
+      "text_bn": "নিরাপত্তা",
+      "category": "settings"
+    },
+    {
+      "key": "settings.integrations",
+      "text_en": "Integrations",
+      "text_bn": "ইন্টিগ্রেশন",
+      "category": "settings"
+    },
+    {
+      "key": "settings.language",
+      "text_en": "Language",
+      "text_bn": "ভাষা",
+      "category": "settings"
+    },
+    {
+      "key": "auth.email",
+      "text_en": "Email Address",
+      "text_bn": "ইমেইল ঠিকানা",
+      "category": "auth"
+    },
+    {
+      "key": "auth.password",
+      "text_en": "Password",
+      "text_bn": "পাসওয়ার্ড",
+      "category": "auth"
+    },
+    {
+      "key": "auth.forgot_password",
+      "text_en": "Forgot Password?",
+      "text_bn": "পাসওয়ার্ড ভুলে গেছেন?",
+      "category": "auth"
+    },
+    {
+      "key": "auth.2fa_code",
+      "text_en": "2FA Code",
+      "text_bn": "২এফএ কোড",
+      "category": "auth"
+    },
+    {
+      "key": "auth.enable_2fa",
+      "text_en": "Enable Two-Factor Authentication",
+      "text_bn": "টু-ফ্যাক্টর অথেন্টিকেশন সক্রিয় করুন",
+      "category": "auth"
+    },
+    {
+      "key": "error.required_field",
+      "text_en": "This field is required",
+      "text_bn": "এই ফিল্ডটি প্রয়োজনীয়",
+      "category": "error"
+    },
+    {
+      "key": "error.invalid_email",
+      "text_en": "Invalid email address",
+      "text_bn": "অবৈধ ইমেইল ঠিকানা",
+      "category": "error"
+    },
+    {
+      "key": "error.invalid_phone",
+      "text_en": "Invalid phone number",
+      "text_bn": "অবৈধ ফোন নম্বর",
+      "category": "error"
+    },
+    {
+      "key": "error.network_error",
+      "text_en": "Network error. Please try again.",
+      "text_bn": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "category": "error"
+    },
+    {
+      "key": "success.saved",
+      "text_en": "Successfully saved",
+      "text_bn": "সফলভাবে সংরক্ষিত",
+      "category": "success"
+    },
+    {
+      "key": "success.deleted",
+      "text_en": "Successfully deleted",
+      "text_bn": "সফলভাবে মুছে ফেলা হয়েছে",
+      "category": "success"
+    },
+    {
+      "key": "success.updated",
+      "text_en": "Successfully updated",
+      "text_bn": "সফলভাবে আপডেট করা হয়েছে",
+      "category": "success"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "tenants": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "Dr. Rahman's Homeopathy Clinic",
+      "email": "dr.rahman@example.com",
+      "phone": "+8801712345678",
+      "clinic_name": "Dhanmondi Homeopathy Center",
+      "clinic_address": "House 12, Road 5, Dhanmondi, Dhaka-1205",
+      "division_id": 1,
+      "district_id": 1,
+      "upazila_id": 1,
+      "specializations": ["homeopathy"],
+      "license_number": "BHB-12345",
+      "is_verified": true,
+      "plan": "pro",
+      "is_active": true,
+      "is_approved": true
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "Dr. Karim's Ayurvedic Center",
+      "email": "dr.karim@example.com",
+      "phone": "+8801812345678",
+      "clinic_name": "Gulshan Ayurveda & Wellness",
+      "clinic_address": "Plot 45, Road 11, Block C, Gulshan-1, Dhaka-1212",
+      "division_id": 1,
+      "district_id": 1,
+      "upazila_id": 2,
+      "specializations": ["ayurveda", "herbal"],
+      "license_number": "BAAM-67890",
+      "is_verified": true,
+      "plan": "plus",
+      "is_active": true,
+      "is_approved": true
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "name": "Dr. Ahmed's Integrated Clinic",
+      "email": "dr.ahmed@example.com",
+      "phone": "+8801912345678",
+      "clinic_name": "Chittagong Alternative Medicine Center",
+      "clinic_address": "CDA Avenue, Nasirabad, Chittagong-4000",
+      "division_id": 2,
+      "district_id": 14,
+      "upazila_id": 6,
+      "specializations": ["homeopathy", "ayurveda", "unani"],
+      "license_number": "MULTI-11223",
+      "is_verified": false,
+      "plan": "free",
+      "is_active": true,
+      "is_approved": true
+    }
+  ],
+  "users": [
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440001",
+      "tenant_id": "550e8400-e29b-41d4-a716-446655440001",
+      "email": "dr.rahman@example.com",
+      "password": "Test@1234",
+      "role": "doctor",
+      "full_name": "Dr. Abdur Rahman",
+      "phone": "+8801712345678",
+      "language": "bn",
+      "is_active": true,
+      "is_email_verified": true,
+      "is_2fa_enabled": false
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440002",
+      "tenant_id": "550e8400-e29b-41d4-a716-446655440001",
+      "email": "receptionist.dhanmondi@example.com",
+      "password": "Test@1234",
+      "role": "receptionist",
+      "full_name": "Fatima Khatun",
+      "phone": "+8801712345679",
+      "language": "bn",
+      "is_active": true,
+      "is_email_verified": true,
+      "is_2fa_enabled": false
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440003",
+      "tenant_id": "550e8400-e29b-41d4-a716-446655440002",
+      "email": "dr.karim@example.com",
+      "password": "Test@1234",
+      "role": "doctor",
+      "full_name": "Dr. Karimul Islam",
+      "phone": "+8801812345678",
+      "language": "en",
+      "is_active": true,
+      "is_email_verified": true,
+      "is_2fa_enabled": false
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440004",
+      "tenant_id": "550e8400-e29b-41d4-a716-446655440003",
+      "email": "dr.ahmed@example.com",
+      "password": "Test@1234",
+      "role": "doctor",
+      "full_name": "Dr. Mahmud Ahmed",
+      "phone": "+8801912345678",
+      "language": "bn",
+      "is_active": true,
+      "is_email_verified": true,
+      "is_2fa_enabled": false
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440005",
+      "tenant_id": null,
+      "email": "admin@altcare.com",
+      "password": "Admin@1234",
+      "role": "admin",
+      "full_name": "Platform Admin",
+      "phone": "+8801700000000",
+      "language": "en",
+      "is_active": true,
+      "is_email_verified": true,
+      "is_2fa_enabled": true
+    },
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440006",
+      "tenant_id": null,
+      "email": "operator@altcare.com",
+      "password": "Operator@1234",
+      "role": "operator",
+      "full_name": "Support Operator",
+      "phone": "+8801700000001",
+      "language": "en",
+      "is_active": true,
+      "is_email_verified": true,
+      "is_2fa_enabled": false
+    }
+  ],
+  "notes": {
+    "passwords": "All test passwords are: Test@1234 (for doctors/receptionists) and Admin@1234 / Operator@1234 (for platform users)",
+    "tenant_ids": {
+      "Dr. Rahman's Clinic": "550e8400-e29b-41d4-a716-446655440001",
+      "Dr. Karim's Center": "550e8400-e29b-41d4-a716-446655440002",
+      "Dr. Ahmed's Clinic": "550e8400-e29b-41d4-a716-446655440003"
+    },
+    "specializations": {
+      "homeopathy": "Homeopathic medicine system",
+      "ayurveda": "Ayurvedic medicine system",
+      "unani": "Unani medicine system",
+      "herbal": "Herbal medicine system"
+    },
+    "roles": {
+      "admin": "Platform administrator (no tenant)",
+      "operator": "Platform support operator (no tenant)",
+      "doctor": "Clinic doctor (tenant-scoped)",
+      "receptionist": "Clinic receptionist (tenant-scoped)"
+    },
+    "plans": {
+      "free": "Free tier with basic features",
+      "plus": "Plus tier with additional features",
+      "pro": "Pro tier with all features including AI"
+    }
+  }
+}
