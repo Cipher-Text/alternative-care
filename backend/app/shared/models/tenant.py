@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, String, Text, func, ARRAY
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.models.base import BaseAuditModel
@@ -87,7 +87,7 @@ class User(BaseAuditModel):
 
     # Tenant association (NULL for platform admins/operators)
     tenant_id: Mapped[str | None] = mapped_column(
-        String(36),
+        ForeignKey("tenants.id"),
         nullable=True,
         index=True,
     )

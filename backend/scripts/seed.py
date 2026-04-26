@@ -29,7 +29,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import async_session_maker
+from app.core.database import AsyncSessionLocal
 from app.core.security import get_password_hash
 from app.shared.models import (
     District,
@@ -198,7 +198,7 @@ async def main():
     print("=" * 60)
 
     try:
-        async with async_session_maker() as session:
+        async with AsyncSessionLocal() as session:
             async with session.begin():
                 seeder = SeedData(session)
 
