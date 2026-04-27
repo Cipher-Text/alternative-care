@@ -28,44 +28,41 @@ else:
     TEST_DATABASE_URL = re.sub(r"/([\w-]+)(\?|$)", r"/\1_test\2", TEST_DATABASE_URL)
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create event loop for async tests."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 async def test_engine():
-    """Create test database engine."""
-    from sqlalchemy import MetaData
+    """Create test database engine for each test."""
+    # Create a fresh engine for each test
+    engine = create_async_engine(TEST_DATABASE_URL, echo=False, pool_pre_ping=True)
 
-    # Create a standard engine
-    engine = create_async_engine(TEST_DATABASE_URL, echo=False)
-
-    # Create all tables, ignoring pgvector/pg_trgm errors since auth tests don't need those tables
+    # Drop all tables first
     async with engine.begin() as conn:
-        try:
+        await conn.run_sync(Base.metadata.drop_all)
+
+    # Try to create all tables
+    try:
+        async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        except Exception as e:
-            # If creation fails (likely due to pgvector or pg_trgm),
-            # try creating tables one by one, skipping problematic ones
-            error_msg = str(e).lower()
-            if 'vector' in error_msg or 'trgm' in error_msg or 'gin' in error_msg:
-                # Create tables individually, skipping ones that fail
-                for table in Base.metadata.sorted_tables:
-                    try:
+    except Exception as e:
+        # If creation fails (likely due to pgvector or pg_trgm),
+        # create tables individually, skipping problematic ones
+        error_msg = str(e).lower()
+        if 'vector' in error_msg or 'trgm' in error_msg or 'gin' in error_msg:
+            # Create tables one by one in separate transactions
+            for table in Base.metadata.sorted_tables:
+                try:
+                    async with engine.begin() as conn:
                         await conn.run_sync(table.create, checkfirst=True)
-                    except Exception:
-                        # Skip tables that fail (embeddings, medicines, etc.)
-                        pass
-            else:
-                raise
+                except Exception as ex:
+                    # Skip tables that fail (embeddings, medicines with gin indexes, etc.)
+                    if 'vector' not in str(ex).lower() and 'gin' not in str(ex).lower() and 'trgm' not in str(ex).lower():
+                        # If it's a different error, raise it
+                        print(f"Error creating table {table.name}: {ex}")
+        else:
+            raise
 
     yield engine
 
-    # Drop all tables after tests
+    # Cleanup: drop all tables after test
     async with engine.begin() as conn:
         try:
             await conn.run_sync(Base.metadata.drop_all)

@@ -19,27 +19,86 @@ from app.shared.schemas import (
 
 
 @pytest.fixture
-def tenant_id():
+async def test_tenant_data(db_session):
+    """Create test tenant."""
+    from app.shared.models import Tenant
+
+    tenant = Tenant(
+        id=str(uuid4()),
+        name="Test Clinic",
+        email="test@clinic.com",
+        clinic_name="Test Clinic",
+        specializations=["homeopathy"],
+        plan="free",
+        is_active=True,
+        is_approved=True,
+    )
+    db_session.add(tenant)
+    await db_session.commit()
+    await db_session.refresh(tenant)
+    return tenant
+
+
+@pytest.fixture
+async def test_doctor(db_session, test_tenant_data):
+    """Create test doctor."""
+    from app.shared.models import User
+
+    doctor = User(
+        id=str(uuid4()),
+        tenant_id=test_tenant_data.id,
+        email="doctor@test.com",
+        password_hash="$2b$12$test_hash_for_testing_only",  # Fake hash for testing
+        role="doctor",
+        full_name="Dr. Test",
+        is_active=True,
+        is_email_verified=True,
+    )
+    db_session.add(doctor)
+    await db_session.commit()
+    await db_session.refresh(doctor)
+    return doctor
+
+
+@pytest.fixture
+async def test_patient(db_session, test_tenant_data):
+    """Create test patient."""
+    from app.shared.models import Patient
+
+    patient = Patient(
+        id=str(uuid4()),
+        tenant_id=test_tenant_data.id,
+        full_name="Test Patient",
+        is_active=True,
+    )
+    db_session.add(patient)
+    await db_session.commit()
+    await db_session.refresh(patient)
+    return patient
+
+
+@pytest.fixture
+def tenant_id(test_tenant_data):
     """Test tenant ID."""
-    return str(uuid4())
+    return test_tenant_data.id
 
 
 @pytest.fixture
-def doctor_id():
+def doctor_id(test_doctor):
     """Test doctor ID."""
-    return str(uuid4())
+    return test_doctor.id
 
 
 @pytest.fixture
-def patient_id():
+def patient_id(test_patient):
     """Test patient ID."""
-    return str(uuid4())
+    return test_patient.id
 
 
 @pytest.fixture
-def user_id():
+def user_id(test_doctor):
     """Test user ID for created_by/updated_by."""
-    return str(uuid4())
+    return test_doctor.id
 
 
 @pytest.fixture
@@ -504,13 +563,46 @@ async def test_update_visit_completes_appointment(
 
 
 @pytest.mark.asyncio
-async def test_tenant_isolation(db_session, doctor_id, patient_id, user_id):
+async def test_tenant_isolation(db_session, test_tenant_data, test_doctor, test_patient, patient_id, doctor_id, user_id):
     """Test that appointments are isolated by tenant."""
-    tenant1_id = str(uuid4())
-    tenant2_id = str(uuid4())
+    from app.shared.models import Tenant, User, Patient
 
-    service1 = AppointmentService(db=db_session, tenant_id=tenant1_id)
-    service2 = AppointmentService(db=db_session, tenant_id=tenant2_id)
+    # Create second tenant with data
+    tenant2 = Tenant(
+        id=str(uuid4()),
+        name="Tenant 2 Clinic",
+        email="tenant2@test.com",
+        clinic_name="Tenant 2",
+        specializations=["ayurveda"],
+        plan="free",
+        is_active=True,
+        is_approved=True,
+    )
+    db_session.add(tenant2)
+
+    doctor2 = User(
+        id=str(uuid4()),
+        tenant_id=tenant2.id,
+        email="doctor2@test.com",
+        password_hash="$2b$12$test_hash_for_testing_only",
+        role="doctor",
+        full_name="Dr. Test 2",
+        is_active=True,
+        is_email_verified=True,
+    )
+    db_session.add(doctor2)
+
+    patient2 = Patient(
+        id=str(uuid4()),
+        tenant_id=tenant2.id,
+        full_name="Patient 2",
+        is_active=True,
+    )
+    db_session.add(patient2)
+    await db_session.commit()
+
+    service1 = AppointmentService(db=db_session, tenant_id=test_tenant_data.id)
+    service2 = AppointmentService(db=db_session, tenant_id=tenant2.id)
 
     # Create appointment for tenant1
     data = AppointmentCreate(

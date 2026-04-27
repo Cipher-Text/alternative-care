@@ -16,10 +16,12 @@ async def test_tenant(db_session):
     tenant = Tenant(
         id=str(uuid4()),
         name="Test Clinic",
-        slug="test-clinic",
+        email="test@clinic.com",
+        clinic_name="Test Clinic",
         specializations=["homeopathy"],
-        plan="basic",
+        plan="free",
         is_active=True,
+        is_approved=True,
     )
     db_session.add(tenant)
     await db_session.commit()
@@ -30,17 +32,15 @@ async def test_tenant(db_session):
 @pytest.fixture
 async def test_doctor(db_session, test_tenant):
     """Create test doctor user."""
-    from app.core.security import get_password_hash
-
     doctor = User(
         id=str(uuid4()),
         tenant_id=test_tenant.id,
         email="doctor@test.com",
-        hashed_password=get_password_hash("testpass123"),
+        password_hash="$2b$12$test_hash_for_testing_only",  # Fake hash for testing
         full_name="Dr. Test Doctor",
         role="doctor",
         is_active=True,
-        email_verified=True,
+        is_email_verified=True,
     )
     db_session.add(doctor)
     await db_session.commit()
@@ -502,10 +502,12 @@ async def test_tenant_isolation_appointments(db_session, test_doctor, patient_id
     tenant2 = Tenant(
         id=str(uuid4()),
         name="Other Clinic",
-        slug="other-clinic",
+        email="other@clinic.com",
+        clinic_name="Other Clinic",
         specializations=["ayurveda"],
-        plan="basic",
+        plan="free",
         is_active=True,
+        is_approved=True,
     )
     db_session.add(tenant2)
 
@@ -513,11 +515,11 @@ async def test_tenant_isolation_appointments(db_session, test_doctor, patient_id
         id=str(uuid4()),
         tenant_id=tenant2.id,
         email="doctor2@test.com",
-        hashed_password=get_password_hash("testpass123"),
+        password_hash="$2b$12$test_hash_for_testing_only",  # Fake hash for testing
         full_name="Dr. Other Doctor",
         role="doctor",
         is_active=True,
-        email_verified=True,
+        is_email_verified=True,
     )
     db_session.add(doctor2)
     await db_session.commit()
