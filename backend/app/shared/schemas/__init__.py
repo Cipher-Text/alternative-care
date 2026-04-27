@@ -13,6 +13,18 @@ from app.shared.schemas.appointment import (
     VisitResponse,
     VisitListItem,
 )
+from app.shared.schemas.doctor import (
+    DoctorProfileResponse,
+    DoctorProfileUpdate,
+    DoctorDegreeBase,
+    DoctorDegreeCreate,
+    DoctorDegreeUpdate,
+    DoctorDegreeResponse,
+    DoctorTrainingBase,
+    DoctorTrainingCreate,
+    DoctorTrainingUpdate,
+    DoctorTrainingResponse,
+)
 from app.shared.schemas.patient import (
     PatientBase,
     PatientCreate,
@@ -60,6 +72,19 @@ __all__ = [
     "VisitUpdate",
     "VisitResponse",
     "VisitListItem",
+    # Doctor Profile
+    "DoctorProfileResponse",
+    "DoctorProfileUpdate",
+    # Doctor Degrees
+    "DoctorDegreeBase",
+    "DoctorDegreeCreate",
+    "DoctorDegreeUpdate",
+    "DoctorDegreeResponse",
+    # Doctor Trainings
+    "DoctorTrainingBase",
+    "DoctorTrainingCreate",
+    "DoctorTrainingUpdate",
+    "DoctorTrainingResponse",
     # Patients
     "PatientBase",
     "PatientCreate",
