@@ -138,7 +138,11 @@ class UserSession(BaseAuditModel):
     __tablename__ = "user_sessions"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    user_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
 
     # Session data
     refresh_token_hash: Mapped[str] = mapped_column(String(255), nullable=False)
