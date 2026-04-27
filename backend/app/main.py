@@ -76,9 +76,11 @@ async def root():
 # API routes
 from app.modules.auth import router as auth_router
 from app.modules.appointments import router as appointments_router
+from app.modules.patient import router as patient_router
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(appointments_router, prefix=f"{settings.API_V1_PREFIX}/appointments", tags=["Appointments"])
+app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", tags=["Patients"])
 
 
 if __name__ == "__main__":

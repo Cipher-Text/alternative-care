@@ -13,6 +13,22 @@ from app.shared.schemas.appointment import (
     VisitResponse,
     VisitListItem,
 )
+from app.shared.schemas.patient import (
+    PatientBase,
+    PatientCreate,
+    PatientUpdate,
+    PatientResponse,
+    PatientListItem,
+    PatientSearchResult,
+    PatientTagBase,
+    PatientTagCreate,
+    PatientTagUpdate,
+    PatientTagResponse,
+    PatientDiagnosisBase,
+    PatientDiagnosisCreate,
+    PatientDiagnosisUpdate,
+    PatientDiagnosisResponse,
+)
 from app.shared.schemas.symptom import (
     SymptomBase,
     SymptomCreate,
@@ -44,6 +60,23 @@ __all__ = [
     "VisitUpdate",
     "VisitResponse",
     "VisitListItem",
+    # Patients
+    "PatientBase",
+    "PatientCreate",
+    "PatientUpdate",
+    "PatientResponse",
+    "PatientListItem",
+    "PatientSearchResult",
+    # Patient Tags
+    "PatientTagBase",
+    "PatientTagCreate",
+    "PatientTagUpdate",
+    "PatientTagResponse",
+    # Patient Diagnoses
+    "PatientDiagnosisBase",
+    "PatientDiagnosisCreate",
+    "PatientDiagnosisUpdate",
+    "PatientDiagnosisResponse",
     # Symptoms
     "SymptomBase",
     "SymptomCreate",
