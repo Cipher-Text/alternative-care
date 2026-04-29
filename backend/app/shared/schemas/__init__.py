@@ -41,6 +41,17 @@ from app.shared.schemas.patient import (
     PatientDiagnosisUpdate,
     PatientDiagnosisResponse,
 )
+from app.shared.schemas.prescription import (
+    PrescriptionItemBase,
+    PrescriptionItemCreate,
+    PrescriptionItemUpdate,
+    PrescriptionItemResponse,
+    PrescriptionBase,
+    PrescriptionCreate,
+    PrescriptionUpdate,
+    PrescriptionResponse,
+    PrescriptionListItem,
+)
 from app.shared.schemas.symptom import (
     SymptomBase,
     SymptomCreate,
@@ -119,4 +130,15 @@ __all__ = [
     "MedicineSymptomMappingCreate",
     "MedicineSymptomMappingUpdate",
     "MedicineSymptomMappingResponse",
+    # Prescription Items
+    "PrescriptionItemBase",
+    "PrescriptionItemCreate",
+    "PrescriptionItemUpdate",
+    "PrescriptionItemResponse",
+    # Prescriptions
+    "PrescriptionBase",
+    "PrescriptionCreate",
+    "PrescriptionUpdate",
+    "PrescriptionResponse",
+    "PrescriptionListItem",
 ]

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **AltCare** is a multi-tenant SaaS platform for alternative medicine practitioners (Homeopathy, Ayurveda, Unani, Herbal) built with FastAPI backend and Next.js frontend (coming in Phase 1, Week 5-6). The system uses row-level multi-tenancy with complete data isolation per clinic.
 
-**Current Status:** Backend foundation complete (30 database models), Phase 1 Week 3-4 authentication module in progress.
+**Current Status:** Backend foundation complete (30 database models). **Phase 1 Week 1-10 COMPLETE** ✅ (Auth, Doctor, Patient, Appointments, Prescriptions). Next: Week 11 - Payment & Invoicing.
 
 ## Essential Commands
 
@@ -86,14 +86,15 @@ backend/app/
 │   ├── security.py        # JWT, bcrypt, TOTP 2FA, Fernet encryption
 │   └── dependencies.py    # Auth dependencies, CurrentUser, role/plan checks
 ├── modules/                # Feature modules (each has router, schemas, service)
-│   ├── auth/              # JWT login, refresh, 2FA
-│   ├── patient/           # Patient CRUD, search, tags, diagnoses
-│   ├── prescription/      # Prescription builder, PDF generation
-│   ├── payment/           # Payment processing, invoices
-│   ├── medicine/          # Medicine database (filtered by specialization)
-│   ├── library/           # EPUB reader, embeddings, RAG
-│   ├── doctor/            # Profile, degrees, trainings
-│   └── integration/       # SMS/Email/Payment provider configs
+│   ├── auth/              # ✅ JWT login, refresh, 2FA (9 endpoints)
+│   ├── doctor/            # ✅ Profile, degrees, trainings (12 endpoints)
+│   ├── patient/           # ✅ Patient CRUD, search, tags, diagnoses (14 endpoints)
+│   ├── appointments/      # ✅ Appointments & visits (10 endpoints)
+│   ├── prescription/      # ✅ Prescription builder, PDF generation (8 endpoints)
+│   ├── payment/           # 🔄 Payment processing, invoices (NEXT)
+│   ├── medicine/          # 📋 Medicine database (filtered by specialization)
+│   ├── library/           # 📋 EPUB reader, embeddings, RAG
+│   └── integration/       # 📋 SMS/Email/Payment provider configs
 └── shared/
     ├── models/            # SQLAlchemy models (30 tables)
     └── schemas/           # Pydantic request/response schemas
@@ -197,6 +198,15 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 - Tenant configs in `tenant_integrations` (credentials encrypted)
 - All API calls logged in `integration_logs` with request/response payloads
 - Provider types: `sms`, `email`, `payment`
+
+**Prescription System (NEW - Week 9-10):**
+- Immutable workflow: `draft` → `issued` → `voided` (status field)
+- Only drafts can be edited/have items added or removed
+- Prescription items support both database medicines (medicine_id) and free-text (medicine_name)
+- PDF generation ready (placeholder implementation, use ReportLab/WeasyPrint)
+- Service layer enforces immutability and role-based access
+- 8 endpoints: CRUD + void + PDF + add/delete items
+- 98% service coverage, 89% route coverage, 36 tests (all passing)
 
 ## Development Guidelines
 
@@ -340,12 +350,13 @@ Tests use `altcare_test` database (auto-created by conftest.py). If tests fail w
 ## Project Roadmap Context
 
 **Phase 1 (Current, May-July 2026):** Core Clinic MVP
-- Week 1-2: ✅ Backend foundation (complete)
-- Week 3-4: 🔄 Authentication & User Management (in progress)
-- Week 5-6: Doctor Profile & Credentials
-- Week 7-8: Patient Management
-- Week 9-10: Prescription System
-- Week 11: Payment & Invoicing
+- Week 1-2: ✅ Backend foundation (complete - 30 models, infra, auth)
+- Week 3-4: ✅ Authentication & User Management (complete - JWT, 2FA, 9 endpoints, 45 tests)
+- Week 5-6: ✅ Doctor Profile & Credentials (complete - 12 endpoints, profile/degrees/trainings)
+- Week 7-8: ✅ Patient Management (complete - 14 endpoints, tags, diagnoses)
+- Bonus: ✅ Appointments & Visits (complete - 10 endpoints, conflict detection)
+- Week 9-10: ✅ **Prescription System (COMPLETE - 8 endpoints, 36 tests, 98% coverage)** 🎉
+- Week 11: 🔄 **Payment & Invoicing (NEXT)**
 - Week 12: Dashboard & Analytics
 - Week 13: Integration Framework
 - Week 14: Testing & Launch
