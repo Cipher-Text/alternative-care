@@ -76,6 +76,14 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
 
+    # bKash Payment Gateway
+    BKASH_APP_KEY: str = ""
+    BKASH_APP_SECRET: str = ""
+    BKASH_USERNAME: str = ""
+    BKASH_PASSWORD: str = ""
+    BKASH_BASE_URL: str = "https://tokenized.sandbox.bka.sh/v1.2.0-beta"
+    BKASH_IS_SANDBOX: bool = True
+
     # OpenAI
     OPENAI_API_KEY: str = ""
 

@@ -13,7 +13,16 @@ from app.core.config import settings
 from app.core.database import Base, get_db
 from app.core.security import create_access_token, get_password_hash
 from app.main import app
-from app.shared.models import Division, District, Tenant, User
+from app.shared.models import (
+    Division,
+    District,
+    Tenant,
+    User,
+    Patient,
+    Visit,
+    Payment,
+    Invoice,
+)
 
 # Test database URL - replace the database name with test database
 # Handle both 'altcare_dev' and 'alternative_care' database names
@@ -401,3 +410,211 @@ async def admin_client(client: AsyncClient, admin_access_token: str) -> AsyncCli
     """Create authenticated admin client."""
     client.headers["Authorization"] = f"Bearer {admin_access_token}"
     return client
+
+
+# ============================================================================
+# Convenient Token Alias Fixtures
+# ============================================================================
+
+
+@pytest.fixture
+def doctor_token(test_access_token: str) -> str:
+    """Alias for test_access_token (for clearer test naming)."""
+    return test_access_token
+
+
+# ============================================================================
+# Patient Fixtures
+# ============================================================================
+
+
+@pytest.fixture
+async def test_patient(db_session: AsyncSession, test_tenant: Tenant) -> Patient:
+    """Create test patient."""
+    from datetime import date
+
+    patient = Patient(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant.id,
+        full_name="John Doe",
+        date_of_birth=date(1980, 5, 15),
+        gender="male",
+        phone="+8801811111111",
+        email="john.doe@example.com",
+        address="123 Patient Street, Dhaka",
+        blood_group="O+",
+        created_by=str(uuid.uuid4()),
+        updated_by=str(uuid.uuid4()),
+    )
+    db_session.add(patient)
+    await db_session.commit()
+    await db_session.refresh(patient)
+    return patient
+
+
+@pytest.fixture
+async def test_patient_2(db_session: AsyncSession, test_tenant_2: Tenant) -> Patient:
+    """Create test patient for second tenant (isolation tests)."""
+    from datetime import date
+
+    patient = Patient(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant_2.id,
+        full_name="Jane Smith",
+        date_of_birth=date(1985, 8, 20),
+        gender="female",
+        phone="+8801822222222",
+        email="jane.smith@example.com",
+        address="456 Patient Avenue, Dhaka",
+        blood_group="A+",
+        created_by=str(uuid.uuid4()),
+        updated_by=str(uuid.uuid4()),
+    )
+    db_session.add(patient)
+    await db_session.commit()
+    await db_session.refresh(patient)
+    return patient
+
+
+# ============================================================================
+# Visit Fixtures
+# ============================================================================
+
+
+@pytest.fixture
+async def test_visit(
+    db_session: AsyncSession, test_tenant: Tenant, test_patient: Patient, test_user: User
+) -> Visit:
+    """Create test visit."""
+    from datetime import datetime
+
+    visit = Visit(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant.id,
+        patient_id=test_patient.id,
+        doctor_id=test_user.id,
+        visit_date=datetime.utcnow(),
+        visit_type="consultation",
+        chief_complaint="Headache and fever",
+        diagnosis="Common cold",
+        notes="Rest and hydration recommended",
+        created_by=test_user.id,
+        updated_by=test_user.id,
+    )
+    db_session.add(visit)
+    await db_session.commit()
+    await db_session.refresh(visit)
+    return visit
+
+
+# ============================================================================
+# Payment Fixtures
+# ============================================================================
+
+
+@pytest.fixture
+async def test_payment(
+    db_session: AsyncSession, test_tenant: Tenant, test_patient: Patient, test_user: User
+) -> Payment:
+    """Create test payment."""
+    from datetime import date
+
+    payment = Payment(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant.id,
+        patient_id=test_patient.id,
+        amount=1000.0,
+        currency="BDT",
+        payment_method="cash",
+        status="paid",
+        description="Consultation fee",
+        payment_date=date.today(),
+        received_by=test_user.id,
+        created_by=test_user.id,
+        updated_by=test_user.id,
+    )
+    db_session.add(payment)
+    await db_session.commit()
+    await db_session.refresh(payment)
+    return payment
+
+
+@pytest.fixture
+async def other_tenant_payment(
+    db_session: AsyncSession, test_tenant_2: Tenant, test_patient_2: Patient, test_user_2: User
+) -> Payment:
+    """Create payment for second tenant (isolation tests)."""
+    from datetime import date
+
+    payment = Payment(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant_2.id,
+        patient_id=test_patient_2.id,
+        amount=1500.0,
+        currency="BDT",
+        payment_method="cash",
+        status="paid",
+        description="Treatment fee",
+        payment_date=date.today(),
+        received_by=test_user_2.id,
+        created_by=test_user_2.id,
+        updated_by=test_user_2.id,
+    )
+    db_session.add(payment)
+    await db_session.commit()
+    await db_session.refresh(payment)
+    return payment
+
+
+# ============================================================================
+# Invoice Fixtures
+# ============================================================================
+
+
+@pytest.fixture
+async def test_invoice(
+    db_session: AsyncSession, test_tenant: Tenant, test_payment: Payment, test_user: User
+) -> Invoice:
+    """Create test invoice."""
+    from datetime import date, timedelta
+
+    invoice = Invoice(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant.id,
+        payment_id=test_payment.id,
+        invoice_number="INV-202604-0001",
+        status="draft",
+        due_date=date.today() + timedelta(days=30),
+        created_by=test_user.id,
+        updated_by=test_user.id,
+    )
+    db_session.add(invoice)
+    await db_session.commit()
+    await db_session.refresh(invoice)
+    return invoice
+
+
+@pytest.fixture
+async def other_tenant_invoice(
+    db_session: AsyncSession,
+    test_tenant_2: Tenant,
+    other_tenant_payment: Payment,
+    test_user_2: User,
+) -> Invoice:
+    """Create invoice for second tenant (isolation tests)."""
+    from datetime import date, timedelta
+
+    invoice = Invoice(
+        id=str(uuid.uuid4()),
+        tenant_id=test_tenant_2.id,
+        payment_id=other_tenant_payment.id,
+        invoice_number="INV-202604-0002",
+        status="draft",
+        due_date=date.today() + timedelta(days=30),
+        created_by=test_user_2.id,
+        updated_by=test_user_2.id,
+    )
+    db_session.add(invoice)
+    await db_session.commit()
+    await db_session.refresh(invoice)
+    return invoice

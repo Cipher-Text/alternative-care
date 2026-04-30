@@ -52,6 +52,24 @@ from app.shared.schemas.prescription import (
     PrescriptionResponse,
     PrescriptionListItem,
 )
+from app.shared.schemas.payment import (
+    PaymentBase,
+    PaymentCreate,
+    PaymentUpdate,
+    PaymentResponse,
+    PaymentListItem,
+    BkashPaymentCreate,
+    BkashPaymentExecute,
+    BkashPaymentQuery,
+    BkashRefundRequest,
+    BkashPaymentResponse,
+    InvoiceBase,
+    InvoiceCreate,
+    InvoiceUpdate,
+    InvoiceResponse,
+    InvoiceListItem,
+    PaymentSummary,
+)
 from app.shared.schemas.symptom import (
     SymptomBase,
     SymptomCreate,
@@ -141,4 +159,23 @@ __all__ = [
     "PrescriptionUpdate",
     "PrescriptionResponse",
     "PrescriptionListItem",
+    # Payments
+    "PaymentBase",
+    "PaymentCreate",
+    "PaymentUpdate",
+    "PaymentResponse",
+    "PaymentListItem",
+    # bKash
+    "BkashPaymentCreate",
+    "BkashPaymentExecute",
+    "BkashPaymentQuery",
+    "BkashRefundRequest",
+    "BkashPaymentResponse",
+    # Invoices
+    "InvoiceBase",
+    "InvoiceCreate",
+    "InvoiceUpdate",
+    "InvoiceResponse",
+    "InvoiceListItem",
+    "PaymentSummary",
 ]
