@@ -6,9 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **AltCare** is a multi-tenant SaaS platform for alternative medicine practitioners (Homeopathy, Ayurveda, Unani, Herbal) built with FastAPI backend and Next.js frontend (coming in Phase 1, Week 5-6). The system uses row-level multi-tenancy with complete data isolation per clinic.
 
-**Current Status:** Backend foundation complete (30 database models). **Phase 1 Week 1-12 COMPLETE** ✅ (Auth, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard). Next: Week 13 - Integration Framework.
+**Current Status:** Backend foundation complete (30 database models). **Phase 1 Week 1-13 COMPLETE** ✅ (Auth, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration Framework). Next: Week 14 - Testing & Launch Prep.
 
 ## Essential Commands
+
+### Initial Setup (First Time Only)
+
+```bash
+# Generate Fernet encryption key for integration credentials
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+
+# Add the generated key to backend/.env
+# INTEGRATION_ENCRYPTION_KEY=<your_generated_key>
+```
 
 ### Development Workflow
 
@@ -31,6 +41,9 @@ alembic upgrade head
 
 # Seed database with geographic data and integration providers
 cd backend && ./scripts/run_seed.sh
+
+# Start Celery worker for background tasks (SMS, Email)
+celery -A app.core.celery:celery_app worker --loglevel=info
 ```
 
 ### Testing
@@ -91,10 +104,10 @@ backend/app/
 │   ├── patient/           # ✅ Patient CRUD, search, tags, diagnoses (14 endpoints)
 │   ├── appointments/      # ✅ Appointments & visits (10 endpoints)
 │   ├── prescription/      # ✅ Prescription builder, PDF generation (8 endpoints)
-│   ├── payment/           # 🔄 Payment processing, invoices (NEXT)
+│   ├── payment/           # ✅ Payment processing, invoices, bKash (12 endpoints)
+│   ├── integration/       # ✅ SMS/Email/Payment provider configs (12 endpoints)
 │   ├── medicine/          # 📋 Medicine database (filtered by specialization)
-│   ├── library/           # 📋 EPUB reader, embeddings, RAG
-│   └── integration/       # 📋 SMS/Email/Payment provider configs
+│   └── library/           # 📋 EPUB reader, embeddings, RAG
 └── shared/
     ├── models/            # SQLAlchemy models (30 tables)
     └── schemas/           # Pydantic request/response schemas
@@ -199,7 +212,7 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 - All API calls logged in `integration_logs` with request/response payloads
 - Provider types: `sms`, `email`, `payment`
 
-**Prescription System (NEW - Week 9-10):**
+**Prescription System (Week 9-10):**
 - Immutable workflow: `draft` → `issued` → `voided` (status field)
 - Only drafts can be edited/have items added or removed
 - Prescription items support both database medicines (medicine_id) and free-text (medicine_name)
@@ -207,6 +220,17 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 - Service layer enforces immutability and role-based access
 - 8 endpoints: CRUD + void + PDF + add/delete items
 - 98% service coverage, 89% route coverage, 36 tests (all passing)
+
+**Integration Framework (Week 13):**
+- Dynamic provider loading via factory pattern (bKash, BulkSMSBD, SMTP)
+- Fernet encryption for all credentials (never stored in plaintext)
+- Celery async tasks for SMS/Email sending with retry logic
+- Complete audit trail via IntegrationLog (request/response payloads)
+- Primary provider selection per type (SMS, Email, Payment)
+- Test mode for all integrations before production use
+- 12 endpoints: provider catalog, CRUD, test, logs, send operations
+- Provider services: BaseProviderService → BkashIntegrationService, BulkSMSBDService, SMTPService
+- Credentials decrypted only when needed, never cached or returned via API
 
 ## Development Guidelines
 
@@ -358,8 +382,8 @@ Tests use `altcare_test` database (auto-created by conftest.py). If tests fail w
 - Week 9-10: ✅ **Prescription System (COMPLETE - 8 endpoints, 36 tests, 98% coverage)** 🎉
 - Week 11: ✅ **Payment & Invoicing (COMPLETE - 12 endpoints, bKash integration, 70+ tests)** 💰
 - Week 12: ✅ **Dashboard & Analytics (COMPLETE - 6 endpoints, 18 schemas, real-time stats)** 📊
-- Week 13: 🔄 **Integration Framework (NEXT)**
-- Week 14: Testing & Launch
+- Week 13: ✅ **Integration Framework (COMPLETE - 12 endpoints, 3 providers: bKash/BulkSMSBD/SMTP, Celery tasks)** 🔌
+- Week 14: 🔄 **Testing & Launch (NEXT)**
 
 **Future Phases:**
 - Phase 2 (Aug-Oct 2026): Knowledge Base (medicine database, symptom search)

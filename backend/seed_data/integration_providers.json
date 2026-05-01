@@ -85,6 +85,45 @@
       "is_active": true
     },
     {
+      "name": "bulksmsbd",
+      "display_name": "BulkSMSBD",
+      "provider_type": "sms",
+      "description": "Bangladesh local SMS gateway. Reliable delivery with competitive rates for local numbers.",
+      "logo_url": null,
+      "config_schema": {
+        "api_key": {
+          "type": "string",
+          "required": true,
+          "label": "API Key",
+          "description": "Your BulkSMSBD API Key",
+          "sensitive": true
+        },
+        "sender_id": {
+          "type": "string",
+          "required": true,
+          "label": "Sender ID",
+          "description": "Approved sender ID/mask (e.g., ALTCARE)",
+          "max_length": 11
+        },
+        "api_url": {
+          "type": "string",
+          "required": false,
+          "label": "API URL",
+          "description": "Custom API endpoint (optional)",
+          "default": "https://api.bulksmsbd.com/api/v1/send"
+        },
+        "mask_type": {
+          "type": "string",
+          "required": true,
+          "label": "Mask Type",
+          "description": "masked or non-masked",
+          "default": "masked"
+        }
+      },
+      "supported_countries": ["BD"],
+      "is_active": true
+    },
+    {
       "name": "sendgrid",
       "display_name": "SendGrid",
       "provider_type": "email",

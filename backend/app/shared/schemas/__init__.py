@@ -106,6 +106,21 @@ from app.shared.schemas.dashboard import (
     PrescriptionByStatus,
     TopMedicine,
 )
+from app.shared.schemas.integration import (
+    IntegrationProviderResponse,
+    IntegrationProviderListItem,
+    TenantIntegrationCreate,
+    TenantIntegrationUpdate,
+    TenantIntegrationResponse,
+    TenantIntegrationListItem,
+    IntegrationTestRequest,
+    IntegrationTestResponse,
+    IntegrationLogResponse,
+    IntegrationLogListItem,
+    SendSMSRequest,
+    SendEmailRequest,
+    SendOperationResponse,
+)
 
 __all__ = [
     # Appointments
@@ -217,4 +232,22 @@ __all__ = [
     "PrescriptionAnalytics",
     "PrescriptionByStatus",
     "TopMedicine",
+    # Integration Providers
+    "IntegrationProviderResponse",
+    "IntegrationProviderListItem",
+    # Tenant Integrations
+    "TenantIntegrationCreate",
+    "TenantIntegrationUpdate",
+    "TenantIntegrationResponse",
+    "TenantIntegrationListItem",
+    # Integration Tests
+    "IntegrationTestRequest",
+    "IntegrationTestResponse",
+    # Integration Logs
+    "IntegrationLogResponse",
+    "IntegrationLogListItem",
+    # Send Operations
+    "SendSMSRequest",
+    "SendEmailRequest",
+    "SendOperationResponse",
 ]

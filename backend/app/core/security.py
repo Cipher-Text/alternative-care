@@ -1,9 +1,11 @@
 """Security utilities - JWT, password hashing, 2FA."""
 
+import json
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import pyotp
+from cryptography.fernet import Fernet
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -117,3 +119,48 @@ def verify_totp(secret: str, token: str) -> bool:
     """
     totp = pyotp.TOTP(secret)
     return totp.verify(token, valid_window=1)  # Allow 1 step tolerance
+
+
+# Integration credential encryption
+def encrypt_credentials(credentials: dict) -> str:
+    """
+    Encrypt credentials dict to string using Fernet.
+
+    Args:
+        credentials: Dict of credential key-value pairs
+
+    Returns:
+        Base64-encoded encrypted string
+
+    Example:
+        >>> creds = {"api_key": "secret123", "username": "user"}
+        >>> encrypted = encrypt_credentials(creds)
+    """
+    fernet = Fernet(settings.INTEGRATION_ENCRYPTION_KEY.encode())
+    json_str = json.dumps(credentials)
+    encrypted = fernet.encrypt(json_str.encode())
+    return encrypted.decode()
+
+
+def decrypt_credentials(encrypted_credentials: str) -> dict:
+    """
+    Decrypt credentials string to dict using Fernet.
+
+    Args:
+        encrypted_credentials: Base64-encoded encrypted string
+
+    Returns:
+        Dict of credential key-value pairs
+
+    Raises:
+        InvalidToken: If decryption fails (invalid key or corrupted data)
+
+    Example:
+        >>> encrypted = "gAAAAABh..."
+        >>> creds = decrypt_credentials(encrypted)
+        >>> print(creds["api_key"])
+        'secret123'
+    """
+    fernet = Fernet(settings.INTEGRATION_ENCRYPTION_KEY.encode())
+    decrypted = fernet.decrypt(encrypted_credentials.encode())
+    return json.loads(decrypted.decode())
