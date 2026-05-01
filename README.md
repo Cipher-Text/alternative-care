@@ -215,7 +215,8 @@ alembic upgrade head
 **Start here:** [docs/README.md](docs/README.md) - Complete documentation map
 
 ### Quick Links
-- **[Getting Started](GETTING_STARTED.md)** - Setup in 30 minutes
+- **[Getting Started](GETTING_STARTED.md)** - Backend setup in 30 minutes
+- **[Frontend Setup](FRONTEND_SETUP.md)** - Next.js 14 setup guide ⭐
 - **[Current Status](docs/status/current.md)** - What's done, what's next
 - **[Architecture](docs/architecture/overview.md)** - System design
 - **[Database Schema](docs/architecture/database.md)** - All 30 tables

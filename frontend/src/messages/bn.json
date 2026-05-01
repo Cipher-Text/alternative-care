@@ -1,0 +1,31 @@
+{
+  "common": {
+    "save": "সংরক্ষণ করুন",
+    "cancel": "বাতিল করুন",
+    "delete": "মুছুন",
+    "edit": "সম্পাদনা",
+    "search": "অনুসন্ধান",
+    "loading": "লোড হচ্ছে...",
+    "error": "একটি ত্রুটি ঘটেছে"
+  },
+  "auth": {
+    "login": "লগইন",
+    "logout": "লগআউট",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "loginSuccess": "সফলভাবে লগইন হয়েছে",
+    "loginFailed": "লগইন ব্যর্থ হয়েছে"
+  },
+  "patients": {
+    "title": "রোগীরা",
+    "addPatient": "রোগী যোগ করুন",
+    "editPatient": "রোগী সম্পাদনা করুন",
+    "firstName": "প্রথম নাম",
+    "lastName": "শেষ নাম",
+    "phone": "ফোন",
+    "gender": "লিঙ্গ",
+    "male": "পুরুষ",
+    "female": "মহিলা",
+    "other": "অন্যান্য"
+  }
+}

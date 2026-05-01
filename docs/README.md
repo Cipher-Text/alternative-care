@@ -16,9 +16,10 @@
 1. [Getting Started Guide](../GETTING_STARTED.md) - **Start here!**
 2. [Complete Setup Guide](development/setup.md) - Detailed setup
 3. [Backend Guide](development/backend.md) - Backend development
-4. [Quick Reference](development/quick-reference.md) - Code snippets
-5. [Testing Guide](development/testing.md) - Testing strategy
-6. [i18n Guide](development/i18n.md) - Bilingual implementation
+4. [Frontend Setup Guide](../FRONTEND_SETUP.md) - **Next.js 14 frontend setup** ⭐
+5. [Quick Reference](development/quick-reference.md) - Code snippets
+6. [Testing Guide](development/testing.md) - Testing strategy
+7. [i18n Guide](development/i18n.md) - Bilingual implementation
 
 ### 🏗️ For Architects & Tech Leads
 - [Architecture Overview](architecture/overview.md) - System design
@@ -56,10 +57,11 @@ docs/
 ├── development/                     # How to build the system
 │   ├── setup.md                    # Complete setup guide
 │   ├── backend.md                  # Backend development
-│   ├── frontend.md                 # Frontend development (TBD)
 │   ├── quick-reference.md         # Code snippets & patterns
 │   ├── testing.md                  # Testing strategy
 │   └── i18n.md                     # Bilingual (EN/BN) guide
+│
+├── ../FRONTEND_SETUP.md            # Frontend development (Next.js 14)
 │
 ├── planning/                        # What we're building & when
 │   ├── roadmap.md                  # High-level roadmap
@@ -162,6 +164,9 @@ See [Architecture Overview](architecture/overview.md) for system design.
 
 **Q: How do I set up the backend?**
 → [Backend Guide](development/backend.md)
+
+**Q: How do I set up the frontend?**
+→ [Frontend Setup Guide](../FRONTEND_SETUP.md)
 
 **Q: What's the roadmap?**
 → [High-Level Roadmap](planning/roadmap.md)
