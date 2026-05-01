@@ -5,7 +5,7 @@ import type {
   TwoFactorRequest,
   RefreshTokenRequest,
   RefreshTokenResponse,
-  User,
+  UserProfileResponse,
 } from '@/types/auth'
 
 export const authApi = {
@@ -33,7 +33,7 @@ export const authApi = {
   },
 
   // Get current user
-  getCurrentUser: async (): Promise<User> => {
+  getCurrentUser: async (): Promise<UserProfileResponse> => {
     const response = await apiClient.get('/auth/me')
     return response.data
   },

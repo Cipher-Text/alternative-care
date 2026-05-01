@@ -51,14 +51,14 @@ export function LoginForm() {
     try {
       const response = await authApi.login(data)
 
-      if (response.user.two_factor_enabled) {
+      if (response.requires_2fa || response.user.is_2fa_enabled) {
         // Show 2FA form
         setCredentials(data)
         setNeeds2FA(true)
         setLoading(false)
       } else {
         // Login successful
-        setAuth(response.user, response.access_token, response.refresh_token)
+        setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
         toast.success('Login successful!')
         router.push('/dashboard')
       }

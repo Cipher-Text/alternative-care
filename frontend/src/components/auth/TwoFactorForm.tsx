@@ -47,7 +47,7 @@ export function TwoFactorForm({ email, password, onBack }: TwoFactorFormProps) {
         totp_code: data.totp_code,
       })
 
-      setAuth(response.user, response.access_token, response.refresh_token)
+      setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
       toast.success('Login successful!')
       router.push('/dashboard')
     } catch (error: any) {

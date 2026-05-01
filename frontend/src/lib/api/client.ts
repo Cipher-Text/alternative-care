@@ -45,10 +45,11 @@ apiClient.interceptors.response.use(
           refresh_token: refreshToken,
         })
 
-        const { access_token } = response.data
+        const { access_token, refresh_token } = response.data
 
         // Update token in cookies
         Cookies.set('accessToken', access_token, { expires: 1/48 }) // 30 minutes
+        Cookies.set('refreshToken', refresh_token, { expires: 7 })
 
         // Retry original request with new token
         if (originalRequest.headers) {
