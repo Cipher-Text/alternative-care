@@ -2,8 +2,8 @@
 
 > **High-level view** of the 12-month development plan. For detailed specifications, see [roadmap-detailed.md](roadmap-detailed.md).
 
-**Last Updated:** April 21, 2026  
-**Current Phase:** Phase 1 - Core Clinic MVP (Week 1-2 complete)
+**Last Updated:** May 1, 2026  
+**Current Phase:** Phase 1 - Core Clinic MVP (Week 1-13 complete)
 
 ---
 
@@ -39,7 +39,7 @@
 ### 🔄 Phase 1: Core Clinic MVP (In Progress)
 **Timeline:** 14 weeks (May-July 2026)  
 **Target Launch:** August 1, 2026  
-**Status:** Week 1-2 of 14 complete (15%)
+**Status:** Week 1-13 of 14 complete (93%)
 
 **Goal:** Launch a working clinic management tool for 10 pilot doctors
 
@@ -55,13 +55,13 @@
 **Progress:**
 ```
 Week 1-2:  Backend Foundation    ████████████ 100% ✅
-Week 3-4:  Auth & Users          ░░░░░░░░░░░░   0% 📋
-Week 5-6:  Doctor Profile        ░░░░░░░░░░░░   0% 📋
-Week 7-8:  Patient Management    ░░░░░░░░░░░░   0% 📋
-Week 9-10: Prescriptions         ░░░░░░░░░░░░   0% 📋
-Week 11:   Payments              ░░░░░░░░░░░░   0% 📋
-Week 12:   Dashboard             ░░░░░░░░░░░░   0% 📋
-Week 13:   Integrations          ░░░░░░░░░░░░   0% 📋
+Week 3-4:  Auth & Users          ████████████ 100% ✅
+Week 5-6:  Doctor Profile        ████████████ 100% ✅
+Week 7-8:  Patient Management    ████████████ 100% ✅
+Week 9-10: Prescriptions         ████████████ 100% ✅
+Week 11:   Payments              ████████████ 100% ✅
+Week 12:   Dashboard             ████████████ 100% ✅
+Week 13:   Integrations          ████████████ 100% ✅
 Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
 ```
 
@@ -299,6 +299,6 @@ Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
 
 ---
 
-**Last Updated:** April 21, 2026  
+**Last Updated:** May 1, 2026  
 **Next Review:** Weekly (every Monday)  
 **Maintained By:** Product & Engineering Team
