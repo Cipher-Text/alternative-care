@@ -86,6 +86,26 @@ from app.shared.schemas.symptom import (
     MedicineSymptomMappingUpdate,
     MedicineSymptomMappingResponse,
 )
+from app.shared.schemas.dashboard import (
+    DateRangeFilter,
+    TrendData,
+    OverviewStats,
+    FinancialAnalytics,
+    RevenueByMethod,
+    PatientAnalytics,
+    PatientDemographics,
+    AgeGroupDistribution,
+    TopDiagnosis,
+    AppointmentAnalytics,
+    AppointmentByStatus,
+    AppointmentByType,
+    VisitAnalytics,
+    VisitByType,
+    TopChiefComplaint,
+    PrescriptionAnalytics,
+    PrescriptionByStatus,
+    TopMedicine,
+)
 
 __all__ = [
     # Appointments
@@ -178,4 +198,23 @@ __all__ = [
     "InvoiceResponse",
     "InvoiceListItem",
     "PaymentSummary",
+    # Dashboard
+    "DateRangeFilter",
+    "TrendData",
+    "OverviewStats",
+    "FinancialAnalytics",
+    "RevenueByMethod",
+    "PatientAnalytics",
+    "PatientDemographics",
+    "AgeGroupDistribution",
+    "TopDiagnosis",
+    "AppointmentAnalytics",
+    "AppointmentByStatus",
+    "AppointmentByType",
+    "VisitAnalytics",
+    "VisitByType",
+    "TopChiefComplaint",
+    "PrescriptionAnalytics",
+    "PrescriptionByStatus",
+    "TopMedicine",
 ]

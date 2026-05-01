@@ -2,7 +2,7 @@
 
 > A multi-tenant SaaS platform for Homeopathy, Ayurveda, Unani, and Herbal practitioners to manage patients, prescriptions, payments, clinical knowledge, and AI-assisted reference — all in one place.
 
-**🎯 Status:** Backend foundation complete ✅ | Phase 1 Week 1-2 of 14 | [View Full Status](docs/status/current.md)
+**🎯 Status:** Backend MVP 86% Complete ✅ | Phase 1 Week 12 of 14 | 7 Modules • 71 Endpoints Live | [View Full Status](STATUS.md)
 
 ---
 
@@ -12,7 +12,7 @@ AltCare is a comprehensive **clinic operating system** built specifically for al
 
 - 📋 **Patient Management** - Complete records, visit history, tags, diagnoses
 - 💊 **Prescription System** - Builder with PDF export, medicine database
-- 💳 **Payment Tracking** - bKash, Nagad, Rocket, card support with invoicing
+- 💳 **Payment Tracking** - Cash, bKash gateway integration with invoicing
 - 📚 **Medical Library** - EPUB reader with bookmarks and highlights
 - 🤖 **AI Assistant** - RAG-powered clinical reference (Phase 4)
 - 🌍 **Bilingual** - Full English/Bengali interface
@@ -56,12 +56,19 @@ open http://localhost:8000/docs
 | Component | Status | Details |
 |-----------|--------|---------|
 | **Backend Foundation** | ✅ Complete | 30 models, auth, infrastructure |
-| **API Endpoints** | 📋 Next | Authentication module in progress |
-| **Frontend** | 📋 Planned | Week 5-6 (Next.js + TypeScript) |
-| **Database** | ✅ Ready | PostgreSQL 16 + pgvector |
+| **API Endpoints** | ✅ 71 Live | 7 modules with full CRUD |
+| **Authentication** | ✅ Complete | JWT, 2FA, RBAC, 9 endpoints |
+| **Doctor Module** | ✅ Complete | Profile, degrees, trainings, 12 endpoints |
+| **Patient Module** | ✅ Complete | CRUD, tags, diagnoses, 14 endpoints |
+| **Appointments** | ✅ Complete | Booking, visits, conflicts, 10 endpoints |
+| **Prescriptions** | ✅ Complete | Builder, PDF, immutable, 8 endpoints |
+| **Payments** | ✅ Complete | Cash, bKash, invoices, 12 endpoints |
+| **Dashboard** | ✅ Complete | Analytics, charts, 6 endpoints |
+| **Frontend** | 📋 Planned | Week 13+ (Next.js + TypeScript) |
+| **Database** | ✅ Running | PostgreSQL 16 + pgvector |
 | **Infrastructure** | ✅ Running | Docker (PostgreSQL, Redis, MinIO) |
 
-**Progress:** 12% complete (Phase 1, Week 1-2 of 14)
+**Progress:** 86% complete (Phase 1, Week 12 of 14) | **Next:** Integration Framework
 
 **→ Detailed status:** [docs/status/current.md](docs/status/current.md)
 
@@ -117,12 +124,14 @@ open http://localhost:8000/docs
 - Bangladesh geographic data in Bengali
 - Language switcher in UI
 
-### Integration Framework
-- SMS providers: Twilio, Banglalink, Robi
-- Email providers: SendGrid, AWS SES
-- Payment gateways: bKash, Nagad, Rocket, Stripe
-- Encrypted credentials (Fernet)
-- Full audit logging
+### Payment & Invoicing
+- Manual payments (cash) with immediate recording
+- bKash Payment Gateway v1.2.0-beta integration
+- OAuth token management with auto-refresh
+- Auto-generated invoices (INV-YYYYMM-NNNN format)
+- Payment filtering (patient, visit, method, date range)
+- Revenue tracking and summaries
+- 12 API endpoints with comprehensive testing
 
 ### Database (30 Tables)
 - **Core:** tenants, users, user_sessions
@@ -141,14 +150,15 @@ open http://localhost:8000/docs
 ## 📋 Roadmap
 
 ### Phase 1: Core Clinic MVP (14 weeks, May-July 2026)
-- ✅ Week 1-2: Backend foundation (COMPLETE)
-- 🔄 Week 3-4: Authentication & User Management
-- 📋 Week 5-6: Doctor Profile & Credentials
-- 📋 Week 7-8: Patient Management
-- 📋 Week 9-10: Prescription System
-- 📋 Week 11: Payment & Invoicing
-- 📋 Week 12: Dashboard & Analytics
-- 📋 Week 13: Integration Framework
+- ✅ Week 1-2: Backend foundation (30 models, Docker, migrations)
+- ✅ Week 3-4: Authentication & User Management (JWT, 2FA, RBAC, 9 endpoints)
+- ✅ Week 5-6: Doctor Profile & Credentials (12 endpoints, verification)
+- ✅ Week 7-8: Patient Management (14 endpoints, tags, diagnoses)
+- ✅ Bonus: Appointments & Visits (10 endpoints, conflict detection)
+- ✅ Week 9-10: Prescription System (8 endpoints, PDF, immutable)
+- ✅ Week 11: Payment & Invoicing (12 endpoints, bKash integration)
+- ✅ Week 12: Dashboard & Analytics (6 endpoints, real-time stats)
+- 🔄 Week 13: Integration Framework (NEXT)
 - 📋 Week 14: Testing & Launch
 
 **Target Launch:** August 1, 2026
@@ -158,8 +168,7 @@ open http://localhost:8000/docs
 - **Phase 3:** Book Library (EPUB reader + progress tracking)
 - **Phase 4:** AI/RAG (Clinical reference assistant)
 
-**→ Full roadmap:** [docs/planning/roadmap.md](docs/planning/roadmap.md)  
-**→ Detailed roadmap:** [docs/planning/roadmap-detailed.md](docs/planning/roadmap-detailed.md)
+**→ Full roadmap:** [ROADMAP.md](ROADMAP.md)
 
 ---
 
@@ -325,4 +334,4 @@ Private — All rights reserved. Contact project owner for licensing inquiries.
 
 **Built with ❤️ for alternative medicine practitioners**
 
-**Last Updated:** April 21, 2026 | **Version:** 0.1.0-alpha | **Status:** Backend foundation complete ✅
+**Last Updated:** May 1, 2026 | **Version:** 0.8.0-alpha | **Status:** Backend MVP 86% complete (12/14 weeks) ✅
