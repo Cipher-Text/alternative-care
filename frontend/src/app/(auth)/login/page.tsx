@@ -9,13 +9,14 @@ import { Toaster } from 'react-hot-toast'
 export default function LoginPage() {
   const router = useRouter()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const hasHydrated = useAuthStore((state) => state.hasHydrated)
 
   useEffect(() => {
     // Redirect to dashboard if already logged in
-    if (isAuthenticated) {
+    if (hasHydrated && isAuthenticated) {
       router.push('/dashboard')
     }
-  }, [isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, router])
 
   return (
     <>

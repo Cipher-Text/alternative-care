@@ -8,11 +8,13 @@ interface AuthStore {
   accessToken: string | null
   refreshToken: string | null
   isAuthenticated: boolean
+  hasHydrated: boolean
 
   setAuth: (user: User, accessToken: string, refreshToken: string) => void
   logout: () => void
   updateUser: (user: Partial<User>) => void
   setAccessToken: (token: string) => void
+  setHydrated: (value: boolean) => void
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -22,6 +24,7 @@ export const useAuthStore = create<AuthStore>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      hasHydrated: false,
 
       setAuth: (user, accessToken, refreshToken) => {
         // Store tokens in httpOnly-like cookies (more secure than localStorage)
@@ -58,10 +61,24 @@ export const useAuthStore = create<AuthStore>()(
         Cookies.set('accessToken', token, { expires: 1/48 })
         set({ accessToken: token })
       },
+
+      setHydrated: (value) => set({ hasHydrated: value }),
     }),
     {
       name: 'auth-storage',
       partialize: (state) => ({ user: state.user }), // Only persist user, not tokens
+      onRehydrateStorage: () => (state) => {
+        const hasAccessToken = Boolean(Cookies.get('accessToken'))
+        const hasRefreshToken = Boolean(Cookies.get('refreshToken'))
+        const hasUser = Boolean(state?.user)
+
+        if (state) {
+          state.isAuthenticated = hasUser && (hasAccessToken || hasRefreshToken)
+          state.accessToken = Cookies.get('accessToken') ?? null
+          state.refreshToken = Cookies.get('refreshToken') ?? null
+          state.hasHydrated = true
+        }
+      },
     }
   )
 )

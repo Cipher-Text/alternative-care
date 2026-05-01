@@ -21,6 +21,15 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>
 
+const DEV_QUICK_USERS: Array<{ label: string; email: string; password: string }> = [
+  { label: 'Admin', email: 'admin@altcare.com', password: 'Admin@1234' },
+  { label: 'Operator', email: 'operator@altcare.com', password: 'Operator@1234' },
+  { label: 'Dr. Rahman', email: 'dr.rahman@example.com', password: 'Test@1234' },
+  { label: 'Receptionist', email: 'receptionist.dhanmondi@example.com', password: 'Test@1234' },
+  { label: 'Dr. Karim', email: 'dr.karim@example.com', password: 'Test@1234' },
+  { label: 'Dr. Ahmed', email: 'dr.ahmed@example.com', password: 'Test@1234' },
+]
+
 export function LoginForm() {
   const router = useRouter()
   const setAuth = useAuthStore((state) => state.setAuth)
@@ -31,6 +40,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -109,6 +119,28 @@ export function LoginForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </Button>
+
+          {process.env.NODE_ENV !== 'production' && (
+            <div className="space-y-2 border-t pt-4">
+              <p className="text-xs font-medium text-muted-foreground">Dev quick users</p>
+              <div className="grid grid-cols-1 gap-2">
+                {DEV_QUICK_USERS.map((user) => (
+                  <button
+                    key={user.email}
+                    type="button"
+                    className="rounded-md border px-3 py-2 text-left text-xs hover:bg-muted"
+                    onClick={() => {
+                      setValue('email', user.email, { shouldValidate: true })
+                      setValue('password', user.password, { shouldValidate: true })
+                    }}
+                    disabled={loading}
+                  >
+                    {user.label}: {user.email}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

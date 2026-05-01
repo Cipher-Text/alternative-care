@@ -77,7 +77,7 @@ async def get_provider(
 # ===== Tenant Integration Endpoints =====
 
 
-@router.post("", response_model=TenantIntegrationResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=TenantIntegrationResponse, status_code=status.HTTP_201_CREATED)
 async def create_integration(
     data: TenantIntegrationCreate,
     service: Annotated[IntegrationService, Depends(get_integration_service)],
@@ -94,7 +94,7 @@ async def create_integration(
     return await service.create_integration(data, created_by=current_user.user_id)
 
 
-@router.get("", response_model=list[TenantIntegrationListItem])
+@router.get("/", response_model=list[TenantIntegrationListItem])
 async def list_integrations(
     service: Annotated[IntegrationService, Depends(get_integration_service)],
     provider_type: str | None = Query(None, description="Filter by type"),

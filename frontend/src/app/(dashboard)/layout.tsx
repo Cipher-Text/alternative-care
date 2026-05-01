@@ -11,15 +11,16 @@ import type { ReactNode } from 'react'
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const hasHydrated = useAuthStore((state) => state.hasHydrated)
 
   useEffect(() => {
     // Redirect to login if not authenticated
-    if (!isAuthenticated) {
+    if (hasHydrated && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, router])
 
-  if (!isAuthenticated) {
+  if (!hasHydrated || !isAuthenticated) {
     return null // Don't render anything while redirecting
   }
 
