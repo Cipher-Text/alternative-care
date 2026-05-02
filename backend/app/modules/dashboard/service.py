@@ -193,10 +193,12 @@ class DashboardService:
             no_show=sum(1 for a in appointments if a.status == "no_show"),
         )
 
+        # Note: Appointment model doesn't have appointment_type field, only 'reason' (free text)
+        # TODO: Add appointment_type field to Appointment model or parse from reason field
         by_type = AppointmentByType(
-            consultation=sum(1 for a in appointments if a.appointment_type == "consultation"),
-            follow_up=sum(1 for a in appointments if a.appointment_type == "follow_up"),
-            emergency=sum(1 for a in appointments if a.appointment_type == "emergency"),
+            consultation=0,  # Placeholder until appointment_type field is added
+            follow_up=0,
+            emergency=0,
         )
 
         booking_trend = await self._get_appointment_booking_trend(date_from, date_to)
@@ -548,9 +550,9 @@ class DashboardService:
 
     async def _get_top_diagnoses(self, limit: int = 10) -> list[TopDiagnosis]:
         result = await self.db.execute(
-            select(PatientDiagnosis.diagnosis, func.count(PatientDiagnosis.id))
+            select(PatientDiagnosis.description, func.count(PatientDiagnosis.id))
             .where(PatientDiagnosis.tenant_id == self.tenant_id)
-            .group_by(PatientDiagnosis.diagnosis)
+            .group_by(PatientDiagnosis.description)
             .order_by(func.count(PatientDiagnosis.id).desc())
             .limit(limit)
         )
@@ -616,8 +618,8 @@ class DashboardService:
     def _calculate_peak_hours(self, appointments: list) -> list[dict]:
         hour_counts = {}
         for appointment in appointments:
-            if appointment.appointment_date:
-                hour = appointment.appointment_date.hour
+            if appointment.appointment_time:
+                hour = appointment.appointment_time.hour
                 hour_counts[hour] = hour_counts.get(hour, 0) + 1
 
         sorted_hours = sorted(hour_counts.items(), key=lambda x: x[1], reverse=True)
