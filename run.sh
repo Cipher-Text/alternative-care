@@ -137,6 +137,20 @@ if [ "$SKIP_BACKEND" != true ]; then
         sleep 1
     done
 
+    # Ensure application database exists (needed when postgres volume was initialized earlier)
+    log_info "Ensuring application database exists (altcare_dev)..."
+    DB_EXISTS=$(docker exec altcare_postgres psql -U altcare -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='altcare_dev';" 2>/dev/null || true)
+    if [ "$DB_EXISTS" != "1" ]; then
+        docker exec altcare_postgres psql -U altcare -d postgres -c "CREATE DATABASE altcare_dev;" > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            log_error "Failed to create database altcare_dev"
+            exit 1
+        fi
+        log_success "Database altcare_dev created"
+    else
+        log_success "Database altcare_dev already exists"
+    fi
+
     # Check and enable pgvector extension
     log_info "Ensuring pgvector extension is enabled..."
     docker exec altcare_postgres psql -U altcare -d altcare_dev -c "CREATE EXTENSION IF NOT EXISTS vector;" 2>&1
@@ -163,6 +177,9 @@ if [ "$SKIP_BACKEND" != true ]; then
 
     # Activate virtual environment
     source venv/bin/activate
+
+    # Force IPv4 localhost to avoid resolving to a different Postgres instance via ::1
+    export DATABASE_URL="postgresql+asyncpg://altcare:altcare123@127.0.0.1:5433/altcare_dev"
 
     # Install/upgrade dependencies
     log_info "Installing backend dependencies..."
