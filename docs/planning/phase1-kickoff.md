@@ -1,6 +1,19 @@
 # Phase 1 Development Kickoff
 ## AltCare UX Improvements - Week 1-4 Implementation
 
+> Status Note (2026-05-08): This is a historical kickoff/spec document from early Phase 1.
+> It is not the current implementation status source.
+>
+> Use these for current truth:
+> - `docs/status/current.md`
+> - `docs/planning/roadmap.md`
+> - `docs/planning/roadmap-detailed.md`
+>
+> Current code baseline:
+> - Backend routers: 9 active modules
+> - Module endpoints: 80 total
+> - Frontend implemented routes: `/login`, `/dashboard`, `/patients`, `/patients/new`, `/patients/[id]`
+
 **Status**: 🚀 Ready to Start  
 **Timeline**: 4 weeks  
 **Team**: Frontend (React/Next.js) + Backend (FastAPI)  
@@ -1329,7 +1342,7 @@ Good luck! 🎉
 
 ---
 
-*Document version: 1.0*  
+*Document version: 1.0 (historical kickoff spec)*  
 *Created: 2026-04-21*  
-*Status: Ready for development*  
-*Estimated completion: May 19, 2026 (4 weeks)*
+*Reconciled note added: 2026-05-08*  
+*Status: Legacy planning reference*

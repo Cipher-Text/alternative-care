@@ -1,6 +1,14 @@
 # AltCare UI/UX Improvements
 ## Senior UX Engineer Recommendations — Implementation Ready
 
+> Status Note (2026-05-08): This document is a UX strategy/proposal artifact.
+> It includes mockup-oriented recommendations and projected impacts; it is not a code-status tracker.
+>
+> For current implementation truth, use:
+> - `docs/status/current.md`
+> - `docs/planning/roadmap.md`
+> - `docs/planning/roadmap-detailed.md`
+
 ---
 
 ## 🎯 Executive Summary
@@ -866,5 +874,6 @@ Win strategy: 10x better for niche vs 10% better for all
 
 *Document version: 2.0 — Applied to Mock HTML*  
 *Last updated: 2026-04-21*  
-*Status: ✅ Phase 1 implemented in mockups*  
-*Next: Phase 2 development*
+*Reconciled note added: 2026-05-08*  
+*Status: UX proposal / mockup reference (not implementation truth)*  
+*Next: Prioritize items against current roadmap and code baseline*
