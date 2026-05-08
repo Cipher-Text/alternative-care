@@ -1,6 +1,17 @@
 # Phase 1 Development Tasks
 ## Task Breakdown & Assignments
 
+> Status Note (2026-05-08): This file is a legacy sprint board from early Phase 1 planning.  
+> For current code-aligned status and priorities, use:
+> - `docs/status/current.md`
+> - `docs/planning/roadmap.md`
+> - `docs/planning/roadmap-detailed.md`
+>
+> Code baseline reference:
+> - Backend routers: 9 active modules
+> - Module endpoints: 80 total
+> - Frontend implemented routes: `/login`, `/dashboard`, `/patients`, `/patients/new`, `/patients/[id]`
+
 **Sprint Duration**: 4 weeks (Apr 22 - May 19, 2026)  
 **Team Size**: 3-5 developers  
 **Daily Standup**: 10:00 AM GMT+6
@@ -493,6 +504,8 @@ CREATE INDEX idx_onboarding_user ON onboarding_progress(user_id);
 
 ## 📊 Progress Tracker
 
+> Historical Snapshot: the percentages below reflect the original April sprint plan and are not current implementation truth.
+
 ### Overall Progress
 ```
 Week 1: [░░░░░░░░░░] 0/6 tasks   (Setup)
@@ -500,7 +513,7 @@ Week 2: [░░░░░░░░░░] 0/5 tasks   (Components)
 Week 3: [░░░░░░░░░░] 0/4 tasks   (Integration)
 Week 4: [░░░░░░░░░░] 0/7 tasks   (Polish)
 
-Total:  [░░░░░░░░░░] 0/22 tasks  (0%)
+Total:  [Historical] 0/22 tasks in this specific sprint board
 ```
 
 ### Velocity Tracking
@@ -597,5 +610,5 @@ A task is "Done" when:
 
 ---
 
-*Last updated: 2026-04-21*  
-*Next update: End of Week 1*
+*Last updated (legacy board): 2026-04-21*  
+*Reconciled note added: 2026-05-08*

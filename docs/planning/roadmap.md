@@ -2,8 +2,9 @@
 
 > **High-level view** of the 12-month development plan. For detailed specifications, see [roadmap-detailed.md](roadmap-detailed.md).
 
-**Last Updated:** May 1, 2026  
-**Current Phase:** Phase 1 - Core Clinic MVP (Week 1-13 complete)
+**Last Updated:** May 8, 2026  
+**Current Phase:** Phase 1 - Core Clinic MVP (Week 13 complete, Week 14 in progress)
+**Baseline Source:** `backend/app/main.py`, `backend/app/modules/*/routes.py`, `frontend/src/app/**`, `docs/status/current.md`
 
 ---
 
@@ -39,11 +40,11 @@
 ### 🔄 Phase 1: Core Clinic MVP (In Progress)
 **Timeline:** 14 weeks (May-July 2026)  
 **Target Launch:** August 1, 2026  
-**Status:** Week 1-13 of 14 complete (93%)
+**Status:** Week 1-13 of 14 complete (93%); Week 14 execution in progress
 
 **Goal:** Launch a working clinic management tool for 10 pilot doctors
 
-**What We're Building:**
+**What We're Building / Verifying:**
 - 👤 **User Management** - Registration, login, 2FA, roles
 - 👨‍⚕️ **Doctor Profiles** - Academic degrees, certifications
 - 🏥 **Patient Management** - Records, tags, diagnoses, visits
@@ -65,7 +66,13 @@ Week 13:   Integrations          ████████████ 100% ✅
 Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
 ```
 
-**Success Metrics:**
+**Code Baseline Snapshot (2026-05-08):**
+- Backend routers registered: 9 (`auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`)
+- Module endpoints: 80 (79 business endpoints + AI contract stub)
+- Frontend implemented routes: `/login`, `/dashboard`, `/patients`, `/patients/new`, `/patients/[id]`
+- AI status: `/api/v1/ai/query` exists and returns `501` by design (contract stub)
+
+**Success Metrics (Target, not yet achieved):**
 - 10 pilot doctors actively using daily
 - 500+ patients managed
 - 200+ prescriptions generated
@@ -171,12 +178,12 @@ Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
 
 ## Success Criteria by Phase
 
-### Phase 1 (MVP)
-- ✅ 10+ pilot doctors onboarded
-- ✅ 500+ patients managed
-- ✅ 200+ prescriptions generated
-- ✅ 95%+ uptime
-- ✅ 80%+ user satisfaction (NPS > 40)
+### Phase 1 (MVP Targets)
+- ⏳ 10+ pilot doctors onboarded
+- ⏳ 500+ patients managed
+- ⏳ 200+ prescriptions generated
+- ⏳ 95%+ uptime
+- ⏳ 80%+ user satisfaction (NPS > 40)
 
 ### Phase 2 (Knowledge)
 - ✅ 1,000+ medicines in database
@@ -276,10 +283,10 @@ Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
 
 ## Next Steps
 
-**This Week:**
-1. Build authentication module (register, login, 2FA)
-2. Create seed data (geographic, providers)
-3. Start patient CRUD endpoints
+**This Week (Week 14):**
+1. Execute launch-readiness testing (API, security, regression)
+2. Reconcile docs with code baseline (status, API counts, module coverage)
+3. Close high-impact frontend gaps for backend-complete modules
 
 **This Month:**
 1. Complete authentication & user management
@@ -299,6 +306,6 @@ Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
 
 ---
 
-**Last Updated:** May 1, 2026  
+**Last Updated:** May 8, 2026  
 **Next Review:** Weekly (every Monday)  
 **Maintained By:** Product & Engineering Team

@@ -2,9 +2,10 @@
 
 > From MVP to comprehensive alternative medicine practice management platform
 
-**Last updated:** May 1, 2026  
-**Current phase:** Phase 1, Week 13 (Integration Framework) - COMPLETE  
+**Last updated:** May 8, 2026  
+**Current phase:** Phase 1, Week 14 (Testing & Launch Prep) - IN PROGRESS  
 **Target launch:** Q3 2026 (MVP) → Q2 2027 (Complete Platform)
+**Baseline source of truth:** `backend/app/main.py`, `backend/app/modules/*/routes.py`, `frontend/src/app/**`, `docs/status/current.md`
 
 ---
 
@@ -47,7 +48,7 @@ Build the most comprehensive practice management system for alternative medicine
 | Phase | Focus | Duration | Target Launch | Status |
 |-------|-------|----------|---------------|--------|
 | **Phase 0** | Planning & Design | 2 weeks | Complete | ✅ Done |
-| **Phase 1** | Core Clinic MVP | 14 weeks | Q3 2026 | 🔄 In Progress (Week 13 Complete, Week 14 Next) |
+| **Phase 1** | Core Clinic MVP | 14 weeks | Q3 2026 | 🔄 In Progress (Week 14 active) |
 | **Phase 2** | Knowledge Base | 8 weeks | Q4 2026 | 📋 Planned |
 | **Phase 3** | Book Library | 10 weeks | Q1 2027 | 📋 Planned |
 | **Phase 4** | AI/RAG | 12 weeks | Q2 2027 | 📋 Planned |
@@ -101,7 +102,7 @@ Build the most comprehensive practice management system for alternative medicine
 **Timeline:** 14 weeks (April 21 - July 26, 2026)  
 **Target Launch:** August 1, 2026  
 **Goal:** Launch a working clinic management tool that 10 pilot doctors can use daily  
-**Current Status:** Week 13 (Integration Framework) COMPLETE — Backend APIs complete (Auth, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration). Next: Week 14 Testing & Launch Prep
+**Current Status:** Week 14 (Testing & Launch Prep) IN PROGRESS — Backend APIs complete (Auth, AI stub, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration). Current focus: launch-readiness testing and frontend coverage alignment.
 
 ### Week 1-2: Foundation & Infrastructure ✅ COMPLETED
 
@@ -1463,15 +1464,16 @@ This roadmap represents a **44-week journey** (~11 months) from planning to a co
 ---
 
 **Document Owner:** Product Team  
-**Last Updated:** April 26, 2026  
-**Next Review:** May 3, 2026 (Sprint Planning)  
-**Status:** Phase 1 Week 3-4 complete (Backend), Week 5-6 (Frontend) in queue
+**Last Updated:** May 8, 2026  
+**Next Review:** Weekly (every Monday)  
+**Status:** Phase 1 Week 14 in progress (launch-readiness and reconciliation)
 
-**Recent Progress:**
-- ✅ Backend foundation: 30 models, migrations, Docker setup
-- ✅ Authentication: Complete JWT + 2FA + RBAC system
-- ✅ Testing: 1,399 lines covering unit, integration, and multi-tenant isolation
-- 📋 Next: Frontend initialization (Next.js 14) + auth UI
+**Recent Progress (Code-Verified):**
+- ✅ Backend routed modules: 9 (`auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`)
+- ✅ Module endpoints: 80 total
+- ✅ Frontend implemented routes: `/login`, `/dashboard`, `/patients`, `/patients/new`, `/patients/[id]`
+- ✅ AI contract route added: `POST /api/v1/ai/query` (`501` stub by design)
+- 📋 Next: Week 14 launch hardening + frontend coverage for backend-complete modules
 
 **Questions or feedback?** Contact the product team or open an issue in the repository.
 
@@ -1484,8 +1486,9 @@ This roadmap represents a **44-week journey** (~11 months) from planning to a co
 Phase 0: Planning & Design        ✅ Complete (April 7-20)
 Phase 1: Core Clinic MVP          🔄 In Progress (April 21-July 26, 14 weeks)
   Week 1-2: Backend Foundation    ✅ Complete (April 21-26)
-  Week 3-4: Authentication        ✅ Backend Complete (April 22-26)
-  Week 5-6: Frontend + Doctor     📋 Next (April 27-May 10)
+  Week 3-4: Authentication        ✅ Complete
+  Week 5-13: Core backend modules ✅ Complete
+  Week 14: Testing & launch prep  🔄 In progress
 Phase 2: Knowledge Base           📋 Planned (Aug-Sep, 8 weeks)
 Phase 3: Book Library             📋 Planned (Oct-Dec, 10 weeks)
 Phase 4: AI/RAG                   📋 Planned (Jan-Mar, 12 weeks)
