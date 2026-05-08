@@ -1,6 +1,6 @@
 # Frontend Development Checklist — Week 13-18
 
-> **Status:** Ready to start | **Start Date:** Week 13 (May 6, 2026)  
+> **Status:** In progress (Week 16 done, Week 17 pending) | **Start Date:** Week 13 (May 6, 2026)  
 > **Target:** Production-ready frontend by Week 18 (June 10, 2026)
 
 ---
@@ -19,15 +19,15 @@ This checklist tracks the frontend development progress from initial setup throu
 
 ### Day 1-2: Project Setup ✅
 
-- [ ] Run `./frontend-quickstart.sh` to initialize project
+- [x] Run `./frontend-quickstart.sh` to initialize project
 - [ ] Verify backend is running (http://localhost:8000/health)
-- [ ] Create Next.js project with TypeScript
-- [ ] Install all dependencies (axios, react-query, zustand, etc.)
-- [ ] Initialize shadcn/ui component library
-- [ ] Configure environment variables (.env.local)
-- [ ] Create directory structure (see FRONTEND_SETUP.md)
+- [x] Create Next.js project with TypeScript
+- [x] Install all dependencies (axios, react-query, zustand, etc.)
+- [x] Initialize shadcn/ui component library
+- [x] Configure environment variables (.env.local)
+- [x] Create directory structure (see FRONTEND_SETUP.md)
 - [ ] Setup translation files (en.json, bn.json)
-- [ ] Configure Next.js (next.config.js)
+- [x] Configure Next.js (next.config.js)
 - [ ] Test dev server runs (http://localhost:3000)
 
 **Deliverable:** Frontend project runs, displays Next.js welcome page
@@ -38,32 +38,32 @@ This checklist tracks the frontend development progress from initial setup throu
 
 #### API Client Setup
 
-- [ ] Create `src/lib/api/client.ts` - Axios instance with interceptors
-- [ ] Create `src/store/authStore.ts` - Zustand auth store
-- [ ] Create `src/lib/api/auth.ts` - Auth API calls
+- [x] Create `src/lib/api/client.ts` - Axios instance with interceptors
+- [x] Create `src/store/authStore.ts` - Zustand auth store
+- [x] Create `src/lib/api/auth.ts` - Auth API calls
 - [ ] Test token storage in cookies (not localStorage for security)
 - [ ] Test token refresh on 401 response
 - [ ] Test logout clears all tokens
 
 #### Login Page
 
-- [ ] Create `src/app/(auth)/layout.tsx` - Auth layout (no sidebar)
-- [ ] Create `src/app/(auth)/login/page.tsx` - Login page
-- [ ] Create `src/components/auth/LoginForm.tsx` - Login form component
-- [ ] Implement form validation with zod + react-hook-form
-- [ ] Style with shadcn/ui components
-- [ ] Handle login success → redirect to /dashboard
-- [ ] Handle login errors → show toast notifications
+- [x] Create `src/app/(auth)/layout.tsx` - Auth layout (no sidebar)
+- [x] Create `src/app/(auth)/login/page.tsx` - Login page
+- [x] Create `src/components/auth/LoginForm.tsx` - Login form component
+- [x] Implement form validation with zod + react-hook-form
+- [x] Style with shadcn/ui components
+- [x] Handle login success → redirect to /dashboard
+- [x] Handle login errors → show toast notifications
 - [ ] Test with actual backend API
 
 #### 2FA Flow
 
-- [ ] Create `src/components/auth/TwoFactorForm.tsx` - TOTP input
-- [ ] Detect 2FA requirement from login response
-- [ ] Show 2FA form after password verification
-- [ ] Implement 6-digit code input
-- [ ] Handle 2FA success → redirect to /dashboard
-- [ ] Handle 2FA errors → show error message
+- [x] Create `src/components/auth/TwoFactorForm.tsx` - TOTP input
+- [x] Detect 2FA requirement from login response
+- [x] Show 2FA form after password verification
+- [x] Implement 6-digit code input
+- [x] Handle 2FA success → redirect to /dashboard
+- [x] Handle 2FA errors → show error message
 - [ ] Test with 2FA-enabled test user
 
 #### Protected Routes
@@ -82,15 +82,15 @@ This checklist tracks the frontend development progress from initial setup throu
 
 #### Layout Components
 
-- [ ] Create `src/app/(dashboard)/layout.tsx` - Main dashboard layout
-- [ ] Create `src/components/layout/Sidebar.tsx` - Navigation sidebar
-- [ ] Create `src/components/layout/Header.tsx` - Top header with user menu
+- [x] Create `src/app/(dashboard)/layout.tsx` - Main dashboard layout
+- [x] Create `src/components/layout/Sidebar.tsx` - Navigation sidebar
+- [x] Create `src/components/layout/Header.tsx` - Top header with user menu
 - [ ] Create `src/components/layout/MobileNav.tsx` - Mobile hamburger menu
 - [ ] Create `src/components/layout/Footer.tsx` - Footer (optional)
 
 #### Navigation
 
-- [ ] Implement navigation menu with icons (lucide-react)
+- [x] Implement navigation menu with icons (lucide-react)
 - [ ] Navigation items:
   - Dashboard (Home icon)
   - Patients (Users icon)
@@ -100,10 +100,10 @@ This checklist tracks the frontend development progress from initial setup throu
   - Medicines (Pill icon)
   - Library (BookOpen icon)
   - Settings (Settings icon)
-- [ ] Highlight active route
-- [ ] Show user info in header (name, email, avatar)
-- [ ] Add dropdown menu: Profile, Settings, Logout
-- [ ] Implement logout functionality
+- [x] Highlight active route
+- [x] Show user info in header (name, email, avatar)
+- [x] Add dropdown menu: Profile, Settings, Logout
+- [x] Implement logout functionality
 
 #### Responsive Design
 
@@ -121,38 +121,38 @@ This checklist tracks the frontend development progress from initial setup throu
 
 ### Day 1-2: Patient API & Hooks
 
-- [ ] Create `src/types/patient.ts` - Patient TypeScript types
-- [ ] Create `src/lib/api/patients.ts` - Patient API calls
-- [ ] Create `src/lib/hooks/usePatients.ts` - React Query hooks
-- [ ] Implement `usePatients()` - List patients
-- [ ] Implement `usePatient(id)` - Get single patient
-- [ ] Implement `useCreatePatient()` - Create mutation
-- [ ] Implement `useUpdatePatient()` - Update mutation
-- [ ] Implement `useDeletePatient()` - Delete mutation
+- [x] Create `src/types/patient.ts` - Patient TypeScript types
+- [x] Create `src/lib/api/patients.ts` - Patient API calls
+- [x] Create `src/lib/hooks/usePatients.ts` - React Query hooks
+- [x] Implement `usePatients()` - List patients
+- [x] Implement `usePatient(id)` - Get single patient
+- [x] Implement `useCreatePatient()` - Create mutation
+- [x] Implement `useUpdatePatient()` - Update mutation
+- [x] Implement `useDeletePatient()` - Delete mutation
 - [ ] Test all hooks with React Query DevTools
 
 ---
 
 ### Day 3-4: Patient List Page
 
-- [ ] Create `src/app/(dashboard)/patients/page.tsx` - List page
-- [ ] Create `src/components/patients/PatientCard.tsx` - Patient card component
-- [ ] Implement patient grid (responsive: 1/2/3 columns)
-- [ ] Add search/filter functionality
-- [ ] Show patient code, name, age, gender, phone
-- [ ] Add "Add Patient" button → `/patients/new`
-- [ ] Click card → `/patients/[id]`
-- [ ] Show loading spinner while fetching
-- [ ] Show error message if API fails
-- [ ] Show "No patients" empty state
+- [x] Create `src/app/(dashboard)/patients/page.tsx` - List page
+- [x] Create `src/components/patients/PatientCard.tsx` - Patient card component
+- [x] Implement patient grid (responsive: 1/2/3 columns)
+- [x] Add search/filter functionality
+- [x] Show patient code, name, age, gender, phone
+- [x] Add "Add Patient" button → `/patients/new`
+- [x] Click card → `/patients/[id]`
+- [x] Show loading spinner while fetching
+- [x] Show error message if API fails
+- [x] Show "No patients" empty state
 
 ---
 
 ### Day 5-6: Create/Edit Patient Forms
 
-- [ ] Create `src/app/(dashboard)/patients/new/page.tsx` - Create page
-- [ ] Create `src/app/(dashboard)/patients/[id]/edit/page.tsx` - Edit page (optional, can edit in place)
-- [ ] Create `src/components/patients/PatientForm.tsx` - Reusable form
+- [x] Create `src/app/(dashboard)/patients/new/page.tsx` - Create page
+- [x] Create `src/app/(dashboard)/patients/[id]/edit/page.tsx` - Edit page (optional, can edit in place)
+- [x] Create `src/components/patients/PatientForm.tsx` - Reusable form
 - [ ] Form fields:
   - First name, Last name
   - Date of birth (date picker)
@@ -163,27 +163,27 @@ This checklist tracks the frontend development progress from initial setup throu
   - Division, District, Upazila (cascading selects)
   - Emergency contact (name + phone)
   - Blood group (select)
-- [ ] Implement form validation with zod
-- [ ] Handle create success → redirect to patient detail
-- [ ] Handle update success → show toast, stay on page
-- [ ] Handle errors → show field-level errors
+- [x] Implement form validation with zod
+- [x] Handle create success → redirect to patient detail
+- [x] Handle update success → show toast, stay on page
+- [x] Handle errors → show field-level errors
 - [ ] Test with Bangladesh geographic data
 
 ---
 
 ### Day 7: Patient Detail Page
 
-- [ ] Create `src/app/(dashboard)/patients/[id]/page.tsx` - Detail page
-- [ ] Show patient profile card (photo placeholder, name, code, age, gender)
-- [ ] Show contact information
-- [ ] Show address with division/district/upazila
-- [ ] Show emergency contact
-- [ ] Show tags (if any)
-- [ ] Show diagnoses (if any)
-- [ ] Add "Edit" button
-- [ ] Add "Delete" button with confirmation dialog
-- [ ] Show loading state
-- [ ] Handle not found (404)
+- [x] Create `src/app/(dashboard)/patients/[id]/page.tsx` - Detail page
+- [x] Show patient profile card (photo placeholder, name, code, age, gender)
+- [x] Show contact information
+- [x] Show address with division/district/upazila
+- [x] Show emergency contact
+- [x] Show tags (if any)
+- [x] Show diagnoses (if any)
+- [x] Add "Edit" button
+- [x] Add "Delete" button with confirmation dialog
+- [x] Show loading state
+- [x] Handle not found (404)
 
 **Deliverable:** Complete patient CRUD with all features working
 
@@ -193,32 +193,32 @@ This checklist tracks the frontend development progress from initial setup throu
 
 ### Day 1-2: Dashboard API Integration
 
-- [ ] Create `src/types/dashboard.ts` - Dashboard TypeScript types
-- [ ] Create `src/lib/api/dashboard.ts` - Dashboard API calls
-- [ ] Create `src/lib/hooks/useDashboard.ts` - Dashboard hooks
-- [ ] Implement `useOverview()` - Overview stats
-- [ ] Implement `useFinancialAnalytics()` - Financial charts
-- [ ] Implement `usePatientAnalytics()` - Patient demographics
+- [x] Create `src/types/dashboard.ts` - Dashboard TypeScript types
+- [x] Create `src/lib/api/dashboard.ts` - Dashboard API calls
+- [x] Create `src/lib/hooks/useDashboard.ts` - Dashboard hooks
+- [x] Implement `useOverview()` - Overview stats
+- [x] Implement `useFinancialAnalytics()` - Financial charts
+- [x] Implement `usePatientAnalytics()` - Patient demographics
 - [ ] Test API integration with date range filters
 
 ---
 
 ### Day 3-4: Overview Dashboard
 
-- [ ] Create `src/app/(dashboard)/page.tsx` - Main dashboard
-- [ ] Install recharts: `npm install recharts`
-- [ ] Create stat cards component (4 columns):
+- [x] Create `src/app/(dashboard)/page.tsx` - Main dashboard
+- [x] Install recharts: `npm install recharts`
+- [x] Create stat cards component (4 columns):
   - Total Patients
   - Today's Appointments
   - This Month Revenue
   - Pending Payments
-- [ ] Show patient growth chart (line chart)
-- [ ] Show revenue trend chart (area chart)
-- [ ] Show appointment status breakdown (bar chart)
-- [ ] Add date range picker (This Week, This Month, Last 30 Days, Custom)
+- [x] Show patient growth chart (line chart)
+- [x] Show revenue trend chart (area chart)
+- [x] Show appointment status breakdown (bar chart)
+- [x] Add date range picker (This Week, This Month, Last 30 Days, Custom)
 - [ ] Real-time data updates
 - [ ] Loading skeleton components
-- [ ] Responsive layout (stack on mobile)
+- [x] Responsive layout (stack on mobile)
 
 ---
 
@@ -242,18 +242,18 @@ This checklist tracks the frontend development progress from initial setup throu
 
 ### Day 1-3: Appointments Module
 
-- [ ] Create `src/lib/api/appointments.ts`
-- [ ] Create `src/lib/hooks/useAppointments.ts`
-- [ ] Create `src/app/(dashboard)/appointments/page.tsx` - Calendar view
-- [ ] Install calendar library: `npm install react-big-calendar date-fns`
-- [ ] Show appointments in calendar
-- [ ] Click date → create appointment
-- [ ] Click appointment → view/edit details
-- [ ] Filter by status (Scheduled, Confirmed, Completed, Cancelled)
-- [ ] Search by patient name
-- [ ] Create appointment form (patient, date/time, type, notes)
-- [ ] Handle conflict detection
-- [ ] Show appointment detail modal/page
+- [x] Create `src/lib/api/appointments.ts`
+- [x] Create `src/lib/hooks/useAppointments.ts`
+- [x] Create `src/app/(dashboard)/appointments/page.tsx` - List + calendar view
+- [x] Install calendar library: `npm install react-big-calendar date-fns`
+- [x] Show appointments in calendar
+- [x] Click date → create appointment
+- [x] Click appointment → view/edit details
+- [x] Filter by status (Scheduled, Confirmed, Completed, Cancelled)
+- [x] Search by patient name
+- [x] Create appointment form (patient, date/time, type, notes)
+- [x] Handle conflict detection
+- [x] Show appointment detail modal/page
 
 ---
 
@@ -508,13 +508,13 @@ This checklist tracks the frontend development progress from initial setup throu
 **Week 15-16:**
 - ✅ Dashboard analytics with charts
 - ✅ Appointments calendar working
-- ✅ Prescription builder functional
+- ⏳ Prescription builder pending
 
 **Week 17-18:**
-- ✅ Payments module complete
-- ✅ All 71 backend APIs integrated
-- ✅ Production build working
-- ✅ No critical bugs
+- ⏳ Payments module pending
+- ⏳ Remaining backend APIs pending integration
+- ⏳ Production build pending (network/font constraint in current environment)
+- ⏳ Critical bug sweep pending
 
 ---
 
@@ -538,6 +538,6 @@ This checklist tracks the frontend development progress from initial setup throu
 
 ---
 
-**Last Updated:** May 1, 2026  
-**Status:** Ready to start Week 13 ✅  
-**Next Milestone:** Week 14 - Patient Management complete
+**Last Updated:** May 9, 2026  
+**Status:** In progress (through Week 16 appointments complete)  
+**Next Milestone:** Week 17 - Payments module scaffold

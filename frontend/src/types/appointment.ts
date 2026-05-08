@@ -28,6 +28,15 @@ export interface AppointmentCreateRequest {
   notes?: string
 }
 
+export interface AppointmentUpdateRequest {
+  appointment_date?: string
+  appointment_time?: string
+  duration_minutes?: number
+  reason?: string
+  notes?: string
+  status?: AppointmentStatus
+}
+
 export interface AppointmentListParams {
   appointment_date?: string
   patient_id?: string
