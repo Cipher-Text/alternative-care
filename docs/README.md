@@ -25,6 +25,7 @@ Central documentation hub for the repository.
 - [Prescriptions](api/prescriptions.md)
 - [Payments](api/payments.md)
 - [Dashboard](api/dashboard.md)
+- [Integrations](api/integrations.md)
 
 ### Architecture
 - [Architecture Overview](architecture/README.md)

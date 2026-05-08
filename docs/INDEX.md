@@ -33,6 +33,7 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `api/prescriptions.md`
 - `api/payments.md`
 - `api/dashboard.md`
+- `api/integrations.md`
 
 ### Architecture
 - `architecture/README.md`

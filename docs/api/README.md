@@ -28,7 +28,7 @@ base_url: "http://localhost:8000/api/v1"
 | **Payments** | 12 | Payments, invoices | [payments.md](payments.md) |
 | **Dashboard** | 6 | Analytics, charts | [dashboard.md](dashboard.md) |
 | **Doctor** | 12 | Profile, credentials | [doctor.md](doctor.md) |
-| **Integrations** | 12 | Provider config, send SMS/email, logs | N/A |
+| **Integrations** | 12 | Provider config, send SMS/email, logs | [integrations.md](integrations.md) |
 
 **Total:** 80 module endpoints
 
