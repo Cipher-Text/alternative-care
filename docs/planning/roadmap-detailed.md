@@ -161,7 +161,8 @@ Build the most comprehensive practice management system for alternative medicine
 - [x] Add security headers middleware (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
 - [x] Enable OWASP baseline security headers
 - [x] Set up rate limiting (5/min login baseline, Redis-backed)
-- [ ] Add per-user and AI-query-specific rate limiting tiers
+- [x] Add per-user rate limiting (JWT `sub` keyed for authenticated API requests)
+- [x] Add AI-query-specific rate limiting tiers (hourly quota scope on `/api/v1/ai/query`)
 - [ ] Configure Fernet encryption for integration credentials
 - [ ] Set up UFW firewall (ports 80, 443, 22 only)
 - [ ] Configure fail2ban for SSH protection

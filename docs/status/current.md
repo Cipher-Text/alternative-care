@@ -9,7 +9,8 @@ AltCare currently has a working FastAPI backend with 9 registered API modules an
 Recent launch-readiness work completed on 2026-05-08:
 - P0 auth fixes completed: password complexity enforcement and session invalidation on password change
 - Baseline HTTP security headers middleware enabled for all responses (CSP, X-Frame-Options, X-Content-Type-Options; HSTS in production)
-- Redis-backed baseline rate limiting enabled (strict login scope + general API scope)
+- Redis-backed baseline rate limiting enabled (strict login scope + per-IP/per-user API scope)
+- AI query endpoint now has dedicated hourly quota scope (`/api/v1/ai/query`)
 
 ## Code-Verified State
 

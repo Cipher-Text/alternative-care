@@ -6,6 +6,7 @@ from fastapi import Request
 from redis.asyncio import Redis
 
 from app.core.config import settings
+from app.core.security import decode_token
 
 _redis_client: Redis | None = None
 
@@ -18,11 +19,12 @@ class RateLimitResult:
     limit: int
     remaining: int
     retry_after: int
+    identifier: str
 
 
-def _build_key(scope: str, client_ip: str) -> str:
+def _build_key(scope: str, identifier: str) -> str:
     """Build a namespaced Redis key for rate limiting."""
-    return f"{settings.RATE_LIMIT_KEY_PREFIX}:rl:{scope}:{client_ip}"
+    return f"{settings.RATE_LIMIT_KEY_PREFIX}:rl:{scope}:{identifier}"
 
 
 def _extract_client_ip(request: Request) -> str:
@@ -30,6 +32,31 @@ def _extract_client_ip(request: Request) -> str:
     if request.client and request.client.host:
         return request.client.host
     return "unknown"
+
+
+def _extract_user_identifier(request: Request) -> str | None:
+    """Extract JWT user identifier from Bearer token when available."""
+    auth_header = request.headers.get("authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+
+    token = auth_header.removeprefix("Bearer ").strip()
+    if not token:
+        return None
+
+    try:
+        payload = decode_token(token)
+    except Exception:
+        return None
+
+    if payload.get("type") != "access":
+        return None
+
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+
+    return f"user:{user_id}"
 
 
 async def get_redis_client() -> Redis:
@@ -48,18 +75,22 @@ async def close_redis_client() -> None:
         _redis_client = None
 
 
-async def enforce_rate_limit(request: Request, scope: str, limit: int) -> RateLimitResult:
+async def enforce_rate_limit(
+    request: Request, scope: str, limit: int, window_seconds: int | None = None
+) -> RateLimitResult:
     """
     Enforce rate limit using Redis atomic increment.
 
     Fail-open behavior is used if Redis is unavailable.
     """
     if limit <= 0:
-        return RateLimitResult(allowed=True, limit=limit, remaining=0, retry_after=0)
+        return RateLimitResult(
+            allowed=True, limit=limit, remaining=0, retry_after=0, identifier="disabled"
+        )
 
-    client_ip = _extract_client_ip(request)
-    key = _build_key(scope, client_ip)
-    window = settings.RATE_LIMIT_WINDOW_SECONDS
+    identifier = _extract_user_identifier(request) or f"ip:{_extract_client_ip(request)}"
+    key = _build_key(scope, identifier)
+    window = window_seconds or settings.RATE_LIMIT_WINDOW_SECONDS
 
     try:
         redis = await get_redis_client()
@@ -76,8 +107,14 @@ async def enforce_rate_limit(request: Request, scope: str, limit: int) -> RateLi
             limit=limit,
             remaining=remaining,
             retry_after=retry_after,
+            identifier=identifier,
         )
     except Exception:
         # Do not block production traffic when Redis is unavailable.
-        return RateLimitResult(allowed=True, limit=limit, remaining=limit, retry_after=0)
-
+        return RateLimitResult(
+            allowed=True,
+            limit=limit,
+            remaining=limit,
+            retry_after=0,
+            identifier=identifier,
+        )

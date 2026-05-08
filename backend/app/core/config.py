@@ -95,6 +95,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_LOGIN_PER_MINUTE: int = 5
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     RATE_LIMIT_KEY_PREFIX: str = "altcare"
+    RATE_LIMIT_AI_PER_HOUR: int = 20
+    RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600
 
     # Security headers
     SECURITY_HEADERS_ENABLED: bool = True

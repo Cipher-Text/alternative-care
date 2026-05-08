@@ -1,16 +1,25 @@
 """FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
+import structlog
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from app.core.config import settings
 from app.core.rate_limit import close_redis_client, enforce_rate_limit
 
 # Import all models for Alembic autogenerate
 from app.shared.models import *  # noqa: F401, F403
+
+logger = structlog.get_logger(__name__)
+rate_limit_block_total = Counter(
+    "altcare_rate_limit_block_total",
+    "Total number of blocked requests due to rate limiting.",
+    ["scope"],
+)
 
 
 @asynccontextmanager
@@ -56,17 +65,34 @@ async def rate_limit_middleware(request: Request, call_next):
     path = request.url.path
     scope = None
     limit = None
+    window_seconds = settings.RATE_LIMIT_WINDOW_SECONDS
 
     if request.method == "POST" and path == f"{settings.API_V1_PREFIX}/auth/login":
         scope = "auth_login"
         limit = settings.RATE_LIMIT_LOGIN_PER_MINUTE
+    elif request.method == "POST" and path == f"{settings.API_V1_PREFIX}/ai/query":
+        scope = "ai_query"
+        limit = settings.RATE_LIMIT_AI_PER_HOUR
+        window_seconds = settings.RATE_LIMIT_AI_WINDOW_SECONDS
     elif path.startswith(settings.API_V1_PREFIX):
         scope = "api"
         limit = settings.RATE_LIMIT_PER_MINUTE
 
     if scope and limit is not None:
-        result = await enforce_rate_limit(request, scope=scope, limit=limit)
+        result = await enforce_rate_limit(
+            request, scope=scope, limit=limit, window_seconds=window_seconds
+        )
         if not result.allowed:
+            rate_limit_block_total.labels(scope=scope).inc()
+            logger.warning(
+                "rate_limit_exceeded",
+                scope=scope,
+                path=path,
+                method=request.method,
+                identifier=result.identifier,
+                retry_after=result.retry_after,
+                limit=result.limit,
+            )
             return JSONResponse(
                 status_code=429,
                 content={
@@ -135,6 +161,12 @@ async def root():
             "docs": "/docs",
         }
     )
+
+
+@app.get("/metrics", tags=["System"])
+async def metrics():
+    """Prometheus metrics endpoint."""
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 # API routes

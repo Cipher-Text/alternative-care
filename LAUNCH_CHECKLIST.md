@@ -148,8 +148,9 @@ alembic upgrade head
 
 ### Rate Limiting
 - [x] Configure per-IP rate limits (login + general API)
-- [ ] Configure per-user rate limits
+- [x] Configure per-user rate limits (JWT `sub` keyed for authenticated API requests)
 - [x] Add Redis-based distributed rate limiting
+- [x] Configure AI-specific quota tier (`/api/v1/ai/query`, hourly window)
 - [x] **Completed:** 2026-05-08 (`backend/app/core/rate_limit.py`, `backend/app/main.py`, `backend/tests/integration/test_rate_limiting.py`)
 
 ### Performance
