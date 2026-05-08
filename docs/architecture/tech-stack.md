@@ -256,7 +256,7 @@ celery_app.conf.task_routes = {
 
 ## Frontend Deep Dive
 
-### Next.js 14 + App Router
+### Next.js 16 + App Router
 
 **Directory structure:**
 ```

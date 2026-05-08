@@ -102,7 +102,7 @@ Build the most comprehensive practice management system for alternative medicine
 **Timeline:** 14 weeks (April 21 - July 26, 2026)  
 **Target Launch:** August 1, 2026  
 **Goal:** Launch a working clinic management tool that 10 pilot doctors can use daily  
-**Current Status:** Week 14 (Testing & Launch Prep) IN PROGRESS — Backend APIs complete (Auth, AI stub, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration). Current focus: launch-readiness testing and frontend coverage alignment.
+**Current Status:** Week 14 (Testing & Launch Prep) IN PROGRESS — Backend APIs complete (Auth, AI stub, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration). P0 auth launch blockers are fixed (password complexity + session invalidation on password change), and baseline HTTP security headers middleware is now implemented. Current focus: production environment hardening and frontend coverage alignment.
 
 ### Week 1-2: Foundation & Infrastructure ✅ COMPLETED
 
@@ -135,7 +135,7 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Set up automated daily backups
 
 **Frontend Setup**
-- [ ] Initialize Next.js 14 with App Router
+- [ ] Initialize/standardize Next.js 16 with App Router
 - [ ] Install Tailwind CSS + shadcn/ui components
 - [ ] Configure next-intl for i18n (English/Bengali)
 - [ ] Create language switcher component (en/bn toggle)
@@ -158,8 +158,8 @@ Build the most comprehensive practice management system for alternative medicine
 
 **Security Hardening**
 - [ ] Configure CORS (restrict to allowed origins)
-- [ ] Add security headers middleware (CSP, HSTS, X-Frame-Options)
-- [ ] Enable OWASP security headers
+- [x] Add security headers middleware (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- [x] Enable OWASP baseline security headers
 - [ ] Set up rate limiting (5/min login, 20/hour AI queries)
 - [ ] Configure Fernet encryption for integration credentials
 - [ ] Set up UFW firewall (ports 80, 443, 22 only)
@@ -185,7 +185,7 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Email verification flow - **TODO**
 
 **Frontend** 📋 PLANNED
-- [ ] Initialize Next.js 14 with App Router - **NEXT PRIORITY**
+- [ ] Initialize/standardize Next.js 16 with App Router - **NEXT PRIORITY**
 - [ ] Login page with form validation (Zod schema) — bilingual labels
 - [ ] Registration page with:
   - Multi-specialization selection (1-4 systems) — Bengali labels
@@ -1299,7 +1299,7 @@ Build the most comprehensive practice management system for alternative medicine
 - slowapi (rate limiting)
 
 **Frontend:**
-- Next.js 14 (App Router), React Query
+- Next.js 16 (App Router), React Query
 - Tailwind CSS + shadcn/ui
 - TypeScript strict mode
 
@@ -1440,7 +1440,7 @@ This roadmap represents a **44-week journey** (~11 months) from planning to a co
 4. [x] ~~Create initial database migrations (30 tables)~~ ✅
 5. [x] ~~Implement authentication system~~ ✅
 6. [x] ~~Write comprehensive test suite~~ ✅
-7. [ ] **Initialize Next.js 14 frontend** — **CURRENT PRIORITY**
+7. [ ] **Initialize/standardize Next.js 16 frontend** — **CURRENT PRIORITY**
 8. [ ] **Implement frontend authentication flows** — **CURRENT PRIORITY**
 9. [ ] Begin beta doctor recruitment
 10. [ ] Apply for SSLCommerz merchant account

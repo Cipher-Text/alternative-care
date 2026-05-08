@@ -546,6 +546,19 @@ class AuthService:
         # Update password
         user.password_hash = get_password_hash(new_password)
 
+        # Revoke all active sessions after password change.
+        # This invalidates all existing refresh tokens across devices.
+        result = await self.db.execute(
+            select(UserSession).where(
+                UserSession.user_id == user_id,
+                UserSession.is_revoked == False,  # noqa: E712
+            )
+        )
+        sessions = result.scalars().all()
+        for session in sessions:
+            session.is_revoked = True
+            session.revoked_at = datetime.now(timezone.utc)
+
         await self.db.commit()
 
         return True

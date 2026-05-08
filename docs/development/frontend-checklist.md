@@ -10,7 +10,7 @@
 This checklist tracks the frontend development progress from initial setup through production launch. Each week builds on the previous, with integrated testing throughout.
 
 **Total Duration:** 6 weeks  
-**Tech Stack:** Next.js 14 + TypeScript + Tailwind CSS + shadcn/ui + React Query  
+**Tech Stack:** Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui + React Query  
 **Backend Dependency:** All 71 API endpoints ready ✅
 
 ---

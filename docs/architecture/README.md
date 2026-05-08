@@ -56,7 +56,7 @@ Multi-tenant SaaS platform for alternative medicine practitioners with row-level
 - **Storage:** MinIO (S3-compatible)
 
 ### Frontend
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **Components:** shadcn/ui

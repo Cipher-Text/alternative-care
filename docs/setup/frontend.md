@@ -4,12 +4,12 @@ type: "setup"
 difficulty: "intermediate"
 time: "30 minutes"
 last_updated: "2026-05-01"
-ai_summary: "Next.js 14 + TypeScript + Tailwind CSS + shadcn/ui frontend setup"
+ai_summary: "Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui frontend setup"
 ---
 
 # Frontend Setup Guide
 
-Complete guide to set up the AltCare Next.js 14 frontend with TypeScript, Tailwind CSS, and shadcn/ui.
+Complete guide to set up the AltCare Next.js 16 frontend with TypeScript, Tailwind CSS, and shadcn/ui.
 
 ---
 

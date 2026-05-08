@@ -77,7 +77,7 @@ Colors:
 - Incomplete: --color-text-tertiary
 ```
 
-### React Component (Next.js 14 + TypeScript)
+### React Component (Next.js 16 + TypeScript)
 
 ```typescript
 // components/dashboard/OnboardingChecklist.tsx
@@ -1111,7 +1111,7 @@ async def get_user_limits(
 
 ## 📦 Package Dependencies
 
-### Frontend (Next.js 14 + React)
+### Frontend (Next.js 16 + React)
 ```json
 {
   "dependencies": {
@@ -1232,7 +1232,7 @@ trackEvent('empty_state_cta_clicked', { state: 'no_patients', action: 'add_patie
 ## ✅ Sprint Checklist
 
 ### Week 1: Setup & Foundation
-- [ ] Initialize Next.js 14 project with TypeScript
+- [ ] Initialize/standardize Next.js 16 project with TypeScript
 - [ ] Set up Tailwind CSS + design tokens
 - [ ] Install dependencies (cmdk, framer-motion, etc.)
 - [ ] Create database migration for onboarding_progress

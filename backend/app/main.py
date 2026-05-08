@@ -2,7 +2,7 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -46,6 +46,32 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """Apply baseline HTTP security headers to all responses."""
+    response = await call_next(request)
+
+    if not settings.SECURITY_HEADERS_ENABLED:
+        return response
+
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = settings.SECURITY_CSP_POLICY
+
+    if (
+        settings.SECURITY_HSTS_ENABLED
+        and settings.ENVIRONMENT.lower() == "production"
+    ):
+        hsts = f"max-age={settings.SECURITY_HSTS_MAX_AGE}"
+        if settings.SECURITY_HSTS_INCLUDE_SUBDOMAINS:
+            hsts += "; includeSubDomains"
+        if settings.SECURITY_HSTS_PRELOAD:
+            hsts += "; preload"
+        response.headers["Strict-Transport-Security"] = hsts
+
+    return response
 
 
 # Health check

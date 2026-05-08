@@ -9,10 +9,11 @@
 ## 🔴 Pre-Launch Blockers (MUST FIX - 3 hours)
 
 ### P0-1: Password Complexity Enforcement
-- [ ] **File:** `backend/app/modules/auth/schemas.py`
-- [ ] **Fix:** Add Pydantic validator for password requirements
-- [ ] **Requirements:** Min 8 chars, 1 uppercase, 1 lowercase, 1 number
-- [ ] **Test:** `tests/integration/test_auth_security.py::test_password_complexity_requirements_enforced`
+- [x] **File:** `backend/app/modules/auth/schemas.py`
+- [x] **Fix:** Added shared validator for password requirements
+- [x] **Requirements:** Min 8 chars, 1 uppercase, 1 lowercase, 1 number
+- [x] **Test:** `tests/integration/test_auth_security.py::test_password_complexity_requirements_enforced`
+- [x] **Completed:** 2026-05-08
 - [ ] **ETA:** 1 hour
 
 ```python
@@ -37,10 +38,11 @@ class UserRegister(BaseModel):
 ```
 
 ### P0-2: Session Invalidation on Password Change
-- [ ] **File:** `backend/app/modules/auth/service.py`
-- [ ] **Fix:** Revoke all user sessions when password changes
-- [ ] **Method:** Add `await self._revoke_all_user_sessions(user_id)` to `change_password()`
-- [ ] **Test:** `tests/integration/test_auth_security.py::test_password_change_invalidates_all_sessions`
+- [x] **File:** `backend/app/modules/auth/service.py`
+- [x] **Fix:** Revoke all user sessions when password changes
+- [x] **Method:** Revoke active `UserSession` rows and set `revoked_at`
+- [x] **Test:** `tests/integration/test_auth_security.py::test_password_change_invalidates_all_sessions`
+- [x] **Completed:** 2026-05-08
 - [ ] **ETA:** 2 hours
 
 ```python
@@ -138,10 +140,11 @@ alembic upgrade head
 ## 🟢 Optional Enhancements (Post-Launch)
 
 ### Security Headers
-- [ ] Add Content-Security-Policy (CSP)
-- [ ] Add Strict-Transport-Security (HSTS)
-- [ ] Add X-Frame-Options: DENY
-- [ ] Add X-Content-Type-Options: nosniff
+- [x] Add Content-Security-Policy (CSP)
+- [x] Add Strict-Transport-Security (HSTS, production-only)
+- [x] Add X-Frame-Options: DENY
+- [x] Add X-Content-Type-Options: nosniff
+- [x] **Completed:** 2026-05-08 (`backend/app/main.py` middleware + `backend/tests/integration/test_security_headers.py`)
 
 ### Rate Limiting
 - [ ] Configure per-IP rate limits
@@ -167,7 +170,7 @@ alembic upgrade head
 ### Pre-Deployment
 - [x] All tests passing (61% coverage, 100% critical)
 - [x] Security audit complete (A- rating)
-- [ ] **P0 blockers fixed** (password + sessions) ⚠️
+- [x] **P0 blockers fixed** (password + sessions)
 - [ ] Production environment configured
 - [ ] Environment variables set
 - [ ] SSL certificates configured

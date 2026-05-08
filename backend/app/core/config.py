@@ -94,6 +94,19 @@ class Settings(BaseSettings):
     RATE_LIMIT_PER_MINUTE: int = 60
     RATE_LIMIT_LOGIN_PER_MINUTE: int = 5
 
+    # Security headers
+    SECURITY_HEADERS_ENABLED: bool = True
+    SECURITY_CSP_POLICY: str = (
+        "default-src 'none'; "
+        "base-uri 'none'; "
+        "frame-ancestors 'none'; "
+        "form-action 'none'"
+    )
+    SECURITY_HSTS_ENABLED: bool = True
+    SECURITY_HSTS_MAX_AGE: int = 31536000
+    SECURITY_HSTS_INCLUDE_SUBDOMAINS: bool = True
+    SECURITY_HSTS_PRELOAD: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:

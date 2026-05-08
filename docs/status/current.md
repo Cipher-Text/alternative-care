@@ -6,6 +6,10 @@ Last Updated: 2026-05-08
 
 AltCare currently has a working FastAPI backend with 9 registered API modules and a partial Next.js frontend focused on auth, dashboard, and patient workflows.
 
+Recent launch-readiness work completed on 2026-05-08:
+- P0 auth fixes completed: password complexity enforcement and session invalidation on password change
+- Baseline HTTP security headers middleware enabled for all responses (CSP, X-Frame-Options, X-Content-Type-Options; HSTS in production)
+
 ## Code-Verified State
 
 ### Backend
@@ -43,6 +47,7 @@ AltCare currently has a working FastAPI backend with 9 registered API modules an
 - Patient management APIs and corresponding frontend patient screens
 - Dashboard analytics APIs and dashboard UI
 - Multi-tenant enforcement patterns in backend architecture and tests
+- Baseline API security response headers middleware
 
 ## What Is Backend-Ready but Frontend-Partial
 - Doctor profile, appointments, prescriptions, payments, and integrations have backend routes but limited or no full UI coverage in `frontend/src/app`

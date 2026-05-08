@@ -28,7 +28,7 @@
 **Priority**: Critical
 
 **Tasks:**
-- [ ] Create Next.js 14 project with TypeScript
+- [ ] Create/standardize Next.js 16 project with TypeScript
 - [ ] Configure `tsconfig.json` with strict mode
 - [ ] Set up Tailwind CSS with design tokens
 - [ ] Add ESLint + Prettier configuration
@@ -439,7 +439,7 @@ CREATE INDEX idx_onboarding_user ON onboarding_progress(user_id);
 **Priority**: Critical
 
 **Tasks:**
-- [ ] Fix P0 bugs (blocking)
+- [x] Fix current known P0 auth bugs (password complexity + password-change session invalidation) — completed 2026-05-08
 - [ ] Fix P1 bugs (high priority)
 - [ ] Triage P2 bugs (medium) for Phase 2
 - [ ] Re-test all fixes
