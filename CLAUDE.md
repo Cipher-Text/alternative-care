@@ -14,8 +14,8 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Dashboard Analytics (Stats, Revenue, Demographics) - Backend + Frontend ✅
 - Multi-tenant isolation (100% secure, 16/16 tests passing) ✅
 
-**Backend:** 8 modules, 80+ endpoints, 30 database models
-**Frontend:** 44 source files (auth, patients, dashboard)
+**Backend:** 8 routed modules, 79 module endpoints (+ `/` and `/health`), 30 database models
+**Frontend:** 48 source files (auth, dashboard, patients)
 **Security:** A- (91/100), 61% test coverage
 
 **Pre-Launch Fixes (~3 hours):**
@@ -163,6 +163,7 @@ async def analytics(user: CurrentUser = Depends(require_role("doctor", "admin"))
 ```python
 from app.core.dependencies import RequireProPlan
 
+# Example for future AI routes (not currently wired in main.py)
 @router.post("/ai/query")
 async def ai_query(user: RequireProPlan):  # 'pro' plan only
     ...
@@ -214,7 +215,7 @@ backend/app/
 │   ├── payment/          # ✅ Processing, bKash (12 endpoints)
 │   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
 │   ├── dashboard/        # ✅ Analytics, stats (6 endpoints)
-│   ├── ai/               # 📋 Placeholder
+│   ├── ai/               # 📋 Placeholder (folder exists, no router registered)
 │   ├── medicine/         # 📋 Placeholder (models exist)
 │   ├── library/          # 📋 Placeholder (models exist)
 │   └── notification/     # 📋 Placeholder
