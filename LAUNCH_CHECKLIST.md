@@ -147,9 +147,10 @@ alembic upgrade head
 - [x] **Completed:** 2026-05-08 (`backend/app/main.py` middleware + `backend/tests/integration/test_security_headers.py`)
 
 ### Rate Limiting
-- [ ] Configure per-IP rate limits
+- [x] Configure per-IP rate limits (login + general API)
 - [ ] Configure per-user rate limits
-- [ ] Add Redis-based distributed rate limiting
+- [x] Add Redis-based distributed rate limiting
+- [x] **Completed:** 2026-05-08 (`backend/app/core/rate_limit.py`, `backend/app/main.py`, `backend/tests/integration/test_rate_limiting.py`)
 
 ### Performance
 - [ ] Enable PostgreSQL query logging

@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
+from app.core.rate_limit import close_redis_client, enforce_rate_limit
 
 # Import all models for Alembic autogenerate
 from app.shared.models import *  # noqa: F401, F403
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
+    await close_redis_client()
     print("👋 AltCare Backend shutting down...")
 
 
@@ -46,6 +48,42 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    """Apply baseline rate limiting for auth login and API routes."""
+    path = request.url.path
+    scope = None
+    limit = None
+
+    if request.method == "POST" and path == f"{settings.API_V1_PREFIX}/auth/login":
+        scope = "auth_login"
+        limit = settings.RATE_LIMIT_LOGIN_PER_MINUTE
+    elif path.startswith(settings.API_V1_PREFIX):
+        scope = "api"
+        limit = settings.RATE_LIMIT_PER_MINUTE
+
+    if scope and limit is not None:
+        result = await enforce_rate_limit(request, scope=scope, limit=limit)
+        if not result.allowed:
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "detail": "Rate limit exceeded",
+                    "scope": scope,
+                    "limit": result.limit,
+                    "retry_after": result.retry_after,
+                },
+                headers={"Retry-After": str(result.retry_after)},
+            )
+
+        response = await call_next(request)
+        response.headers["X-RateLimit-Limit"] = str(result.limit)
+        response.headers["X-RateLimit-Remaining"] = str(result.remaining)
+        return response
+
+    return await call_next(request)
 
 
 @app.middleware("http")

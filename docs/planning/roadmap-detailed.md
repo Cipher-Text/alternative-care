@@ -120,7 +120,7 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Configure i18n with Babel (English/Bengali support) - Models ready
 - [ ] Configure structlog for structured JSON logging - To be added
 - [ ] Integrate Sentry for error tracking - Config ready
-- [ ] Set up slowapi rate limiting with Redis backend - To be added
+- [x] Set up Redis-backed rate limiting middleware (login + API scope) ✅
 - [ ] Configure Prometheus metrics collection - To be added
 
 **Database Setup** ✅ DONE
@@ -160,7 +160,8 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Configure CORS (restrict to allowed origins)
 - [x] Add security headers middleware (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
 - [x] Enable OWASP baseline security headers
-- [ ] Set up rate limiting (5/min login, 20/hour AI queries)
+- [x] Set up rate limiting (5/min login baseline, Redis-backed)
+- [ ] Add per-user and AI-query-specific rate limiting tiers
 - [ ] Configure Fernet encryption for integration credentials
 - [ ] Set up UFW firewall (ports 80, 443, 22 only)
 - [ ] Configure fail2ban for SSH protection
