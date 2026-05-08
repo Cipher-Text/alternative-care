@@ -57,12 +57,12 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 
 ## Code-Verified Snapshot (2026-05-08)
 
-- Backend routers registered in `backend/app/main.py`: `auth`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
-- API endpoints in module route files: 79 total
+- Backend routers registered in `backend/app/main.py`: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
+- API endpoints in module route files: 80 total
 - System endpoints: `/` and `/health`
 - Frontend stack: Next.js 16 + React 19
 - Frontend implemented pages: login, dashboard, and patient management flows
-- AI module status: `backend/app/modules/ai/` exists but is not wired into `main.py`; no live `/api/v1/ai/*` endpoints yet
+- AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes
 

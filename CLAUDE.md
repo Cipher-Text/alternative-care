@@ -14,7 +14,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Dashboard Analytics (Stats, Revenue, Demographics) - Backend + Frontend ✅
 - Multi-tenant isolation (100% secure, 16/16 tests passing) ✅
 
-**Backend:** 8 routed modules, 79 module endpoints (+ `/` and `/health`), 30 database models
+**Backend:** 9 routed modules, 80 module endpoints (+ `/` and `/health`), 30 database models
 **Frontend:** 48 source files (auth, dashboard, patients)
 **Security:** A- (91/100), 61% test coverage
 

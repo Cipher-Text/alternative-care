@@ -4,13 +4,14 @@ Last Updated: 2026-05-08
 
 ## Summary
 
-AltCare currently has a working FastAPI backend with 8 registered API modules and a partial Next.js frontend focused on auth, dashboard, and patient workflows.
+AltCare currently has a working FastAPI backend with 9 registered API modules and a partial Next.js frontend focused on auth, dashboard, and patient workflows.
 
 ## Code-Verified State
 
 ### Backend
 - Registered routers in `backend/app/main.py`:
   - `auth`
+  - `ai`
   - `appointments`
   - `dashboard`
   - `doctor`
@@ -18,7 +19,7 @@ AltCare currently has a working FastAPI backend with 8 registered API modules an
   - `prescription`
   - `payment`
   - `integration`
-- Endpoint count from route decorators: 79 module endpoints
+- Endpoint count from route decorators: 80 module endpoints
 - System endpoints: `/` and `/health`
 - Data model scope: 30 SQLAlchemy models (multi-tenant pattern)
 
@@ -33,10 +34,9 @@ AltCare currently has a working FastAPI backend with 8 registered API modules an
 - Dashboard layout/auth shell is in place
 
 ### AI / QAI-Related Features
-- `backend/app/modules/ai/` directory exists
-- AI router is not registered in `backend/app/main.py`
-- No live `/api/v1/ai/*` API is exposed yet
-- AI/RAG remains planned work, not an active user-facing feature
+- `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint
+- Current behavior returns `501 Not Implemented`
+- AI/RAG remains planned work beyond this contract endpoint
 
 ## What Is Implemented End-to-End
 - Authentication flows (including 2FA support) across backend and frontend login flow

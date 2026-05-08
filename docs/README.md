@@ -53,7 +53,7 @@ If you are using Codex/QAI tooling to reason about current behavior:
 - Treat `backend/app/main.py` as the source of truth for active API routers.
 - Treat route decorators in `backend/app/modules/*/routes.py` as endpoint truth.
 - Treat `frontend/src/app/**` as the source of truth for implemented UI routes.
-- Treat AI/RAG as planned work unless an `/api/v1/ai/*` router is explicitly added to `main.py`.
+- Treat AI/RAG as planned work; currently only `/api/v1/ai/query` stub exists and returns `501`.
 
 ## Maintenance Rule
 
