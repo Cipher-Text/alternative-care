@@ -1,271 +1,222 @@
-# 🚀 Getting Started with AltCare
+# Getting Started with AltCare
 
-**Welcome!** This guide will get you up and running with AltCare in 30 minutes.
+Get up and running in 10 minutes.
 
 ---
 
-## Prerequisites
+## 1. PREREQUISITES
 
-Before you begin, ensure you have:
+**Required:**
+- Python 3.12+ - [Download](https://www.python.org/downloads/)
+- Docker & Docker Compose - [Download](https://www.docker.com/products/docker-desktop/)
+- Git - [Download](https://git-scm.com/downloads)
 
-- ✅ **macOS, Linux, or Windows** with WSL2
-- ✅ **Python 3.12+** - [Download](https://www.python.org/downloads/)
-- ✅ **Docker & Docker Compose** - [Download](https://www.docker.com/products/docker-desktop/)
-- ✅ **Git** - [Download](https://git-scm.com/downloads)
-- ✅ **Code Editor** - VS Code recommended
-
-**Check your versions:**
+**Verify:**
 ```bash
-python3 --version  # Should be 3.12 or higher
-docker --version   # Should be 20.10 or higher
-git --version      # Any recent version
+python3 --version  # 3.12+
+docker --version   # 20.10+
+git --version
 ```
 
+**Recommended:**
+- VS Code with Python extension
+- macOS, Linux, or Windows with WSL2
+
 ---
 
-## Quick Start (5 minutes)
+## 2. QUICK START (10 Minutes)
 
-### 1. Clone the Repository
+### Clone Repository
 
 ```bash
 git clone https://github.com/your-org/alternative-care.git
 cd alternative-care
 ```
 
-### 2. Run Automated Setup
+### Backend Setup (Automated)
 
 ```bash
 cd backend
 ./quick_start.sh
 ```
 
-**What this does:**
-- ✅ Starts Docker services (PostgreSQL, Redis, MinIO)
-- ✅ Creates Python virtual environment
-- ✅ Installs dependencies
-- ✅ Installs pgvector extension
-- ✅ Runs database migrations (creates 30 tables)
-- ✅ Verifies everything works
+**This script:**
+- Starts Docker services (PostgreSQL 16, Redis 7, MinIO)
+- Creates Python virtual environment
+- Installs dependencies
+- Installs pgvector extension
+- Runs database migrations (creates 30 tables)
+- Seeds initial data
 
-**Time:** ~5 minutes
+**Duration:** ~5-10 minutes
 
-### 3. Verify Installation
+### Frontend Setup
 
-Open your browser:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-- **API Documentation:** http://localhost:8000/docs
-- **Health Check:** http://localhost:8000/health
-- **MinIO Console:** http://localhost:9001 (minioadmin / minioadmin)
+**Frontend runs at:** http://localhost:3000
 
-You should see:
-- ✅ Swagger UI with API endpoints
-- ✅ Health check returning `{"status": "healthy"}`
-- ✅ MinIO login page
+### Verify Installation
 
-**✅ Success!** You're ready to develop.
+**Open in browser:**
+- Frontend: http://localhost:3000
+- API Docs: http://localhost:8000/docs
+- Health Check: http://localhost:8000/health
+
+**Should see:**
+- Frontend login page
+- Swagger UI with 80+ endpoints
+- Health check: `{"status": "healthy"}`
+
+**Success!** You're ready to develop.
 
 ---
 
-## Manual Setup (Alternative)
-
-If the automated script doesn't work, follow these steps:
+## 3. MANUAL SETUP (If Automated Fails)
 
 ### Step 1: Start Infrastructure
 
 ```bash
 # From project root
-docker compose up -d postgres redis minio
+docker compose up -d
 
-# Wait for services to start (15 seconds)
-sleep 15
-
-# Verify services are running
+# Verify services running
 docker compose ps
 ```
 
-### Step 2: Set Up Python Environment
+### Step 2: Backend
 
 ```bash
 cd backend
 
 # Create virtual environment
 python3 -m venv venv
-
-# Activate it
 source venv/bin/activate  # macOS/Linux
-# OR
-venv\Scripts\activate     # Windows
+# venv\Scripts\activate   # Windows
 
 # Install dependencies
 pip install -e .
-```
 
-### Step 3: Install pgvector Extension
-
-```bash
+# Install pgvector
 docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
-```
 
-### Step 4: Run Migrations
-
-```bash
-# Generate migration (first time only)
-alembic revision --autogenerate -m "Initial schema with 30 tables"
-
-# Apply migrations
+# Run migrations
 alembic upgrade head
 
-# Verify tables created (should show 30 tables)
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev -c "\dt"
-```
+# Seed data
+./scripts/run_seed.sh
 
-### Step 5: Start the Development Server
-
-```bash
-# Still in backend/ directory with venv activated
+# Start server
 uvicorn app.main:app --reload
+```
 
-# Server starts at: http://localhost:8000
+### Step 3: Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
 
-## What's Next?
+## 4. DAILY WORKFLOW
 
-### For Developers
-
-1. **Read the documentation map**
-   - See [docs/README.md](docs/README.md) for full navigation
-
-2. **Check current status**
-   - Read [docs/status/current.md](docs/status/current.md) - What's done, what's next
-
-3. **Complete setup guide**
-   - Follow [docs/development/setup.md](docs/development/setup.md) for detailed setup
-
-4. **Start coding**
-   - Use [docs/development/quick-reference.md](docs/development/quick-reference.md) for code patterns
-   - Pick a task from [docs/planning/phase1-tasks.md](docs/planning/phase1-tasks.md)
-
-### For Stakeholders
-
-1. **Understand the project**
-   - Read [README.md](README.md) - Project overview
-
-2. **Check the roadmap**
-   - See [docs/planning/roadmap.md](docs/planning/roadmap.md) - High-level plan
-   - Or [docs/planning/roadmap-detailed.md](docs/planning/roadmap-detailed.md) - Full details
-
-3. **Track progress**
-   - Monitor [docs/status/current.md](docs/status/current.md) - Updated weekly
-
-### For Architects
-
-1. **Review architecture**
-   - Read [docs/architecture/overview.md](docs/architecture/overview.md) - System design
-
-2. **Study the database**
-   - Browse [docs/architecture/database.md](docs/architecture/database.md) - All 30 tables
-
-3. **Understand the stack**
-   - Check [docs/architecture/tech-stack.md](docs/architecture/tech-stack.md) - Technology choices
-
----
-
-## Common Commands
-
-### Development
+### Start Development
 
 ```bash
-# Start all services
+# 1. Start services (if not running)
 docker compose up -d
 
-# Stop all services
-docker compose down
-
-# View logs
-docker compose logs -f postgres  # PostgreSQL
-docker compose logs -f redis     # Redis
-
-# Restart a service
-docker compose restart postgres
-
-# Start backend (with auto-reload)
+# 2. Backend
 cd backend && source venv/bin/activate
 uvicorn app.main:app --reload
+
+# 3. Frontend (separate terminal)
+cd frontend && npm run dev
+
+# 4. Celery (optional, for background tasks)
+celery -A app.core.celery:celery_app worker --loglevel=info
 ```
 
-### Database
+### Before Committing
 
 ```bash
-# Create migration after model changes
-alembic revision --autogenerate -m "Description"
+# Run tests
+cd backend && pytest --cov=app
 
-# Apply migrations
-alembic upgrade head
+# Run frontend E2E tests
+cd frontend && npx playwright test
 
-# Rollback last migration
-alembic downgrade -1
-
-# View migration history
-alembic history
-
-# Access database directly
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev
-```
-
-### Testing
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=app --cov-report=html
-
-# Run specific test file
-pytest tests/unit/test_auth.py -v
+# Format code
+cd backend && black app && ruff check app
 ```
 
 ---
 
-## Troubleshooting
+## 5. NEXT STEPS
 
-### Issue: Docker not running
+### Understand the Codebase
 
-**Error:** `Cannot connect to the Docker daemon`
+1. **Read CLAUDE.md** - Architecture, patterns, conventions
+2. **Check backend/API_ENDPOINTS.md** - All 80+ endpoints
+3. **Browse frontend/src/** - Component structure
 
-**Solution:**
+### Start Coding
+
+**Backend:**
+- Add new endpoint: See CLAUDE.md § 5.1
+- Add database table: See CLAUDE.md § 5.2
+- Module structure: `backend/app/modules/<module>/`
+
+**Frontend:**
+- Add new page: See CLAUDE.md § 5.3
+- API client: `frontend/src/lib/api/`
+- Components: `frontend/src/components/`
+
+### Test Your Changes
+
 ```bash
-# Start Docker Desktop
-# Then verify:
+# Backend unit tests
+pytest tests/unit/test_<module>.py -v
+
+# Backend integration tests
+pytest tests/integration/ -v
+
+# Frontend E2E tests
+cd frontend && npx playwright test --ui
+```
+
+---
+
+## 6. TROUBLESHOOTING
+
+### Docker Not Running
+
+```bash
+# Start Docker Desktop, then verify:
 docker info
 ```
 
-### Issue: Port already in use
+### Port Already in Use
 
-**Error:** `Port 8000 is already in use`
-
-**Solution:**
 ```bash
-# Find process using the port
-lsof -ti:8000
+# Find and kill process
+lsof -ti:8000 | xargs kill -9
 
-# Kill it
-kill -9 <PID>
-
-# Or use a different port
+# Or use different port
 uvicorn app.main:app --reload --port 8001
 ```
 
-### Issue: Database connection failed
+### Database Connection Failed
 
-**Error:** `Could not connect to database`
-
-**Solution:**
 ```bash
-# Check if PostgreSQL is running
+# Check if PostgreSQL running
 docker compose ps postgres
 
 # Restart it
@@ -275,24 +226,17 @@ docker compose restart postgres
 docker compose logs postgres
 ```
 
-### Issue: pgvector not installed
+### pgvector Not Installed
 
-**Error:** `Extension "vector" does not exist`
-
-**Solution:**
 ```bash
-# Install the extension
 docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
-  -c "CREATE EXTENSION vector;"
+  -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
-### Issue: Migration failed
+### Migration Failed
 
-**Error:** `Alembic migration failed`
-
-**Solution:**
 ```bash
-# Reset database (DEV ONLY! Will delete all data)
+# Reset database (DEV ONLY - destroys all data)
 docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
   -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
@@ -300,85 +244,75 @@ docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
 alembic upgrade head
 ```
 
-**Still stuck?** See [docs/development/setup.md](docs/development/setup.md) for detailed troubleshooting.
+### Frontend Module Not Found
+
+```bash
+cd frontend
+rm -rf .next node_modules
+npm install
+npm run dev
+```
 
 ---
 
-## Development Workflow
+## 7. REFERENCE
 
-### Daily Workflow
+### Essential Commands
 
 ```bash
-# 1. Pull latest changes
-git pull origin main
+# Database
+alembic upgrade head              # Apply migrations
+alembic revision --autogenerate   # Create migration
+./scripts/run_seed.sh             # Seed data
 
-# 2. Start services (if not running)
-docker compose up -d
+# Testing
+pytest --cov=app                  # Backend tests
+npx playwright test               # Frontend E2E
 
-# 3. Activate virtual environment
-cd backend && source venv/bin/activate
-
-# 4. Apply any new migrations
-alembic upgrade head
-
-# 5. Start development server
-uvicorn app.main:app --reload
-
-# 6. Code, test, commit
-# ... (your work here)
-
-# 7. Run tests before commit
-pytest
-
-# 8. Commit your changes
-git add .
-git commit -m "feat: your feature description"
+# Code Quality
+black backend/app                 # Format
+ruff check backend/app            # Lint
+mypy backend/app                  # Type check
 ```
+
+### Service URLs
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **API Docs:** http://localhost:8000/docs (Swagger), http://localhost:8000/redoc
+- **Database:** localhost:5432 (user: altcare, db: altcare_dev)
+- **Redis:** localhost:6379
+- **MinIO:** http://localhost:9001 (minioadmin/minioadmin)
+
+### Key Files
+
+- **CLAUDE.md** - Main documentation (architecture, patterns, how-tos)
+- **backend/API_ENDPOINTS.md** - All endpoints documented
+- **backend/.env** - Backend environment variables
+- **frontend/.env.local** - Frontend environment variables
+- **docker-compose.yml** - Infrastructure setup
 
 ### Git Workflow
 
 ```bash
-# 1. Create feature branch
-git checkout -b feat/your-feature-name
+# Create feature branch
+git checkout -b feat/your-feature
 
-# 2. Make changes and commit
+# Make changes, commit
 git add .
 git commit -m "feat: description"
 
-# 3. Push to remote
-git push origin feat/your-feature-name
-
-# 4. Create pull request on GitHub
+# Push and create PR
+git push origin feat/your-feature
 ```
-
----
-
-## Useful Resources
-
-### Documentation
-- [Full Documentation Index](docs/README.md)
-- [Current Status](docs/status/current.md)
-- [Backend Guide](docs/development/backend.md)
-- [API Docs](http://localhost:8000/docs) (when running)
-
-### External Resources
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [SQLAlchemy 2.0 Documentation](https://docs.sqlalchemy.org/en/20/)
-- [Alembic Documentation](https://alembic.sqlalchemy.org/)
-- [Docker Documentation](https://docs.docker.com/)
 
 ---
 
 ## Need Help?
 
-- **Setup Issues:** See [docs/development/setup.md](docs/development/setup.md)
-- **Code Examples:** Check [docs/development/quick-reference.md](docs/development/quick-reference.md)
-- **Architecture Questions:** Read [docs/architecture/overview.md](docs/architecture/overview.md)
-- **Project Status:** View [docs/status/current.md](docs/status/current.md)
-- **Everything Else:** Start with [docs/README.md](docs/README.md)
+1. **Architecture & Patterns:** See CLAUDE.md
+2. **API Documentation:** http://localhost:8000/docs
+3. **Troubleshooting:** CLAUDE.md § 6
+4. **Breaking Changes:** See BREAKING_CHANGES.md
 
----
-
-**🎉 You're all set!** Happy coding!
-
-**Next Step:** Choose your path in [docs/README.md](docs/README.md)
+**You're all set!** Start coding with CLAUDE.md as your guide.

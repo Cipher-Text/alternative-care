@@ -1,228 +1,202 @@
 # AltCare Backend
 
-FastAPI backend for Alternative Medicine Practice Management System.
+FastAPI backend for multi-tenant alternative medicine practice management.
+
+**Full Documentation:** See [../CLAUDE.md](../CLAUDE.md) for architecture, patterns, and detailed guides.
+
+---
 
 ## Quick Start
 
-### 1. Start infrastructure services
-
 ```bash
-# Start PostgreSQL, Redis, MinIO
-docker compose up -d postgres redis minio
+# 1. Start infrastructure
+docker compose up -d
+
+# 2. Run automated setup
+./quick_start.sh
+
+# 3. Start development server
+source venv/bin/activate
+uvicorn app.main:app --reload
 ```
 
-### 2. Set up Python environment
+**API Docs:** http://localhost:8000/docs
 
-```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -e .
-
-# Or for development
-pip install -e ".[dev]"
-```
-
-### 3. Configure environment
-
-```bash
-# Copy example env file
-cp .env.example .env
-
-# Edit .env with your values (at minimum, database URL should be correct)
-```
-
-### 4. Run database migrations
-
-```bash
-# Create initial migration
-alembic revision --autogenerate -m "Initial schema with 30 tables"
-
-# Apply migrations
-alembic upgrade head
-```
-
-### 5. Run the development server
-
-```bash
-# Using uvicorn directly
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Or using python
-python -m app.main
-```
-
-### 6. Access the API
-
-- **API Documentation**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **Health Check**: http://localhost:8000/health
+---
 
 ## Project Structure
 
 ```
-backend/
-├── app/
-│   ├── main.py                 # FastAPI app entry point
-│   ├── core/                   # Core functionality
-│   │   ├── config.py          # Settings (Pydantic)
-│   │   ├── database.py        # SQLAlchemy setup
-│   │   ├── security.py        # JWT, password hashing, 2FA
-│   │   └── dependencies.py    # FastAPI dependencies (auth, etc.)
-│   ├── modules/                # Feature modules
-│   │   ├── auth/              # Authentication
-│   │   ├── doctor/            # Doctor profile & credentials
-│   │   ├── patient/           # Patient management
-│   │   ├── prescription/      # Prescription system
-│   │   ├── payment/           # Payments & invoices
-│   │   ├── medicine/          # Medicine database
-│   │   ├── library/           # Book library
-│   │   ├── ai/                # AI/RAG (Phase 4)
-│   │   ├── notification/      # Email/SMS
-│   │   ├── integration/       # Integration framework
-│   │   └── dashboard/         # Dashboard & analytics
-│   └── shared/
-│       ├── models/            # SQLAlchemy models (30 tables)
-│       └── schemas/           # Pydantic schemas
-├── alembic/                   # Database migrations
-│   ├── versions/              # Migration files
-│   └── env.py                 # Alembic config
-├── tests/
-│   ├── unit/                  # Unit tests
-│   └── integration/           # Integration tests
-├── pyproject.toml             # Python project config
-├── alembic.ini                # Alembic config
-└── README.md                  # This file
+backend/app/
+├── main.py              # FastAPI app entry point
+├── core/                # Infrastructure
+│   ├── config.py       # Settings (env vars)
+│   ├── database.py     # SQLAlchemy async engine
+│   ├── security.py     # JWT, bcrypt, TOTP, Fernet
+│   ├── celery.py       # Background tasks
+│   └── dependencies.py # Auth, RBAC, plan checks
+├── modules/             # Feature modules (80+ endpoints)
+│   ├── auth/           # Login, refresh, 2FA (9)
+│   ├── doctor/         # Profile, degrees (12)
+│   ├── patient/        # CRUD, search, tags (14)
+│   ├── appointments/   # Scheduling, visits (10)
+│   ├── prescription/   # Builder, PDF (8)
+│   ├── payment/        # Processing, bKash (12)
+│   ├── integration/    # SMS/Email/Payment (12)
+│   └── dashboard/      # Analytics, stats (6)
+└── shared/
+    ├── models/         # SQLAlchemy models (30 tables)
+    └── schemas/        # Pydantic schemas
 ```
 
-## Database Models (30 Tables)
+**Implemented:** 8 modules, 80+ endpoints, 30 tables  
+**Placeholder:** ai, medicine, library, notification (not implemented)
 
-### Core (3 tables)
-- `tenants` - Clinics/doctors
-- `users` - Platform and tenant users
-- `user_sessions` - Session tracking
+---
 
-### Doctor Credentials (2 tables)
-- `doctor_degrees` - Academic degrees
-- `doctor_trainings` - Professional training/certifications
+## Database (30 Tables)
 
-### Geographic (3 tables)
-- `divisions` - Bangladesh divisions (8)
-- `districts` - Districts (64)
-- `upazilas` - Sub-districts (490+)
+**Core:** tenants, users, user_sessions  
+**Doctor:** doctor_degrees, doctor_trainings  
+**Geographic:** divisions, districts, upazilas  
+**Patient:** patients, patient_tags, patient_diagnoses  
+**Prescription:** prescriptions, prescription_items  
+**Payment:** payments, invoices  
+**Medicine:** medicines, medicine_symptoms  
+**Library:** books, chapters, sections, embeddings, reading_progress, bookmarks, highlights  
+**Integration:** integration_providers, tenant_integrations, integration_logs  
+**System:** translations, usage_tracking
 
-### Patient Management (3 tables)
-- `patients` - Patient records
-- `patient_tags` - Tags (special case, chronic, treatment, allergy)
-- `patient_diagnoses` - Diagnosis records
+**Pattern:** All tenant-scoped tables have `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_at`
 
-### Prescription (2 tables)
-- `prescriptions` - Prescription records
-- `prescription_items` - Medicine items
+See [../CLAUDE.md § 4.3](../CLAUDE.md) for schema details.
 
-### Payment (2 tables)
-- `payments` - Payment records
-- `invoices` - Invoice generation
-
-### Medicine Database (2 tables)
-- `medicines` - Medicine catalog (bilingual)
-- `medicine_symptoms` - Symptom-to-medicine mapping
-
-### Library (7 tables)
-- `books` - Medical books
-- `chapters` - Book chapters
-- `sections` - Parsed content sections
-- `embeddings` - Vector embeddings (pgvector)
-- `reading_progress` - User reading progress
-- `bookmarks` - User bookmarks
-- `highlights` - User highlights
-
-### Integrations (3 tables)
-- `integration_providers` - Provider catalog
-- `tenant_integrations` - Tenant configurations
-- `integration_logs` - Transaction audit logs
-
-### System (2 tables)
-- `translations` - i18n key-value pairs (EN/BN)
-- `usage_tracking` - Plan limit enforcement
+---
 
 ## Development
 
-### Running tests
+### Essential Commands
 
 ```bash
-# All tests
-pytest
+# Database
+alembic upgrade head                        # Apply migrations
+alembic revision --autogenerate -m "desc"   # Create migration
+alembic downgrade -1                        # Rollback
+./scripts/run_seed.sh                       # Seed data
 
-# With coverage
-pytest --cov=app --cov-report=html
+# Testing
+pytest --cov=app --cov-report=html          # All tests with coverage
+pytest tests/unit/test_auth.py -v           # Specific test
+pytest tests/integration/ -v                # Integration tests
 
-# Specific test file
-pytest tests/unit/test_auth.py -v
+# Code Quality
+black app/                                  # Format
+ruff check app/                             # Lint
+mypy app/                                   # Type check
+
+# Server
+uvicorn app.main:app --reload               # Development server
+uvicorn app.main:app --reload --port 8001   # Different port
+
+# Celery (background tasks)
+celery -A app.core.celery:celery_app worker --loglevel=info
 ```
 
-### Code quality
+### Generate Encryption Key
 
 ```bash
-# Format code
-black .
-
-# Lint
-ruff check .
-
-# Type checking
-mypy app/
-```
-
-### Database migrations
-
-```bash
-# Create a new migration (after model changes)
-alembic revision --autogenerate -m "Description of changes"
-
-# Apply migrations
-alembic upgrade head
-
-# Rollback one migration
-alembic downgrade -1
-
-# View migration history
-alembic history
-```
-
-### Generate Fernet key for encryption
-
-```bash
+# For INTEGRATION_ENCRYPTION_KEY in .env
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
-## API Documentation
+---
 
-Once the server is running, visit:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+## Adding Features
+
+**See [../CLAUDE.md § 5](../CLAUDE.md) for complete implementation guides:**
+
+- Add Backend Endpoint → CLAUDE.md § 5.1
+- Database Migration → CLAUDE.md § 5.2
+- Test Multi-Tenant Isolation → CLAUDE.md § 5.3
+
+**Pattern:**
+1. Define Pydantic schemas in `modules/<module>/schemas.py`
+2. Create routes in `modules/<module>/router.py`
+3. Register router in `app/main.py`
+4. Add tests in `tests/`
+
+---
 
 ## Environment Variables
 
-See `.env.example` for all available configuration options.
+**Critical Settings:**
 
-**Critical settings to change in production:**
-- `SECRET_KEY` - JWT signing key
-- `INTEGRATION_ENCRYPTION_KEY` - Fernet key for credentials
-- `DATABASE_URL` - Production database
-- `CORS_ORIGINS` - Production frontend URL
-- All API keys (SendGrid, Twilio, SSLCommerz, Stripe, OpenAI)
+```bash
+# Security
+SECRET_KEY=<generate-random-string>
+INTEGRATION_ENCRYPTION_KEY=<fernet-key>
 
-## Next Steps
+# Database
+DATABASE_URL=postgresql+asyncpg://altcare:altcare@localhost:5432/altcare_dev
 
-1. ✅ Backend structure created
-2. ✅ Database models defined (30 tables)
-3. ✅ Core modules implemented (config, database, security)
-4. 🔄 Run initial migration
-5. 📋 Create authentication module
-6. 📋 Create patient management module
-7. 📋 Create prescription module
+# CORS
+CORS_ORIGINS=["http://localhost:3000"]
 
-See [ROADMAP.md](../ROADMAP.md) for full development plan.
+# Integrations (optional)
+SENDGRID_API_KEY=
+TWILIO_ACCOUNT_SID=
+OPENAI_API_KEY=
+```
+
+See `.env.example` for all options.
+
+---
+
+## Key Files
+
+- **app/main.py** - FastAPI app, router registration
+- **app/core/dependencies.py** - Auth, CurrentUser, RBAC
+- **app/core/security.py** - JWT, encryption, password hashing
+- **alembic/versions/** - Database migrations
+- **tests/conftest.py** - Test fixtures
+- **API_ENDPOINTS.md** - All endpoints documented
+- **../CLAUDE.md** - Main documentation
+
+---
+
+## Troubleshooting
+
+**pgvector missing:**
+```bash
+docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+  -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+**Port in use:**
+```bash
+lsof -ti:8000 | xargs kill -9
+```
+
+**Migration failed:**
+```bash
+# DEV ONLY - destroys data
+docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+  -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+alembic upgrade head
+```
+
+See [../CLAUDE.md § 6](../CLAUDE.md) for more troubleshooting.
+
+---
+
+## API Documentation
+
+**Local:**
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+- Health Check: http://localhost:8000/health
+
+**Reference:**
+- API Endpoints: [API_ENDPOINTS.md](API_ENDPOINTS.md)
+- Architecture: [../CLAUDE.md](../CLAUDE.md)
+- Breaking Changes: [BREAKING_CHANGES.md](BREAKING_CHANGES.md)

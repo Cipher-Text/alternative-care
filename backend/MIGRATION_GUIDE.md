@@ -1,29 +1,29 @@
-# Database Migration Guide - Phase 1A Tables
+# Database Migration Guide
 
-## Overview
+Practical guide for running and verifying Alembic migrations.
 
-This migration adds critical missing tables identified in the RECOMMENDATION.md analysis:
-
-### New Tables Added ✅
-
-1. **appointments** - Patient appointment scheduling
-2. **visits** - Patient visit records with clinical data
-3. **symptoms** - Normalized symptom master table
-4. **symptom_aliases** - Symptom search aliases (CRITICAL for Bangladesh)
-5. **medicine_aliases** - Medicine search aliases (CRITICAL for Bangladesh)
-6. **medicine_symptom_mappings** - Normalized medicine-symptom relationships
-
-### Migration Impact
-
-- **Phase 1A Ready**: Appointments and Visits modules now supported
-- **Search Enabled**: Alias tables enable Bangladesh-first search
-- **Data Quality**: Normalized symptoms prevent duplication
+**For breaking changes:** See [BREAKING_CHANGES.md](BREAKING_CHANGES.md)
 
 ---
 
-## Running the Migration
+## Quick Migration
 
-### 1. Install Alembic (if not installed)
+```bash
+# Check current state
+alembic current
+
+# Apply all pending migrations
+alembic upgrade head
+
+# Verify tables created
+alembic current
+```
+
+---
+
+## 1. SETUP
+
+### Install Alembic
 
 ```bash
 cd backend
@@ -31,55 +31,215 @@ source venv/bin/activate
 pip install alembic
 ```
 
-### 2. Run Migration
+### Configuration
 
+Alembic is pre-configured:
+- **Config:** `alembic.ini`
+- **Env:** `alembic/env.py`
+- **Migrations:** `alembic/versions/`
+
+Database URL loaded from `.env`:
 ```bash
-# Check current revision
-alembic current
-
-# Run upgrade
-alembic upgrade head
-
-# Verify tables created
-alembic current
-```
-
-### 3. Verify Tables
-
-```sql
--- Check tables exist
-SELECT tablename FROM pg_tables 
-WHERE schemaname = 'public' 
-AND tablename IN (
-    'appointments', 
-    'visits', 
-    'symptoms', 
-    'symptom_aliases', 
-    'medicine_aliases',
-    'medicine_symptom_mappings'
-);
-
--- Check indexes created
-SELECT indexname FROM pg_indexes 
-WHERE tablename IN ('symptoms', 'symptom_aliases', 'medicine_aliases');
+DATABASE_URL=postgresql+asyncpg://altcare:altcare@localhost:5432/altcare_dev
 ```
 
 ---
 
-## Data Migration Strategy
+## 2. RUNNING MIGRATIONS
 
-### Phase 1: Populate Alias Tables (CRITICAL)
+### Apply Migrations
 
-Create aliases for common search patterns:
+```bash
+# Apply all pending
+alembic upgrade head
+
+# Apply specific number of migrations
+alembic upgrade +2
+
+# Upgrade to specific revision
+alembic upgrade <revision_id>
+```
+
+### Check Status
+
+```bash
+# Current revision
+alembic current
+
+# Migration history
+alembic history
+
+# Show SQL without running
+alembic upgrade head --sql
+```
+
+### Rollback
+
+```bash
+# Rollback last migration
+alembic downgrade -1
+
+# Rollback to specific revision
+alembic downgrade <revision_id>
+
+# Rollback all
+alembic downgrade base
+```
+
+---
+
+## 3. CREATING MIGRATIONS
+
+### Auto-Generate from Models
+
+```bash
+# After modifying SQLAlchemy models in app/shared/models/
+alembic revision --autogenerate -m "Add new table"
+
+# Review generated file in alembic/versions/
+# Edit if needed (autogenerate isn't perfect)
+
+# Apply migration
+alembic upgrade head
+```
+
+### Manual Migration
+
+```bash
+# Create empty migration
+alembic revision -m "Custom data migration"
+
+# Edit alembic/versions/<hash>_custom_data_migration.py
+# Add upgrade() and downgrade() logic
+
+# Apply
+alembic upgrade head
+```
+
+### Migration Template
 
 ```python
-# Example: Headache aliases
+"""Add custom field
+
+Revision ID: abc123
+Revises: xyz789
+Create Date: 2026-05-08 10:30:00.000000
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+# revision identifiers
+revision = 'abc123'
+down_revision = 'xyz789'
+branch_labels = None
+depends_on = None
+
+def upgrade():
+    # Add column
+    op.add_column('patients', 
+        sa.Column('custom_field', sa.String(100), nullable=True)
+    )
+    
+    # Create index
+    op.create_index('ix_patients_custom_field', 'patients', ['custom_field'])
+
+def downgrade():
+    # Reverse operations
+    op.drop_index('ix_patients_custom_field', 'patients')
+    op.drop_column('patients', 'custom_field')
+```
+
+---
+
+## 4. VERIFICATION
+
+### Verify Tables
+
+```sql
+-- List all tables
+\dt
+
+-- Specific tables
+SELECT tablename FROM pg_tables 
+WHERE schemaname = 'public' 
+AND tablename IN ('patients', 'appointments', 'prescriptions');
+
+-- Table structure
+\d+ patients
+```
+
+### Verify Indexes
+
+```sql
+-- All indexes
+\di
+
+-- Specific table indexes
+SELECT indexname FROM pg_indexes WHERE tablename = 'patients';
+```
+
+### Verify Foreign Keys
+
+```sql
+-- All foreign keys
+SELECT
+    tc.table_name, 
+    kcu.column_name,
+    ccu.table_name AS foreign_table_name,
+    ccu.column_name AS foreign_column_name
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+  ON tc.constraint_name = kcu.constraint_name
+JOIN information_schema.constraint_column_usage AS ccu
+  ON ccu.constraint_name = tc.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY';
+```
+
+### Verify Data
+
+```sql
+-- Count records
+SELECT COUNT(*) FROM patients;
+
+-- Check tenant isolation
+SELECT tenant_id, COUNT(*) FROM patients GROUP BY tenant_id;
+```
+
+---
+
+## 5. DATA MIGRATION
+
+### Seed Initial Data
+
+```bash
+# Run seed script after migrations
+./scripts/run_seed.sh
+```
+
+**Seeds:**
+- Geographic data (divisions, districts, upazilas)
+- Integration providers (11 providers)
+- UI translations (80+ strings)
+- Sample tenants/users (dev only)
+
+### Populate Alias Tables
+
+```python
+# Example: Symptom aliases (critical for Bangladesh search)
+from app.shared.models import Symptom, SymptomAlias
+
+# Create symptom
 symptom = Symptom(
     name_en="Headache",
     name_bn="মাথা ব্যথা",
-    category="neurological"
+    category="neurological",
+    is_global=True
 )
+session.add(symptom)
+session.flush()
 
+# Add aliases
 aliases = [
     SymptomAlias(
         symptom_id=symptom.id,
@@ -89,181 +249,177 @@ aliases = [
     ),
     SymptomAlias(
         symptom_id=symptom.id,
-        alias_en="head pain",
+        alias_en="migraine",
         alias_type="common_name",
         priority=7
     ),
-    SymptomAlias(
-        symptom_id=symptom.id,
-        alias_en="migraine",
-        alias_type="common_name",
-        priority=6
-    ),
 ]
+session.add_all(aliases)
+session.commit()
 ```
 
-### Phase 2: Medicine Aliases
-
-```python
-# Example: Arnica aliases
-medicine = Medicine(
-    name_en="Arnica Montana",
-    name_bn="আর্নিকা মন্টানা",
-    system="homeopathy"
-)
-
-aliases = [
-    MedicineAlias(
-        medicine_id=medicine.id,
-        alias_en="arnika",
-        alias_type="transliteration",
-        priority=8
-    ),
-    MedicineAlias(
-        medicine_id=medicine.id,
-        alias_en="leopard's bane",
-        alias_type="common_name",
-        priority=6
-    ),
-]
-```
+See [ALIAS_DATA_EXAMPLES.md](ALIAS_DATA_EXAMPLES.md) for more examples.
 
 ---
 
-## Search Implementation
+## 6. TROUBLESHOOTING
 
-### Updated Search Flow
-
-```
-User Input: "matha byatha"
-    ↓
-1. Normalize input
-    ↓
-2. Search symptom_aliases (alias_en = "matha byatha")
-    ↓
-3. Find symptom_id → Symptom(name_en="Headache")
-    ↓
-4. Query medicine_symptom_mappings WHERE symptom_id
-    ↓
-5. Return matching medicines with strength ranking
-```
-
-### Search Query Example
-
-```python
-async def search_medicines_by_symptom(query: str, language: str = "en"):
-    """Search medicines using alias-aware symptom matching."""
-    
-    # Step 1: Search in symptom aliases
-    alias_matches = await db.query(SymptomAlias).filter(
-        or_(
-            SymptomAlias.alias_en.ilike(f"%{query}%"),
-            SymptomAlias.alias_bn.ilike(f"%{query}%")
-        )
-    ).all()
-    
-    # Step 2: Get symptom IDs
-    symptom_ids = [a.symptom_id for a in alias_matches]
-    
-    # Step 3: Find medicines
-    medicines = await db.query(Medicine).join(
-        MedicineSymptomMapping
-    ).filter(
-        MedicineSymptomMapping.symptom_id.in_(symptom_ids)
-    ).order_by(
-        MedicineSymptomMapping.strength.desc()
-    ).all()
-    
-    return medicines
-```
-
----
-
-## Important Notes
-
-### 1. Old Table Removed
-
-The old `medicine_symptoms` table is **DROPPED** in this migration. The normalized `medicine_symptom_mappings` table replaces it completely.
-
-### 2. Alias Data is Critical
-
-The recommendation document emphasizes:
-
-> **"Without this → search will fail in Bangladesh context"**
-
-Priority tasks:
-1. Populate common symptom aliases (English ↔ Bengali ↔ Transliteration)
-2. Populate medicine aliases (brand names, regional names)
-3. Test search with real user queries
-
-### 3. Start Fresh with Clean Data
-
-Since the old table is dropped, you'll populate:
-- Symptoms from scratch (or seed data)
-- Medicine-symptom mappings from scratch
-- Alias data (the critical work)
-
-This ensures clean, normalized data from day one.
-
-### 4. Multi-tenant Consideration
-
-- Symptoms can be **global** (`is_global=true`) or tenant-specific
-- Aliases can be added per tenant for specialized vocabularies
-- System symptoms should be global, user-added can be tenant-scoped
-
----
-
-## Testing Checklist
-
-After migration:
-
-- [ ] All 6 new tables created
-- [ ] Indexes created (check with `\d+ symptoms` in psql)
-- [ ] Foreign keys working
-- [ ] Can create appointments
-- [ ] Can create visits
-- [ ] Can create normalized symptoms
-- [ ] Can add symptom aliases
-- [ ] Can add medicine aliases
-- [ ] Search works with aliases
-- [ ] Bilingual search works (EN + BN)
-- [ ] Transliteration search works
-
----
-
-## Rollback
-
-If you need to rollback:
+### Migration Failed
 
 ```bash
-alembic downgrade -1
+# Check error message
+alembic upgrade head
+
+# If stuck, check current state
+alembic current
+alembic history
+
+# Manual fix in database, then stamp revision
+alembic stamp <revision_id>
 ```
 
-This will drop all new tables and indexes.
+### Tables Already Exist
+
+```bash
+# If migration says "table already exists"
+# Option 1: Drop and recreate (DEV ONLY)
+docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+  -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+alembic upgrade head
+
+# Option 2: Stamp current state
+alembic stamp head
+```
+
+### Alembic Out of Sync
+
+```bash
+# Reset to specific revision
+alembic downgrade <revision_id>
+alembic upgrade head
+
+# Or stamp to current schema
+alembic stamp head
+```
+
+### pgvector Extension Missing
+
+```bash
+docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+  -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+### Multiple Migration Branches
+
+```bash
+# Check for heads
+alembic heads
+
+# Merge branches
+alembic merge <rev1> <rev2> -m "Merge branches"
+alembic upgrade head
+```
 
 ---
 
-## Next Steps
+## 7. BEST PRACTICES
 
-1. **Immediate**: Run migration, verify tables
-2. **Phase 1A**: Build Appointment/Visit APIs
-3. **Phase 2**: Populate symptom/medicine databases
-4. **Phase 2**: Build alias data (this is the hard work!)
-5. **Phase 2**: Implement search with alias matching
+### Before Creating Migration
+
+1. **Test models locally** - Ensure SQLAlchemy models work
+2. **Check existing schema** - Avoid duplicate tables/columns
+3. **Review autogenerate output** - Always review before applying
+
+### Autogenerate Limitations
+
+**May miss:**
+- Data migrations
+- Index changes on existing columns
+- Constraint modifications
+- Enum type changes
+- Table/column renames (creates drop+add instead)
+
+**Always review and edit generated migrations!**
+
+### Migration Guidelines
+
+1. **One concern per migration** - Don't mix schema + data changes
+2. **Make reversible** - Implement proper `downgrade()`
+3. **Test rollback** - Ensure `downgrade()` works
+4. **Document** - Add clear description and comments
+5. **Small migrations** - Easier to debug and rollback
+
+### Multi-Tenant Safety
+
+**Always include in tenant-scoped tables:**
+```python
+op.add_column('new_table', sa.Column('tenant_id', sa.UUID(), nullable=False))
+op.create_foreign_key('fk_new_table_tenant', 'new_table', 'tenants', ['tenant_id'], ['id'])
+op.create_index('ix_new_table_tenant_id', 'new_table', ['tenant_id'])
+```
 
 ---
 
-## Alignment with RECOMMENDATION.md
+## 8. CHECKLIST
 
-This migration addresses **ALL critical gaps** identified:
+### Pre-Migration
 
-| Gap | Status |
-|-----|--------|
-| ❌ No Alias Tables | ✅ Fixed |
-| ❌ Symptom Not Normalized | ✅ Fixed |
-| ❌ Missing Appointment Module | ✅ Fixed |
-| ❌ Missing Visit Module | ✅ Fixed |
+- [ ] Database backup (production)
+- [ ] Review migration file
+- [ ] Test in dev environment
+- [ ] Document breaking changes
 
-**Database Score**: 7.2/10 → **9.5/10** 🎉
+### Post-Migration
 
-Remaining work is **data population**, not schema design.
+- [ ] Verify tables created (`\dt`)
+- [ ] Verify indexes created (`\di`)
+- [ ] Verify foreign keys working
+- [ ] Run tests (`pytest`)
+- [ ] Seed data if needed
+- [ ] Update API documentation
+
+---
+
+## 9. REFERENCE
+
+### Commands Cheatsheet
+
+```bash
+# Status
+alembic current                    # Current revision
+alembic history                    # All revisions
+alembic heads                      # Latest revisions
+
+# Upgrade
+alembic upgrade head              # All pending
+alembic upgrade +1                # Next one
+alembic upgrade <rev>             # To specific
+
+# Downgrade
+alembic downgrade -1              # Previous one
+alembic downgrade <rev>           # To specific
+alembic downgrade base            # All the way back
+
+# Create
+alembic revision --autogenerate -m "msg"   # Auto from models
+alembic revision -m "msg"                  # Manual
+
+# Utilities
+alembic stamp <rev>               # Mark as current
+alembic merge <rev1> <rev2>       # Merge branches
+alembic show <rev>                # Show migration
+```
+
+### Files
+
+- **Config:** `alembic.ini`
+- **Environment:** `alembic/env.py`
+- **Migrations:** `alembic/versions/`
+- **Models:** `app/shared/models/`
+
+### Resources
+
+- **Breaking Changes:** [BREAKING_CHANGES.md](BREAKING_CHANGES.md)
+- **Alias Examples:** [ALIAS_DATA_EXAMPLES.md](ALIAS_DATA_EXAMPLES.md)
+- **Architecture:** [../CLAUDE.md](../CLAUDE.md)
+- **Alembic Docs:** https://alembic.sqlalchemy.org

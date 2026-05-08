@@ -2,30 +2,95 @@
 
 **Migration**: 001_phase1a_tables  
 **Date**: 2026-04-23  
-**Type**: BREAKING - No Backward Compatibility
+**Type**: BREAKING - No Backward Compatibility  
+**Impact**: `medicine_symptoms` table → 3 normalized tables (`symptoms`, `symptom_aliases`, `medicine_symptom_mappings`)
 
 ---
 
-## ⚠️ Breaking Change: medicine_symptoms Table Dropped
+## 1. OVERVIEW
 
-### What Was Removed
+### What Changed
 
-**Table**: `medicine_symptoms`
+**REMOVED:**
+- `medicine_symptoms` table (symptom text stored per medicine)
+- `MedicineSymptom` model
 
-**Old Structure** (DELETED):
+**ADDED:**
+- `symptoms` table (master symptom list)
+- `symptom_aliases` table (search aliases)
+- `medicine_symptom_mappings` table (medicine ↔ symptom relationships)
+
+### Why
+
+**Old Problems:**
+- Duplicated data ("Headache" stored 100+ times)
+- Inconsistent text ("headache" vs "Headache" vs "Head ache")
+- No alias support (can't search "matha byatha" → "Headache")
+- Poor search performance (full-text on duplicated fields)
+
+**New Benefits:**
+- Single source of truth (one "Headache" entry)
+- Alias support (multiple search terms per symptom)
+- Categorization (symptoms grouped by system)
+- Better search (indexed aliases + trigram)
+- Scalable (easy to add symptoms/aliases)
+
+---
+
+## 2. OLD vs NEW
+
+### Database Schema
+
+**OLD (Deleted):**
 ```sql
 CREATE TABLE medicine_symptoms (
     id INTEGER PRIMARY KEY,
     medicine_id INTEGER,
-    symptom_en VARCHAR(500),      -- ❌ Text field (duplicated)
-    symptom_bn VARCHAR(500),       -- ❌ Text field (duplicated)
+    symptom_en VARCHAR(500),      -- ❌ Text (duplicated)
+    symptom_bn VARCHAR(500),       -- ❌ Text (duplicated)
     modality_en TEXT,
     modality_bn TEXT,
     strength INTEGER
 );
 ```
 
-**Old Model** (DELETED):
+**NEW (Current):**
+```sql
+-- Master symptom list
+CREATE TABLE symptoms (
+    id INTEGER PRIMARY KEY,
+    name_en VARCHAR(500),
+    name_bn VARCHAR(500),
+    description_en TEXT,
+    description_bn TEXT,
+    category VARCHAR(100),         -- ✅ "neurological", "respiratory"
+    is_global BOOLEAN
+);
+
+-- Search aliases
+CREATE TABLE symptom_aliases (
+    id INTEGER PRIMARY KEY,
+    symptom_id INTEGER REFERENCES symptoms(id),  -- ✅ FK
+    alias_en VARCHAR(500),         -- ✅ "matha byatha", "migraine"
+    alias_bn VARCHAR(500),
+    alias_type VARCHAR(50),        -- ✅ "transliteration", "common_name"
+    priority INTEGER
+);
+
+-- Medicine ↔ Symptom relationships
+CREATE TABLE medicine_symptom_mappings (
+    id INTEGER PRIMARY KEY,
+    medicine_id INTEGER REFERENCES medicines(id),  -- ✅ FK
+    symptom_id INTEGER REFERENCES symptoms(id),    -- ✅ FK (normalized!)
+    modality_en TEXT,
+    modality_bn TEXT,
+    strength INTEGER
+);
+```
+
+### Python Models
+
+**OLD (Deleted):**
 ```python
 class MedicineSymptom(TenantScopedModel):
     symptom_en: Mapped[str]  # Free text
@@ -33,62 +98,19 @@ class MedicineSymptom(TenantScopedModel):
     medicine: Mapped["Medicine"] = relationship(...)
 ```
 
----
-
-## ✅ What Replaces It
-
-### New Normalized Structure
-
-**3 New Tables**:
-
-1. **`symptoms`** - Master symptom list
-```sql
-CREATE TABLE symptoms (
-    id INTEGER PRIMARY KEY,
-    name_en VARCHAR(500),
-    name_bn VARCHAR(500),
-    description_en TEXT,
-    description_bn TEXT,
-    category VARCHAR(100),
-    is_global BOOLEAN
-);
-```
-
-2. **`symptom_aliases`** - Search aliases
-```sql
-CREATE TABLE symptom_aliases (
-    id INTEGER PRIMARY KEY,
-    symptom_id INTEGER REFERENCES symptoms(id),
-    alias_en VARCHAR(500),
-    alias_bn VARCHAR(500),
-    alias_type VARCHAR(50),
-    priority INTEGER
-);
-```
-
-3. **`medicine_symptom_mappings`** - Relationships
-```sql
-CREATE TABLE medicine_symptom_mappings (
-    id INTEGER PRIMARY KEY,
-    medicine_id INTEGER REFERENCES medicines(id),
-    symptom_id INTEGER REFERENCES symptoms(id),  -- ✅ FK instead of text
-    modality_en TEXT,
-    modality_bn TEXT,
-    strength INTEGER
-);
-```
-
-**New Models**:
+**NEW (Current):**
 ```python
 class Symptom(TenantScopedModel):
     name_en: Mapped[str]
     name_bn: Mapped[str | None]
+    category: Mapped[str]
     aliases: Mapped[list["SymptomAlias"]] = relationship(...)
 
 class SymptomAlias(TenantScopedModel):
     symptom_id: Mapped[int]  # FK
     alias_en: Mapped[str | None]
     alias_bn: Mapped[str | None]
+    alias_type: Mapped[str]
 
 class MedicineSymptomMapping(TenantScopedModel):
     medicine_id: Mapped[int]  # FK
@@ -98,44 +120,53 @@ class MedicineSymptomMapping(TenantScopedModel):
 
 ---
 
-## 🔄 Migration Impact
+## 3. MIGRATION PATH
 
-### Code That Will Break
+### Update Imports
 
-**Old Code** (will fail):
+**OLD (Will Fail):**
 ```python
 from app.shared.models import MedicineSymptom
 
-# This import no longer exists
 symptom = MedicineSymptom(
     medicine_id=1,
-    symptom_en="Headache",  # ❌ Text-based approach
+    symptom_en="Headache",  # ❌ Text-based
     symptom_bn="মাথা ব্যথা"
 )
 ```
 
-**New Code** (use this):
+**NEW (Use This):**
 ```python
-from app.shared.models import Symptom, MedicineSymptomMapping
+from app.shared.models import Symptom, SymptomAlias, MedicineSymptomMapping
 
-# 1. Create or find symptom
+# 1. Create or find symptom (one time)
 symptom = Symptom(
     name_en="Headache",
     name_bn="মাথা ব্যথা",
     category="neurological"
 )
+session.add(symptom)
 
-# 2. Create mapping
+# 2. Add aliases (optional)
+alias = SymptomAlias(
+    symptom_id=symptom.id,
+    alias_en="matha byatha",
+    alias_type="transliteration"
+)
+session.add(alias)
+
+# 3. Create medicine-symptom mapping
 mapping = MedicineSymptomMapping(
     medicine_id=1,
     symptom_id=symptom.id,  # ✅ FK reference
     strength=8
 )
+session.add(mapping)
 ```
 
-### Queries That Need Update
+### Update Queries
 
-**Old Query** (will fail):
+**OLD (Will Fail):**
 ```python
 # Search by symptom text
 results = session.query(Medicine).join(MedicineSymptom).filter(
@@ -143,134 +174,165 @@ results = session.query(Medicine).join(MedicineSymptom).filter(
 ).all()
 ```
 
-**New Query** (use this):
+**NEW (Use This):**
 ```python
-# Search by symptom FK
-results = session.query(Medicine).join(MedicineSymptomMapping).join(Symptom).filter(
-    Symptom.name_en.ilike("%headache%")
-).all()
+# Basic search
+results = (
+    session.query(Medicine)
+    .join(MedicineSymptomMapping)
+    .join(Symptom)
+    .filter(Symptom.name_en.ilike("%headache%"))
+    .all()
+)
 
-# Or with alias support
-results = session.query(Medicine).join(MedicineSymptomMapping).join(Symptom).join(SymptomAlias).filter(
-    or_(
-        Symptom.name_en.ilike("%headache%"),
-        SymptomAlias.alias_en.ilike("%headache%")
+# Search with alias support
+from sqlalchemy import or_
+
+results = (
+    session.query(Medicine)
+    .join(MedicineSymptomMapping)
+    .join(Symptom)
+    .outerjoin(SymptomAlias)  # Include aliases
+    .filter(
+        or_(
+            Symptom.name_en.ilike("%headache%"),
+            SymptomAlias.alias_en.ilike("%headache%")
+        )
     )
-).all()
+    .distinct()
+    .all()
+)
 ```
 
----
+### Pre-Migration Checklist
 
-## 📋 Migration Checklist
-
-Before running migration, check:
-
-- [ ] No existing code imports `MedicineSymptom`
+- [ ] No code imports `MedicineSymptom`
 - [ ] No API endpoints reference `medicine_symptoms` table
 - [ ] No frontend code depends on old symptom structure
-- [ ] Ready to populate new `symptoms` and `symptom_aliases` tables
+- [ ] Ready to seed new `symptoms` and `symptom_aliases` tables
 
-After running migration:
+### Post-Migration Verification
 
 - [ ] Old table `medicine_symptoms` is gone
-- [ ] New tables `symptoms`, `symptom_aliases`, `medicine_symptom_mappings` exist
+- [ ] New tables created: `symptoms`, `symptom_aliases`, `medicine_symptom_mappings`
 - [ ] All FK constraints working
 - [ ] Indexes created
 
 ---
 
-## 💡 Why This Change?
-
-### Problems with Old Approach
-
-1. **Duplicated Data**: "Headache" stored 100+ times
-2. **Inconsistent**: "headache" vs "Headache" vs "Head ache"
-3. **No Aliases**: Can't search "matha byatha" → "Headache"
-4. **Poor Search**: Full-text search on duplicated text fields
-5. **No Categories**: Can't group symptoms
-
-### Benefits of New Approach
-
-1. **Single Source**: "Headache" stored once
-2. **Consistent**: One canonical name per symptom
-3. **Alias Support**: Multiple search terms per symptom
-4. **Better Search**: Indexed aliases + trigram search
-5. **Categorized**: Symptoms grouped by system
-6. **Scalable**: Easy to add new symptoms/aliases
-
----
-
-## 🎯 Data Migration Strategy
-
-Since this is a **fresh start** (no data preservation):
+## 4. DATA MIGRATION
 
 ### Step 1: Run Migration
+
 ```bash
 alembic upgrade head
 ```
 
 ### Step 2: Populate Symptoms
+
 ```python
-# Seed common symptoms
+# Seed common symptoms (one time)
 symptoms = [
-    Symptom(name_en="Headache", name_bn="মাথা ব্যথা", category="neurological"),
-    Symptom(name_en="Fever", name_bn="জ্বর", category="general"),
-    Symptom(name_en="Cough", name_bn="কাশি", category="respiratory"),
-    # ... more
+    Symptom(
+        name_en="Headache",
+        name_bn="মাথা ব্যথা",
+        category="neurological",
+        is_global=True
+    ),
+    Symptom(
+        name_en="Fever",
+        name_bn="জ্বর",
+        category="general",
+        is_global=True
+    ),
+    Symptom(
+        name_en="Cough",
+        name_bn="কাশি",
+        category="respiratory",
+        is_global=True
+    ),
 ]
+session.add_all(symptoms)
+session.commit()
 ```
 
 ### Step 3: Populate Aliases
+
 ```python
-# Critical for Bangladesh search
+# Add search aliases (critical for Bangladesh users)
 aliases = [
-    SymptomAlias(symptom_id=1, alias_en="matha byatha", alias_type="transliteration"),
-    SymptomAlias(symptom_id=1, alias_en="migraine", alias_type="common_name"),
-    # ... more
+    # Headache aliases
+    SymptomAlias(
+        symptom_id=1,
+        alias_en="matha byatha",
+        alias_type="transliteration",
+        priority=1
+    ),
+    SymptomAlias(
+        symptom_id=1,
+        alias_en="migraine",
+        alias_type="common_name",
+        priority=2
+    ),
+    # Fever aliases
+    SymptomAlias(
+        symptom_id=2,
+        alias_en="jor",
+        alias_type="transliteration",
+        priority=1
+    ),
 ]
+session.add_all(aliases)
+session.commit()
 ```
 
 ### Step 4: Create Mappings
+
 ```python
 # Link medicines to symptoms
 mappings = [
-    MedicineSymptomMapping(medicine_id=1, symptom_id=1, strength=9),
-    MedicineSymptomMapping(medicine_id=2, symptom_id=1, strength=7),
-    # ... more
+    MedicineSymptomMapping(
+        medicine_id=1,
+        symptom_id=1,  # Headache
+        strength=9,
+        modality_en="Worse from noise, light"
+    ),
+    MedicineSymptomMapping(
+        medicine_id=2,
+        symptom_id=1,  # Headache
+        strength=7,
+        modality_en="Better from pressure"
+    ),
 ]
+session.add_all(mappings)
+session.commit()
 ```
 
 ---
 
-## 🚨 Rollback Instructions
+## 5. REFERENCE
 
-If you need to rollback:
+### Rollback
 
+**If needed, rollback to old structure:**
 ```bash
-# This will recreate medicine_symptoms table
-# and drop new symptom tables
 alembic downgrade -1
 ```
 
-**Note**: Any data in new tables will be lost.
+**Warning:** All data in new tables (`symptoms`, `symptom_aliases`, `medicine_symptom_mappings`) will be lost.
 
----
+### Support Resources
 
-## 📞 Support
+- **MIGRATION_GUIDE.md** - Detailed migration instructions
+- **ALIAS_DATA_EXAMPLES.md** - Sample data for aliases
+- **CLAUDE.md** - Architecture patterns
 
-If you encounter issues:
-
-1. Check this document for migration patterns
-2. Review `MIGRATION_GUIDE.md` for detailed instructions
-3. See `ALIAS_DATA_EXAMPLES.md` for data examples
-
----
-
-## ✅ Confirmed: No Backward Compatibility
+### Design Decision
 
 This migration **intentionally breaks** backward compatibility to:
-- Enforce clean, normalized data structure
-- Enable Bangladesh-first search from day one
+- Enforce clean, normalized data structure from day one
+- Enable Bangladesh-first search (Bengali transliterations)
 - Prevent maintaining two parallel systems
+- Improve search performance and data quality
 
-The old approach is **completely removed**. All code must use the new normalized structure.
+The old text-based approach is **completely removed**. All new code must use the normalized structure.

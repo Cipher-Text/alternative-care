@@ -1,18 +1,19 @@
 # AltCare API Endpoints
 
-**Total:** 71 endpoints across 7 modules  
+**Total:** 83 endpoints across 8 modules  
 **Base URL:** `http://localhost:8000/api/v1`  
-**Authentication:** Bearer JWT token (except `/auth/register` and `/auth/login`)
+**Auth:** Bearer JWT (except `/auth/register` and `/auth/login`)  
+**Interactive Docs:** http://localhost:8000/docs
 
 ---
 
-## Authentication (9 endpoints)
+## 1. Authentication (9)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/auth/register` | Register new doctor account | No |
 | POST | `/auth/login` | Login and get JWT tokens | No |
-| POST | `/auth/refresh` | Refresh access token | Yes (refresh token) |
+| POST | `/auth/refresh` | Refresh access token | Refresh token |
 | POST | `/auth/logout` | Logout and invalidate session | Yes |
 | GET | `/auth/me` | Get current user info | Yes |
 | POST | `/auth/password/change` | Change password | Yes |
@@ -20,12 +21,16 @@
 | POST | `/auth/2fa/verify` | Verify 2FA code | Yes |
 | POST | `/auth/2fa/disable` | Disable 2FA | Yes |
 
+**Tokens:**
+- Access: 30min expiry
+- Refresh: 7d expiry
+
 ---
 
-## Doctor Profile (12 endpoints)
+## 2. Doctor Profile (12)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/doctor/profile` | Get doctor profile | Yes |
 | PATCH | `/doctor/profile` | Update doctor profile | Yes |
 | POST | `/doctor/degrees` | Add medical degree | Yes |
@@ -41,16 +46,16 @@
 
 ---
 
-## Patients (14 endpoints)
+## 3. Patients (14)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/patients` | Create new patient | Yes |
 | GET | `/patients` | List patients (with filters) | Yes |
 | GET | `/patients/count` | Get patient count | Yes |
 | GET | `/patients/{patient_id}` | Get patient details | Yes |
 | PATCH | `/patients/{patient_id}` | Update patient | Yes |
-| DELETE | `/patients/{patient_id}` | Delete patient | Yes |
+| DELETE | `/patients/{patient_id}` | Soft delete patient | Yes |
 | POST | `/patients/{patient_id}/tags` | Add patient tag | Yes |
 | GET | `/patients/{patient_id}/tags` | List patient tags | Yes |
 | PATCH | `/patients/tags/{tag_id}` | Update tag | Yes |
@@ -60,82 +65,126 @@
 | PATCH | `/patients/diagnoses/{diagnosis_id}` | Update diagnosis | Yes |
 | DELETE | `/patients/diagnoses/{diagnosis_id}` | Delete diagnosis | Yes |
 
+**Query Params:** `search`, `limit`, `offset`, `sort_by`, `sort_order`
+
 ---
 
-## Appointments (10 endpoints)
+## 4. Appointments (10)
 
-### Appointments (6 endpoints)
+### Appointments (6)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/appointments/appointments` | Create appointment | Yes |
-| GET | `/appointments/appointments` | List appointments (with filters) | Yes |
-| GET | `/appointments/appointments/{appointment_id}` | Get appointment details | Yes |
-| PATCH | `/appointments/appointments/{appointment_id}` | Update appointment | Yes |
-| POST | `/appointments/appointments/{appointment_id}/cancel` | Cancel appointment | Yes |
-| DELETE | `/appointments/appointments/{appointment_id}` | Delete appointment | Yes |
+| GET | `/appointments/appointments` | List appointments | Yes |
+| GET | `/appointments/appointments/{id}` | Get appointment details | Yes |
+| PATCH | `/appointments/appointments/{id}` | Update appointment | Yes |
+| POST | `/appointments/appointments/{id}/cancel` | Cancel appointment | Yes |
+| DELETE | `/appointments/appointments/{id}` | Delete appointment | Yes |
 
-### Visits (4 endpoints)
+### Visits (4)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/appointments/appointments/visits` | Create visit record | Yes |
 | GET | `/appointments/appointments/visits` | List visits | Yes |
-| GET | `/appointments/appointments/visits/{visit_id}` | Get visit details | Yes |
-| PATCH | `/appointments/appointments/visits/{visit_id}` | Update visit | Yes |
+| GET | `/appointments/appointments/visits/{id}` | Get visit details | Yes |
+| PATCH | `/appointments/appointments/visits/{id}` | Update visit | Yes |
+
+**Query Params:** `date_from`, `date_to`, `status`, `patient_id`
 
 ---
 
-## Prescriptions (8 endpoints)
+## 5. Prescriptions (8)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/prescriptions` | Create prescription (draft) | Yes |
 | GET | `/prescriptions` | List prescriptions | Yes |
 | GET | `/prescriptions/{prescription_id}` | Get prescription details | Yes |
-| PATCH | `/prescriptions/{prescription_id}` | Update prescription (draft only) | Yes |
+| PATCH | `/prescriptions/{prescription_id}` | Update (draft only) | Yes |
 | POST | `/prescriptions/{prescription_id}/void` | Void prescription | Yes |
 | POST | `/prescriptions/{prescription_id}/items` | Add prescription item | Yes |
-| DELETE | `/prescriptions/{prescription_id}/items/{item_id}` | Delete prescription item | Yes |
+| DELETE | `/prescriptions/{prescription_id}/items/{item_id}` | Delete item | Yes |
 | POST | `/prescriptions/{prescription_id}/generate-pdf` | Generate PDF | Yes |
+
+**Workflow:** draft → issued → voided (immutable after issued)
 
 ---
 
-## Payments (12 endpoints)
+## 6. Payments (12)
 
-### Payments (4 endpoints)
+### Payments (4)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/payments` | Create manual payment (cash) | Yes |
-| GET | `/payments` | List payments (with filters) | Yes |
-| GET | `/payments/summary` | Get payment summary stats | Yes |
+| GET | `/payments` | List payments | Yes |
+| GET | `/payments/summary` | Payment summary stats | Yes |
 | GET | `/payments/{payment_id}` | Get payment details | Yes |
 
-### bKash Integration (3 endpoints)
+### bKash Integration (3)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/payments/bkash/create` | Create bKash payment | Yes |
 | POST | `/payments/bkash/execute` | Execute bKash payment | Yes |
-| POST | `/payments/bkash/query` | Query bKash payment status | Yes |
+| POST | `/payments/bkash/query` | Query payment status | Yes |
 
-### Invoices (5 endpoints)
+### Invoices (5)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | POST | `/payments/invoices` | Create invoice | Yes |
 | GET | `/payments/invoices` | List invoices | Yes |
 | GET | `/payments/invoices/{invoice_id}` | Get invoice details | Yes |
 | PATCH | `/payments/invoices/{invoice_id}` | Update invoice | Yes |
-| POST | `/payments/invoices/{invoice_id}/generate-pdf` | Generate invoice PDF | Yes |
+| POST | `/payments/invoices/{invoice_id}/generate-pdf` | Generate PDF | Yes |
 
 ---
 
-## Dashboard (6 endpoints)
+## 7. Integration (12)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
+### Providers (2)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/integration/providers` | List all providers (SMS/Email/Payment) | Yes |
+| GET | `/integration/providers/{provider_id}` | Get provider details | Yes |
+
+### Tenant Integrations (7)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/integration/integrations` | Add integration config | Yes |
+| GET | `/integration/integrations` | List tenant integrations | Yes |
+| GET | `/integration/integrations/{integration_id}` | Get integration details | Yes |
+| PATCH | `/integration/integrations/{integration_id}` | Update integration | Yes |
+| DELETE | `/integration/integrations/{integration_id}` | Delete integration | Yes |
+| POST | `/integration/integrations/{integration_id}/test` | Test integration | Yes |
+| POST | `/integration/integrations/{integration_id}/set-primary` | Set as primary | Yes |
+
+### Send Operations (2)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/integration/send-sms` | Send SMS via configured provider | Yes |
+| POST | `/integration/send-email` | Send email via configured provider | Yes |
+
+### Logs (1)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/integration/logs` | List integration logs | Yes |
+
+**Providers:** bKash, BulkSMSBD, SMTP (credentials encrypted with Fernet)
+
+---
+
+## 8. Dashboard (6)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/dashboard/overview` | High-level overview stats | Yes |
 | GET | `/dashboard/financial` | Financial analytics | Yes |
 | GET | `/dashboard/patients` | Patient analytics | Yes |
@@ -143,104 +192,116 @@
 | GET | `/dashboard/visits` | Visit analytics | Yes |
 | GET | `/dashboard/prescriptions` | Prescription analytics | Yes |
 
-**Note:** All dashboard endpoints support optional `date_from` and `date_to` query parameters for filtering.
+**Query Params:** All endpoints support `date_from` and `date_to` (YYYY-MM-DD)
 
 ---
 
-## Common Query Parameters
+## Common Patterns
 
 ### Pagination
-- `limit` (integer): Number of results (default: 100, max: 500)
-- `offset` (integer): Skip N results (default: 0)
+
+```
+GET /patients?limit=50&offset=0
+```
+
+- `limit`: Results per page (default: 100, max: 500)
+- `offset`: Skip N results (default: 0)
 
 ### Filtering
-- `date_from` (date): Start date (YYYY-MM-DD)
-- `date_to` (date): End date (YYYY-MM-DD)
-- `status` (string): Filter by status
-- `patient_id` (uuid): Filter by patient
-- `visit_id` (uuid): Filter by visit
+
+```
+GET /appointments/appointments?date_from=2026-05-01&date_to=2026-05-31&status=scheduled
+```
+
+- `date_from`, `date_to`: Date range (YYYY-MM-DD)
+- `status`: Filter by status
+- `patient_id`: Filter by patient UUID
+
+### Sorting
+
+```
+GET /patients?sort_by=created_at&sort_order=desc
+```
+
+- `sort_by`: Field name
+- `sort_order`: `asc` or `desc`
 
 ---
 
 ## Response Formats
 
-### Success Response
+### Success (200/201)
+
 ```json
 {
   "id": "uuid",
-  "field1": "value",
-  "field2": 123,
+  "name": "John Doe",
   "created_at": "2026-05-01T10:30:00Z",
   "updated_at": "2026-05-01T10:30:00Z"
 }
 ```
 
-### Error Response
-```json
-{
-  "detail": "Error message"
-}
-```
+### List (200)
 
-### List Response
 ```json
 [
-  {
-    "id": "uuid",
-    "field1": "value"
-  },
-  {
-    "id": "uuid2",
-    "field2": "value2"
-  }
+  { "id": "uuid1", "name": "Patient 1" },
+  { "id": "uuid2", "name": "Patient 2" }
 ]
+```
+
+### Error (4xx/5xx)
+
+```json
+{
+  "detail": "Error message or validation details"
+}
 ```
 
 ---
 
 ## Status Codes
 
-- `200 OK` - Success
-- `201 Created` - Resource created
-- `204 No Content` - Success with no response body
-- `400 Bad Request` - Invalid input
-- `401 Unauthorized` - Authentication required
-- `403 Forbidden` - Insufficient permissions
-- `404 Not Found` - Resource not found
-- `422 Unprocessable Entity` - Validation error
-- `500 Internal Server Error` - Server error
-- `501 Not Implemented` - Feature pending implementation
+| Code | Meaning | When |
+|------|---------|------|
+| 200 | OK | Success (read/update) |
+| 201 | Created | Resource created |
+| 204 | No Content | Success with no body (delete) |
+| 400 | Bad Request | Invalid input |
+| 401 | Unauthorized | Missing/invalid token |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource not found |
+| 422 | Unprocessable Entity | Validation error |
+| 500 | Internal Server Error | Server error |
+| 501 | Not Implemented | Feature pending |
 
 ---
 
 ## Authentication
 
-All endpoints (except `/auth/register` and `/auth/login`) require a valid JWT access token in the Authorization header:
+**Required:** All endpoints except `/auth/register` and `/auth/login`
 
+**Header:**
 ```
 Authorization: Bearer <access_token>
 ```
 
-**Token Expiry:**
-- Access tokens: 30 minutes
-- Refresh tokens: 7 days
-
-**Refresh Flow:**
-1. Access token expires (401 Unauthorized)
+**Token Refresh Flow:**
+1. Access token expires → 401 Unauthorized
 2. Call `POST /auth/refresh` with refresh token
-3. Receive new access token
-4. Update Authorization header with new token
+3. Get new access token
+4. Retry request with new token
+
+**Frontend:** Auto-refresh implemented in Axios interceptor (`frontend/src/lib/api/client.ts`)
 
 ---
 
 ## Interactive Documentation
 
-**Swagger UI:** http://localhost:8000/docs  
-**ReDoc:** http://localhost:8000/redoc  
-**OpenAPI JSON:** http://localhost:8000/openapi.json
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
+- **OpenAPI JSON:** http://localhost:8000/openapi.json
 
 ---
 
-**Last Updated:** May 1, 2026  
-**API Version:** 0.8.0-alpha  
-**For detailed usage examples, see module READMEs in `app/modules/*/README.md`**
+**See [CLAUDE.md](../CLAUDE.md) for architecture and implementation details.**
