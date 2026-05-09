@@ -2,35 +2,44 @@
 
 Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 
-## Current State (Code-Verified: 2026-05-09)
+## Current State (Code-Verified: 2026-05-10)
 
 - Backend: FastAPI + SQLAlchemy async, 30 models
 - Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
 - Module endpoints: 82+ (`81+` implemented business endpoints + `1` AI stub)
 - System endpoints: `/`, `/health`, `/metrics`
-- Frontend: Next.js 16 + React 19
-  - Implemented: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions` (list/detail)
-  - In Progress: `/prescriptions/new` (builder pending)
+- Frontend: Next.js 16 + React 19 (68+ source files)
+  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`
+  - 📋 Pending: Payments UI, Integrations UI
 
 ## Feature Snapshot
 
-### Implemented End-to-End
-- Authentication (JWT, refresh, 2FA, session management)
-- Patient management (CRUD, search, tags, diagnoses)
-- Appointments (calendar, scheduling, visits)
-- Dashboard analytics (stats, charts, filters)
-- Prescriptions (list, detail, status management) - **builder pending**
-- Multi-tenant isolation (100% secure, row-level)
+### ✅ Implemented End-to-End (Backend + Frontend)
+- **Authentication** - JWT, refresh tokens, 2FA/TOTP, session management
+- **Patient Management** - CRUD, search, tags, diagnoses, demographics
+- **Appointments** - Calendar view, scheduling, visits, status tracking
+- **Dashboard Analytics** - Stats, revenue charts, patient demographics
+- **Prescriptions** - Complete CRUD, builder, medicine items, draft/issue/void workflow, PDF generation
+- **Doctor Profile** - Personal/clinic info, academic degrees, certifications/trainings
+- **Multi-tenant Isolation** - 100% secure row-level security (16/16 tests passing)
 
-### Backend-Ready, Frontend Pending
-- Doctor profile management
-- Prescription builder (create/edit form)
-- Payments processing
-- Integration management
+### 📋 Backend-Ready, Frontend Pending
+- **Payments Processing** - Invoice generation, bKash/Nagad/Rocket integration, transaction history
+- **Integration Management** - SMS/Email provider setup, credential encryption, usage logs
 
 ### AI / QAI Status
-- `/api/v1/ai/query` exists as a stub endpoint and returns `501 Not Implemented`
-- Full AI/RAG assistant remains planned work
+- `/api/v1/ai/query` exists as stub endpoint (returns `501 Not Implemented`)
+- Pro plan-gated with rate limiting (100 req/hour)
+- Full AI/RAG assistant with vector search remains planned work
+
+### Security Features
+- ✅ Password complexity enforcement (8+ chars, mixed case, numbers)
+- ✅ Session invalidation on password/role change
+- ✅ HTTP security headers (CSP, X-Frame-Options, HSTS)
+- ✅ Redis-backed rate limiting (login: 10/min, API: 100/min, AI: 100/hour)
+- ✅ JWT token validation (expiry, type, claims)
+- ✅ 2FA/TOTP with QR code generation
+- ✅ Fernet encryption for integration credentials
 
 ## Quick Start
 
