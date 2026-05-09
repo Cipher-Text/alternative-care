@@ -2,28 +2,31 @@
 
 Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 
-## Current State (Code-Verified: 2026-05-08)
+## Current State (Code-Verified: 2026-05-09)
 
 - Backend: FastAPI + SQLAlchemy async, 30 models
 - Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
-- Module endpoints: 80 (`79` implemented business endpoints + `1` AI stub)
-- System endpoints: `/` and `/health`
-- Frontend: Next.js 16 + React 19, implemented routes: `/login`, `/dashboard`, `/patients`, `/patients/new`, `/patients/[id]`
+- Module endpoints: 82+ (`81+` implemented business endpoints + `1` AI stub)
+- System endpoints: `/`, `/health`, `/metrics`
+- Frontend: Next.js 16 + React 19
+  - Implemented: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions` (list/detail)
+  - In Progress: `/prescriptions/new` (builder pending)
 
 ## Feature Snapshot
 
 ### Implemented End-to-End
-- Authentication (JWT, refresh, 2FA)
-- Patient management (API + frontend pages)
-- Dashboard analytics (API + frontend dashboard)
-- Multi-tenant isolation patterns
+- Authentication (JWT, refresh, 2FA, session management)
+- Patient management (CRUD, search, tags, diagnoses)
+- Appointments (calendar, scheduling, visits)
+- Dashboard analytics (stats, charts, filters)
+- Prescriptions (list, detail, status management) - **builder pending**
+- Multi-tenant isolation (100% secure, row-level)
 
-### Backend-Ready, Frontend Partial
-- Doctor profile
-- Appointments
-- Prescriptions
-- Payments
-- Integrations
+### Backend-Ready, Frontend Pending
+- Doctor profile management
+- Prescription builder (create/edit form)
+- Payments processing
+- Integration management
 
 ### AI / QAI Status
 - `/api/v1/ai/query` exists as a stub endpoint and returns `501 Not Implemented`

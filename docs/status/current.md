@@ -1,10 +1,10 @@
 # Current Project Status
 
-Last Updated: 2026-05-08
+Last Updated: 2026-05-09
 
 ## Summary
 
-AltCare currently has a working FastAPI backend with 9 registered API modules and a partial Next.js frontend focused on auth, dashboard, and patient workflows.
+AltCare currently has a working FastAPI backend with 10 registered API modules and a partial Next.js frontend with auth, dashboard, patients, appointments, and prescription list/detail views implemented.
 
 Recent launch-readiness work completed on 2026-05-08:
 - P0 auth fixes completed: password complexity enforcement and session invalidation on password change
@@ -34,10 +34,11 @@ Recent launch-readiness work completed on 2026-05-08:
 - Implemented app routes:
   - `/login`
   - `/dashboard`
-  - `/patients`
-  - `/patients/new`
-  - `/patients/[id]`
+  - `/patients` (list, create, detail)
+  - `/appointments` (calendar, list, create, detail)
+  - `/prescriptions` (list, detail) - **NEW (2026-05-09)**
 - Dashboard layout/auth shell is in place
+- UI Components: shadcn/ui (button, card, input, select, badge, table, dialog)
 
 ### AI / QAI-Related Features
 - `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint
@@ -46,8 +47,10 @@ Recent launch-readiness work completed on 2026-05-08:
 
 ## What Is Implemented End-to-End
 - Authentication flows (including 2FA support) across backend and frontend login flow
-- Patient management APIs and corresponding frontend patient screens
+- Patient management APIs and corresponding frontend patient screens (CRUD complete)
+- Appointment scheduling APIs and corresponding frontend calendar/list views
 - Dashboard analytics APIs and dashboard UI
+- Prescription list & detail views (builder/creator pending)
 - Multi-tenant enforcement patterns in backend architecture and tests
 - Baseline API security response headers middleware
 

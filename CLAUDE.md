@@ -17,7 +17,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
 **Backend:** 10 routed modules, 82+ endpoints (+ `/`, `/health`, `/metrics`), 30 database models
-**Frontend:** 50+ source files (auth, dashboard, patients, appointments)
+**Frontend:** 55+ source files (auth, dashboard, patients, appointments, prescriptions)
 **Security:** A (95/100), comprehensive auth security tests
 
 **Security Features:**
@@ -28,11 +28,11 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - ✅ JWT token validation (expiry, type checking, claim validation)
 - ✅ 2FA/TOTP support with QR code generation
 
-**Post-MVP (Backend Ready, Frontend Pending):**
-- Doctor Profile (backend complete)
-- Prescriptions (backend complete)
-- Payments (backend complete)
-- Integrations (backend complete)
+**Post-MVP (Backend Ready, Frontend In Progress/Pending):**
+- Prescriptions (backend complete, frontend 50% - list/detail done, builder pending)
+- Doctor Profile (backend complete, frontend pending)
+- Payments (backend complete, frontend pending)
+- Integrations (backend complete, frontend pending)
 - AI Query Module (stub endpoint, plan-gated)
 
 ---
@@ -289,7 +289,8 @@ frontend/src/
 │   ├── (dashboard)/      # ✅ Protected routes
 │   │   ├── dashboard/    # ✅ Analytics charts
 │   │   ├── patients/     # ✅ Patient CRUD
-│   │   └── appointments/ # ✅ Appointment scheduling & views
+│   │   ├── appointments/ # ✅ Appointment scheduling & views
+│   │   └── prescriptions/# 🔄 List & detail done, builder pending
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/
@@ -297,12 +298,18 @@ frontend/src/
 │   ├── dashboard/        # ✅ Charts, Stats
 │   ├── patients/         # ✅ PatientCard, PatientForm
 │   ├── appointments/     # ✅ AppointmentCard, AppointmentForm
+│   ├── prescriptions/    # 🔄 Builder components pending
 │   ├── layout/           # ✅ Header, Sidebar
-│   └── ui/               # ✅ shadcn/ui components
+│   └── ui/               # ✅ shadcn/ui (button, card, table, badge, etc.)
 ├── lib/
-│   ├── api/              # ✅ API clients (auth, patients, dashboard, appointments)
-│   ├── hooks/            # ✅ React Query hooks
+│   ├── api/              # ✅ API clients (auth, patients, dashboard, appointments, prescriptions)
+│   ├── hooks/            # ✅ React Query hooks (use* for all modules)
 │   └── utils/            # ✅ Helpers
+├── types/                # ✅ TypeScript interfaces
+│   ├── patient.ts
+│   ├── appointment.ts
+│   ├── prescription.ts   # ✅ NEW
+│   └── dashboard.ts
 └── stores/
     └── authStore.ts      # ✅ Zustand auth state
 ```

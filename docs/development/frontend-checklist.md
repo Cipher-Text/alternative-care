@@ -259,23 +259,25 @@ This checklist tracks the frontend development progress from initial setup throu
 
 ### Day 4-7: Prescriptions Module
 
-- [ ] Create `src/lib/api/prescriptions.ts`
-- [ ] Create `src/lib/hooks/usePrescriptions.ts`
-- [ ] Create `src/app/(dashboard)/prescriptions/page.tsx` - List view
-- [ ] Create `src/app/(dashboard)/prescriptions/[id]/page.tsx` - Detail view
+- [x] Create `src/lib/api/prescriptions.ts`
+- [x] Create `src/lib/hooks/usePrescriptions.ts`
+- [x] Create `src/types/prescription.ts` - TypeScript types
+- [x] Create `src/components/ui/table.tsx` - Table component
+- [x] Create `src/app/(dashboard)/prescriptions/page.tsx` - List view
+- [x] Create `src/app/(dashboard)/prescriptions/[id]/page.tsx` - Detail view
 - [ ] Create `src/app/(dashboard)/prescriptions/new/page.tsx` - Builder
 - [ ] Prescription builder:
-  - Select patient
-  - Select visit (or create new)
-  - Add prescription items (medicine, dosage, duration, instructions)
-  - Search medicines from database
-  - Add custom/free-text medicines
-  - Preview prescription
-- [ ] Implement draft → issued workflow
-- [ ] Show immutable indicator (can't edit issued prescriptions)
-- [ ] PDF download button
-- [ ] Void prescription (with confirmation)
-- [ ] Filter by patient, status, date range
+  - [ ] Select patient
+  - [ ] Select visit (or create new)
+  - [ ] Add prescription items (medicine, dosage, duration, instructions)
+  - [ ] Search medicines from database
+  - [ ] Add custom/free-text medicines
+  - [ ] Preview prescription
+- [x] Implement draft → issued workflow (done in detail page)
+- [x] Show immutable indicator (can't edit issued prescriptions)
+- [x] PDF download button (implemented, generates on click)
+- [x] Void prescription (with confirmation dialog)
+- [x] Filter by patient, status, date range (list page)
 
 **Deliverable:** Appointments calendar + Prescription builder working
 
@@ -508,7 +510,7 @@ This checklist tracks the frontend development progress from initial setup throu
 **Week 15-16:**
 - ✅ Dashboard analytics with charts
 - ✅ Appointments calendar working
-- ⏳ Prescription builder pending
+- 🔄 Prescription module (list/detail done, builder pending)
 
 **Week 17-18:**
 - ⏳ Payments module pending
@@ -539,5 +541,5 @@ This checklist tracks the frontend development progress from initial setup throu
 ---
 
 **Last Updated:** May 9, 2026  
-**Status:** In progress (through Week 16 appointments complete)  
-**Next Milestone:** Week 17 - Payments module scaffold
+**Status:** In progress (Week 16 appointments complete, prescriptions 50% complete)  
+**Next Milestone:** Complete prescription builder, then Week 17 - Payments module
