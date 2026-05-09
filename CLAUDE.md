@@ -17,7 +17,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
 **Backend:** 10 routed modules, 82+ endpoints (+ `/`, `/health`, `/metrics`), 30 database models
-**Frontend:** 55+ source files (auth, dashboard, patients, appointments, prescriptions)
+**Frontend:** 61+ source files (auth, dashboard, patients, appointments, prescriptions)
 **Security:** A (95/100), comprehensive auth security tests
 
 **Security Features:**
@@ -28,8 +28,8 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - ✅ JWT token validation (expiry, type checking, claim validation)
 - ✅ 2FA/TOTP support with QR code generation
 
-**Post-MVP (Backend Ready, Frontend In Progress/Pending):**
-- Prescriptions (backend complete, frontend 50% - list/detail done, builder pending)
+**Post-MVP (Backend Ready, Frontend Status):**
+- Prescriptions (backend complete, **frontend complete** ✅ - list/detail/builder all done)
 - Doctor Profile (backend complete, frontend pending)
 - Payments (backend complete, frontend pending)
 - Integrations (backend complete, frontend pending)
@@ -267,7 +267,7 @@ backend/app/
 │   ├── doctor/           # ✅ Profile, degrees (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags (14 endpoints)
 │   ├── appointments/     # ✅ Scheduling, visits (10 endpoints)
-│   ├── prescription/     # ✅ Builder, PDF (8 endpoints)
+│   ├── prescription/     # ✅ CRUD, items, issue, void, PDF (8 endpoints)
 │   ├── payment/          # ✅ Processing, bKash (12 endpoints)
 │   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
 │   ├── dashboard/        # ✅ Analytics, stats (6 endpoints)
@@ -290,7 +290,7 @@ frontend/src/
 │   │   ├── dashboard/    # ✅ Analytics charts
 │   │   ├── patients/     # ✅ Patient CRUD
 │   │   ├── appointments/ # ✅ Appointment scheduling & views
-│   │   └── prescriptions/# 🔄 List & detail done, builder pending
+│   │   └── prescriptions/# ✅ List, detail, create/edit builder
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/
@@ -298,9 +298,9 @@ frontend/src/
 │   ├── dashboard/        # ✅ Charts, Stats
 │   ├── patients/         # ✅ PatientCard, PatientForm
 │   ├── appointments/     # ✅ AppointmentCard, AppointmentForm
-│   ├── prescriptions/    # 🔄 Builder components pending
+│   ├── prescriptions/    # ✅ PrescriptionBuilder, MedicineItemsBuilder, PatientSelector
 │   ├── layout/           # ✅ Header, Sidebar
-│   └── ui/               # ✅ shadcn/ui (button, card, table, badge, etc.)
+│   └── ui/               # ✅ shadcn/ui (button, card, table, badge, textarea, etc.)
 ├── lib/
 │   ├── api/              # ✅ API clients (auth, patients, dashboard, appointments, prescriptions)
 │   ├── hooks/            # ✅ React Query hooks (use* for all modules)
@@ -308,13 +308,77 @@ frontend/src/
 ├── types/                # ✅ TypeScript interfaces
 │   ├── patient.ts
 │   ├── appointment.ts
-│   ├── prescription.ts   # ✅ NEW
+│   ├── prescription.ts
 │   └── dashboard.ts
 └── stores/
     └── authStore.ts      # ✅ Zustand auth state
 ```
 
-### 4.6 Critical Patterns
+### 4.6 Prescription Builder (Frontend)
+
+**Components:**
+```typescript
+// PrescriptionBuilder - Main form component
+// - Patient selection (searchable)
+// - Clinical info (diagnosis, notes, advice)
+// - Medicine items builder
+// - Draft/Issue workflow
+// - Validation and error handling
+
+// MedicineItemsBuilder - Dynamic medicine list
+// - Add/Edit/Delete medicines
+// - Required: name, dosage, frequency
+// - Optional: duration, quantity, instructions
+// - Table view with modal dialog
+
+// PatientSelector - Smart patient search
+// - Real-time search (name, phone, code)
+// - Autocomplete dropdown
+// - Selected patient card with details
+// - Clear selection
+```
+
+**Routes:**
+- `/prescriptions` - List all prescriptions (filter by status)
+- `/prescriptions/new` - Create new prescription
+- `/prescriptions/[id]` - View prescription details
+- `/prescriptions/[id]/edit` - Edit draft prescription
+
+**Workflow:**
+```typescript
+// 1. Create Draft
+const draft = await createPrescription({
+  patient_id,
+  diagnosis,
+  doctors_notes,
+  advice,
+  items: [/* medicines */],
+  status: 'draft'
+})
+
+// 2. Edit Draft (only drafts editable)
+await updatePrescription(id, { diagnosis: '...' })
+await addPrescriptionItem(id, { medicine_name: '...' })
+
+// 3. Issue Prescription (becomes immutable)
+await updatePrescription(id, { status: 'issued' })
+
+// 4. Immutability enforced
+// - Cannot update issued/voided prescriptions
+// - Cannot add/delete items
+// - Can only void
+```
+
+**Key Features:**
+- Patient search with autocomplete
+- Free-text medicine names (no DB dependency yet)
+- Form validation (patient + ≥1 medicine required)
+- Draft/Issue status workflow
+- Immutability enforcement
+- Responsive design
+- TypeScript type safety
+
+### 4.7 Critical Patterns
 
 **Async Database:**
 ```python

@@ -147,7 +147,11 @@ export default function PrescriptionDetailPage({
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {statusInfo.label}
               </Badge>
-              {isIssued && <Lock className="h-5 w-5 text-muted-foreground" title="Immutable" />}
+              {isIssued && (
+                <span title="Immutable">
+                  <Lock className="h-5 w-5 text-muted-foreground" />
+                </span>
+              )}
             </div>
             <p className="text-sm text-muted-foreground font-mono">ID: {prescription.id}</p>
           </div>
