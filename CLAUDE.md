@@ -17,7 +17,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
 **Backend:** 10 routed modules, 82+ endpoints (+ `/`, `/health`, `/metrics`), 30 database models
-**Frontend:** 61+ source files (auth, dashboard, patients, appointments, prescriptions)
+**Frontend:** 68+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile)
 **Security:** A (95/100), comprehensive auth security tests
 
 **Security Features:**
@@ -30,7 +30,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **Post-MVP (Backend Ready, Frontend Status):**
 - Prescriptions (backend complete, **frontend complete** ✅ - list/detail/builder all done)
-- Doctor Profile (backend complete, frontend pending)
+- Doctor Profile (backend complete, **frontend complete** ✅ - profile/degrees/trainings all done)
 - Payments (backend complete, frontend pending)
 - Integrations (backend complete, frontend pending)
 - AI Query Module (stub endpoint, plan-gated)
@@ -290,7 +290,8 @@ frontend/src/
 │   │   ├── dashboard/    # ✅ Analytics charts
 │   │   ├── patients/     # ✅ Patient CRUD
 │   │   ├── appointments/ # ✅ Appointment scheduling & views
-│   │   └── prescriptions/# ✅ List, detail, create/edit builder
+│   │   ├── prescriptions/# ✅ List, detail, create/edit builder
+│   │   └── profile/      # ✅ Doctor profile with degrees & trainings
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/
@@ -299,6 +300,7 @@ frontend/src/
 │   ├── patients/         # ✅ PatientCard, PatientForm
 │   ├── appointments/     # ✅ AppointmentCard, AppointmentForm
 │   ├── prescriptions/    # ✅ PrescriptionBuilder, MedicineItemsBuilder, PatientSelector
+│   ├── doctor/           # ✅ ProfileForm, DegreesSection, TrainingsSection
 │   ├── layout/           # ✅ Header, Sidebar
 │   └── ui/               # ✅ shadcn/ui (button, card, table, badge, textarea, etc.)
 ├── lib/
@@ -309,6 +311,7 @@ frontend/src/
 │   ├── patient.ts
 │   ├── appointment.ts
 │   ├── prescription.ts
+│   ├── doctor.ts
 │   └── dashboard.ts
 └── stores/
     └── authStore.ts      # ✅ Zustand auth state
