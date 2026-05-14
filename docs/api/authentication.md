@@ -3,16 +3,16 @@ title: "Authentication API"
 type: "api-reference"
 module: "authentication"
 version: "0.9.0"
-last_updated: "2026-05-01"
-ai_summary: "9 endpoints for JWT login, 2FA, token refresh, and user management"
-endpoints: 9
+last_updated: "2026-05-14"
+ai_summary: "Authentication, self-registration, and admin provisioning/approval endpoints"
+endpoints: 12
 authentication: "public + protected"
 ---
 
 # Authentication API
 
 **Module:** Authentication  
-**Endpoints:** 9  
+**Endpoints:** 12  
 **Base Path:** `/api/v1/auth`
 
 ---
@@ -45,6 +45,9 @@ Authentication endpoints using **JWT tokens** with optional **TOTP 2FA**.
 - ✅ Token refresh mechanism
 - ✅ Secure logout
 - ✅ Profile management
+- ✅ Public doctor self-registration (`/register`) with pending approval
+- ✅ Admin client provisioning (`/admin/provision-client`)
+- ✅ Admin tenant approval workflow (`/admin/tenants/pending`, `/admin/tenants/{tenant_id}/approve`)
 
 **Token Lifetimes:**
 - Access Token: 30 minutes

@@ -2,7 +2,7 @@
 title: "AltCare Architecture Overview"
 type: "architecture"
 version: "0.9.0"
-last_updated: "2026-05-01"
+last_updated: "2026-05-14"
 ai_summary: "Multi-tenant SaaS architecture with FastAPI backend, Next.js frontend, and PostgreSQL with pgvector"
 ---
 
@@ -100,6 +100,15 @@ JWT Token → tenant_id extracted → Set in ContextVar → All queries auto-fil
 - Refresh token: 7 days
 - TOTP 2FA optional
 
+**Current onboarding implementation:**
+- Doctor onboarding is self-registration via `POST /api/v1/auth/register`
+- Registration creates both `users` (role=`doctor`) and `tenants` (clinic context)
+- New tenants are blocked from login until `tenant.is_approved = true`
+- Admin provisioning endpoint exists: `POST /api/v1/auth/admin/provision-client`
+- Admin tenant approval endpoints exist:
+  - `GET /api/v1/auth/admin/tenants/pending`
+  - `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
+
 **Authorization:** Role-based access control
 - Platform users: `tenant_id = NULL`
 - Tenant users: `tenant_id = <uuid>`
@@ -143,13 +152,15 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP
 │   └── dependencies.py # Auth, CurrentUser
 ├── modules/             # Feature modules
-│   ├── auth/           # 9 endpoints
+│   ├── auth/           # 16 endpoints
 │   ├── patient/        # 14 endpoints
-│   ├── appointments/   # 10 endpoints
+│   ├── appointments/   # 6 endpoints
 │   ├── prescription/   # 8 endpoints
 │   ├── payment/        # 12 endpoints
 │   ├── dashboard/      # 6 endpoints
-│   └── doctor/         # 12 endpoints
+│   ├── doctor/         # 12 endpoints
+│   ├── integration/    # 12 endpoints
+│   └── ai/             # 1 endpoint
 └── shared/
     ├── models/         # SQLAlchemy models
     └── schemas/        # Pydantic schemas

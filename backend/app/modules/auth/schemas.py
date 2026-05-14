@@ -86,6 +86,27 @@ class RegisterResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AdminCreateTenantDoctorRequest(RegisterRequest):
+    """Admin request to create tenant (clinic) and primary doctor account."""
+
+    tenant_name: str | None = Field(
+        None,
+        min_length=2,
+        max_length=255,
+        description="Tenant display name; defaults to doctor's full name if omitted.",
+    )
+    plan: Literal["free", "plus", "pro"] = "free"
+    auto_approve: bool = True
+
+
+class TenantApprovalResponse(BaseModel):
+    """Tenant approval response."""
+
+    message: str
+    tenant_id: str
+    is_approved: bool
+
+
 # ============================================================================
 # Login Schemas
 # ============================================================================

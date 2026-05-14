@@ -20,6 +20,7 @@ from app.core.security import (
     verify_totp,
 )
 from app.modules.auth.schemas import (
+    AdminCreateTenantDoctorRequest,
     LoginRequest,
     LoginResponse,
     RegisterRequest,
@@ -113,6 +114,76 @@ class AuthService:
             tenant_id=tenant.id,
             email=user.email,
             requires_approval=True,
+        )
+
+    async def admin_create_tenant_doctor(
+        self,
+        data: AdminCreateTenantDoctorRequest,
+        admin_user_id: str,
+    ) -> RegisterResponse:
+        """
+        Admin-only provisioning flow for a new client account.
+
+        Creates tenant (clinic) and primary doctor in one operation.
+        """
+        result = await self.db.execute(select(User).where(User.email == data.email))
+        if result.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered",
+            )
+
+        tenant_id = str(uuid.uuid4())
+        tenant = Tenant(
+            id=tenant_id,
+            name=data.tenant_name or data.full_name,
+            email=data.email,
+            phone=data.phone,
+            clinic_name=data.clinic_name,
+            clinic_address=data.clinic_address,
+            division_id=data.division_id,
+            district_id=data.district_id,
+            upazila_id=data.upazila_id,
+            specializations=data.specializations,
+            license_number=data.license_number,
+            is_verified=False,
+            is_approved=data.auto_approve,
+            approved_at=datetime.now(timezone.utc) if data.auto_approve else None,
+            approved_by=admin_user_id if data.auto_approve else None,
+            is_active=True,
+            plan=data.plan,
+        )
+        self.db.add(tenant)
+
+        user_id = str(uuid.uuid4())
+        user = User(
+            id=user_id,
+            tenant_id=tenant_id,
+            email=data.email,
+            password_hash=get_password_hash(data.password),
+            role="doctor",
+            full_name=data.full_name,
+            phone=data.phone,
+            language=data.language,
+            is_active=True,
+            is_email_verified=False,
+        )
+        self.db.add(user)
+
+        await self.db.commit()
+        await self.db.refresh(user)
+
+        requires_approval = not tenant.is_approved
+        return RegisterResponse(
+            message=(
+                "Client account created successfully."
+                if tenant.is_approved
+                else "Client account created. Tenant is pending approval."
+            ),
+            user_id=user.id,
+            tenant_id=tenant.id,
+            email=user.email,
+            requires_approval=requires_approval,
         )
 
     # ========================================================================
@@ -602,3 +673,31 @@ class AuthService:
             user=UserResponse.model_validate(user),
             tenant=tenant,
         )
+
+    async def list_pending_tenants(self) -> list[TenantResponse]:
+        """List tenants waiting for approval."""
+        result = await self.db.execute(
+            select(Tenant)
+            .where(Tenant.is_approved == False)  # noqa: E712
+            .order_by(Tenant.created_at.desc())
+        )
+        tenants = result.scalars().all()
+        return [TenantResponse.model_validate(tenant) for tenant in tenants]
+
+    async def approve_tenant(self, tenant_id: str, admin_user_id: str) -> TenantResponse:
+        """Approve a pending tenant so users can log in."""
+        result = await self.db.execute(select(Tenant).where(Tenant.id == tenant_id))
+        tenant = result.scalar_one_or_none()
+        if not tenant:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tenant not found",
+            )
+
+        tenant.is_approved = True
+        tenant.approved_at = datetime.now(timezone.utc)
+        tenant.approved_by = admin_user_id
+
+        await self.db.commit()
+        await self.db.refresh(tenant)
+        return TenantResponse.model_validate(tenant)

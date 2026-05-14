@@ -25,9 +25,16 @@ Recent launch-readiness work completed on 2026-05-08:
   - `prescription`
   - `payment`
   - `integration`
-- Endpoint count from route decorators: 84 module endpoints
+- Endpoint count from route decorators: 87 module endpoints
 - System endpoints: `/`, `/health`, `/metrics`
 - Data model scope: 30 SQLAlchemy models (multi-tenant pattern)
+- Onboarding/auth reality:
+  - `POST /api/v1/auth/register` creates both doctor user and tenant (clinic) in one flow
+  - New doctor tenants are created with `is_approved = false`
+  - Admin provisioning endpoint available: `POST /api/v1/auth/admin/provision-client` (creates tenant + primary doctor)
+  - Admin approval endpoints available:
+    - `GET /api/v1/auth/admin/tenants/pending`
+    - `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
 
 ### Frontend
 - Stack: Next.js 16, React 19, TypeScript
@@ -55,6 +62,7 @@ Recent launch-readiness work completed on 2026-05-08:
 - Prescription list/create/detail/edit views
 - Multi-tenant enforcement patterns in backend architecture and tests
 - Baseline API security response headers middleware
+- Doctor self-registration with pending-approval gate before first login
 
 ## What Is Backend-Ready but Frontend-Partial
 - Doctor profile, appointments, prescriptions, payments, and integrations have backend routes but limited or no full UI coverage in `frontend/src/app`

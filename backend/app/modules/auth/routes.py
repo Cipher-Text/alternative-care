@@ -6,8 +6,9 @@ from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, RequireAdmin, get_current_user
 from app.modules.auth.schemas import (
+    AdminCreateTenantDoctorRequest,
     ChangePasswordRequest,
     Disable2FARequest,
     LoginRequest,
@@ -19,6 +20,7 @@ from app.modules.auth.schemas import (
     RegisterResponse,
     Setup2FAResponse,
     UserProfileResponse,
+    TenantResponse,
     Verify2FARequest,
     Verify2FAResponse,
 )
@@ -46,6 +48,54 @@ async def register(
     """Register new doctor with tenant creation."""
     service = AuthService(db)
     return await service.register_doctor(data)
+
+
+@router.post(
+    "/admin/provision-client",
+    response_model=RegisterResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Admin: create client account",
+    description="Create tenant (clinic) and primary doctor account in one operation.",
+)
+async def admin_provision_client(
+    data: AdminCreateTenantDoctorRequest,
+    current_user: RequireAdmin,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Admin-only client provisioning."""
+    service = AuthService(db)
+    return await service.admin_create_tenant_doctor(data, current_user.user_id)
+
+
+@router.get(
+    "/admin/tenants/pending",
+    response_model=list[TenantResponse],
+    summary="Admin: list pending tenants",
+    description="List tenants waiting for approval.",
+)
+async def list_pending_tenants(
+    current_user: RequireAdmin,  # noqa: ARG001
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Admin-only pending tenant list."""
+    service = AuthService(db)
+    return await service.list_pending_tenants()
+
+
+@router.post(
+    "/admin/tenants/{tenant_id}/approve",
+    response_model=TenantResponse,
+    summary="Admin: approve tenant",
+    description="Approve a tenant so tenant-scoped users can log in.",
+)
+async def approve_tenant(
+    tenant_id: str,
+    current_user: RequireAdmin,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Admin-only tenant approval."""
+    service = AuthService(db)
+    return await service.approve_tenant(tenant_id, current_user.user_id)
 
 
 # ============================================================================
