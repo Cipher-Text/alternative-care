@@ -206,11 +206,10 @@ def verify_access_token(token: str) -> dict:
     → Return tokens + user info
     
 4b. If 2FA enabled:
-    → Return {detail: "2FA required", user: {two_factor_enabled: true}}
-    → Frontend prompts for TOTP code
+    → Frontend retries login with TOTP code in same endpoint
     ↓
 5. User submits email + password + TOTP code
-   POST /auth/login-2fa → {email, password, totp_code}
+   POST /auth/login → {email, password, totp_code}
    ↓
 6. Verify password + TOTP code
    ↓
