@@ -1,10 +1,10 @@
 # Current Project Status
 
-Last Updated: 2026-05-09
+Last Updated: 2026-05-14
 
 ## Summary
 
-AltCare currently has a working FastAPI backend with 10 registered API modules and a partial Next.js frontend with auth, dashboard, patients, appointments, and prescription list/detail views implemented.
+AltCare currently has a working FastAPI backend with 9 registered API modules and a partial Next.js frontend with auth, dashboard, profile, patients, appointments, and prescriptions flows implemented (including list/create/detail/edit pages for core clinical entities).
 
 Recent launch-readiness work completed on 2026-05-08:
 - P0 auth fixes completed: password complexity enforcement and session invalidation on password change
@@ -25,18 +25,20 @@ Recent launch-readiness work completed on 2026-05-08:
   - `prescription`
   - `payment`
   - `integration`
-- Endpoint count from route decorators: 80 module endpoints
-- System endpoints: `/` and `/health`
+- Endpoint count from route decorators: 84 module endpoints
+- System endpoints: `/`, `/health`, `/metrics`
 - Data model scope: 30 SQLAlchemy models (multi-tenant pattern)
 
 ### Frontend
 - Stack: Next.js 16, React 19, TypeScript
 - Implemented app routes:
+  - `/` (landing page)
   - `/login`
   - `/dashboard`
-  - `/patients` (list, create, detail)
-  - `/appointments` (calendar, list, create, detail)
-  - `/prescriptions` (list, detail) - **NEW (2026-05-09)**
+  - `/profile`
+  - `/patients`, `/patients/new`, `/patients/[id]`, `/patients/[id]/edit`
+  - `/appointments`, `/appointments/new`, `/appointments/[id]`, `/appointments/[id]/edit`
+  - `/prescriptions`, `/prescriptions/new`, `/prescriptions/[id]`, `/prescriptions/[id]/edit`
 - Dashboard layout/auth shell is in place
 - UI Components: shadcn/ui (button, card, input, select, badge, table, dialog)
 
@@ -50,7 +52,7 @@ Recent launch-readiness work completed on 2026-05-08:
 - Patient management APIs and corresponding frontend patient screens (CRUD complete)
 - Appointment scheduling APIs and corresponding frontend calendar/list views
 - Dashboard analytics APIs and dashboard UI
-- Prescription list & detail views (builder/creator pending)
+- Prescription list/create/detail/edit views
 - Multi-tenant enforcement patterns in backend architecture and tests
 - Baseline API security response headers middleware
 

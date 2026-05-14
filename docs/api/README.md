@@ -2,15 +2,15 @@
 title: "AltCare API Overview"
 type: "api-reference"
 version: "1.0.0"
-last_updated: "2026-05-08"
-ai_summary: "80 REST endpoints across 9 modules (including AI stub) with JWT authentication"
+last_updated: "2026-05-14"
+ai_summary: "84 REST endpoints across 9 modules (including AI stub) with JWT authentication"
 base_url: "http://localhost:8000/api/v1"
 ---
 
 # AltCare API Documentation
 
 **Base URL:** `http://localhost:8000/api/v1`  
-**Total Endpoints:** 80 (module routes) + 2 system endpoints (`/`, `/health`)  
+**Total Endpoints:** 84 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)  
 **Authentication:** JWT Bearer Token  
 **Format:** JSON
 
@@ -30,7 +30,7 @@ base_url: "http://localhost:8000/api/v1"
 | **Doctor** | 12 | Profile, credentials | [doctor.md](doctor.md) |
 | **Integrations** | 12 | Provider config, send SMS/email, logs | [integrations.md](integrations.md) |
 
-**Total:** 80 module endpoints
+**Total:** 84 module endpoints
 
 ## Authentication
 

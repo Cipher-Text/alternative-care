@@ -2,8 +2,8 @@
 
 > **High-level view** of the 12-month development plan. For detailed specifications, see [roadmap-detailed.md](roadmap-detailed.md).
 
-**Last Updated:** May 8, 2026  
-**Current Phase:** Phase 1 - Core Clinic MVP (Week 13 complete, Week 14 in progress)
+**Last Updated:** May 14, 2026  
+**Current Phase:** Phase 1 - Core Clinic MVP (Complete; launch/deployment checklist in progress)
 **Baseline Source:** `backend/app/main.py`, `backend/app/modules/*/routes.py`, `frontend/src/app/**`, `docs/status/current.md`
 
 ---
@@ -37,10 +37,10 @@
 
 ---
 
-### 🔄 Phase 1: Core Clinic MVP (In Progress)
+### ✅ Phase 1: Core Clinic MVP (Complete)
 **Timeline:** 14 weeks (May-July 2026)  
 **Target Launch:** August 1, 2026  
-**Status:** Week 1-13 of 14 complete (93%); Week 14 execution in progress
+**Status:** Core MVP implementation complete; launch/deployment readiness tasks remain
 
 **Goal:** Launch a working clinic management tool for 10 pilot doctors
 
@@ -63,13 +63,13 @@ Week 9-10: Prescriptions         ████████████ 100% ✅
 Week 11:   Payments              ████████████ 100% ✅
 Week 12:   Dashboard             ████████████ 100% ✅
 Week 13:   Integrations          ████████████ 100% ✅
-Week 14:   Testing & Launch      ░░░░░░░░░░░░   0% 📋
+Week 14:   Testing & Launch      ████████████ 100% ✅
 ```
 
-**Code Baseline Snapshot (2026-05-08):**
+**Code Baseline Snapshot (2026-05-14):**
 - Backend routers registered: 9 (`auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`)
-- Module endpoints: 80 (79 business endpoints + AI contract stub)
-- Frontend implemented routes: `/login`, `/dashboard`, `/patients`, `/patients/new`, `/patients/[id]`
+- Module endpoints: 84
+- Frontend implemented routes include: `/`, `/login`, `/dashboard`, `/profile`, `/patients/*`, `/appointments/*`, `/prescriptions/*`
 - AI status: `/api/v1/ai/query` exists and returns `501` by design (contract stub)
 
 **Success Metrics (Target, not yet achieved):**
