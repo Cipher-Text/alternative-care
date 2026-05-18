@@ -69,7 +69,7 @@ npm run dev
 
 **Should see:**
 - Frontend login page
-- Swagger UI with 80+ endpoints
+- Swagger UI with 87 endpoints
 - Health check: `{"status": "healthy"}`
 
 **Success!** You're ready to develop.
@@ -164,8 +164,9 @@ cd backend && black app && ruff check app
 ### Understand the Codebase
 
 1. **Read CLAUDE.md** - Architecture, patterns, conventions
-2. **Check backend/API_ENDPOINTS.md** - All 80+ endpoints
+2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 87 endpoints)
 3. **Browse frontend/src/** - Component structure
+4. **Check docs/** - Detailed documentation by area (setup, architecture, API)
 
 ### Start Coding
 
@@ -287,7 +288,7 @@ mypy backend/app                  # Type check
 ### Key Files
 
 - **CLAUDE.md** - Main documentation (architecture, patterns, how-tos)
-- **backend/API_ENDPOINTS.md** - All endpoints documented
+- **docs/** - Detailed documentation by area (API, architecture, setup, planning)
 - **backend/.env** - Backend environment variables
 - **frontend/.env.local** - Frontend environment variables
 - **docker-compose.yml** - Infrastructure setup

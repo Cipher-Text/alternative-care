@@ -16,9 +16,11 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Multi-tenant isolation (100% secure, 16/16 tests passing) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
-**Backend:** 10 routed modules, 82+ endpoints (+ `/`, `/health`, `/metrics`), 30 database models
-**Frontend:** 68+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile)
+**Backend:** 9 routed modules, 87 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Frontend:** 70+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile)
 **Security:** A (95/100), comprehensive auth security tests
+
+**Last Verified:** 2026-05-19
 
 **Security Features:**
 - ✅ Password complexity enforcement (8+ chars, mixed case, numbers)
@@ -224,15 +226,17 @@ def _validate_password_strength(password: str):
     # Applied to: registration, password change, password reset
 ```
 
-### 4.3 Database Schema (30 Tables)
+### 4.3 Database Schema (34 Tables)
 
 **Core:** `tenants`, `users`, `user_sessions`
 **Doctor:** `doctor_degrees`, `doctor_trainings`
 **Geographic:** `divisions`, `districts`, `upazilas` (Bangladesh)
 **Patient:** `patients`, `patient_tags`, `patient_diagnoses`
+**Appointments:** `appointments`, `visits`
 **Prescription:** `prescriptions`, `prescription_items`
 **Payment:** `payments`, `invoices`
-**Medicine:** `medicines`, `medicine_symptoms` (bilingual)
+**Medicine:** `medicines`, `medicine_aliases`
+**Symptom:** `symptoms`, `symptom_aliases`, `medicine_symptom_mappings`
 **Library:** `books`, `chapters`, `sections`, `embeddings`, `reading_progress`, `bookmarks`, `highlights`
 **Integration:** `integration_providers`, `tenant_integrations`, `integration_logs`
 **System:** `translations`, `usage_tracking`
@@ -262,11 +266,11 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules
-│   ├── auth/             # ✅ Login, refresh, 2FA, password change (9 endpoints)
-│   ├── doctor/           # ✅ Profile, degrees (12 endpoints)
-│   ├── patient/          # ✅ CRUD, search, tags (14 endpoints)
-│   ├── appointments/     # ✅ Scheduling, visits (10 endpoints)
+├── modules/               # Feature modules (87 total endpoints)
+│   ├── auth/             # ✅ Login, refresh, 2FA, password change (16 endpoints)
+│   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
+│   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
+│   ├── appointments/     # ✅ Scheduling, visits (6 endpoints)
 │   ├── prescription/     # ✅ CRUD, items, issue, void, PDF (8 endpoints)
 │   ├── payment/          # ✅ Processing, bKash (12 endpoints)
 │   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
@@ -298,11 +302,12 @@ frontend/src/
 │   ├── auth/             # ✅ LoginForm, TwoFactorForm
 │   ├── dashboard/        # ✅ Charts, Stats
 │   ├── patients/         # ✅ PatientCard, PatientForm
-│   ├── appointments/     # ✅ AppointmentCard, AppointmentForm
 │   ├── prescriptions/    # ✅ PrescriptionBuilder, MedicineItemsBuilder, PatientSelector
 │   ├── doctor/           # ✅ ProfileForm, DegreesSection, TrainingsSection
 │   ├── layout/           # ✅ Header, Sidebar
+│   ├── shared/           # ✅ Shared utilities
 │   └── ui/               # ✅ shadcn/ui (button, card, table, badge, textarea, etc.)
+│   # Note: Appointments use route-level components (no separate components/ dir)
 ├── lib/
 │   ├── api/              # ✅ API clients (auth, patients, dashboard, appointments, prescriptions)
 │   ├── hooks/            # ✅ React Query hooks (use* for all modules)

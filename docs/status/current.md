@@ -1,6 +1,6 @@
 # Current Project Status
 
-Last Updated: 2026-05-14
+Last Updated: 2026-05-19
 
 ## Summary
 
@@ -27,7 +27,7 @@ Recent launch-readiness work completed on 2026-05-08:
   - `integration`
 - Endpoint count from route decorators: 87 module endpoints
 - System endpoints: `/`, `/health`, `/metrics`
-- Data model scope: 30 SQLAlchemy models (multi-tenant pattern)
+- Data model scope: 34 table models (+ 3 base classes, multi-tenant pattern)
 - Onboarding/auth reality:
   - `POST /api/v1/auth/register` creates both doctor user and tenant (clinic) in one flow
   - New doctor tenants are created with `is_approved = false`

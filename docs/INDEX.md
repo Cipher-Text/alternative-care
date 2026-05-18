@@ -1,7 +1,7 @@
 ---
 title: "AltCare Documentation Index"
 type: "navigation"
-last_updated: "2026-05-08"
+last_updated: "2026-05-19"
 ai_purpose: "Fast navigation map for AI assistants"
 version: "1.0.0"
 ---
@@ -56,13 +56,14 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `planning/phase1-tasks.md`
 - `planning/ux-improvements.md`
 
-## Code-Verified Snapshot (2026-05-08)
+## Code-Verified Snapshot (2026-05-19)
 
 - Backend routers registered in `backend/app/main.py`: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
-- API endpoints in module route files: 80 total
-- System endpoints: `/` and `/health`
+- API endpoints in module route files: 87 total
+- Database table models: 34 (plus 3 base classes)
+- System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
-- Frontend implemented pages: login, dashboard, and patient management flows
+- Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes
