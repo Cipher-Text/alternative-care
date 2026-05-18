@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,11 +16,12 @@ export default function NewInvoicePage() {
   const handleSubmit = async (data: InvoiceCreate) => {
     try {
       const invoice = await createInvoice.mutateAsync(data);
+      toast.success("Invoice created successfully");
       // Navigate to invoice detail page
       router.push(`/payments/invoices/${invoice.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create invoice:", error);
-      // TODO: Show error toast
+      toast.error(error?.response?.data?.detail || "Failed to create invoice");
     }
   };
 
@@ -39,7 +41,7 @@ export default function NewInvoicePage() {
       </div>
 
       {/* Invoice Form */}
-      <InvoiceForm onSubmit={handleSubmit} isLoading={createInvoice.isPending} />
+      <InvoiceForm onSubmit={handleSubmit} isLoading={createInvoice.isLoading} />
     </div>
   );
 }

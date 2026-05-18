@@ -17,7 +17,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
 **Backend:** 9 routed modules, 87 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
-**Frontend:** 70+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile)
+**Frontend:** 90+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile, payments)
 **Security:** A (95/100), comprehensive auth security tests
 
 **Last Verified:** 2026-05-19
@@ -33,7 +33,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 **Post-MVP (Backend Ready, Frontend Status):**
 - Prescriptions (backend complete, **frontend complete** ✅ - list/detail/builder all done)
 - Doctor Profile (backend complete, **frontend complete** ✅ - profile/degrees/trainings all done)
-- Payments (backend complete, frontend pending)
+- Payments (backend complete, **frontend complete** ✅ - dashboard/transactions/invoices/toasts all done)
 - Integrations (backend complete, frontend pending)
 - AI Query Module (stub endpoint, plan-gated)
 

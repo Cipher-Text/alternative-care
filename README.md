@@ -8,9 +8,9 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 - Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
 - Module endpoints: 87 total (auth: 16, ai: 1, appointments: 6, dashboard: 6, doctor: 12, integration: 12, patient: 14, payment: 12, prescription: 8)
 - System endpoints: `/`, `/health`, `/metrics`
-- Frontend: Next.js 16 + React 19 (70+ source files)
-  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`
-  - 📋 Pending: Payments UI, Integrations UI
+- Frontend: Next.js 16 + React 19 (90+ source files)
+  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`
+  - 📋 Pending: Integrations UI
 
 ## Feature Snapshot
 
@@ -21,10 +21,10 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 - **Dashboard Analytics** - Stats, revenue charts, patient demographics
 - **Prescriptions** - Complete CRUD, builder, medicine items, draft/issue/void workflow, PDF generation
 - **Doctor Profile** - Personal/clinic info, academic degrees, certifications/trainings
+- **Payments & Billing** - Dashboard, transactions, invoices, payment recording, CSV export, toast notifications
 - **Multi-tenant Isolation** - 100% secure row-level security (16/16 tests passing)
 
 ### 📋 Backend-Ready, Frontend Pending
-- **Payments Processing** - Invoice generation, bKash/Nagad/Rocket integration, transaction history
 - **Integration Management** - SMS/Email provider setup, credential encryption, usage logs
 
 ### AI / QAI Status

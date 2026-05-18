@@ -3,6 +3,7 @@
 import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, Send, CheckCircle } from "lucide-react";
@@ -24,8 +25,15 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
   const handleStatusUpdate = async (status: "sent" | "paid" | "cancelled") => {
     try {
       await updateInvoice.mutateAsync({ id, data: { status } });
-    } catch (error) {
+      const statusMessages = {
+        sent: "Invoice sent successfully",
+        paid: "Invoice marked as paid",
+        cancelled: "Invoice cancelled",
+      };
+      toast.success(statusMessages[status]);
+    } catch (error: any) {
       console.error("Failed to update invoice:", error);
+      toast.error(error?.response?.data?.detail || "Failed to update invoice status");
     }
   };
 
@@ -35,9 +43,11 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       // Open PDF in new tab
       if (result.pdf_url) {
         window.open(result.pdf_url, "_blank");
+        toast.success("PDF generated successfully");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to generate PDF:", error);
+      toast.error(error?.response?.data?.detail || "Failed to generate PDF");
     }
   };
 
@@ -95,20 +105,20 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleGeneratePdf} disabled={generatePdf.isPending}>
+          <Button variant="outline" onClick={handleGeneratePdf} disabled={generatePdf.isLoading}>
             <FileText className="mr-2 h-4 w-4" />
-            {generatePdf.isPending ? "Generating..." : "Generate PDF"}
+            {generatePdf.isLoading ? "Generating..." : "Generate PDF"}
           </Button>
 
           {invoice.status === "draft" && (
-            <Button onClick={() => handleStatusUpdate("sent")} disabled={updateInvoice.isPending}>
+            <Button onClick={() => handleStatusUpdate("sent")} disabled={updateInvoice.isLoading}>
               <Send className="mr-2 h-4 w-4" />
               Send Invoice
             </Button>
           )}
 
           {invoice.status === "sent" && (
-            <Button onClick={() => handleStatusUpdate("paid")} disabled={updateInvoice.isPending}>
+            <Button onClick={() => handleStatusUpdate("paid")} disabled={updateInvoice.isLoading}>
               <CheckCircle className="mr-2 h-4 w-4" />
               Mark as Paid
             </Button>

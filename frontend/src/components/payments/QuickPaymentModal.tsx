@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -74,10 +75,12 @@ export function QuickPaymentModal({
       };
 
       await createPayment.mutateAsync(paymentData);
+      toast.success(`Payment of ৳${data.amount} recorded successfully`);
       reset();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create payment:", error);
+      toast.error(error?.response?.data?.detail || "Failed to record payment");
     }
   };
 
@@ -184,12 +187,12 @@ export function QuickPaymentModal({
               type="button"
               variant="outline"
               onClick={handleClose}
-              disabled={createPayment.isPending}
+              disabled={createPayment.isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createPayment.isPending}>
-              {createPayment.isPending && (
+            <Button type="submit" disabled={createPayment.isLoading}>
+              {createPayment.isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Record Payment

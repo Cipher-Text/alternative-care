@@ -2,7 +2,7 @@
  * React Query hooks for Payments and Invoices
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { paymentsApi, invoicesApi, bkashApi } from '@/lib/api/payments';
 import type {
   PaymentCreate,
