@@ -35,39 +35,44 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP, Fernet
 │   ├── celery.py       # Background tasks
 │   └── dependencies.py # Auth, RBAC, plan checks
-├── modules/             # Feature modules (80+ endpoints)
-│   ├── auth/           # Login, refresh, 2FA (9)
+├── modules/             # Feature modules (87 endpoints)
+│   ├── auth/           # Login, refresh, 2FA (16)
+│   ├── ai/             # Query stub (1)
 │   ├── doctor/         # Profile, degrees (12)
 │   ├── patient/        # CRUD, search, tags (14)
-│   ├── appointments/   # Scheduling, visits (10)
+│   ├── appointments/   # Scheduling, visits (6)
 │   ├── prescription/   # Builder, PDF (8)
 │   ├── payment/        # Processing, bKash (12)
 │   ├── integration/    # SMS/Email/Payment (12)
 │   └── dashboard/      # Analytics, stats (6)
 └── shared/
-    ├── models/         # SQLAlchemy models (30 tables)
+    ├── models/         # SQLAlchemy models (34 table models)
     └── schemas/        # Pydantic schemas
+
+**Note:** Module API docs are in `../docs/api/` directory
 ```
 
-**Implemented:** 8 modules, 80+ endpoints, 30 tables  
-**Placeholder:** ai, medicine, library, notification (not implemented)
+**Implemented:** 9 modules, 87 endpoints, 34 table models  
+**Placeholder:** medicine, library, notification (not implemented)
 
 ---
 
-## Database (30 Tables)
+## Database (34 Tables)
 
 **Core:** tenants, users, user_sessions  
 **Doctor:** doctor_degrees, doctor_trainings  
-**Geographic:** divisions, districts, upazilas  
+**Geographic:** divisions, districts, upazilas (Bangladesh)  
 **Patient:** patients, patient_tags, patient_diagnoses  
+**Appointments:** appointments, visits  
 **Prescription:** prescriptions, prescription_items  
 **Payment:** payments, invoices  
-**Medicine:** medicines, medicine_symptoms  
+**Medicine:** medicines, medicine_aliases  
+**Symptom:** symptoms, symptom_aliases, medicine_symptom_mappings  
 **Library:** books, chapters, sections, embeddings, reading_progress, bookmarks, highlights  
 **Integration:** integration_providers, tenant_integrations, integration_logs  
 **System:** translations, usage_tracking
 
-**Pattern:** All tenant-scoped tables have `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_at`
+**Pattern:** All tenant-scoped tables have `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_at` (soft deletes)
 
 See [../CLAUDE.md § 4.3](../CLAUDE.md) for schema details.
 
@@ -159,8 +164,9 @@ See `.env.example` for all options.
 - **app/core/security.py** - JWT, encryption, password hashing
 - **alembic/versions/** - Database migrations
 - **tests/conftest.py** - Test fixtures
-- **API_ENDPOINTS.md** - All endpoints documented
-- **../CLAUDE.md** - Main documentation
+- **API_ENDPOINTS.md** - All endpoints overview
+- **../docs/api/** - Detailed API documentation by module
+- **../CLAUDE.md** - Main documentation (architecture, patterns, guides)
 
 ---
 
@@ -197,6 +203,7 @@ See [../CLAUDE.md § 6](../CLAUDE.md) for more troubleshooting.
 - Health Check: http://localhost:8000/health
 
 **Reference:**
-- API Endpoints: [API_ENDPOINTS.md](API_ENDPOINTS.md)
-- Architecture: [../CLAUDE.md](../CLAUDE.md)
-- Breaking Changes: [BREAKING_CHANGES.md](BREAKING_CHANGES.md)
+- API Overview: [API_ENDPOINTS.md](API_ENDPOINTS.md)
+- Detailed API Docs: [../docs/api/](../docs/api/)
+- Architecture & Patterns: [../CLAUDE.md](../CLAUDE.md)
+- Breaking Changes: [../BREAKING_CHANGES.md](../BREAKING_CHANGES.md)
