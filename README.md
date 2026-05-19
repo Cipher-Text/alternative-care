@@ -2,11 +2,11 @@
 
 Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 
-## Current State (Code-Verified: 2026-05-19)
+## Current State (Code-Verified: 2026-05-20)
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
 - Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
-- Module endpoints: 87 total (auth: 16, ai: 1, appointments: 6, dashboard: 6, doctor: 12, integration: 12, patient: 14, payment: 12, prescription: 8)
+- Module endpoints: 83 total (auth: 12, ai: 1, appointments: 6, dashboard: 6, doctor: 12, integration: 12, patient: 14, payment: 12, prescription: 8)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend: Next.js 16 + React 19 (90+ source files)
   - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`

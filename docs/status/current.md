@@ -1,10 +1,10 @@
 # Current Project Status
 
-Last Updated: 2026-05-19
+Last Updated: 2026-05-20
 
 ## Summary
 
-AltCare currently has a working FastAPI backend with 9 registered API modules and a partial Next.js frontend with auth, dashboard, profile, patients, appointments, and prescriptions flows implemented (including list/create/detail/edit pages for core clinical entities).
+AltCare currently has a working FastAPI backend with 9 registered API modules and a working Next.js frontend with auth, dashboard, profile, patients, appointments, prescriptions, and payments flows implemented.
 
 Recent launch-readiness work completed on 2026-05-08:
 - P0 auth fixes completed: password complexity enforcement and session invalidation on password change
@@ -25,7 +25,7 @@ Recent launch-readiness work completed on 2026-05-08:
   - `prescription`
   - `payment`
   - `integration`
-- Endpoint count from route decorators: 87 module endpoints
+- Endpoint count from route decorators: 83 module endpoints
 - System endpoints: `/`, `/health`, `/metrics`
 - Data model scope: 34 table models (+ 3 base classes, multi-tenant pattern)
 - Onboarding/auth reality:
@@ -65,7 +65,7 @@ Recent launch-readiness work completed on 2026-05-08:
 - Doctor self-registration with pending-approval gate before first login
 
 ## What Is Backend-Ready but Frontend-Partial
-- Doctor profile, appointments, prescriptions, payments, and integrations have backend routes but limited or no full UI coverage in `frontend/src/app`
+- Integrations have backend routes but no frontend route coverage in `frontend/src/app`
 
 ## Documentation Source-of-Truth Rules
 
