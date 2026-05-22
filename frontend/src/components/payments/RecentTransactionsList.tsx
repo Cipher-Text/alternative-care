@@ -21,20 +21,20 @@ export function RecentTransactionsList({
 }: RecentTransactionsListProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-slate-800/50 border-slate-700">
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
-          <CardDescription>Loading...</CardDescription>
+          <CardTitle className="text-white">Recent Transactions</CardTitle>
+          <CardDescription className="text-gray-400">Loading...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={i} className="flex items-center justify-between p-3 border border-slate-700 bg-slate-900/50 rounded-lg">
                 <div className="space-y-2">
-                  <div className="h-4 w-32 animate-pulse bg-gray-200 rounded" />
-                  <div className="h-3 w-24 animate-pulse bg-gray-200 rounded" />
+                  <div className="h-4 w-32 animate-pulse bg-slate-700 rounded" />
+                  <div className="h-3 w-24 animate-pulse bg-slate-700 rounded" />
                 </div>
-                <div className="h-6 w-20 animate-pulse bg-gray-200 rounded" />
+                <div className="h-6 w-20 animate-pulse bg-slate-700 rounded" />
               </div>
             ))}
           </div>
@@ -47,13 +47,13 @@ export function RecentTransactionsList({
 
   if (recentPayments.length === 0) {
     return (
-      <Card>
+      <Card className="bg-slate-800/50 border-slate-700">
         <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
-          <CardDescription>No transactions yet</CardDescription>
+          <CardTitle className="text-white">Recent Transactions</CardTitle>
+          <CardDescription className="text-gray-400">No transactions yet</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-400">
             Transactions will appear here once you start recording payments.
           </p>
         </CardContent>
@@ -62,15 +62,21 @@ export function RecentTransactionsList({
   }
 
   return (
-    <Card>
+    <Card className="bg-slate-800/50 border-slate-700">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>Latest {recentPayments.length} payments</CardDescription>
+            <CardTitle className="text-white">Recent Transactions</CardTitle>
+            <CardDescription className="text-gray-400">
+              Latest {recentPayments.length} payments
+            </CardDescription>
           </div>
           <Link href="/payments/transactions">
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-300 hover:text-white hover:bg-slate-700"
+            >
               View All
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -82,27 +88,29 @@ export function RecentTransactionsList({
           {recentPayments.map((payment) => (
             <div
               key={payment.id}
-              className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between p-3 border border-slate-700 bg-slate-900/50 rounded-lg hover:bg-slate-700/50 hover:border-indigo-600 transition-all duration-200"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium truncate">{payment.patient_name}</p>
+                  <p className="text-sm font-medium truncate text-white">
+                    {payment.patient_name}
+                  </p>
                   <PaymentStatusBadge status={payment.status} />
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-400">
                     {new Date(payment.payment_date).toLocaleDateString()}
                   </p>
                   <PaymentMethodBadge method={payment.payment_method} />
                   {payment.description && (
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs text-gray-500 truncate">
                       {payment.description}
                     </p>
                   )}
                 </div>
               </div>
               <div className="text-right ml-4">
-                <p className="text-sm font-semibold">
+                <p className="text-sm font-semibold text-indigo-400">
                   {payment.currency} {payment.amount.toLocaleString()}
                 </p>
               </div>
