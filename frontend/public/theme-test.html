@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Debug</title>
+    <style>
+        body {
+            font-family: system-ui;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.pass { background: #10b981; color: white; }
+        .status.fail { background: #ef4444; color: white; }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Theme System Diagnostic</h1>
+
+    <div class="panel">
+        <h2>1. localStorage Check</h2>
+        <p>Theme storage exists: <span id="storage-status" class="status"></span></p>
+        <p>Stored theme: <code id="stored-theme"></code></p>
+        <pre id="storage-data" style="background: #f3f4f6; padding: 10px; border-radius: 4px; overflow-x: auto;"></pre>
+    </div>
+
+    <div class="panel">
+        <h2>2. HTML Class Check</h2>
+        <p>Current HTML classes: <code id="html-classes"></code></p>
+        <p>Has 'dark' class: <span id="dark-class-status" class="status"></span></p>
+        <p>Has 'light' class: <span id="light-class-status" class="status"></span></p>
+    </div>
+
+    <div class="panel">
+        <h2>3. CSS Variables Check</h2>
+        <p>--background value: <code id="bg-var"></code></p>
+        <p>--foreground value: <code id="fg-var"></code></p>
+    </div>
+
+    <div class="panel">
+        <h2>4. Manual Theme Test</h2>
+        <button onclick="setLight()">Force Light Mode</button>
+        <button onclick="setDark()">Force Dark Mode</button>
+        <button onclick="clearStorage()">Clear Theme Storage</button>
+        <p id="manual-result"></p>
+    </div>
+
+    <div class="panel">
+        <h2>5. Next Steps</h2>
+        <div id="diagnosis"></div>
+    </div>
+
+    <script>
+        function checkAll() {
+            // Check localStorage
+            const storage = localStorage.getItem('theme-storage');
+            const hasStorage = !!storage;
+            document.getElementById('storage-status').textContent = hasStorage ? 'PASS' : 'FAIL';
+            document.getElementById('storage-status').className = 'status ' + (hasStorage ? 'pass' : 'fail');
+
+            if (storage) {
+                const parsed = JSON.parse(storage);
+                document.getElementById('stored-theme').textContent = parsed.state?.theme || 'unknown';
+                document.getElementById('storage-data').textContent = JSON.stringify(parsed, null, 2);
+            } else {
+                document.getElementById('stored-theme').textContent = 'none';
+                document.getElementById('storage-data').textContent = 'No theme storage found';
+            }
+
+            // Check HTML classes
+            const htmlClasses = document.documentElement.className;
+            document.getElementById('html-classes').textContent = htmlClasses || '(none)';
+
+            const hasDark = document.documentElement.classList.contains('dark');
+            const hasLight = document.documentElement.classList.contains('light');
+
+            document.getElementById('dark-class-status').textContent = hasDark ? 'YES' : 'NO';
+            document.getElementById('dark-class-status').className = 'status ' + (hasDark ? 'pass' : 'fail');
+
+            document.getElementById('light-class-status').textContent = hasLight ? 'YES' : 'NO';
+            document.getElementById('light-class-status').className = 'status ' + (hasLight ? 'pass' : 'fail');
+
+            // Check CSS variables
+            const styles = getComputedStyle(document.documentElement);
+            const bgVar = styles.getPropertyValue('--background');
+            const fgVar = styles.getPropertyValue('--foreground');
+
+            document.getElementById('bg-var').textContent = bgVar || '(not defined)';
+            document.getElementById('fg-var').textContent = fgVar || '(not defined)';
+
+            // Diagnosis
+            let diagnosis = '<ul>';
+
+            if (!hasStorage) {
+                diagnosis += '<li>❌ <strong>No theme storage found.</strong> The theme system may not be initialized.</li>';
+            }
+
+            if (!hasDark && !hasLight) {
+                diagnosis += '<li>❌ <strong>No theme class on HTML element.</strong> The theme is not being applied.</li>';
+                diagnosis += '<li>💡 <strong>Fix:</strong> The theme provider may not be working. Check browser console for errors.</li>';
+            }
+
+            if (!bgVar && !fgVar) {
+                diagnosis += '<li>❌ <strong>CSS variables not defined.</strong> Tailwind CSS may not be loaded or configured correctly.</li>';
+            }
+
+            if (hasStorage && (hasDark || hasLight)) {
+                diagnosis += '<li>✅ Theme system appears to be working!</li>';
+                diagnosis += '<li>💡 If pages still look dark in light mode, check that components use <code>dark:</code> variants.</li>';
+            }
+
+            diagnosis += '</ul>';
+            document.getElementById('diagnosis').innerHTML = diagnosis;
+        }
+
+        function setLight() {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            document.getElementById('manual-result').textContent = '✅ Set to light mode. If UI doesn\'t change, components need dark: variants.';
+            setTimeout(checkAll, 100);
+        }
+
+        function setDark() {
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
+            document.getElementById('manual-result').textContent = '✅ Set to dark mode.';
+            setTimeout(checkAll, 100);
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('theme-storage');
+            document.getElementById('manual-result').textContent = '✅ Cleared theme storage. Reload the app to reset theme.';
+            setTimeout(checkAll, 100);
+        }
+
+        // Run check on load
+        checkAll();
+
+        // Auto-refresh every 2 seconds
+        setInterval(checkAll, 2000);
+    </script>
+</body>
+</html>

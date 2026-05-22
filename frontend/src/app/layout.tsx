@@ -31,6 +31,27 @@ export default function RootLayout({
     >
       <head>
         <meta name="theme-color" content="#0f172a" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const stored = localStorage.getItem('theme-storage');
+                if (stored) {
+                  const { state } = JSON.parse(stored);
+                  const theme = state.theme || 'dark';
+                  const resolved = theme === 'system'
+                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    : theme;
+                  document.documentElement.classList.add(resolved);
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
+            `,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <Providers>{children}</Providers>

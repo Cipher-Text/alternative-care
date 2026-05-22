@@ -4,16 +4,26 @@ import { useEffect } from 'react'
 import { useThemeStore } from '@/store/themeStore'
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { theme, setTheme, hasHydrated, setHydrated } = useThemeStore()
+  const { theme, setTheme, resolvedTheme } = useThemeStore()
 
-  // Initialize theme on mount
+  // Apply theme immediately on mount (before hydration)
   useEffect(() => {
-    if (!hasHydrated) {
-      setHydrated(true)
-      // Re-apply theme after hydration
-      setTheme(theme)
-    }
-  }, [hasHydrated, setHydrated, setTheme, theme])
+    // Apply the resolved theme to HTML element
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(resolvedTheme)
+
+    // Also set the theme to trigger any necessary updates
+    setTheme(theme)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Run once on mount to initialize
+
+  // Listen to theme changes
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(resolvedTheme)
+  }, [resolvedTheme])
 
   // Listen to system theme changes
   useEffect(() => {
