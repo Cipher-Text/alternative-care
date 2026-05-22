@@ -1,6 +1,6 @@
 # Current Project Status
 
-Last Updated: 2026-05-20
+Last Updated: 2026-05-22
 
 ## Summary
 
@@ -25,7 +25,9 @@ Recent launch-readiness work completed on 2026-05-08:
   - `prescription`
   - `payment`
   - `integration`
-- Endpoint count from route decorators: 83 module endpoints
+  - `medicine` (NEW)
+  - `symptom` (NEW)
+- Endpoint count from route decorators: 87 module endpoints
 - System endpoints: `/`, `/health`, `/metrics`
 - Data model scope: 34 table models (+ 3 base classes, multi-tenant pattern)
 - Onboarding/auth reality:
@@ -46,8 +48,13 @@ Recent launch-readiness work completed on 2026-05-08:
   - `/patients`, `/patients/new`, `/patients/[id]`, `/patients/[id]/edit`
   - `/appointments`, `/appointments/new`, `/appointments/[id]`, `/appointments/[id]/edit`
   - `/prescriptions`, `/prescriptions/new`, `/prescriptions/[id]`, `/prescriptions/[id]/edit`
+  - `/payments`, `/payments/transactions`, `/payments/invoices`, `/payments/invoices/[id]`, `/payments/invoices/new`
+  - `/medicines`, `/medicines/new`, `/medicines/[id]`, `/medicines/[id]/edit`
+  - `/symptoms`, `/symptoms/new`, `/symptoms/[id]`, `/symptoms/[id]/edit`
+  - `/settings`, `/settings/integrations`
 - Dashboard layout/auth shell is in place
-- UI Components: shadcn/ui (button, card, input, select, badge, table, dialog)
+- UI Components: shadcn/ui (button, card, input, select, badge, table, dialog, dropdown-menu, tabs)
+- Custom Components: MedicineAutocomplete (smart search with keyboard navigation)
 
 ### AI / QAI-Related Features
 - `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint
@@ -59,13 +66,15 @@ Recent launch-readiness work completed on 2026-05-08:
 - Patient management APIs and corresponding frontend patient screens (CRUD complete)
 - Appointment scheduling APIs and corresponding frontend calendar/list views
 - Dashboard analytics APIs and dashboard UI
-- Prescription list/create/detail/edit views
+- Prescription list/create/detail/edit views with medicine item builder
+- Doctor profile management (degrees, trainings)
+- Payment processing with invoice management and transaction tracking
+- Integrations management (SMS/Email/Payment provider setup and monitoring)
 - Multi-tenant enforcement patterns in backend architecture and tests
 - Baseline API security response headers middleware
 - Doctor self-registration with pending-approval gate before first login
-
-## What Is Backend-Ready but Frontend-Partial
-- Integrations have backend routes but no frontend route coverage in `frontend/src/app`
+- **Medicine Module**: Backend complete (8 endpoints) + full frontend UI (4 pages, autocomplete, prescription integration)
+- **Symptom Module**: Backend complete (8 endpoints) + full frontend UI (4 pages)
 
 ## Documentation Source-of-Truth Rules
 

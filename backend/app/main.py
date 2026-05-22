@@ -179,6 +179,8 @@ from app.modules.patient import router as patient_router
 from app.modules.prescription import router as prescription_router
 from app.modules.payment import router as payment_router
 from app.modules.integration import router as integration_router
+from app.modules.medicine import router as medicine_router
+from app.modules.symptom import router as symptom_router
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"])
@@ -189,6 +191,8 @@ app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", 
 app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"])
 app.include_router(payment_router, prefix=f"{settings.API_V1_PREFIX}/payments", tags=["Payments"])
 app.include_router(integration_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"])
+app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"])
+app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"])
 
 
 if __name__ == "__main__":

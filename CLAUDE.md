@@ -16,11 +16,11 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Multi-tenant isolation (100% secure, 16/16 tests passing) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
-**Backend:** 9 routed modules, 83 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
-**Frontend:** 90+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile, payments)
+**Backend:** 11 routed modules, 87 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Frontend:** 110+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile, payments, integrations, medicines, symptoms)
 **Security:** A (95/100), comprehensive auth security tests
 
-**Last Verified:** 2026-05-20
+**Last Verified:** 2026-05-22
 
 **Security Features:**
 - ✅ Password complexity enforcement (8+ chars, mixed case, numbers)
@@ -34,7 +34,9 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Prescriptions (backend complete, **frontend complete** ✅ - list/detail/builder all done)
 - Doctor Profile (backend complete, **frontend complete** ✅ - profile/degrees/trainings all done)
 - Payments (backend complete, **frontend complete** ✅ - dashboard/transactions/invoices/toasts all done)
-- Integrations (backend complete, frontend pending)
+- Integrations (backend complete, **frontend complete** ✅ - provider marketplace/config wizard/logs all done)
+- **Medicines** (backend complete ✅, **frontend complete** ✅ - CRUD/search/aliases/autocomplete all done)
+- **Symptoms** (backend complete ✅, **frontend complete** ✅ - CRUD/search/aliases all done)
 - AI Query Module (stub endpoint, plan-gated)
 
 ---
@@ -266,7 +268,7 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (83 total endpoints)
+├── modules/               # Feature modules (87 total endpoints)
 │   ├── auth/             # ✅ Login, refresh, 2FA, password change (12 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
@@ -276,7 +278,8 @@ backend/app/
 │   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
 │   ├── dashboard/        # ✅ Analytics, stats (6 endpoints)
 │   ├── ai/               # ✅ Stub endpoint, pro-plan gated (1 endpoint)
-│   ├── medicine/         # 📋 Models exist, no routes
+│   ├── medicine/         # ✅ CRUD, search, aliases, mappings (8 endpoints)
+│   ├── symptom/          # ✅ CRUD, search, aliases (8 endpoints)
 │   ├── library/          # 📋 Models exist, no routes
 │   └── notification/     # 📋 Placeholder
 └── shared/
@@ -295,21 +298,28 @@ frontend/src/
 │   │   ├── patients/     # ✅ Patient CRUD
 │   │   ├── appointments/ # ✅ Appointment scheduling & views
 │   │   ├── prescriptions/# ✅ List, detail, create/edit builder
-│   │   └── profile/      # ✅ Doctor profile with degrees & trainings
+│   │   ├── profile/      # ✅ Doctor profile with degrees & trainings
+│   │   ├── payments/     # ✅ Payment dashboard, transactions, invoices
+│   │   ├── medicines/    # ✅ Medicine library CRUD with autocomplete
+│   │   ├── symptoms/     # ✅ Symptom library CRUD
+│   │   └── settings/     # ✅ Integrations management
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/
 │   ├── auth/             # ✅ LoginForm, TwoFactorForm
 │   ├── dashboard/        # ✅ Charts, Stats
 │   ├── patients/         # ✅ PatientCard, PatientForm
-│   ├── prescriptions/    # ✅ PrescriptionBuilder, MedicineItemsBuilder, PatientSelector
+│   ├── prescriptions/    # ✅ PrescriptionBuilder, MedicineItemsBuilder (with autocomplete), PatientSelector
 │   ├── doctor/           # ✅ ProfileForm, DegreesSection, TrainingsSection
+│   ├── payments/         # ✅ PaymentDashboard, TransactionList, InvoiceForm
+│   ├── integrations/     # ✅ ProviderList, ConfigWizard, IntegrationLogs
+│   ├── medicines/        # ✅ MedicineAutocomplete (smart search with keyboard nav)
 │   ├── layout/           # ✅ Header, Sidebar
 │   ├── shared/           # ✅ Shared utilities
 │   └── ui/               # ✅ shadcn/ui (button, card, table, badge, textarea, etc.)
-│   # Note: Appointments use route-level components (no separate components/ dir)
+│   # Note: Appointments and symptoms use route-level components
 ├── lib/
-│   ├── api/              # ✅ API clients (auth, patients, dashboard, appointments, prescriptions)
+│   ├── api/              # ✅ API clients (auth, patients, dashboard, appointments, prescriptions, payments, integrations, medicines, symptoms)
 │   ├── hooks/            # ✅ React Query hooks (use* for all modules)
 │   └── utils/            # ✅ Helpers
 ├── types/                # ✅ TypeScript interfaces
@@ -317,7 +327,11 @@ frontend/src/
 │   ├── appointment.ts
 │   ├── prescription.ts
 │   ├── doctor.ts
-│   └── dashboard.ts
+│   ├── dashboard.ts
+│   ├── payment.ts
+│   ├── integration.ts
+│   ├── medicine.ts       # ✅ NEW
+│   └── symptom.ts        # ✅ NEW
 └── stores/
     └── authStore.ts      # ✅ Zustand auth state
 ```
@@ -329,13 +343,25 @@ frontend/src/
 // PrescriptionBuilder - Main form component
 // - Patient selection (searchable)
 // - Clinical info (diagnosis, notes, advice)
-// - Medicine items builder
+// - Medicine items builder (with autocomplete)
 // - Draft/Issue workflow
 // - Validation and error handling
 
 // MedicineItemsBuilder - Dynamic medicine list
+// - Medicine autocomplete with smart search
+// - Auto-fill dosage guidance from database
+// - Toggle between autocomplete and free-text
 // - Add/Edit/Delete medicines
 // - Required: name, dosage, frequency
+// - Shows selected medicine details (indications, contraindications)
+
+// MedicineAutocomplete - Smart search component
+// - Type-ahead search with 300ms debouncing
+// - Searches medicine names and aliases
+// - Keyboard navigation (arrow keys, enter, escape)
+// - Match rank scoring (name: 100%, alias: 80%)
+// - Shows medicine details (system, potency, category)
+// - Mobile-friendly dropdown
 // - Optional: duration, quantity, instructions
 // - Table view with modal dialog
 

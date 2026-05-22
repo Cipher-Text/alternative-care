@@ -22,8 +22,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { MedicineAutocomplete } from '@/components/medicines/MedicineAutocomplete'
 import type { PrescriptionItemCreate } from '@/types/prescription'
-import { PlusCircle, Trash2, Edit2, Pill } from 'lucide-react'
+import type { MedicineSearchResult } from '@/types/medicine'
+import { PlusCircle, Trash2, Edit2, Pill, Info } from 'lucide-react'
 
 interface MedicineItemsBuilderProps {
   items: PrescriptionItemCreate[]
@@ -59,10 +62,14 @@ export function MedicineItemsBuilder({
   const [showDialog, setShowDialog] = useState(false)
   const [editIndex, setEditIndex] = useState<number | null>(null)
   const [formData, setFormData] = useState<MedicineFormData>(emptyFormData)
+  const [selectedMedicine, setSelectedMedicine] = useState<MedicineSearchResult | null>(null)
+  const [useAutocomplete, setUseAutocomplete] = useState(true)
 
   const handleAddNew = () => {
     setEditIndex(null)
     setFormData(emptyFormData)
+    setSelectedMedicine(null)
+    setUseAutocomplete(true)
     setShowDialog(true)
   }
 
@@ -77,7 +84,20 @@ export function MedicineItemsBuilder({
       quantity: item.quantity?.toString() || '',
       instructions: item.instructions || '',
     })
+    setSelectedMedicine(null)
+    setUseAutocomplete(false)
     setShowDialog(true)
+  }
+
+  const handleMedicineSelect = (medicine: MedicineSearchResult) => {
+    setSelectedMedicine(medicine)
+    setFormData({
+      ...formData,
+      medicine_name: medicine.potency
+        ? `${medicine.name_en} ${medicine.potency}`
+        : medicine.name_en,
+      dosage: medicine.dosage_guidance_en || formData.dosage,
+    })
   }
 
   const handleDelete = (index: number) => {
@@ -206,21 +226,80 @@ export function MedicineItemsBuilder({
           <div className="space-y-4 py-4">
             {/* Medicine Name */}
             <div className="space-y-2">
-              <Label htmlFor="medicine_name">
-                Medicine Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="medicine_name"
-                placeholder="e.g., Arnica Montana, Nux Vomica"
-                value={formData.medicine_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, medicine_name: e.target.value })
-                }
-                autoFocus
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter the full medicine name including potency if applicable
-              </p>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="medicine_name">
+                  Medicine Name <span className="text-red-500">*</span>
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setUseAutocomplete(!useAutocomplete)}
+                  className="text-xs"
+                >
+                  {useAutocomplete ? 'Use free text' : 'Search database'}
+                </Button>
+              </div>
+
+              {useAutocomplete ? (
+                <>
+                  <MedicineAutocomplete
+                    onSelect={handleMedicineSelect}
+                    placeholder="Search medicines by name or alias..."
+                    defaultValue={formData.medicine_name}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Start typing to search from the medicine database. Select a medicine to auto-fill dosage guidance.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Input
+                    id="medicine_name"
+                    placeholder="e.g., Arnica Montana 30C"
+                    value={formData.medicine_name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, medicine_name: e.target.value })
+                    }
+                    autoFocus
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Enter the full medicine name including potency if applicable
+                  </p>
+                </>
+              )}
+
+              {/* Show selected medicine details */}
+              {selectedMedicine && (
+                <Card className="p-3 bg-blue-50 border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-medium">{selectedMedicine.name_en}</span>
+                        {selectedMedicine.potency && (
+                          <Badge variant="outline" className="text-xs">
+                            {selectedMedicine.potency}
+                          </Badge>
+                        )}
+                      </div>
+                      {selectedMedicine.dosage_guidance_en && (
+                        <p className="text-xs text-gray-700">
+                          <span className="font-medium">Suggested dosage: </span>
+                          {selectedMedicine.dosage_guidance_en}
+                        </p>
+                      )}
+                      {selectedMedicine.indications_en && (
+                        <p className="text-xs text-gray-600 mt-1">
+                          <span className="font-medium">Used for: </span>
+                          {selectedMedicine.indications_en.slice(0, 150)}
+                          {selectedMedicine.indications_en.length > 150 ? '...' : ''}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
             </div>
 
             {/* Dosage and Frequency */}

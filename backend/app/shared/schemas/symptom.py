@@ -51,6 +51,19 @@ class SymptomResponse(SymptomBase):
     updated_at: datetime | None
 
 
+class SymptomListItem(BaseModel):
+    """Lightweight symptom list item."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name_en: str
+    name_bn: str | None
+    category: str | None
+    is_global: bool
+    is_active: bool
+
+
 # ===== Symptom Alias Schemas =====
 
 class SymptomAliasBase(BaseModel):

@@ -75,6 +75,7 @@ from app.shared.schemas.symptom import (
     SymptomCreate,
     SymptomUpdate,
     SymptomResponse,
+    SymptomListItem,
     SymptomWithAliases,
     SymptomSearchResult,
     SymptomAliasBase,
@@ -85,6 +86,19 @@ from app.shared.schemas.symptom import (
     MedicineSymptomMappingCreate,
     MedicineSymptomMappingUpdate,
     MedicineSymptomMappingResponse,
+)
+from app.shared.schemas.medicine import (
+    MedicineBase,
+    MedicineCreate,
+    MedicineUpdate,
+    MedicineResponse,
+    MedicineListItem,
+    MedicineSearchResult,
+    MedicineAliasBase,
+    MedicineAliasCreate,
+    MedicineAliasUpdate,
+    MedicineAliasResponse,
+    MedicineWithSymptoms,
 )
 from app.shared.schemas.dashboard import (
     DateRangeFilter,
@@ -171,6 +185,7 @@ __all__ = [
     "SymptomCreate",
     "SymptomUpdate",
     "SymptomResponse",
+    "SymptomListItem",
     "SymptomWithAliases",
     "SymptomSearchResult",
     # Symptom Aliases
@@ -178,6 +193,19 @@ __all__ = [
     "SymptomAliasCreate",
     "SymptomAliasUpdate",
     "SymptomAliasResponse",
+    # Medicines
+    "MedicineBase",
+    "MedicineCreate",
+    "MedicineUpdate",
+    "MedicineResponse",
+    "MedicineListItem",
+    "MedicineSearchResult",
+    "MedicineWithSymptoms",
+    # Medicine Aliases
+    "MedicineAliasBase",
+    "MedicineAliasCreate",
+    "MedicineAliasUpdate",
+    "MedicineAliasResponse",
     # Medicine-Symptom Mappings
     "MedicineSymptomMappingBase",
     "MedicineSymptomMappingCreate",
