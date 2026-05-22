@@ -66,9 +66,9 @@ jobs:
         DATABASE_URL: postgresql+asyncpg://altcare:altcare123@localhost:5432/altcare_test
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test-secret-key-for-ci-only
-        INTEGRATION_ENCRYPTION_KEY: test-encryption-key
+        INTEGRATION_ENCRYPTION_KEY: 7_xWwRUfL4F2A5fVbA2Jf4fpWM0gR5xJvDzDMegbe7I=
       run: |
-        pytest --cov=app --cov-report=xml --cov-report=term-missing
+        pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=60
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
@@ -76,3 +76,53 @@ jobs:
         files: ./backend/coverage.xml
         flags: backend
         name: backend-coverage
+
+  migration-safety:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: altcare
+          POSTGRES_PASSWORD: altcare123
+          POSTGRES_DB: altcare_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      working-directory: ./backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Install pgvector extension
+      env:
+        PGPASSWORD: altcare123
+      run: |
+        psql -h localhost -U altcare -d altcare_test -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
+    - name: Migration safety check (upgrade, downgrade, re-upgrade)
+      working-directory: ./backend
+      env:
+        DATABASE_URL: postgresql+asyncpg://altcare:altcare123@localhost:5432/altcare_test
+        REDIS_URL: redis://localhost:6379/0
+        SECRET_KEY: test-secret-key-for-ci-only
+        INTEGRATION_ENCRYPTION_KEY: 7_xWwRUfL4F2A5fVbA2Jf4fpWM0gR5xJvDzDMegbe7I=
+      run: |
+        alembic upgrade head
+        alembic downgrade -1
+        alembic upgrade head

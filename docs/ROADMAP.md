@@ -204,6 +204,17 @@ Build a comprehensive, multi-tenant SaaS platform for alternative medicine pract
 
 ---
 
+## ✅ Testing (MVP)
+
+Testing roadmap, standards, module ownership, and quality gates are maintained in:
+- `docs/testing/TEST_STRATEGY.md`
+
+MVP testing priority:
+- Close backend gaps for `integration` module tests, migration safety automation, and contract/schema checks.
+- Establish required frontend component/page integration suites in CI alongside existing E2E coverage.
+
+---
+
 ### 📚 Medical Library & Knowledge Base
 
 **Status:** Models exist, no routes

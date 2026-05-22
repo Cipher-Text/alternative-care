@@ -48,7 +48,9 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `development/i18n.md`
 
 ### Planning and Status
+- `ROADMAP.md`
 - `status/current.md`
+- `testing/TEST_STRATEGY.md`
 - `planning/roadmap-detailed.md`
 - `planning/phase1-kickoff.md`
 - `planning/phase1-tasks.md`

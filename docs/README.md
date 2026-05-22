@@ -42,8 +42,9 @@ Central documentation hub for the repository.
 
 ### Planning and Status
 - [Current Status](status/current.md)
-- [Roadmap](planning/roadmap.md)
+- [Roadmap](ROADMAP.md)
 - [Detailed Roadmap](planning/roadmap-detailed.md)
+- [Testing Strategy](testing/TEST_STRATEGY.md)
 - [Phase 1 Kickoff](planning/phase1-kickoff.md)
 - [Phase 1 Tasks](planning/phase1-tasks.md)
 - [UX Improvements](planning/ux-improvements.md)
