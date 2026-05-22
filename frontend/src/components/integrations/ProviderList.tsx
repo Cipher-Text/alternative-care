@@ -29,7 +29,7 @@ export function ProviderList({ onSetup, onManage }: ProviderListProps) {
   if (loadingProviders) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
       </div>
     );
   }
@@ -37,7 +37,7 @@ export function ProviderList({ onSetup, onManage }: ProviderListProps) {
   if (!providers || providers.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No providers available</p>
+        <p className="text-gray-600 dark:text-gray-400">No providers available</p>
       </div>
     );
   }

@@ -25,18 +25,18 @@ export function ProviderCard({
   const getProviderTypeColor = (type: string) => {
     switch (type) {
       case 'sms':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300 dark:border dark:border-blue-500/30';
       case 'email':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300 dark:border dark:border-green-500/30';
       case 'payment':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300 dark:border dark:border-purple-500/30';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-300 dark:border dark:border-gray-500/30';
     }
   };
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow">
+    <Card className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           {provider.logo_url ? (
@@ -46,21 +46,21 @@ export function ProviderCard({
               className="w-12 h-12 object-contain"
             />
           ) : (
-            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-              <span className="text-xl font-bold text-gray-500">
+            <div className="w-12 h-12 bg-gray-200 dark:bg-slate-700 rounded flex items-center justify-center">
+              <span className="text-xl font-bold text-gray-500 dark:text-gray-400">
                 {provider.display_name[0]}
               </span>
             </div>
           )}
           <div>
-            <h3 className="font-semibold text-lg">{provider.display_name}</h3>
+            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{provider.display_name}</h3>
             <Badge className={getProviderTypeColor(provider.provider_type)}>
               {provider.provider_type.toUpperCase()}
             </Badge>
           </div>
         </div>
         {configured && (
-          <div className="flex items-center gap-1 text-green-600">
+          <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
             <CheckCircle2 className="w-5 h-5" />
             <span className="text-sm font-medium">Configured</span>
           </div>
@@ -71,14 +71,17 @@ export function ProviderCard({
         {configured ? (
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700"
             onClick={() => onManage?.(provider.id)}
           >
             <Settings className="w-4 h-4 mr-2" />
             Manage
           </Button>
         ) : (
-          <Button className="w-full" onClick={() => onSetup(provider.id)}>
+          <Button
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+            onClick={() => onSetup(provider.id)}
+          >
             Setup Integration
           </Button>
         )}
