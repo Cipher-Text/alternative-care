@@ -45,7 +45,7 @@ async def list_medicines(
     - Filter by category, active status
     - Paginated results
     """
-    query = select(Medicine).where(Medicine.deleted_at.is_(None))
+    query = select(Medicine)
 
     # Include global medicines OR tenant-specific medicines
     query = query.where(
@@ -121,7 +121,6 @@ async def get_medicine(
     result = await db.execute(
         select(Medicine).where(
             Medicine.id == medicine_id,
-            Medicine.deleted_at.is_(None),
             or_(
                 Medicine.is_global == True,
                 Medicine.tenant_id == user.tenant_id
@@ -157,8 +156,7 @@ async def update_medicine(
         select(Medicine).where(
             Medicine.id == medicine_id,
             Medicine.tenant_id == user.tenant_id,
-            Medicine.is_global == False,
-            Medicine.deleted_at.is_(None)
+            Medicine.is_global == False
         )
     )
 
@@ -189,17 +187,16 @@ async def delete_medicine(
     user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """
-    Delete medicine (soft delete).
+    Deactivate medicine.
 
     - Can only delete tenant-specific medicines (not global)
-    - Soft delete: sets deleted_at timestamp
+    - Marks record inactive
     """
     result = await db.execute(
         select(Medicine).where(
             Medicine.id == medicine_id,
             Medicine.tenant_id == user.tenant_id,
-            Medicine.is_global == False,
-            Medicine.deleted_at.is_(None)
+            Medicine.is_global == False
         )
     )
 
@@ -211,7 +208,8 @@ async def delete_medicine(
             detail="Medicine not found or cannot be deleted"
         )
 
-    medicine.deleted_at = func.now()
+    medicine.is_active = False
+    medicine.updated_by = user.user_id
     await db.commit()
 
 
@@ -238,7 +236,6 @@ async def search_medicines(
 
     # Search in medicine names
     name_query = select(Medicine).where(
-        Medicine.deleted_at.is_(None),
         Medicine.is_active == True,
         or_(
             Medicine.is_global == True,
@@ -261,7 +258,6 @@ async def search_medicines(
         MedicineAlias,
         Medicine.id == MedicineAlias.medicine_id
     ).where(
-        Medicine.deleted_at.is_(None),
         Medicine.is_active == True,
         MedicineAlias.is_active == True,
         or_(
@@ -338,7 +334,6 @@ async def create_medicine_alias(
     result = await db.execute(
         select(Medicine).where(
             Medicine.id == medicine_id,
-            Medicine.deleted_at.is_(None),
             or_(
                 Medicine.is_global == True,
                 Medicine.tenant_id == user.tenant_id
@@ -382,7 +377,6 @@ async def list_medicine_aliases(
     result = await db.execute(
         select(Medicine).where(
             Medicine.id == medicine_id,
-            Medicine.deleted_at.is_(None),
             or_(
                 Medicine.is_global == True,
                 Medicine.tenant_id == user.tenant_id

@@ -39,8 +39,7 @@ async def create_mapping(
     # Verify medicine exists and is accessible
     medicine_result = await db.execute(
         select(Medicine).where(
-            Medicine.id == data.medicine_id,
-            Medicine.deleted_at.is_(None)
+            Medicine.id == data.medicine_id
         )
     )
     medicine = medicine_result.scalar_one_or_none()
@@ -54,8 +53,7 @@ async def create_mapping(
     # Verify symptom exists and is accessible
     symptom_result = await db.execute(
         select(Symptom).where(
-            Symptom.id == data.symptom_id,
-            Symptom.deleted_at.is_(None)
+            Symptom.id == data.symptom_id
         )
     )
     symptom = symptom_result.scalar_one_or_none()
@@ -71,8 +69,7 @@ async def create_mapping(
         select(MedicineSymptomMapping).where(
             and_(
                 MedicineSymptomMapping.medicine_id == data.medicine_id,
-                MedicineSymptomMapping.symptom_id == data.symptom_id,
-                MedicineSymptomMapping.deleted_at.is_(None)
+                MedicineSymptomMapping.symptom_id == data.symptom_id
             )
         )
     )
@@ -111,8 +108,7 @@ async def get_mapping(
     """
     result = await db.execute(
         select(MedicineSymptomMapping).where(
-            MedicineSymptomMapping.id == mapping_id,
-            MedicineSymptomMapping.deleted_at.is_(None)
+            MedicineSymptomMapping.id == mapping_id
         )
     )
 
@@ -143,8 +139,7 @@ async def update_mapping(
     """
     result = await db.execute(
         select(MedicineSymptomMapping).where(
-            MedicineSymptomMapping.id == mapping_id,
-            MedicineSymptomMapping.deleted_at.is_(None)
+            MedicineSymptomMapping.id == mapping_id
         )
     )
 
@@ -182,8 +177,7 @@ async def delete_mapping(
     """
     result = await db.execute(
         select(MedicineSymptomMapping).where(
-            MedicineSymptomMapping.id == mapping_id,
-            MedicineSymptomMapping.deleted_at.is_(None)
+            MedicineSymptomMapping.id == mapping_id
         )
     )
 
@@ -218,8 +212,7 @@ async def get_medicine_symptoms(
     # Verify medicine exists
     medicine_result = await db.execute(
         select(Medicine).where(
-            Medicine.id == medicine_id,
-            Medicine.deleted_at.is_(None)
+            Medicine.id == medicine_id
         )
     )
 
@@ -236,9 +229,7 @@ async def get_medicine_symptoms(
             Symptom.id == MedicineSymptomMapping.symptom_id
         ).where(
             MedicineSymptomMapping.medicine_id == medicine_id,
-            MedicineSymptomMapping.is_active == True,
-            MedicineSymptomMapping.deleted_at.is_(None),
-            Symptom.deleted_at.is_(None)
+            MedicineSymptomMapping.is_active == True
         ).order_by(MedicineSymptomMapping.strength.desc()).limit(limit)
     )
 
@@ -266,8 +257,7 @@ async def get_symptom_medicines(
     # Verify symptom exists
     symptom_result = await db.execute(
         select(Symptom).where(
-            Symptom.id == symptom_id,
-            Symptom.deleted_at.is_(None)
+            Symptom.id == symptom_id
         )
     )
 
@@ -283,9 +273,7 @@ async def get_symptom_medicines(
         Medicine.id == MedicineSymptomMapping.medicine_id
     ).where(
         MedicineSymptomMapping.symptom_id == symptom_id,
-        MedicineSymptomMapping.is_active == True,
-        MedicineSymptomMapping.deleted_at.is_(None),
-        Medicine.deleted_at.is_(None)
+        MedicineSymptomMapping.is_active == True
     )
 
     if system:

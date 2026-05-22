@@ -43,7 +43,7 @@ async def list_symptoms(
     - Filter by category (respiratory, digestive, etc.)
     - Paginated results
     """
-    query = select(Symptom).where(Symptom.deleted_at.is_(None))
+    query = select(Symptom)
 
     # Include global symptoms OR tenant-specific symptoms
     query = query.where(
@@ -116,7 +116,6 @@ async def get_symptom(
     result = await db.execute(
         select(Symptom).where(
             Symptom.id == symptom_id,
-            Symptom.deleted_at.is_(None),
             or_(
                 Symptom.is_global == True,
                 Symptom.tenant_id == user.tenant_id
@@ -152,8 +151,7 @@ async def update_symptom(
         select(Symptom).where(
             Symptom.id == symptom_id,
             Symptom.tenant_id == user.tenant_id,
-            Symptom.is_global == False,
-            Symptom.deleted_at.is_(None)
+            Symptom.is_global == False
         )
     )
 
@@ -184,17 +182,16 @@ async def delete_symptom(
     user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """
-    Delete symptom (soft delete).
+    Deactivate symptom.
 
     - Can only delete tenant-specific symptoms (not global)
-    - Soft delete: sets deleted_at timestamp
+    - Marks record inactive
     """
     result = await db.execute(
         select(Symptom).where(
             Symptom.id == symptom_id,
             Symptom.tenant_id == user.tenant_id,
-            Symptom.is_global == False,
-            Symptom.deleted_at.is_(None)
+            Symptom.is_global == False
         )
     )
 
@@ -206,7 +203,8 @@ async def delete_symptom(
             detail="Symptom not found or cannot be deleted"
         )
 
-    symptom.deleted_at = func.now()
+    symptom.is_active = False
+    symptom.updated_by = user.user_id
     await db.commit()
 
 
@@ -233,7 +231,6 @@ async def search_symptoms(
 
     # Search in symptom names
     name_query = select(Symptom).where(
-        Symptom.deleted_at.is_(None),
         Symptom.is_active == True,
         or_(
             Symptom.is_global == True,
@@ -256,7 +253,6 @@ async def search_symptoms(
         SymptomAlias,
         Symptom.id == SymptomAlias.symptom_id
     ).where(
-        Symptom.deleted_at.is_(None),
         Symptom.is_active == True,
         SymptomAlias.is_active == True,
         or_(
@@ -325,7 +321,6 @@ async def create_symptom_alias(
     result = await db.execute(
         select(Symptom).where(
             Symptom.id == symptom_id,
-            Symptom.deleted_at.is_(None),
             or_(
                 Symptom.is_global == True,
                 Symptom.tenant_id == user.tenant_id
@@ -369,7 +364,6 @@ async def list_symptom_aliases(
     result = await db.execute(
         select(Symptom).where(
             Symptom.id == symptom_id,
-            Symptom.deleted_at.is_(None),
             or_(
                 Symptom.is_global == True,
                 Symptom.tenant_id == user.tenant_id

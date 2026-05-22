@@ -57,6 +57,14 @@ class SeedData:
         with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
+    async def get_default_tenant_id(self) -> str:
+        """Return a tenant ID for seeding tenant-scoped global catalog rows."""
+        data = self.load_json("sample_data.json")
+        tenants = data.get("tenants", [])
+        if not tenants:
+            raise RuntimeError("sample_data.json has no tenants for catalog seeding")
+        return tenants[0]["id"]
+
     async def seed_geographic_data(self) -> dict[str, int]:
         """Seed divisions, districts, and upazilas."""
         data = self.load_json("geographic_data.json")
@@ -192,7 +200,7 @@ class SeedData:
         await self.session.flush()
         return stats
 
-    async def seed_medicines(self) -> int:
+    async def seed_medicines(self, tenant_id: str) -> int:
         """Seed medicines catalog."""
         data = self.load_json("medicines.json")
         count = 0
@@ -206,14 +214,14 @@ class SeedData:
                 )
             )
             if not existing.scalar_one_or_none():
-                medicine = Medicine(**medicine_data, tenant_id=None)
+                medicine = Medicine(**medicine_data, tenant_id=tenant_id)
                 self.session.add(medicine)
                 count += 1
 
         await self.session.flush()
         return count
 
-    async def seed_symptoms(self) -> int:
+    async def seed_symptoms(self, tenant_id: str) -> int:
         """Seed symptoms catalog."""
         data = self.load_json("symptoms.json")
         count = 0
@@ -226,7 +234,7 @@ class SeedData:
                 )
             )
             if not existing.scalar_one_or_none():
-                symptom = Symptom(**symptom_data, tenant_id=None)
+                symptom = Symptom(**symptom_data, tenant_id=tenant_id)
                 self.session.add(symptom)
                 count += 1
 
@@ -248,10 +256,11 @@ async def main():
                 # Seed all data
                 geo_stats = await seeder.seed_geographic_data()
                 providers_count = await seeder.seed_integration_providers()
-                medicines_count = await seeder.seed_medicines()
-                symptoms_count = await seeder.seed_symptoms()
-                translations_count = await seeder.seed_translations()
                 sample_stats = await seeder.seed_sample_data()
+                default_tenant_id = await seeder.get_default_tenant_id()
+                medicines_count = await seeder.seed_medicines(default_tenant_id)
+                symptoms_count = await seeder.seed_symptoms(default_tenant_id)
+                translations_count = await seeder.seed_translations()
 
                 # Commit transaction
                 await session.commit()
