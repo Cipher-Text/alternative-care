@@ -63,6 +63,12 @@ Standard per-module template:
 
 MVP current reality:
 - E2E coverage exists for auth, dashboard access, patient CRUD, tenant-isolation path.
+- E2E coverage now includes:
+  - smoke login and dashboard redirect checks
+  - 2FA UI flow (mocked auth responses)
+  - token refresh retry behavior (mocked 401 + refresh)
+  - patient CRUD flow (create/read/update/delete)
+  - cross-tenant patient access blocked (API-level E2E assertion)
 - Component/integration test harness is not yet established as a required CI gate.
 
 ## Cross-Cutting Required Suites
@@ -131,6 +137,16 @@ MVP current reality:
   - [x] backend coverage threshold required on PR
   - [x] migration safety job required on PR
 
+## Frontend Missing Tests (MVP Scope, Actionable)
+
+- [ ] Add component tests for critical auth and patient components:
+  - `LoginForm`, `TwoFactorForm`, `PatientForm`, `PatientCard`
+- [ ] Add page integration tests (non-E2E) for key routes:
+  - `/login`, `/patients`, `/patients/new`, `/dashboard`
+- [ ] Add API error-state tests in UI (4xx/5xx/timeout rendering behavior)
+- [ ] Add required CI frontend test job (component/integration + e2e smoke)
+- [ ] Add i18n and accessibility baseline checks for critical screens
+
 ## Run Commands (Reference)
 
 Backend:
@@ -138,6 +154,9 @@ Backend:
 
 E2E:
 - `npx playwright test -c tests/e2e/playwright.config.ts`
+
+Frontend unit/integration (to add with harness):
+- `npm -C frontend run test`
 
 ## PR Checklist (Testing)
 
