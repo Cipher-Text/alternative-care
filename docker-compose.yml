@@ -1,22 +1,4 @@
 services:
-  # PostgreSQL 16 with pgvector
-  postgres:
-    image: pgvector/pgvector:pg16
-    container_name: altcare_postgres
-    environment:
-      POSTGRES_USER: altcare
-      POSTGRES_PASSWORD: altcare123
-      POSTGRES_DB: altcare_dev
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U altcare" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Redis (cache + Celery broker)
   redis:
     image: redis:7-alpine
@@ -58,7 +40,7 @@ services:
   #     dockerfile: Dockerfile
   #   container_name: altcare_api
   #   environment:
-  #     - DATABASE_URL=postgresql+asyncpg://altcare:altcare123@postgres:5432/altcare_dev
+  #     - DATABASE_URL=postgresql+asyncpg://altcare:altcare123@host.docker.internal:5432/altcare_dev
   #     - REDIS_URL=redis://redis:6379/0
   #     - MINIO_ENDPOINT=minio:9000
   #   ports:
@@ -66,8 +48,6 @@ services:
   #   volumes:
   #     - ./backend:/app
   #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
   #     redis:
   #       condition: service_healthy
   #     minio:
@@ -75,7 +55,6 @@ services:
   #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
-  postgres_data:
   redis_data:
   minio_data:
 
