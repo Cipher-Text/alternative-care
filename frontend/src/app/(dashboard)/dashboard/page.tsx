@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { useOverviewStats, useFinancialAnalytics, usePatientAnalytics } from '@/lib/hooks/useDashboard'
 import { StatsCard } from '@/components/dashboard/StatsCard'
@@ -9,6 +10,8 @@ import { PatientDemographicsChart } from '@/components/dashboard/PatientDemograp
 import { AgeDistributionChart } from '@/components/dashboard/AgeDistributionChart'
 import { RevenueByMethodChart } from '@/components/dashboard/RevenueByMethodChart'
 import { DateRangePicker } from '@/components/dashboard/DateRangePicker'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import {
   Users,
   Calendar,
@@ -17,9 +20,12 @@ import {
   TrendingUp,
   Activity,
   Loader2,
+  UserPlus,
+  FilePlus,
 } from 'lucide-react'
 
 export default function DashboardPage() {
+  const router = useRouter()
   const user = useAuthStore((state) => state.user)
   const [dateRange, setDateRange] = useState<{
     date_from?: string
@@ -45,91 +51,194 @@ export default function DashboardPage() {
     )
   }
 
+  // Note: Trend calculations would come from backend in production
+  // For now, we show static metrics without trends
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {user?.full_name}!</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Dashboard
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Welcome back, {user?.full_name}!
+          </p>
         </div>
-        <DateRangePicker onRangeChange={handleDateRangeChange} />
+        <div className="flex items-center gap-3">
+          <DateRangePicker onRangeChange={handleDateRangeChange} />
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Total Patients"
-          value={overview?.total_patients || 0}
-          description={`${overview?.new_patients_this_month || 0} new this month`}
-          icon={Users}
-        />
-        <StatsCard
-          title="Today's Appointments"
-          value={overview?.appointments_today || 0}
-          description={`${overview?.upcoming_appointments || 0} upcoming`}
-          icon={Calendar}
-        />
-        <StatsCard
-          title="This Month Revenue"
-          value={`৳${(overview?.revenue_this_month || 0).toLocaleString()}`}
-          description="Total collected"
-          icon={DollarSign}
-        />
-        <StatsCard
-          title="Pending Payments"
-          value={`৳${(overview?.pending_payments || 0).toLocaleString()}`}
-          description="Outstanding amount"
-          icon={TrendingUp}
-        />
+      {/* Quick Actions */}
+      <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950 dark:to-gray-900">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Button
+              variant="outline"
+              className="h-auto flex-col items-start p-4 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:border-indigo-300"
+              onClick={() => router.push('/patients/new')}
+            >
+              <UserPlus className="h-5 w-5 mb-2 text-indigo-600" />
+              <span className="font-medium text-sm">New Patient</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col items-start p-4 hover:bg-green-50 dark:hover:bg-green-950 hover:border-green-300"
+              onClick={() => router.push('/appointments/new')}
+            >
+              <Calendar className="h-5 w-5 mb-2 text-green-600" />
+              <span className="font-medium text-sm">Schedule</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col items-start p-4 hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-300"
+              onClick={() => router.push('/prescriptions/new')}
+            >
+              <FilePlus className="h-5 w-5 mb-2 text-purple-600" />
+              <span className="font-medium text-sm">Prescription</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto flex-col items-start p-4 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300"
+              onClick={() => router.push('/payments')}
+            >
+              <DollarSign className="h-5 w-5 mb-2 text-blue-600" />
+              <span className="font-medium text-sm">Payment</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Key Metrics */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Key Metrics
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StatsCard
+            title="Total Patients"
+            value={overview?.total_patients || 0}
+            description={`${overview?.new_patients_this_month || 0} new this month`}
+            icon={Users}
+          />
+          <StatsCard
+            title="Today's Appointments"
+            value={overview?.appointments_today || 0}
+            description={`${overview?.upcoming_appointments || 0} upcoming`}
+            icon={Calendar}
+          />
+          <StatsCard
+            title="Monthly Revenue"
+            value={`৳${(overview?.revenue_this_month || 0).toLocaleString()}`}
+            description="Collected this month"
+            icon={DollarSign}
+          />
+          <StatsCard
+            title="Active Patients"
+            value={overview?.active_patients || 0}
+            description="Visited in last 30 days"
+            icon={Activity}
+          />
+          <StatsCard
+            title="Prescriptions"
+            value={overview?.prescriptions_this_month || 0}
+            description="Issued this month"
+            icon={FileText}
+          />
+          <StatsCard
+            title="Pending Payments"
+            value={`৳${(overview?.pending_payments || 0).toLocaleString()}`}
+            description="Outstanding amount"
+            icon={TrendingUp}
+            className="border-orange-200 bg-orange-50 dark:bg-orange-950 dark:border-orange-800"
+          />
+        </div>
       </div>
 
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Total Visits"
-          value={overview?.total_visits || 0}
-          description={`${overview?.visits_this_month || 0} this month`}
-          icon={Activity}
-        />
-        <StatsCard
-          title="Active Patients"
-          value={overview?.active_patients || 0}
-          description="Visited in last 30 days"
-          icon={Users}
-        />
-        <StatsCard
-          title="Prescriptions"
-          value={overview?.total_prescriptions || 0}
-          description={`${overview?.prescriptions_this_month || 0} this month`}
-          icon={FileText}
-        />
-        <StatsCard
-          title="Total Revenue"
-          value={`৳${(overview?.total_revenue || 0).toLocaleString()}`}
-          description="All time"
-          icon={DollarSign}
-        />
+      {/* Analytics */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Analytics
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {financial?.daily_revenue && financial.daily_revenue.length > 0 ? (
+            <RevenueChart data={financial.daily_revenue} />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Revenue Trend</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                  <p>No revenue data available</p>
+                  <p className="text-xs mt-1">Start accepting payments to see trends</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {financial?.revenue_by_method ? (
+            <RevenueByMethodChart data={financial.revenue_by_method} />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Revenue by Payment Method</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <DollarSign className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                  <p>No payment data available</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
 
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {financial?.daily_revenue && financial.daily_revenue.length > 0 && (
-          <RevenueChart data={financial.daily_revenue} />
-        )}
-        {financial?.revenue_by_method && (
-          <RevenueByMethodChart data={financial.revenue_by_method} />
-        )}
-      </div>
+      {/* Patient Insights */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Patient Insights
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {patients?.demographics ? (
+            <PatientDemographicsChart data={patients.demographics} />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Patient Demographics</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <Users className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                  <p>No patient data available</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {patients?.demographics && (
-          <PatientDemographicsChart data={patients.demographics} />
-        )}
-        {patients?.age_distribution && (
-          <AgeDistributionChart data={patients.age_distribution} />
-        )}
+          {patients?.age_distribution ? (
+            <AgeDistributionChart data={patients.age_distribution} />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Age Distribution</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <Activity className="h-12 w-12 mx-auto mb-2 opacity-20" />
+                  <p>No age data available</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   )

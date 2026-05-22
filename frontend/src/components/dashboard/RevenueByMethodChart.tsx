@@ -23,10 +23,16 @@ export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
 
   const total = data.cash + data.bkash + data.other
 
+  if (total === 0) {
+    return null
+  }
+
   return (
-    <Card>
+    <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader>
-        <CardTitle>Revenue by Payment Method</CardTitle>
+        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+          Revenue by Payment Method
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -36,10 +42,10 @@ export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, value }) =>
-                `${name}: ৳${value.toLocaleString()}`
+              label={({ name, percent }) =>
+                `${name}: ${(percent * 100).toFixed(0)}%`
               }
-              outerRadius={80}
+              outerRadius={90}
               fill="#8884d8"
               dataKey="value"
             >
@@ -49,13 +55,25 @@ export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
             </Pie>
             <Tooltip
               formatter={(value) => `৳${Number(value || 0).toLocaleString()}`}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                padding: '8px 12px',
+              }}
             />
-            <Legend />
+            <Legend
+              verticalAlign="bottom"
+              height={36}
+              iconType="circle"
+            />
           </PieChart>
         </ResponsiveContainer>
-        <div className="text-center mt-4">
-          <p className="text-sm text-muted-foreground">Total Revenue</p>
-          <p className="text-2xl font-bold">৳{total.toLocaleString()}</p>
+        <div className="text-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            ৳{total.toLocaleString()}
+          </p>
         </div>
       </CardContent>
     </Card>

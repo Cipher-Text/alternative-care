@@ -30,15 +30,15 @@ export function Sidebar() {
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">
-      <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col flex-1 min-h-0 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700">
         {/* Logo */}
-        <div className="flex items-center h-16 flex-shrink-0 px-4 bg-indigo-600 dark:bg-indigo-800">
-          <h1 className="text-xl font-bold text-white">AltCare</h1>
+        <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-slate-700">
+          <h1 className="text-2xl font-bold text-white tracking-tight">AltCare</h1>
         </div>
 
         {/* Navigation */}
         <div className="flex-1 flex flex-col overflow-y-auto">
-          <nav className="flex-1 px-2 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-6 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
@@ -48,18 +48,18 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    'group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
                     isActive
-                      ? 'bg-indigo-100 text-indigo-900 dark:bg-indigo-900 dark:text-indigo-100'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/50'
+                      : 'text-gray-300 hover:bg-slate-700 hover:text-white'
                   )}
                 >
                   <Icon
                     className={cn(
                       'mr-3 h-5 w-5 flex-shrink-0',
                       isActive
-                        ? 'text-indigo-600 dark:text-indigo-400'
-                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
+                        ? 'text-white'
+                        : 'text-gray-400 group-hover:text-white'
                     )}
                   />
                   {item.name}

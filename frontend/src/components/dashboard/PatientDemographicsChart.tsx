@@ -21,10 +21,26 @@ export function PatientDemographicsChart({ data }: PatientDemographicsChartProps
     { name: 'Other', value: data.other, color: COLORS.other },
   ].filter((item) => item.value > 0)
 
+  const total = data.male + data.female + data.other
+
+  if (total === 0) {
+    return null
+  }
+
   return (
-    <Card>
+    <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader>
-        <CardTitle>Patient Demographics</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+            Patient Demographics
+          </CardTitle>
+          <div className="text-right">
+            <p className="text-xs text-gray-600 dark:text-gray-400">Total</p>
+            <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+              {total}
+            </p>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -37,7 +53,7 @@ export function PatientDemographicsChart({ data }: PatientDemographicsChartProps
               label={({ name, percent }) =>
                 `${name}: ${((percent || 0) * 100).toFixed(0)}%`
               }
-              outerRadius={80}
+              outerRadius={90}
               fill="#8884d8"
               dataKey="value"
             >
@@ -45,8 +61,20 @@ export function PatientDemographicsChart({ data }: PatientDemographicsChartProps
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
-            <Legend />
+            <Tooltip
+              formatter={(value) => [`${value} patients`, '']}
+              contentStyle={{
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                padding: '8px 12px',
+              }}
+            />
+            <Legend
+              verticalAlign="bottom"
+              height={36}
+              iconType="circle"
+            />
           </PieChart>
         </ResponsiveContainer>
       </CardContent>
