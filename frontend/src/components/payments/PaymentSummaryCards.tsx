@@ -14,14 +14,14 @@ export function PaymentSummaryCards({ summary, isLoading }: PaymentSummaryCardsP
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="bg-slate-800/50 border-slate-700">
+          <Card key={i} className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="h-4 w-24 animate-pulse bg-slate-700 rounded" />
-              <div className="h-4 w-4 animate-pulse bg-slate-700 rounded" />
+              <div className="h-4 w-24 animate-pulse bg-gray-200 dark:bg-slate-700 rounded" />
+              <div className="h-4 w-4 animate-pulse bg-gray-200 dark:bg-slate-700 rounded" />
             </CardHeader>
             <CardContent>
-              <div className="h-8 w-32 animate-pulse bg-slate-700 rounded mb-2" />
-              <div className="h-3 w-20 animate-pulse bg-slate-700 rounded" />
+              <div className="h-8 w-32 animate-pulse bg-gray-200 dark:bg-slate-700 rounded mb-2" />
+              <div className="h-3 w-20 animate-pulse bg-gray-200 dark:bg-slate-700 rounded" />
             </CardContent>
           </Card>
         ))}
@@ -71,10 +71,10 @@ export function PaymentSummaryCards({ summary, isLoading }: PaymentSummaryCardsP
         return (
           <Card
             key={card.title}
-            className="bg-slate-800/50 border-slate-700 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-200"
+            className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-indigo-500/10 transition-all duration-200"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 {card.title}
               </CardTitle>
               <div className={`p-2 rounded-lg ${card.bgColor}`}>
@@ -82,8 +82,8 @@ export function PaymentSummaryCards({ summary, isLoading }: PaymentSummaryCardsP
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{card.value}</div>
-              <p className="text-xs text-gray-400 mt-1">{card.subtitle}</p>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{card.value}</div>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{card.subtitle}</p>
             </CardContent>
           </Card>
         );

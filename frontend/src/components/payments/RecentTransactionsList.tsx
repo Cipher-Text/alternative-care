@@ -21,20 +21,20 @@ export function RecentTransactionsList({
 }: RecentTransactionsListProps) {
   if (isLoading) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
         <CardHeader>
-          <CardTitle className="text-white">Recent Transactions</CardTitle>
-          <CardDescription className="text-gray-400">Loading...</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">Loading...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between p-3 border border-slate-700 bg-slate-900/50 rounded-lg">
+              <div key={i} className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 rounded-lg">
                 <div className="space-y-2">
-                  <div className="h-4 w-32 animate-pulse bg-slate-700 rounded" />
-                  <div className="h-3 w-24 animate-pulse bg-slate-700 rounded" />
+                  <div className="h-4 w-32 animate-pulse bg-gray-200 dark:bg-slate-700 rounded" />
+                  <div className="h-3 w-24 animate-pulse bg-gray-200 dark:bg-slate-700 rounded" />
                 </div>
-                <div className="h-6 w-20 animate-pulse bg-slate-700 rounded" />
+                <div className="h-6 w-20 animate-pulse bg-gray-200 dark:bg-slate-700 rounded" />
               </div>
             ))}
           </div>
@@ -47,13 +47,13 @@ export function RecentTransactionsList({
 
   if (recentPayments.length === 0) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
         <CardHeader>
-          <CardTitle className="text-white">Recent Transactions</CardTitle>
-          <CardDescription className="text-gray-400">No transactions yet</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">No transactions yet</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Transactions will appear here once you start recording payments.
           </p>
         </CardContent>
@@ -62,12 +62,12 @@ export function RecentTransactionsList({
   }
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
+    <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-white">Recent Transactions</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-400">
               Latest {recentPayments.length} payments
             </CardDescription>
           </div>
@@ -75,7 +75,7 @@ export function RecentTransactionsList({
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-300 hover:text-white hover:bg-slate-700"
+              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700"
             >
               View All
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -88,22 +88,22 @@ export function RecentTransactionsList({
           {recentPayments.map((payment) => (
             <div
               key={payment.id}
-              className="flex items-center justify-between p-3 border border-slate-700 bg-slate-900/50 rounded-lg hover:bg-slate-700/50 hover:border-indigo-600 transition-all duration-200"
+              className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium truncate text-white">
+                  <p className="text-sm font-medium truncate text-gray-900 dark:text-white">
                     {payment.patient_name}
                   </p>
                   <PaymentStatusBadge status={payment.status} />
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
                     {new Date(payment.payment_date).toLocaleDateString()}
                   </p>
                   <PaymentMethodBadge method={payment.payment_method} />
                   {payment.description && (
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
                       {payment.description}
                     </p>
                   )}

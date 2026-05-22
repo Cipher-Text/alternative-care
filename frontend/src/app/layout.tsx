@@ -36,18 +36,19 @@ export default function RootLayout({
             __html: `
               try {
                 const stored = localStorage.getItem('theme-storage');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 if (stored) {
                   const { state } = JSON.parse(stored);
-                  const theme = state.theme || 'dark';
+                  const theme = state.theme || 'system';
                   const resolved = theme === 'system'
-                    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                    ? (prefersDark ? 'dark' : 'light')
                     : theme;
                   document.documentElement.classList.add(resolved);
                 } else {
-                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.add(prefersDark ? 'dark' : 'light');
                 }
               } catch (e) {
-                document.documentElement.classList.add('dark');
+                document.documentElement.classList.add('light');
               }
             `,
           }}
