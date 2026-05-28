@@ -3,7 +3,7 @@ title: "Frontend Setup Guide"
 type: "setup"
 difficulty: "intermediate"
 time: "30 minutes"
-last_updated: "2026-05-01"
+last_updated: "2026-05-29"
 ai_summary: "Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui frontend setup"
 ---
 
@@ -97,7 +97,7 @@ cd frontend
 ```bash
 # API & State Management
 npm install axios
-npm install @tanstack/react-query
+npm install react-query
 npm install zustand
 npm install date-fns
 
@@ -343,7 +343,7 @@ npm run dev
 
 ```bash
 # Type check
-npm run type-check
+./node_modules/.bin/tsc -p tsconfig.json --noEmit
 
 # Lint
 npm run lint
@@ -420,7 +420,7 @@ rm -rf node_modules
 npm install
 
 # Run type check
-npm run type-check
+./node_modules/.bin/tsc -p tsconfig.json --noEmit
 ```
 
 ---
@@ -437,6 +437,47 @@ npm install
 
 # Try build again
 npm run build
+```
+
+---
+
+### Next.js 16 Dynamic Route Params Warning
+
+Next.js 16 passes App Router dynamic route `params` to client pages as a promise. Client components must unwrap it with React `use()` before reading values.
+
+```tsx
+'use client'
+
+import { use } from 'react'
+
+export default function DetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const recordId = parseInt(id, 10)
+
+  return <div>{recordId}</div>
+}
+```
+
+Do not access `params.id` directly in client pages.
+
+---
+
+### Hydration Error: `<p>` Cannot Contain `<div>`
+
+The local `Badge` component renders a `div`. Avoid rendering it inside paragraph tags.
+
+```tsx
+// Correct
+<div className="mt-1">
+  <Badge>Active</Badge>
+</div>
+```
+
+```tsx
+// Incorrect
+<p className="mt-1">
+  <Badge>Active</Badge>
+</p>
 ```
 
 ---

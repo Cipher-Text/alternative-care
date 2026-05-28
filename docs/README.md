@@ -12,7 +12,7 @@ Central documentation hub for the repository.
 ## Documentation Map
 
 ### Setup
-- [Quickstart](setup/quickstart.md)
+- [Getting Started](../GETTING_STARTED.md)
 - [Backend Setup](setup/backend.md)
 - [Frontend Setup](setup/frontend.md)
 
@@ -48,6 +48,7 @@ Central documentation hub for the repository.
 - [Phase 1 Kickoff](planning/phase1-kickoff.md)
 - [Phase 1 Tasks](planning/phase1-tasks.md)
 - [UX Improvements](planning/ux-improvements.md)
+- [Documentation Refactor Proposal](planning/docs-refactor.md)
 
 ## AI/Codex Notes
 
@@ -63,3 +64,4 @@ When implementation changes:
 1. Update this map if files or sections moved.
 2. Update `status/current.md` for feature-state changes.
 3. Update API docs for endpoint changes.
+4. Move dated progress reports to `archive/` once they are no longer active planning material.
