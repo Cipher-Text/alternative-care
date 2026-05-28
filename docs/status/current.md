@@ -29,7 +29,7 @@ Recent launch-readiness work completed on 2026-05-08:
   - `integration`
   - `medicine` (NEW)
   - `symptom` (NEW)
-- Endpoint count from route decorators: 87 module endpoints
+- Endpoint count from route decorators: 89 module endpoints
 - System endpoints: `/`, `/health`, `/metrics`
 - Data model scope: 34 table models (+ 3 base classes, multi-tenant pattern)
 - Onboarding/auth reality:
@@ -61,6 +61,10 @@ Recent launch-readiness work completed on 2026-05-08:
 - Platform admin onboarding UI:
   - Provision client: create tenant/clinic + primary doctor from admin UI
   - Pending tenants: list and approve self-registered doctor tenants
+- Platform admin client directory:
+  - Full list view for clinics/tenants with primary doctor summary
+  - Clinic/tenant detail page with attached doctors
+  - Backend admin list/detail endpoints are implemented
 
 ### AI / QAI-Related Features
 - `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint
@@ -80,6 +84,7 @@ Recent launch-readiness work completed on 2026-05-08:
 - Baseline API security response headers middleware
 - Doctor self-registration with pending-approval gate before first login
 - Platform-admin provisioning and approval are available in the frontend at `/admin/clients`
+- Platform-admin doctor/clinic directory and detail views are available under `/admin/clients`
 - **Medicine Module**: Backend complete (8 endpoints) + full frontend UI (4 pages, autocomplete, prescription integration)
 - **Symptom Module**: Backend complete (8 endpoints) + full frontend UI (4 pages)
 

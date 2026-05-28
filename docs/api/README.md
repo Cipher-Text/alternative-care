@@ -2,25 +2,25 @@
 title: "AltCare API Overview"
 type: "api-reference"
 version: "1.0.0"
-last_updated: "2026-05-14"
-ai_summary: "87 REST endpoints across 9 modules (including AI stub) with JWT authentication"
+last_updated: "2026-05-29"
+ai_summary: "89 REST endpoints across 11 modules (including AI stub) with JWT authentication"
 base_url: "http://localhost:8000/api/v1"
 ---
 
 # AltCare API Documentation
 
 **Base URL:** `http://localhost:8000/api/v1`  
-**Total Endpoints:** 87 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)  
+**Total Endpoints:** 89 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)  
 **Authentication:** JWT Bearer Token  
 **Format:** JSON
 
 ## Overview
 
-**9 API Modules:**
+**11 API Modules:**
 
 | Module | Endpoints | Purpose | Docs |
 |--------|-----------|---------|------|
-| **Authentication** | 16 | Login, 2FA, registration, admin provisioning/approval | [authentication.md](authentication.md) |
+| **Authentication** | 18 | Login, 2FA, registration, admin provisioning/approval/client directory | [authentication.md](authentication.md) |
 | **AI** | 1 | Query stub (`501`) | N/A (stub) |
 | **Patients** | 14 | Patient CRUD, search | [patients.md](patients.md) |
 | **Appointments** | 6 | Scheduling | [appointments.md](appointments.md) |
@@ -29,8 +29,10 @@ base_url: "http://localhost:8000/api/v1"
 | **Dashboard** | 6 | Analytics, charts | [dashboard.md](dashboard.md) |
 | **Doctor** | 12 | Profile, credentials | [doctor.md](doctor.md) |
 | **Integrations** | 12 | Provider config, send SMS/email, logs | [integrations.md](integrations.md) |
+| **Medicine** | 8 | Global and tenant medicines | N/A |
+| **Symptom** | 8 | Global and tenant symptoms | N/A |
 
-**Total:** 87 module endpoints
+**Total:** 89 module endpoints
 
 ## Authentication
 

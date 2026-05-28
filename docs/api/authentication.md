@@ -3,16 +3,16 @@ title: "Authentication API"
 type: "api-reference"
 module: "authentication"
 version: "0.9.0"
-last_updated: "2026-05-14"
-ai_summary: "16 endpoints for auth, self-registration, admin client provisioning, tenant approval, JWT session lifecycle, and 2FA"
-endpoints: 16
+last_updated: "2026-05-29"
+ai_summary: "18 endpoints for auth, self-registration, admin client provisioning, client directory, tenant approval, JWT session lifecycle, and 2FA"
+endpoints: 18
 authentication: "public + protected"
 ---
 
 # Authentication API
 
 **Module:** Authentication  
-**Endpoints:** 16  
+**Endpoints:** 18  
 **Base Path:** `/api/v1/auth`
 
 ## Overview
@@ -29,6 +29,20 @@ Authentication and onboarding endpoints for:
 ## Admin Endpoints
 
 Frontend status: platform-admin client provisioning and tenant approval are implemented at `/admin/clients`.
+
+### List Clients
+`GET /api/v1/auth/admin/clients`
+
+Auth: Admin only
+
+Returns all tenant clients with primary doctor summary, doctor count, approval status, and plan.
+
+### Get Client Detail
+`GET /api/v1/auth/admin/clients/{tenant_id}`
+
+Auth: Admin only
+
+Returns one tenant/clinic with all attached doctor users and lifecycle metadata.
 
 ### Provision Client Account
 `POST /api/v1/auth/admin/provision-client`

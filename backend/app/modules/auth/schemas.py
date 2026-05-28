@@ -278,6 +278,43 @@ class TenantResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class AdminClientDoctorResponse(BaseModel):
+    """Doctor summary for platform admin client views."""
+
+    id: str
+    email: str
+    full_name: str
+    phone: str | None
+    role: str
+    language: str
+    is_active: bool
+    is_email_verified: bool
+    last_login_at: datetime | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class AdminClientListItem(BaseModel):
+    """Tenant + primary doctor summary for platform admin client directory."""
+
+    tenant: TenantResponse
+    primary_doctor: AdminClientDoctorResponse | None
+    doctor_count: int
+    created_at: datetime
+
+
+class AdminClientDetailResponse(BaseModel):
+    """Tenant and doctor details for platform admin client detail view."""
+
+    tenant: TenantResponse
+    doctors: list[AdminClientDoctorResponse]
+    created_at: datetime
+    updated_at: datetime | None
+    approved_at: datetime | None
+    approved_by: str | None
+
+
 class UserProfileResponse(BaseModel):
     """Detailed user profile with tenant info."""
 

@@ -2,15 +2,15 @@
 
 Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 
-## Current State (Code-Verified: 2026-05-20)
+## Current State (Code-Verified: 2026-05-29)
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
-- Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`
-- Module endpoints: 83 total (auth: 12, ai: 1, appointments: 6, dashboard: 6, doctor: 12, integration: 12, patient: 14, payment: 12, prescription: 8)
+- Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`
+- Module endpoints: 89 total (auth: 18, ai: 1, appointments: 6, dashboard: 6, doctor: 12, integration: 12, medicine: 8, patient: 14, payment: 12, prescription: 8, symptom: 8)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend: Next.js 16 + React 19 (90+ source files)
-  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`
-  - 📋 Pending: Integrations UI
+  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`
+  - 📋 Pending: AI/RAG assistant UI
 
 ## Feature Snapshot
 
@@ -22,10 +22,13 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 - **Prescriptions** - Complete CRUD, builder, medicine items, draft/issue/void workflow, PDF generation
 - **Doctor Profile** - Personal/clinic info, academic degrees, certifications/trainings
 - **Payments & Billing** - Dashboard, transactions, invoices, payment recording, CSV export, toast notifications
+- **Integrations** - SMS/Email/Payment provider setup and monitoring
+- **Medicine & Symptom Libraries** - Global and tenant-aware clinical lookup data
+- **Platform Admin Client Management** - Provision tenant + primary doctor, approve tenants, view doctor/clinic directory and details
 - **Multi-tenant Isolation** - 100% secure row-level security (16/16 tests passing)
 
 ### 📋 Backend-Ready, Frontend Pending
-- **Integration Management** - SMS/Email provider setup, credential encryption, usage logs
+- **AI Query** - Stable backend contract exists as a `501` stub; full AI/RAG remains planned
 
 ### AI / QAI Status
 - `/api/v1/ai/query` exists as stub endpoint (returns `501 Not Implemented`)

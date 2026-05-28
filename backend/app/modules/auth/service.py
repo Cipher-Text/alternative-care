@@ -21,6 +21,9 @@ from app.core.security import (
 )
 from app.modules.auth.schemas import (
     AdminCreateTenantDoctorRequest,
+    AdminClientDetailResponse,
+    AdminClientDoctorResponse,
+    AdminClientListItem,
     LoginRequest,
     LoginResponse,
     RegisterRequest,
@@ -683,6 +686,69 @@ class AuthService:
         )
         tenants = result.scalars().all()
         return [TenantResponse.model_validate(tenant) for tenant in tenants]
+
+    async def list_admin_clients(self) -> list[AdminClientListItem]:
+        """List all tenant clients with primary doctor summaries."""
+        tenant_result = await self.db.execute(
+            select(Tenant).order_by(Tenant.created_at.desc())
+        )
+        tenants = tenant_result.scalars().all()
+
+        if not tenants:
+            return []
+
+        tenant_ids = [tenant.id for tenant in tenants]
+        user_result = await self.db.execute(
+            select(User)
+            .where(User.tenant_id.in_(tenant_ids), User.role == "doctor")
+            .order_by(User.created_at.asc())
+        )
+        doctors = user_result.scalars().all()
+
+        doctors_by_tenant: dict[str, list[User]] = {}
+        for doctor in doctors:
+            if doctor.tenant_id:
+                doctors_by_tenant.setdefault(doctor.tenant_id, []).append(doctor)
+
+        return [
+            AdminClientListItem(
+                tenant=TenantResponse.model_validate(tenant),
+                primary_doctor=(
+                    AdminClientDoctorResponse.model_validate(doctors_by_tenant[tenant.id][0])
+                    if doctors_by_tenant.get(tenant.id)
+                    else None
+                ),
+                doctor_count=len(doctors_by_tenant.get(tenant.id, [])),
+                created_at=tenant.created_at,
+            )
+            for tenant in tenants
+        ]
+
+    async def get_admin_client_detail(self, tenant_id: str) -> AdminClientDetailResponse:
+        """Get tenant client details with all doctor users for platform admins."""
+        tenant_result = await self.db.execute(select(Tenant).where(Tenant.id == tenant_id))
+        tenant = tenant_result.scalar_one_or_none()
+        if not tenant:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tenant not found",
+            )
+
+        doctor_result = await self.db.execute(
+            select(User)
+            .where(User.tenant_id == tenant.id, User.role == "doctor")
+            .order_by(User.created_at.asc())
+        )
+        doctors = doctor_result.scalars().all()
+
+        return AdminClientDetailResponse(
+            tenant=TenantResponse.model_validate(tenant),
+            doctors=[AdminClientDoctorResponse.model_validate(doctor) for doctor in doctors],
+            created_at=tenant.created_at,
+            updated_at=tenant.updated_at,
+            approved_at=tenant.approved_at,
+            approved_by=tenant.approved_by,
+        )
 
     async def approve_tenant(self, tenant_id: str, admin_user_id: str) -> TenantResponse:
         """Approve a pending tenant so users can log in."""

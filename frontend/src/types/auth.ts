@@ -59,6 +59,35 @@ export interface TenantResponse {
   is_active: boolean
 }
 
+export interface AdminClientDoctor {
+  id: string
+  email: string
+  full_name: string
+  phone: string | null
+  role: string
+  language: string
+  is_active: boolean
+  is_email_verified: boolean
+  last_login_at: string | null
+  created_at: string
+}
+
+export interface AdminClientListItem {
+  tenant: TenantResponse
+  primary_doctor: AdminClientDoctor | null
+  doctor_count: number
+  created_at: string
+}
+
+export interface AdminClientDetail {
+  tenant: TenantResponse
+  doctors: AdminClientDoctor[]
+  created_at: string
+  updated_at: string | null
+  approved_at: string | null
+  approved_by: string | null
+}
+
 export interface LoginResponse {
   tokens: {
     access_token: string

@@ -9,6 +9,8 @@ from app.core.database import get_db
 from app.core.dependencies import CurrentUser, RequireAdmin, get_current_user
 from app.modules.auth.schemas import (
     AdminCreateTenantDoctorRequest,
+    AdminClientDetailResponse,
+    AdminClientListItem,
     ChangePasswordRequest,
     Disable2FARequest,
     LoginRequest,
@@ -65,6 +67,37 @@ async def admin_provision_client(
     """Admin-only client provisioning."""
     service = AuthService(db)
     return await service.admin_create_tenant_doctor(data, current_user.user_id)
+
+
+@router.get(
+    "/admin/clients",
+    response_model=list[AdminClientListItem],
+    summary="Admin: list clients",
+    description="List all tenant clients with primary doctor summaries.",
+)
+async def list_admin_clients(
+    current_user: RequireAdmin,  # noqa: ARG001
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Admin-only client directory."""
+    service = AuthService(db)
+    return await service.list_admin_clients()
+
+
+@router.get(
+    "/admin/clients/{tenant_id}",
+    response_model=AdminClientDetailResponse,
+    summary="Admin: get client detail",
+    description="Get tenant/clinic details and doctor users for a client.",
+)
+async def get_admin_client_detail(
+    tenant_id: str,
+    current_user: RequireAdmin,  # noqa: ARG001
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Admin-only client detail."""
+    service = AuthService(db)
+    return await service.get_admin_client_detail(tenant_id)
 
 
 @router.get(

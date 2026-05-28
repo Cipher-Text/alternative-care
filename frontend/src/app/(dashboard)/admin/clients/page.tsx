@@ -1,17 +1,25 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   Building2,
   CheckCircle,
+  Eye,
   Loader2,
+  Search,
   ShieldAlert,
   UserPlus,
   Users,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
-import { useApproveTenant, usePendingTenants, useProvisionClient } from '@/lib/hooks/useAdminClients'
+import {
+  useAdminClients,
+  useApproveTenant,
+  usePendingTenants,
+  useProvisionClient,
+} from '@/lib/hooks/useAdminClients'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -68,8 +76,10 @@ export default function AdminClientsPage() {
   const user = useAuthStore((state) => state.user)
   const [form, setForm] = useState<AdminCreateTenantDoctorRequest>(initialForm)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [searchTerm, setSearchTerm] = useState('')
   const isAdmin = user?.role === 'admin'
 
+  const clients = useAdminClients(isAdmin)
   const pendingTenants = usePendingTenants(isAdmin)
   const provisionClient = useProvisionClient()
   const approveTenant = useApproveTenant()
@@ -78,6 +88,24 @@ export default function AdminClientsPage() {
     () => new Set(form.specializations),
     [form.specializations]
   )
+  const filteredClients = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase()
+    if (!term) return clients.data || []
+
+    return (clients.data || []).filter((client) => {
+      const tenant = client.tenant
+      const doctor = client.primary_doctor
+
+      return [
+        tenant.name,
+        tenant.email,
+        tenant.clinic_name || '',
+        tenant.plan,
+        doctor?.full_name || '',
+        doctor?.email || '',
+      ].some((value) => value.toLowerCase().includes(term))
+    })
+  }, [clients.data, searchTerm])
 
   const validateForm = () => {
     const nextErrors: Record<string, string> = {}
@@ -159,8 +187,12 @@ export default function AdminClientsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="provision">
+      <Tabs defaultValue="directory">
         <TabsList>
+          <TabsTrigger value="directory">
+            <Building2 className="h-4 w-4 mr-2" />
+            Client Directory
+          </TabsTrigger>
           <TabsTrigger value="provision">
             <UserPlus className="h-4 w-4 mr-2" />
             Provision Client
@@ -170,6 +202,99 @@ export default function AdminClientsPage() {
             Pending Tenants
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="directory" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Doctors and Clinics</CardTitle>
+              <CardDescription>
+                View all tenant clients, primary doctors, approval status, and subscription plans.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search clinic, tenant, doctor, or email"
+                  className="pl-9"
+                />
+              </div>
+
+              {clients.isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                </div>
+              ) : filteredClients.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Clinic / Tenant</TableHead>
+                      <TableHead>Primary Doctor</TableHead>
+                      <TableHead>Plan</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Doctors</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredClients.map((client) => (
+                      <TableRow key={client.tenant.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{client.tenant.clinic_name || client.tenant.name}</p>
+                            <p className="text-sm text-muted-foreground">{client.tenant.email}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {client.primary_doctor ? (
+                            <div>
+                              <p className="font-medium">{client.primary_doctor.full_name}</p>
+                              <p className="text-sm text-muted-foreground">{client.primary_doctor.email}</p>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">No doctor user</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">{client.tenant.plan}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant={client.tenant.is_approved ? 'default' : 'outline'}>
+                              {client.tenant.is_approved ? 'Approved' : 'Pending'}
+                            </Badge>
+                            {!client.tenant.is_active && (
+                              <Badge variant="destructive">Inactive</Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{client.doctor_count}</TableCell>
+                        <TableCell className="text-right">
+                          <Button asChild size="sm" variant="outline">
+                            <Link href={`/admin/clients/${client.tenant.id}`}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Details
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold">No clients found</h3>
+                  <p className="text-muted-foreground mt-2">
+                    Create a tenant and primary doctor from the provisioning tab.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="provision" className="mt-6">
           <form onSubmit={handleSubmit}>

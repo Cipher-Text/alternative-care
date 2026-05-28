@@ -28,7 +28,7 @@ When any planning document conflicts with implementation:
 ## Current Baseline Snapshot (2026-05-29)
 
 - Backend active routers: 11 modules
-- Module endpoints: 87 total
+- Module endpoints: 89 total
 - Frontend implemented route families: auth, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations
 - AI route status: `/api/v1/ai/query` exists as a `501 Not Implemented` contract stub
 

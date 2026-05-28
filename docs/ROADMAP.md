@@ -322,6 +322,12 @@ MVP testing priority:
   - List pending tenants from `GET /api/v1/auth/admin/tenants/pending`
   - Approve tenants with `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
   - Required if public doctor self-registration remains enabled
+- [x] Platform admin doctor/clinic directory
+  - Backend: admin endpoint lists all tenants with primary doctor summary
+  - Backend: admin endpoint returns tenant/clinic + doctor details
+  - Frontend: searchable approved/pending client list
+  - Frontend: clinic and doctor detail views
+  - Required for operating support, onboarding follow-up, and customer management
 
 ### User Experience Improvements
 - [ ] Onboarding wizard for new tenants
@@ -405,7 +411,7 @@ MVP testing priority:
 
 ### Current (MVP v1.0)
 - ✅ 7/9 modules with complete frontend
-- ✅ 87 API endpoints
+- ✅ 89 API endpoints
 - ✅ 90+ frontend files
 - ✅ Security: A (95/100)
 - ✅ Test coverage: Multi-tenant isolation 100%

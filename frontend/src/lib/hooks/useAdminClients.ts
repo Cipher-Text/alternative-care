@@ -20,6 +20,24 @@ export function usePendingTenants(enabled = true) {
   })
 }
 
+export function useAdminClients(enabled = true) {
+  return useQuery(['admin', 'clients'], () => authApi.listAdminClients(), {
+    enabled,
+    staleTime: 30000,
+  })
+}
+
+export function useAdminClient(tenantId: string, enabled = true) {
+  return useQuery(
+    ['admin', 'clients', tenantId],
+    () => authApi.getAdminClient(tenantId),
+    {
+      enabled: enabled && Boolean(tenantId),
+      staleTime: 30000,
+    }
+  )
+}
+
 export function useProvisionClient() {
   const queryClient = useQueryClient()
 
@@ -27,6 +45,7 @@ export function useProvisionClient() {
     (payload: AdminCreateTenantDoctorRequest) => authApi.provisionClient(payload),
     {
       onSuccess: (data) => {
+        queryClient.invalidateQueries(['admin', 'clients'])
         queryClient.invalidateQueries(['admin', 'pending-tenants'])
         toast.success(data.message || 'Client account created')
       },
@@ -42,6 +61,7 @@ export function useApproveTenant() {
 
   return useMutation((tenantId: string) => authApi.approveTenant(tenantId), {
     onSuccess: () => {
+      queryClient.invalidateQueries(['admin', 'clients'])
       queryClient.invalidateQueries(['admin', 'pending-tenants'])
       toast.success('Tenant approved')
     },
