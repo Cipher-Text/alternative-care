@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSymptom, useSymptomAliases, useDeleteSymptom, useCreateSymptomAlias, useDeleteSymptomAlias } from '@/lib/hooks/useSymptoms';
 import { Card } from '@/components/ui/card';
@@ -15,9 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, ArrowLeft, Edit, Trash2, Plus, X } from 'lucide-react';
 import type { SymptomAliasType } from '@/types/symptom';
 
-export default function SymptomDetailPage({ params }: { params: { id: string } }) {
+export default function SymptomDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const symptomId = parseInt(params.id);
+  const { id } = use(params);
+  const symptomId = parseInt(id);
 
   const { data: symptom, isLoading } = useSymptom(symptomId);
   const { data: aliases = [] } = useSymptomAliases(symptomId);

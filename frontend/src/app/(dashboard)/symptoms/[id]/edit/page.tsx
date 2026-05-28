@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSymptom, useUpdateSymptom } from '@/lib/hooks/useSymptoms';
 import { Card } from '@/components/ui/card';
@@ -15,9 +15,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, ArrowLeft, Save } from 'lucide-react';
 import type { SymptomCategory } from '@/types/symptom';
 
-export default function EditSymptomPage({ params }: { params: { id: string } }) {
+export default function EditSymptomPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const symptomId = parseInt(params.id);
+  const { id } = use(params);
+  const symptomId = parseInt(id);
 
   const { data: symptom, isLoading } = useSymptom(symptomId);
   const updateSymptom = useUpdateSymptom();

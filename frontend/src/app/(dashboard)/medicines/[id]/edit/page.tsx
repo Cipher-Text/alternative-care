@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMedicine, useUpdateMedicine } from '@/lib/hooks/useMedicines';
 import { Card } from '@/components/ui/card';
@@ -15,9 +15,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, ArrowLeft, Save } from 'lucide-react';
 import type { MedicalSystem } from '@/types/medicine';
 
-export default function EditMedicinePage({ params }: { params: { id: string } }) {
+export default function EditMedicinePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const medicineId = parseInt(params.id);
+  const { id } = use(params);
+  const medicineId = parseInt(id);
 
   const { data: medicine, isLoading } = useMedicine(medicineId);
   const updateMedicine = useUpdateMedicine();

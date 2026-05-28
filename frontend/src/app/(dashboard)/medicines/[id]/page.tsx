@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMedicine, useMedicineAliases, useDeleteMedicine, useCreateMedicineAlias, useDeleteMedicineAlias } from '@/lib/hooks/useMedicines';
 import { Card } from '@/components/ui/card';
@@ -15,9 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, ArrowLeft, Edit, Trash2, Plus, X } from 'lucide-react';
 import type { MedicalSystem, MedicineAliasType } from '@/types/medicine';
 
-export default function MedicineDetailPage({ params }: { params: { id: string } }) {
+export default function MedicineDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const medicineId = parseInt(params.id);
+  const { id } = use(params);
+  const medicineId = parseInt(id);
 
   const { data: medicine, isLoading } = useMedicine(medicineId);
   const { data: aliases = [] } = useMedicineAliases(medicineId);
