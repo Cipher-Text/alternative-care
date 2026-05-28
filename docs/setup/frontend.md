@@ -604,7 +604,7 @@ After setup:
 **See Also:**
 - [Backend Setup](backend.md) - Backend setup guide
 - [API Reference](../api/README.md) - API documentation
-- [Quick Start](quickstart.md) - 5-minute start guide
+- [Getting Started](../../GETTING_STARTED.md) - local setup flow
 
 ---
 

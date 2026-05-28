@@ -37,18 +37,14 @@ Central documentation hub for the repository.
 
 ### Development
 - [Quick Reference](development/quick-reference.md)
-- [Frontend Checklist](development/frontend-checklist.md)
 - [i18n Guide](development/i18n.md)
+- [Theme System](development/theme-system.md)
 
 ### Planning and Status
 - [Current Status](status/current.md)
 - [Roadmap](ROADMAP.md)
 - [Detailed Roadmap](planning/roadmap-detailed.md)
 - [Testing Strategy](testing/TEST_STRATEGY.md)
-- [Phase 1 Kickoff](planning/phase1-kickoff.md)
-- [Phase 1 Tasks](planning/phase1-tasks.md)
-- [UX Improvements](planning/ux-improvements.md)
-- [Documentation Refactor Proposal](planning/docs-refactor.md)
 
 ## AI/Codex Notes
 

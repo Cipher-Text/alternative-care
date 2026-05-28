@@ -449,7 +449,7 @@ docker compose down -v
 ---
 
 **See Also:**
-- [Quick Start Guide](quickstart.md) - 5-minute setup
+- [Getting Started](../../GETTING_STARTED.md) - local setup flow
 - [API Reference](../api/README.md) - API documentation
 - [Architecture](../architecture/README.md) - System design
 

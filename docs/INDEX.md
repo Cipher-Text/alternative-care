@@ -44,18 +44,14 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 
 ### Development
 - `development/quick-reference.md`
-- `development/frontend-checklist.md`
 - `development/i18n.md`
+- `development/theme-system.md`
 
 ### Planning and Status
 - `ROADMAP.md`
 - `status/current.md`
 - `testing/TEST_STRATEGY.md`
 - `planning/roadmap-detailed.md`
-- `planning/phase1-kickoff.md`
-- `planning/phase1-tasks.md`
-- `planning/ux-improvements.md`
-- `planning/docs-refactor.md`
 
 ## Code-Verified Snapshot (2026-05-29)
 

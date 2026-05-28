@@ -2,7 +2,7 @@
 
 Practical guide for running and verifying Alembic migrations.
 
-**For breaking changes:** See [BREAKING_CHANGES.md](BREAKING_CHANGES.md)
+**For breaking changes:** See [BREAKING_CHANGES.md](../BREAKING_CHANGES.md)
 
 ---
 
@@ -419,7 +419,7 @@ alembic show <rev>                # Show migration
 
 ### Resources
 
-- **Breaking Changes:** [BREAKING_CHANGES.md](BREAKING_CHANGES.md)
+- **Breaking Changes:** [BREAKING_CHANGES.md](../BREAKING_CHANGES.md)
 - **Alias Examples:** [ALIAS_DATA_EXAMPLES.md](ALIAS_DATA_EXAMPLES.md)
 - **Architecture:** [../CLAUDE.md](../CLAUDE.md)
 - **Alembic Docs:** https://alembic.sqlalchemy.org
