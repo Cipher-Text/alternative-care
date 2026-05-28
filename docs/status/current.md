@@ -8,6 +8,8 @@ AltCare currently has a working FastAPI backend with 11 registered API modules a
 
 Product-start onboarding path: platform admins can now use `/admin/clients` to create a tenant + primary doctor through `POST /api/v1/auth/admin/provision-client`, and to approve pending self-registered tenants.
 
+Settings integration provider cards now use stable local logo assets for all seeded providers instead of relying on external logo URLs.
+
 Recent launch-readiness work completed on 2026-05-08:
 - P0 auth fixes completed: password complexity enforcement and session invalidation on password change
 - Baseline HTTP security headers middleware enabled for all responses (CSP, X-Frame-Options, X-Content-Type-Options; HSTS in production)
@@ -65,6 +67,10 @@ Recent launch-readiness work completed on 2026-05-08:
   - Full list view for clinics/tenants with primary doctor summary
   - Clinic/tenant detail page with attached doctors
   - Backend admin list/detail endpoints are implemented
+- Settings integrations:
+  - Provider marketplace/config wizard/logs are implemented
+  - All 12 seeded providers have local logo assets under `frontend/public/integrations/`
+  - `frontend/src/lib/integration-logos.ts` keeps logos visible even when existing DB rows still have null or legacy external `logo_url` values
 
 ### AI / QAI-Related Features
 - `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint

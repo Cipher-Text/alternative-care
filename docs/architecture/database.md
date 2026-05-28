@@ -1134,7 +1134,7 @@ CREATE TABLE integration_providers (
   config_schema JSONB NOT NULL,  -- Defines required fields for this provider
   
   -- Provider metadata
-  logo_url TEXT,
+  logo_url TEXT,                 -- local frontend asset path, e.g. '/integrations/twilio.svg'
   documentation_url TEXT,
   supported_countries VARCHAR(50)[],  -- ['BD', 'IN', 'US']
   
@@ -1147,13 +1147,13 @@ CREATE TABLE integration_providers (
 CREATE INDEX idx_integration_providers_type ON integration_providers(type);
 CREATE UNIQUE INDEX idx_integration_providers_name ON integration_providers(type, provider_name);
 
--- Seed data example (Bangladesh-focused + international options)
+-- Current seeded provider set (Bangladesh-focused + international options)
 INSERT INTO integration_providers (type, provider_name, display_name, config_schema, supported_countries) VALUES
 -- SMS Providers
 ('sms', 'twilio', 'Twilio SMS', '{"required": ["account_sid", "auth_token", "phone_number"]}', ARRAY['US', 'BD']),
 ('sms', 'banglalink', 'Banglalink Bulk SMS', '{"required": ["api_key", "sender_id"]}', ARRAY['BD']),
 ('sms', 'robi', 'Robi SMS API', '{"required": ["username", "password", "mask"]}', ARRAY['BD']),
-('sms', 'grameenphone', 'Grameenphone SMS', '{"required": ["api_key", "sender_id"]}', ARRAY['BD']),
+('sms', 'bulksmsbd', 'BulkSMSBD', '{"required": ["api_key", "sender_id", "mask_type"]}', ARRAY['BD']),
 
 -- Email Providers
 ('email', 'smtp', 'SMTP Server', '{"required": ["host", "port", "username", "password"]}', ARRAY['*']),
@@ -1164,12 +1164,13 @@ INSERT INTO integration_providers (type, provider_name, display_name, config_sch
 ('payment', 'bkash', 'bKash', '{"required": ["merchant_number", "app_key", "app_secret", "username", "password"]}', ARRAY['BD']),
 ('payment', 'nagad', 'Nagad', '{"required": ["merchant_id", "merchant_number", "public_key", "private_key"]}', ARRAY['BD']),
 ('payment', 'rocket', 'Rocket', '{"required": ["merchant_number", "api_key"]}', ARRAY['BD']),
-('payment', 'upay', 'Upay', '{"required": ["merchant_id", "api_key"]}', ARRAY['BD']),
+('payment', 'sslcommerz', 'SSLCommerz', '{"required": ["store_id", "store_password"]}', ARRAY['BD']),
 
 -- Payment Providers (International)
-('payment', 'stripe', 'Stripe', '{"required": ["secret_key", "publishable_key", "webhook_secret"]}', ARRAY['*']),
-('payment', 'razorpay', 'Razorpay', '{"required": ["key_id", "key_secret"]}', ARRAY['IN', 'BD']);
+('payment', 'stripe', 'Stripe', '{"required": ["secret_key", "publishable_key", "webhook_secret"]}', ARRAY['*']);
 ```
+
+Provider logos are shipped as local frontend assets in `frontend/public/integrations/`. Seeded `logo_url` values use `/integrations/*` paths so the settings UI does not depend on external vendor CDNs.
 
 ---
 

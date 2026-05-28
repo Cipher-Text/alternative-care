@@ -445,6 +445,7 @@ WHERE system IN tenant.specializations OR is_global = true
 - Audit: `integration_logs` (request/response)
 - Types: `sms`, `email`, `payment`
 - Factory: BaseProviderService → BkashIntegrationService, BulkSMSBDService, SMTPService
+- Logos: provider `logo_url` values use local `/integrations/*` frontend assets, with `frontend/src/lib/integration-logos.ts` as a fallback for existing seeded DB rows
 
 **Prescription Workflow:**
 ```python
@@ -585,7 +586,7 @@ cd backend && ./scripts/run_seed.sh
 
 Seeds:
 - Bangladesh geographic data (8 divisions, 64 districts, upazilas)
-- Integration providers (11: SMS, Email, Payment)
+- Integration providers (12: SMS, Email, Payment, with local logo paths)
 - UI translations (80+ English/Bengali)
 - Sample tenants/users (dev only)
 

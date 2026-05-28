@@ -33,9 +33,10 @@ Bangladesh geographic hierarchy for address management.
 Catalog of available integration providers for SMS, Email, and Payment processing.
 
 **Contents:**
-- **SMS Providers** (3): Twilio, Banglalink SMS Gateway, Robi SMS Gateway
+- **SMS Providers** (4): Twilio, Banglalink SMS Gateway, Robi SMS Gateway, BulkSMSBD
 - **Email Providers** (3): SendGrid, Amazon SES, Generic SMTP
 - **Payment Providers** (5): bKash, Nagad, Rocket, SSLCommerz, Stripe
+- **Provider Logos**: Stable local frontend assets under `/integrations/*`; seeded `logo_url` values should not depend on external vendor CDN URLs.
 
 **Format:**
 ```json
@@ -46,7 +47,7 @@ Catalog of available integration providers for SMS, Email, and Payment processin
       "display_name": "Twilio",
       "provider_type": "sms",
       "description": "...",
-      "logo_url": "...",
+      "logo_url": "/integrations/twilio.svg",
       "config_schema": {...},
       "supported_countries": ["US", "CA", "BD", ...],
       "is_active": true
@@ -133,7 +134,7 @@ The seed script is **idempotent** - it checks for existing data before inserting
 | Divisions | 8 | All Bangladesh divisions |
 | Districts | 64 | All Bangladesh districts |
 | Upazilas | 10+ | Sample upazilas (expandable to 490+) |
-| Integration Providers | 11 | SMS, Email, and Payment providers |
+| Integration Providers | 12 | SMS, Email, and Payment providers |
 | Translations | 80+ | Bilingual UI strings (EN/BN) |
 | Sample Tenants | 3 | Test clinics |
 | Sample Users | 6 | Test users (doctors, staff, admins) |
@@ -170,13 +171,14 @@ Add new translation keys to `translations.json`:
 
 ### Adding Integration Providers
 
-Add new providers to `integration_providers.json` with proper config schema.
+Add new providers to `integration_providers.json` with a proper config schema and a stable local logo path. Frontend logo assets live in `frontend/public/integrations/`, and `frontend/src/lib/integration-logos.ts` should be updated so already-seeded databases also render the right logo.
 
 ## Notes
 
 - All passwords in `sample_data.json` are hashed by the seed script before insertion
 - Geographic coordinates are included for potential mapping features
 - Integration provider config schemas define required credentials
+- Integration provider `logo_url` values point to local frontend assets for reliable settings UI rendering
 - Translation keys follow dot notation (category.key)
 - Sample data is for development/testing only
 
@@ -192,5 +194,5 @@ The sample users and passwords are for development and testing only. Always:
 
 ---
 
-**Last Updated:** April 24, 2026  
+**Last Updated:** May 29, 2026  
 **Maintained By:** AltCare Development Team

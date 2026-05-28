@@ -198,7 +198,7 @@ docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
 
 **Seed Data:**
 - Bangladesh geographic data (8 divisions, 64 districts, sample upazilas)
-- Integration providers (11 providers: SMS, Email, Payment)
+- Integration providers (12 providers: SMS, Email, Payment; local logo paths)
 - UI translations (80+ English/Bengali strings)
 - Sample tenants and users for development
 

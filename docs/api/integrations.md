@@ -3,7 +3,7 @@ title: "Integrations API"
 type: "api-reference"
 module: "integrations"
 version: "1.0.0"
-last_updated: "2026-05-08"
+last_updated: "2026-05-29"
 ai_summary: "12 endpoints for provider catalog, tenant integration configs, testing, logs, and send operations"
 endpoints: 12
 authentication: "required"
@@ -24,6 +24,15 @@ This module manages:
 - Provider testing
 - Integration logs
 - Direct send operations (SMS/email)
+
+## Provider Catalog
+
+The seeded catalog currently contains 12 providers:
+- SMS: Twilio, Banglalink SMS Gateway, Robi SMS Gateway, BulkSMSBD
+- Email: SendGrid, Amazon SES, Generic SMTP
+- Payment: bKash, Nagad, Rocket, SSLCommerz, Stripe
+
+Provider `logo_url` values are stable local frontend asset paths such as `/integrations/twilio.svg`. The frontend also uses `frontend/src/lib/integration-logos.ts` as a compatibility fallback so existing seeded databases with null or old external URLs still display logos in `/settings/integrations`.
 
 ## Endpoints
 

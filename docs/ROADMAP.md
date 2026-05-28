@@ -131,9 +131,9 @@ Build a comprehensive, multi-tenant SaaS platform for alternative medicine pract
 
 ---
 
-### 🔌 Integrations Management (Backend Complete, Frontend Pending)
+### 🔌 Integrations Management
 
-**Estimated Effort:** 4-6 hours frontend development
+**Status:** ✅ Core provider setup and monitoring UI complete
 
 **Backend Ready:**
 - [x] Integration provider catalog
@@ -146,22 +146,21 @@ Build a comprehensive, multi-tenant SaaS platform for alternative medicine pract
 - [x] Usage tracking
 - [x] Test endpoints
 
-**Frontend Needed:**
-- [ ] Integration provider listing
-- [ ] Provider setup wizard
-- [ ] Credential management UI
-- [ ] Test integration interface
-- [ ] Integration logs viewer
-- [ ] Usage statistics
-- [ ] Enable/disable toggles
-- [ ] Integration status dashboard
+**Frontend Ready:**
+- [x] Integration provider listing
+- [x] Provider setup wizard
+- [x] Credential management UI
+- [x] Test integration interface
+- [x] Integration logs viewer
+- [x] Enable/disable and primary-provider management
+- [x] Local provider logo assets for all 12 seeded providers
 
 **Features:**
 - Visual provider catalog
 - Step-by-step setup wizards
 - Secure credential storage
 - Test sending (SMS/Email)
-- Usage analytics
+- Usage/status monitoring
 - Error log viewing
 
 **Priority:** MEDIUM (enables communication features)
@@ -383,8 +382,8 @@ MVP testing priority:
 ### Q2 2026 (Current)
 - ✅ MVP v1.0 launch (Core platform)
 - ✅ Payments frontend (Complete - May 19)
-- 🚧 Integrations frontend (Next)
-- 🔜 Medicine database (Week 3-4)
+- ✅ Integrations frontend
+- ✅ Medicine and symptom libraries
 
 ### Q3 2026
 - AI query assistant (basic)
@@ -410,7 +409,7 @@ MVP testing priority:
 ## 🎯 Success Metrics
 
 ### Current (MVP v1.0)
-- ✅ 7/9 modules with complete frontend
+- ✅ Core product modules with complete frontend, except planned AI/RAG assistant
 - ✅ 89 API endpoints
 - ✅ 90+ frontend files
 - ✅ Security: A (95/100)
@@ -418,7 +417,7 @@ MVP testing priority:
 - ✅ Production ready
 
 ### Targets (Phase 2)
-- [ ] 8/9 modules with complete frontend (1 remaining: Integrations)
+- [x] Integrations frontend complete
 - [x] Payment processing live
 - [ ] First paying customers
 - [ ] 90%+ uptime
@@ -438,16 +437,13 @@ MVP testing priority:
 
 ### Immediate Priorities (Next 2 Weeks)
 
-1. **Integrations Frontend** (HIGH - Next Priority)
-   - Provider setup UI
-   - Credential management
-   - Test interface
-   - ~4-6 hours
+1. **AI/RAG Assistant** (HIGH)
+   - Implement vector-backed assistant behind the existing `/api/v1/ai/query` contract
+   - Add source attribution and plan-aware quotas
 
-3. **Medicine Database** (MEDIUM-HIGH)
-   - Backend routes
-   - Frontend CRUD
-   - Search integration
+2. **Launch Hardening** (HIGH)
+   - Resolve remaining frontend type/lint debt
+   - Add E2E coverage for onboarding, integrations, payments, and admin clients
    - ~15-20 hours
 
 ### How to Contribute

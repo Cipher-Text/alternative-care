@@ -61,6 +61,7 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
 - Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin clients
+- Settings integrations use local provider logo assets for all 12 seeded providers
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes

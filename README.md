@@ -22,7 +22,7 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 - **Prescriptions** - Complete CRUD, builder, medicine items, draft/issue/void workflow, PDF generation
 - **Doctor Profile** - Personal/clinic info, academic degrees, certifications/trainings
 - **Payments & Billing** - Dashboard, transactions, invoices, payment recording, CSV export, toast notifications
-- **Integrations** - SMS/Email/Payment provider setup and monitoring
+- **Integrations** - SMS/Email/Payment provider setup and monitoring with stable local provider logos
 - **Medicine & Symptom Libraries** - Global and tenant-aware clinical lookup data
 - **Platform Admin Client Management** - Provision tenant + primary doctor, approve tenants, view doctor/clinic directory and details
 - **Multi-tenant Isolation** - 100% secure row-level security (16/16 tests passing)
