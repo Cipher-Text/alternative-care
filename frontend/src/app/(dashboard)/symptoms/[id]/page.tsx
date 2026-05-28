@@ -170,11 +170,11 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
 
           <div>
             <label className="text-sm font-medium text-gray-500">Status</label>
-            <p className="mt-1">
+            <div className="mt-1">
               <Badge variant={symptom.is_active ? 'default' : 'outline'}>
                 {symptom.is_active ? 'Active' : 'Inactive'}
               </Badge>
-            </p>
+            </div>
           </div>
         </div>
       </Card>

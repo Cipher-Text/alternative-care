@@ -174,11 +174,11 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
 
           <div>
             <label className="text-sm font-medium text-gray-500">Status</label>
-            <p className="mt-1">
+            <div className="mt-1">
               <Badge variant={medicine.is_active ? 'default' : 'outline'}>
                 {medicine.is_active ? 'Active' : 'Inactive'}
               </Badge>
-            </p>
+            </div>
           </div>
         </div>
       </Card>
