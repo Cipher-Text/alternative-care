@@ -28,6 +28,8 @@ Authentication and onboarding endpoints for:
 
 ## Admin Endpoints
 
+Frontend status: platform-admin client provisioning and tenant approval are implemented at `/admin/clients`.
+
 ### Provision Client Account
 `POST /api/v1/auth/admin/provision-client`
 

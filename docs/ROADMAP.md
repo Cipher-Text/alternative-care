@@ -313,6 +313,16 @@ MVP testing priority:
 
 ## 🎨 Phase 4: UX & Polish (ONGOING)
 
+### Product Start Blockers
+- [x] Platform admin client provisioning UI
+  - Create tenant/clinic and primary doctor in one flow
+  - Backend endpoint exists: `POST /api/v1/auth/admin/provision-client`
+  - Required for starting AltCare as an operated SaaS product
+- [x] Platform admin tenant approval UI
+  - List pending tenants from `GET /api/v1/auth/admin/tenants/pending`
+  - Approve tenants with `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
+  - Required if public doctor self-registration remains enabled
+
 ### User Experience Improvements
 - [ ] Onboarding wizard for new tenants
 - [ ] Interactive product tour

@@ -12,7 +12,9 @@ import {
   Pill,
   BookOpen,
   Settings,
+  ShieldCheck,
 } from 'lucide-react'
+import { useAuthStore } from '@/store/authStore'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -25,8 +27,14 @@ const navigation = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
+const adminNavigation = [
+  { name: 'Admin Clients', href: '/admin/clients', icon: ShieldCheck },
+]
+
 export function Sidebar() {
   const pathname = usePathname()
+  const user = useAuthStore((state) => state.user)
+  const items = user?.role === 'admin' ? [...navigation, ...adminNavigation] : navigation
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">
@@ -39,8 +47,8 @@ export function Sidebar() {
         {/* Navigation */}
         <div className="flex-1 flex flex-col overflow-y-auto">
           <nav className="flex-1 px-3 py-6 space-y-1">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href
+            {items.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
               const Icon = item.icon
 
               return (

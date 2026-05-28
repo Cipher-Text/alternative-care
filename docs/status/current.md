@@ -1,10 +1,12 @@
 # Current Project Status
 
-Last Updated: 2026-05-22
+Last Updated: 2026-05-29
 
 ## Summary
 
-AltCare currently has a working FastAPI backend with 9 registered API modules and a working Next.js frontend with auth, dashboard, profile, patients, appointments, prescriptions, and payments flows implemented.
+AltCare currently has a working FastAPI backend with 11 registered API modules and a working Next.js frontend with auth, dashboard, profile, patients, appointments, prescriptions, payments, integrations, medicines, and symptoms flows implemented.
+
+Product-start onboarding path: platform admins can now use `/admin/clients` to create a tenant + primary doctor through `POST /api/v1/auth/admin/provision-client`, and to approve pending self-registered tenants.
 
 Recent launch-readiness work completed on 2026-05-08:
 - P0 auth fixes completed: password complexity enforcement and session invalidation on password change
@@ -52,9 +54,13 @@ Recent launch-readiness work completed on 2026-05-08:
   - `/medicines`, `/medicines/new`, `/medicines/[id]`, `/medicines/[id]/edit`
   - `/symptoms`, `/symptoms/new`, `/symptoms/[id]`, `/symptoms/[id]/edit`
   - `/settings`, `/settings/integrations`
+  - `/admin/clients`
 - Dashboard layout/auth shell is in place
 - UI Components: shadcn/ui (button, card, input, select, badge, table, dialog, dropdown-menu, tabs)
 - Custom Components: MedicineAutocomplete (smart search with keyboard navigation)
+- Platform admin onboarding UI:
+  - Provision client: create tenant/clinic + primary doctor from admin UI
+  - Pending tenants: list and approve self-registered doctor tenants
 
 ### AI / QAI-Related Features
 - `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint
@@ -73,6 +79,7 @@ Recent launch-readiness work completed on 2026-05-08:
 - Multi-tenant enforcement patterns in backend architecture and tests
 - Baseline API security response headers middleware
 - Doctor self-registration with pending-approval gate before first login
+- Platform-admin provisioning and approval are available in the frontend at `/admin/clients`
 - **Medicine Module**: Backend complete (8 endpoints) + full frontend UI (4 pages, autocomplete, prescription integration)
 - **Symptom Module**: Backend complete (8 endpoints) + full frontend UI (4 pages)
 

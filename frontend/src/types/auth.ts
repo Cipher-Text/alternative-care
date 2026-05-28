@@ -18,6 +18,47 @@ export interface LoginRequest {
   password: string
 }
 
+export type MedicalSystem = 'homeopathy' | 'ayurveda' | 'unani' | 'herbal'
+export type SubscriptionPlan = 'free' | 'plus' | 'pro'
+
+export interface AdminCreateTenantDoctorRequest {
+  email: string
+  password: string
+  full_name: string
+  phone?: string | null
+  language: 'en' | 'bn'
+  clinic_name?: string | null
+  clinic_address?: string | null
+  division_id?: number | null
+  district_id?: number | null
+  upazila_id?: number | null
+  specializations: MedicalSystem[]
+  license_number?: string | null
+  tenant_name?: string | null
+  plan: SubscriptionPlan
+  auto_approve: boolean
+}
+
+export interface RegisterResponse {
+  message: string
+  user_id: string
+  tenant_id: string
+  email: string
+  requires_approval: boolean
+}
+
+export interface TenantResponse {
+  id: string
+  name: string
+  email: string
+  clinic_name: string | null
+  specializations: string[]
+  plan: string
+  is_verified: boolean
+  is_approved: boolean
+  is_active: boolean
+}
+
 export interface LoginResponse {
   tokens: {
     access_token: string
