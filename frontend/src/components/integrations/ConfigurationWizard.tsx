@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { getIntegrationLogoUrl } from '@/lib/integration-logos';
 import { Loader2, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import type {
   TenantIntegrationCreate,
@@ -46,6 +47,7 @@ export function ConfigurationWizard({
   const [createdIntegrationId, setCreatedIntegrationId] = useState<number | null>(null);
 
   const { data: provider, isLoading: loadingProvider } = useProvider(providerId || 0);
+  const logoUrl = getIntegrationLogoUrl(provider);
   const createIntegration = useCreateIntegration();
   const updateIntegration = useUpdateIntegration();
   const testIntegration = useTestIntegration();
@@ -57,7 +59,7 @@ export function ConfigurationWizard({
     watch,
   } = useForm();
 
-  const onSubmit = async (formData: any) => {
+  const onSubmit = async (formData: Record<string, unknown>) => {
     if (!provider) return;
 
     try {
@@ -166,9 +168,9 @@ export function ConfigurationWizard({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            {provider.logo_url && (
+            {logoUrl && (
               <img
-                src={provider.logo_url}
+                src={logoUrl}
                 alt={provider.display_name}
                 className="w-10 h-10 object-contain"
               />
@@ -200,7 +202,7 @@ export function ConfigurationWizard({
 
               {/* Dynamic Credential Fields */}
               {provider.config_schema &&
-                Object.entries(provider.config_schema).map(([key, field]: [string, any]) => {
+                Object.entries(provider.config_schema).map(([key, field]) => {
                   const fieldSchema = field as ConfigSchemaField;
                   return (
                     <div key={key}>

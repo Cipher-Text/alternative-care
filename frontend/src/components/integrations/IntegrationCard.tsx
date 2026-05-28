@@ -12,7 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { TenantIntegration, TenantIntegrationListItem, IntegrationProviderListItem } from '@/types/integration';
+import { getIntegrationLogoUrl } from '@/lib/integration-logos';
+import type { TenantIntegrationListItem, IntegrationProviderListItem } from '@/types/integration';
 import {
   CheckCircle2,
   XCircle,
@@ -44,6 +45,8 @@ export function IntegrationCard({
   onSetPrimary,
   onDelete,
 }: IntegrationCardProps) {
+  const logoUrl = getIntegrationLogoUrl(integration.provider);
+
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'success':
@@ -70,9 +73,9 @@ export function IntegrationCard({
     <Card className="p-6">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3 flex-1">
-          {integration.provider?.logo_url && (
+          {logoUrl && integration.provider && (
             <img
-              src={integration.provider.logo_url}
+              src={logoUrl}
               alt={integration.provider.display_name}
               className="w-10 h-10 object-contain"
             />

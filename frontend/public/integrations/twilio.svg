@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">Twilio</title>
+  <rect width="160" height="160" rx="28" fill="#f22f46"/>
+  <circle cx="80" cy="80" r="52" fill="none" stroke="#fff" stroke-width="14"/>
+  <circle cx="61" cy="61" r="10" fill="#fff"/>
+  <circle cx="99" cy="61" r="10" fill="#fff"/>
+  <circle cx="61" cy="99" r="10" fill="#fff"/>
+  <circle cx="99" cy="99" r="10" fill="#fff"/>
+</svg>

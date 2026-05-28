@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" role="img" aria-labelledby="title">
+  <title id="title">Robi</title>
+  <rect width="240" height="160" rx="24" fill="#ec1c24"/>
+  <circle cx="120" cy="68" r="34" fill="#fff"/>
+  <circle cx="120" cy="68" r="18" fill="#ec1c24"/>
+  <text x="120" y="126" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" text-anchor="middle">Robi</text>
+</svg>

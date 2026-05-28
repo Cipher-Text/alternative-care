@@ -6,6 +6,7 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { getIntegrationLogoUrl } from '@/lib/integration-logos';
 import type { IntegrationProviderListItem } from '@/types/integration';
 import { CheckCircle2, Settings } from 'lucide-react';
 
@@ -22,6 +23,8 @@ export function ProviderCard({
   onSetup,
   onManage,
 }: ProviderCardProps) {
+  const logoUrl = getIntegrationLogoUrl(provider);
+
   const getProviderTypeColor = (type: string) => {
     switch (type) {
       case 'sms':
@@ -39,9 +42,9 @@ export function ProviderCard({
     <Card className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          {provider.logo_url ? (
+          {logoUrl ? (
             <img
-              src={provider.logo_url}
+              src={logoUrl}
               alt={provider.display_name}
               className="w-12 h-12 object-contain"
             />

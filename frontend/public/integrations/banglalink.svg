@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" role="img" aria-labelledby="title">
+  <title id="title">Banglalink</title>
+  <rect width="240" height="160" rx="24" fill="#f58220"/>
+  <path d="M58 55c31-22 70-22 101 0-32 5-65 5-101 0Z" fill="#fff"/>
+  <path d="M77 78c24 12 54 12 80 0-18 30-58 31-80 0Z" fill="#fff"/>
+  <text x="120" y="125" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" text-anchor="middle">banglalink</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" role="img" aria-labelledby="title">
+  <title id="title">Generic SMTP</title>
+  <rect width="240" height="160" rx="24" fill="#374151"/>
+  <rect x="48" y="48" width="144" height="88" rx="14" fill="#fff"/>
+  <path d="m56 60 64 48 64-48" fill="none" stroke="#374151" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="120" y="36" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" text-anchor="middle">SMTP</text>
+</svg>

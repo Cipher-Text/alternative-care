@@ -5,7 +5,7 @@
       "display_name": "Twilio",
       "provider_type": "sms",
       "description": "Leading cloud communications platform for SMS, voice, and video. Reliable global delivery with 99.95% uptime SLA.",
-      "logo_url": "https://www.twilio.com/content/dam/twilio-com/global/en/logo/logo-twilio-mark-red.png",
+      "logo_url": "/integrations/twilio.svg",
       "config_schema": {
         "account_sid": {
           "type": "string",
@@ -35,7 +35,7 @@
       "display_name": "Banglalink SMS Gateway",
       "provider_type": "sms",
       "description": "Bangladesh local SMS gateway by Banglalink. Best for local delivery with competitive rates.",
-      "logo_url": null,
+      "logo_url": "/integrations/banglalink.svg",
       "config_schema": {
         "api_key": {
           "type": "string",
@@ -59,7 +59,7 @@
       "display_name": "Robi SMS Gateway",
       "provider_type": "sms",
       "description": "Bangladesh local SMS gateway by Robi. High-speed delivery for local numbers.",
-      "logo_url": null,
+      "logo_url": "/integrations/robi.svg",
       "config_schema": {
         "username": {
           "type": "string",
@@ -89,7 +89,7 @@
       "display_name": "BulkSMSBD",
       "provider_type": "sms",
       "description": "Bangladesh local SMS gateway. Reliable delivery with competitive rates for local numbers.",
-      "logo_url": null,
+      "logo_url": "/integrations/bulksmsbd.svg",
       "config_schema": {
         "api_key": {
           "type": "string",
@@ -128,7 +128,7 @@
       "display_name": "SendGrid",
       "provider_type": "email",
       "description": "Twilio SendGrid email delivery platform. Industry-leading deliverability with 99% inbox placement.",
-      "logo_url": "https://sendgrid.com/brand/sg-logo-300.png",
+      "logo_url": "/integrations/sendgrid.svg",
       "config_schema": {
         "api_key": {
           "type": "string",
@@ -158,7 +158,7 @@
       "display_name": "Amazon SES",
       "provider_type": "email",
       "description": "Amazon Simple Email Service. Cost-effective email delivery with high reliability.",
-      "logo_url": "https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png",
+      "logo_url": "/integrations/aws-ses.png",
       "config_schema": {
         "aws_access_key_id": {
           "type": "string",
@@ -195,7 +195,7 @@
       "display_name": "Generic SMTP",
       "provider_type": "email",
       "description": "Standard SMTP server connection. Works with any email provider supporting SMTP.",
-      "logo_url": null,
+      "logo_url": "/integrations/smtp.svg",
       "config_schema": {
         "host": {
           "type": "string",
@@ -243,7 +243,7 @@
       "display_name": "bKash",
       "provider_type": "payment",
       "description": "Leading mobile financial service in Bangladesh. Supports merchant payments and tokenization.",
-      "logo_url": "https://www.bkash.com/sites/default/files/bkash-logo.png",
+      "logo_url": "/integrations/bkash.svg",
       "config_schema": {
         "app_key": {
           "type": "string",
@@ -287,7 +287,7 @@
       "display_name": "Nagad",
       "provider_type": "payment",
       "description": "Government-backed mobile financial service in Bangladesh. Fast and secure payments.",
-      "logo_url": null,
+      "logo_url": "/integrations/nagad.svg",
       "config_schema": {
         "merchant_id": {
           "type": "string",
@@ -330,7 +330,7 @@
       "display_name": "Rocket",
       "provider_type": "payment",
       "description": "Dutch-Bangla Bank mobile financial service. Wide acceptance across Bangladesh.",
-      "logo_url": null,
+      "logo_url": "/integrations/rocket.svg",
       "config_schema": {
         "merchant_id": {
           "type": "string",
@@ -360,7 +360,7 @@
       "display_name": "SSLCommerz",
       "provider_type": "payment",
       "description": "Bangladesh's largest payment gateway. Supports cards, mobile banking, and internet banking.",
-      "logo_url": "https://www.sslcommerz.com/wp-content/uploads/2020/05/logo.png",
+      "logo_url": "/integrations/sslcommerz.svg",
       "config_schema": {
         "store_id": {
           "type": "string",
@@ -390,7 +390,7 @@
       "display_name": "Stripe",
       "provider_type": "payment",
       "description": "Global payment processing platform. Supports cards, wallets, and bank transfers in 135+ currencies.",
-      "logo_url": "https://images.ctfassets.net/fzn2n1nzq965/HTTOloNPhisV9P4hlMPNA/cacf1bb88b9fc492dfad34378d844280/Stripe_icon_-_square.svg",
+      "logo_url": "/integrations/stripe.svg",
       "config_schema": {
         "publishable_key": {
           "type": "string",

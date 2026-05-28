@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" role="img" aria-labelledby="title">
+  <title id="title">Rocket</title>
+  <rect width="240" height="160" rx="24" fill="#5b2c83"/>
+  <path d="M119 32c28 19 42 45 41 78l-24-10-17 30-17-30-24 10c-1-33 13-59 41-78Z" fill="#fff"/>
+  <circle cx="119" cy="68" r="12" fill="#5b2c83"/>
+  <text x="120" y="145" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" text-anchor="middle">Rocket</text>
+</svg>
