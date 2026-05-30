@@ -1,10 +1,14 @@
 """Application configuration using Pydantic Settings."""
 
+import logging
+import sys
 from functools import lru_cache
 from typing import Any
 
-from pydantic import PostgresDsn, field_validator
+from pydantic import PostgresDsn, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -54,6 +58,56 @@ class Settings(BaseSettings):
         """Parse comma-separated CORS origins."""
         return [origin.strip() for origin in v.split(",")]
 
+    @model_validator(mode="after")
+    def validate_security_settings(self) -> "Settings":
+        """
+        SECURITY: Validate required security settings at startup.
+
+        Fails fast if critical secrets are missing or weak.
+        """
+        errors = []
+
+        # Validate SECRET_KEY
+        if not self.SECRET_KEY or len(self.SECRET_KEY) < 32:
+            errors.append(
+                "SECRET_KEY must be set and at least 32 characters long. "
+                "Generate with: python -c 'import secrets; print(secrets.token_urlsafe(32))'"
+            )
+
+        # Validate INTEGRATION_ENCRYPTION_KEY (Fernet requires 32 url-safe base64-encoded bytes)
+        if not self.INTEGRATION_ENCRYPTION_KEY or len(self.INTEGRATION_ENCRYPTION_KEY) < 32:
+            errors.append(
+                "INTEGRATION_ENCRYPTION_KEY must be set and at least 32 characters long. "
+                "Generate with: python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'"
+            )
+
+        # Validate DATABASE_URL
+        if not self.DATABASE_URL:
+            errors.append("DATABASE_URL must be set")
+
+        # Warn about default MinIO credentials in production
+        if self.ENVIRONMENT == "production":
+            if self.MINIO_ACCESS_KEY == "minioadmin" or self.MINIO_SECRET_KEY == "minioadmin":
+                errors.append(
+                    "SECURITY WARNING: Using default MinIO credentials in production! "
+                    "Change MINIO_ACCESS_KEY and MINIO_SECRET_KEY immediately."
+                )
+
+            # Warn about weak rate limits in production
+            if self.RATE_LIMIT_LOGIN_PER_MINUTE > 10:
+                logger.warning(
+                    f"RATE_LIMIT_LOGIN_PER_MINUTE={self.RATE_LIMIT_LOGIN_PER_MINUTE} "
+                    "is high for production (recommended: 5-10)"
+                )
+
+        if errors:
+            error_msg = "\n❌ SECURITY CONFIGURATION ERRORS:\n" + "\n".join(f"  - {e}" for e in errors)
+            logger.error(error_msg)
+            print(error_msg, file=sys.stderr)
+            raise ValueError("Critical security configuration missing. See errors above.")
+
+        return self
+
     # Celery
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
@@ -101,10 +155,17 @@ class Settings(BaseSettings):
     # Security headers
     SECURITY_HEADERS_ENABLED: bool = True
     SECURITY_CSP_POLICY: str = (
-        "default-src 'none'; "
-        "base-uri 'none'; "
-        "frame-ancestors 'none'; "
-        "form-action 'none'"
+        # SECURITY: Balanced CSP policy - strict but functional
+        # Allows Next.js, API calls, and necessary resources
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "  # Next.js needs eval for HMR in dev
+        "style-src 'self' 'unsafe-inline'; "  # Tailwind inline styles
+        "img-src 'self' data: blob:; "  # Images, data URLs, blobs
+        "font-src 'self' data:; "
+        "connect-src 'self' http://localhost:* ws://localhost:*; "  # API + WebSocket for dev
+        "frame-ancestors 'none'; "  # Prevent clickjacking
+        "base-uri 'self'; "
+        "form-action 'self'"
     )
     SECURITY_HSTS_ENABLED: bool = True
     SECURITY_HSTS_MAX_AGE: int = 31536000

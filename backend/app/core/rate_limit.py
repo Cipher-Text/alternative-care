@@ -1,6 +1,8 @@
 """Redis-backed rate limiting utilities."""
 
+import logging
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from fastapi import Request
 from redis.asyncio import Redis
@@ -8,7 +10,12 @@ from redis.asyncio import Redis
 from app.core.config import settings
 from app.core.security import decode_token
 
+logger = logging.getLogger(__name__)
+
 _redis_client: Redis | None = None
+_redis_failure_count = 0
+_redis_last_failure: datetime | None = None
+_in_memory_fallback: dict[str, tuple[int, datetime]] = {}
 
 
 @dataclass
@@ -75,14 +82,57 @@ async def close_redis_client() -> None:
         _redis_client = None
 
 
+def _use_in_memory_fallback(key: str, limit: int, window: int) -> RateLimitResult:
+    """
+    In-memory fallback rate limiting when Redis is unavailable.
+
+    SECURITY: This is a temporary circuit breaker. It's less accurate than Redis
+    (process-local only) but prevents complete bypass of rate limits.
+    """
+    now = datetime.utcnow()
+
+    # Clean up old entries
+    _in_memory_fallback.clear() if len(_in_memory_fallback) > 10000 else None
+
+    if key in _in_memory_fallback:
+        count, expires_at = _in_memory_fallback[key]
+        if now < expires_at:
+            count += 1
+            _in_memory_fallback[key] = (count, expires_at)
+            remaining = max(0, limit - count)
+            retry_after = int((expires_at - now).total_seconds())
+            return RateLimitResult(
+                allowed=count <= limit,
+                limit=limit,
+                remaining=remaining,
+                retry_after=retry_after,
+                identifier=key,
+            )
+
+    # New window
+    expires_at = now + timedelta(seconds=window)
+    _in_memory_fallback[key] = (1, expires_at)
+
+    return RateLimitResult(
+        allowed=True,
+        limit=limit,
+        remaining=limit - 1,
+        retry_after=window,
+        identifier=key,
+    )
+
+
 async def enforce_rate_limit(
     request: Request, scope: str, limit: int, window_seconds: int | None = None
 ) -> RateLimitResult:
     """
-    Enforce rate limit using Redis atomic increment.
+    Enforce rate limit using Redis atomic increment with in-memory fallback.
 
-    Fail-open behavior is used if Redis is unavailable.
+    SECURITY: Uses circuit breaker pattern - if Redis fails repeatedly,
+    falls back to in-memory rate limiting instead of allowing unlimited requests.
     """
+    global _redis_failure_count, _redis_last_failure
+
     if limit <= 0:
         return RateLimitResult(
             allowed=True, limit=limit, remaining=0, retry_after=0, identifier="disabled"
@@ -91,6 +141,15 @@ async def enforce_rate_limit(
     identifier = _extract_user_identifier(request) or f"ip:{_extract_client_ip(request)}"
     key = _build_key(scope, identifier)
     window = window_seconds or settings.RATE_LIMIT_WINDOW_SECONDS
+
+    # Circuit breaker: if Redis failed recently, use in-memory fallback immediately
+    if _redis_failure_count >= 3 and _redis_last_failure:
+        time_since_failure = (datetime.utcnow() - _redis_last_failure).total_seconds()
+        if time_since_failure < 60:  # 60 second circuit break
+            logger.warning(
+                f"Rate limiting using in-memory fallback (Redis circuit breaker active)"
+            )
+            return _use_in_memory_fallback(key, limit, window)
 
     try:
         redis = await get_redis_client()
@@ -102,6 +161,10 @@ async def enforce_rate_limit(
         retry_after = max(1, ttl) if ttl > 0 else window
         remaining = max(0, limit - current)
 
+        # Reset failure counter on success
+        _redis_failure_count = 0
+        _redis_last_failure = None
+
         return RateLimitResult(
             allowed=current <= limit,
             limit=limit,
@@ -109,12 +172,15 @@ async def enforce_rate_limit(
             retry_after=retry_after,
             identifier=identifier,
         )
-    except Exception:
-        # Do not block production traffic when Redis is unavailable.
-        return RateLimitResult(
-            allowed=True,
-            limit=limit,
-            remaining=limit,
-            retry_after=0,
-            identifier=identifier,
+    except Exception as e:
+        # Track failures for circuit breaker
+        _redis_failure_count += 1
+        _redis_last_failure = datetime.utcnow()
+
+        logger.error(
+            f"Rate limit Redis error (failure #{_redis_failure_count}): {e}. "
+            f"Using in-memory fallback."
         )
+
+        # SECURITY: Use in-memory fallback instead of allowing unlimited requests
+        return _use_in_memory_fallback(key, limit, window)

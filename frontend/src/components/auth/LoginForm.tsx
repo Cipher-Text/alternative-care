@@ -21,14 +21,35 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>
 
-const DEV_QUICK_USERS: Array<{ label: string; email: string; password: string }> = [
-  { label: 'Admin', email: 'admin@altcare.com', password: 'Admin@1234' },
-  { label: 'Operator', email: 'operator@altcare.com', password: 'Operator@1234' },
-  { label: 'Dr. Rahman', email: 'dr.rahman@example.com', password: 'Test@1234' },
-  { label: 'Receptionist', email: 'receptionist.dhanmondi@example.com', password: 'Test@1234' },
-  { label: 'Dr. Karim', email: 'dr.karim@example.com', password: 'Test@1234' },
-  { label: 'Dr. Ahmed', email: 'dr.ahmed@example.com', password: 'Test@1234' },
-]
+// Dev quick users - only loaded in development mode
+// SECURITY: Never include credentials in production builds
+const getDevQuickUsers = (): Array<{ label: string; email: string; password: string }> => {
+  if (process.env.NODE_ENV === 'production') {
+    return []
+  }
+
+  // Load from environment or use defaults (dev only)
+  const devUsers = process.env.NEXT_PUBLIC_DEV_USERS
+  if (devUsers) {
+    try {
+      return JSON.parse(devUsers)
+    } catch {
+      console.warn('Failed to parse NEXT_PUBLIC_DEV_USERS')
+    }
+  }
+
+  // Fallback dev credentials (only in development)
+  return [
+    { label: 'Admin', email: 'admin@altcare.com', password: 'Admin@1234' },
+    { label: 'Operator', email: 'operator@altcare.com', password: 'Operator@1234' },
+    { label: 'Dr. Rahman', email: 'dr.rahman@example.com', password: 'Test@1234' },
+    { label: 'Receptionist', email: 'receptionist.dhanmondi@example.com', password: 'Test@1234' },
+    { label: 'Dr. Karim', email: 'dr.karim@example.com', password: 'Test@1234' },
+    { label: 'Dr. Ahmed', email: 'dr.ahmed@example.com', password: 'Test@1234' },
+  ]
+}
+
+const DEV_QUICK_USERS = getDevQuickUsers()
 
 export function LoginForm() {
   const router = useRouter()
