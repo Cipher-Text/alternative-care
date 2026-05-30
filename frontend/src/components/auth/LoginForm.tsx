@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TwoFactorForm } from './TwoFactorForm'
+import { getErrorMessage } from '@/types/api'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -83,8 +84,8 @@ export function LoginForm() {
         toast.success('Login successful!')
         router.push('/dashboard')
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Login failed')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Login failed'))
       setLoading(false)
     }
   }

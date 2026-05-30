@@ -6,10 +6,12 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.security import decode_token
+from app.shared.models.tenant import User
 
 # Security scheme
 security = HTTPBearer()
@@ -52,13 +54,19 @@ class CurrentUser:
 
 
 async def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    db: AsyncSession = Depends(get_db),
 ) -> CurrentUser:
     """
-    Get current user from JWT token.
+    Get current user from JWT token with token version validation.
+
+    SECURITY: Validates token_version to ensure tokens are invalidated on:
+    - Password change
+    - Email change
+    - Role change
 
     Raises:
-        HTTPException: If token is invalid or missing required claims
+        HTTPException: If token is invalid, expired, or version mismatch
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -79,6 +87,7 @@ async def get_current_user(
         if user_id is None:
             raise credentials_exception
 
+        token_version: int | None = payload.get("token_version")
         tenant_id: str | None = payload.get("tenant_id")
         role: str | None = payload.get("role")
         email: str | None = payload.get("email")
@@ -86,6 +95,32 @@ async def get_current_user(
 
         if not role or not email:
             raise credentials_exception
+
+        # SECURITY: Validate token version against database
+        # This invalidates old tokens on password/email/role changes
+        if token_version is not None:  # Skip check for old tokens without version
+            result = await db.execute(
+                select(User.token_version, User.is_active).where(User.id == user_id)
+            )
+            user_data = result.first()
+
+            if not user_data:
+                raise credentials_exception
+
+            db_token_version, is_active = user_data
+
+            if not is_active:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="User account is deactivated",
+                )
+
+            if token_version != db_token_version:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token has been invalidated. Please login again.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
 
         # Set tenant context for multi-tenant queries
         if tenant_id:

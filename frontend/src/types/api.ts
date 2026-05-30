@@ -1,0 +1,69 @@
+/**
+ * API Types - Common types for API requests and responses
+ */
+
+/**
+ * Standard API error response from backend
+ */
+export interface APIError {
+  detail: string
+  status?: number
+}
+
+/**
+ * Axios error with API error response
+ */
+export interface AxiosAPIError extends Error {
+  response?: {
+    data?: APIError
+    status: number
+  }
+  request?: unknown
+  config?: unknown
+}
+
+/**
+ * Type guard to check if error is an Axios API error
+ */
+export function isAxiosAPIError(error: unknown): error is AxiosAPIError {
+  return (
+    error !== null &&
+    typeof error === 'object' &&
+    'response' in error &&
+    typeof (error as AxiosAPIError).response === 'object'
+  )
+}
+
+/**
+ * Extract error message from unknown error
+ */
+export function getErrorMessage(error: unknown, fallback = 'An error occurred'): string {
+  if (isAxiosAPIError(error)) {
+    return error.response?.data?.detail || fallback
+  }
+  if (error instanceof Error) {
+    return error.message
+  }
+  if (typeof error === 'string') {
+    return error
+  }
+  return fallback
+}
+
+/**
+ * Pagination parameters
+ */
+export interface PaginationParams {
+  skip?: number
+  limit?: number
+}
+
+/**
+ * Paginated response wrapper
+ */
+export interface PaginatedResponse<T> {
+  items: T[]
+  total: number
+  skip: number
+  limit: number
+}

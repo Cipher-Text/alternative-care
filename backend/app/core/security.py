@@ -30,11 +30,14 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     Create JWT access token.
 
     Args:
-        data: Payload data (should include sub, tenant_id, role, email, plan)
+        data: Payload data (should include sub, tenant_id, role, email, plan, token_version)
         expires_delta: Custom expiration time
 
     Returns:
         Encoded JWT token
+
+    Note:
+        token_version is included in JWT payload to enable invalidation on password/email/role changes
     """
     to_encode = data.copy()
 
@@ -55,10 +58,13 @@ def create_refresh_token(data: dict[str, Any]) -> str:
     Create JWT refresh token.
 
     Args:
-        data: Payload data (minimal - just user_id)
+        data: Payload data (minimal - should include sub, token_version)
 
     Returns:
         Encoded JWT refresh token
+
+    Note:
+        token_version is included to enable invalidation on security-critical changes
     """
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)

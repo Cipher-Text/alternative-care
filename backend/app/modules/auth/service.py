@@ -270,9 +270,13 @@ class AuthService:
             "role": user.role,
             "email": user.email,
             "plan": plan,
+            "token_version": user.token_version,  # For token invalidation
         }
         access_token = create_access_token(token_data)
-        refresh_token = create_refresh_token({"sub": user.id})
+        refresh_token = create_refresh_token({
+            "sub": user.id,
+            "token_version": user.token_version,  # For token invalidation
+        })
 
         # Create session
         session_id = str(uuid.uuid4())
@@ -338,6 +342,9 @@ class AuthService:
                     detail="Invalid token",
                 )
 
+            # SECURITY: Validate token version
+            token_version = payload.get("token_version")
+
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -352,6 +359,13 @@ class AuthService:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User not found or inactive",
+            )
+
+        # SECURITY: Validate token version (invalidates tokens on password/email/role change)
+        if token_version is not None and token_version != user.token_version:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been invalidated. Please login again.",
             )
 
         # Verify session exists and not revoked
@@ -398,9 +412,13 @@ class AuthService:
             "role": user.role,
             "email": user.email,
             "plan": plan,
+            "token_version": user.token_version,  # For token invalidation
         }
         new_access_token = create_access_token(token_data)
-        new_refresh_token = create_refresh_token({"sub": user.id})
+        new_refresh_token = create_refresh_token({
+            "sub": user.id,
+            "token_version": user.token_version,  # For token invalidation
+        })
 
         # Update session with new refresh token (token rotation)
         valid_session.refresh_token_hash = get_password_hash(new_refresh_token)
@@ -619,6 +637,10 @@ class AuthService:
 
         # Update password
         user.password_hash = get_password_hash(new_password)
+
+        # SECURITY: Increment token_version to invalidate all existing JWTs
+        # This ensures old access tokens can't be used even if they haven't expired
+        user.token_version += 1
 
         # Revoke all active sessions after password change.
         # This invalidates all existing refresh tokens across devices.

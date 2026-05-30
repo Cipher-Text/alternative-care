@@ -127,6 +127,14 @@ class User(BaseAuditModel):
         nullable=True,
     )
 
+    # Token version for JWT invalidation
+    # Incremented on password change, email change, or role change to invalidate old tokens
+    token_version: Mapped[int] = mapped_column(
+        nullable=False,
+        default=1,
+        server_default="1",
+    )
+
     # Relationships
     tenant: Mapped["Tenant | None"] = relationship("Tenant", back_populates="users")
     sessions: Mapped[list["UserSession"]] = relationship("UserSession", back_populates="user")
