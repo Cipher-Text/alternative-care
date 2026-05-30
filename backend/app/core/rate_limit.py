@@ -89,7 +89,7 @@ def _use_in_memory_fallback(key: str, limit: int, window: int) -> RateLimitResul
     SECURITY: This is a temporary circuit breaker. It's less accurate than Redis
     (process-local only) but prevents complete bypass of rate limits.
     """
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # Clean up old entries
     _in_memory_fallback.clear() if len(_in_memory_fallback) > 10000 else None
@@ -144,7 +144,7 @@ async def enforce_rate_limit(
 
     # Circuit breaker: if Redis failed recently, use in-memory fallback immediately
     if _redis_failure_count >= 3 and _redis_last_failure:
-        time_since_failure = (datetime.utcnow() - _redis_last_failure).total_seconds()
+        time_since_failure = (datetime.now(timezone.utc) - _redis_last_failure).total_seconds()
         if time_since_failure < 60:  # 60 second circuit break
             logger.warning(
                 f"Rate limiting using in-memory fallback (Redis circuit breaker active)"
@@ -175,7 +175,7 @@ async def enforce_rate_limit(
     except Exception as e:
         # Track failures for circuit breaker
         _redis_failure_count += 1
-        _redis_last_failure = datetime.utcnow()
+        _redis_last_failure = datetime.now(timezone.utc)
 
         logger.error(
             f"Rate limit Redis error (failure #{_redis_failure_count}): {e}. "
