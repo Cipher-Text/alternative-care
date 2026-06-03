@@ -3,10 +3,21 @@
  */
 
 /**
+ * Pydantic validation error from FastAPI
+ */
+export interface ValidationError {
+  type: string
+  loc: (string | number)[]
+  msg: string
+  input?: unknown
+  ctx?: Record<string, unknown>
+}
+
+/**
  * Standard API error response from backend
  */
 export interface APIError {
-  detail: string
+  detail: string | ValidationError[]
   status?: number
 }
 
@@ -39,7 +50,21 @@ export function isAxiosAPIError(error: unknown): error is AxiosAPIError {
  */
 export function getErrorMessage(error: unknown, fallback = 'An error occurred'): string {
   if (isAxiosAPIError(error)) {
-    return error.response?.data?.detail || fallback
+    const detail = error.response?.data?.detail
+
+    // Handle string detail (normal error)
+    if (typeof detail === 'string') {
+      return detail
+    }
+
+    // Handle array of validation errors (Pydantic)
+    if (Array.isArray(detail) && detail.length > 0) {
+      // Return the first error message
+      const firstError = detail[0] as ValidationError
+      return firstError.msg || fallback
+    }
+
+    return fallback
   }
   if (error instanceof Error) {
     return error.message
