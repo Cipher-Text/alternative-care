@@ -32,7 +32,7 @@
       "id": 5,
       "name_en": "Barisal",
       "name_bn": "বরিশাল",
-      "latitude": 22.7010,
+      "latitude": 22.701,
       "longitude": 90.3535
     },
     {
@@ -80,7 +80,7 @@
       "name_en": "Narayanganj",
       "name_bn": "নারায়ণগঞ্জ",
       "latitude": 23.6238,
-      "longitude": 90.5000
+      "longitude": 90.5
     },
     {
       "id": 4,
@@ -95,7 +95,7 @@
       "division_id": 1,
       "name_en": "Kishoreganj",
       "name_bn": "কিশোরগঞ্জ",
-      "latitude": 24.4260,
+      "latitude": 24.426,
       "longitude": 90.7827
     },
     {
@@ -143,7 +143,7 @@
       "division_id": 1,
       "name_en": "Faridpur",
       "name_bn": "ফরিদপুর",
-      "latitude": 23.6070,
+      "latitude": 23.607,
       "longitude": 89.8429
     },
     {
@@ -151,7 +151,7 @@
       "division_id": 1,
       "name_en": "Gopalganj",
       "name_bn": "গোপালগঞ্জ",
-      "latitude": 23.0050,
+      "latitude": 23.005,
       "longitude": 89.8266
     },
     {
@@ -264,7 +264,7 @@
       "name_en": "Bogra",
       "name_bn": "বগুড়া",
       "latitude": 24.8465,
-      "longitude": 89.3770
+      "longitude": 89.377
     },
     {
       "id": 27,
@@ -351,7 +351,7 @@
       "division_id": 4,
       "name_en": "Jhenaidah",
       "name_bn": "ঝিনাইদহ",
-      "latitude": 23.5450,
+      "latitude": 23.545,
       "longitude": 89.1539
     },
     {
@@ -376,7 +376,7 @@
       "name_en": "Chuadanga",
       "name_bn": "চুয়াডাঙ্গা",
       "latitude": 23.6401,
-      "longitude": 88.8410
+      "longitude": 88.841
     },
     {
       "id": 41,
@@ -399,7 +399,7 @@
       "division_id": 5,
       "name_en": "Barisal",
       "name_bn": "বরিশাল",
-      "latitude": 22.7010,
+      "latitude": 22.701,
       "longitude": 90.3535
     },
     {
@@ -415,7 +415,7 @@
       "division_id": 5,
       "name_en": "Barguna",
       "name_bn": "বরগুনা",
-      "latitude": 22.1590,
+      "latitude": 22.159,
       "longitude": 90.1119
     },
     {
@@ -472,7 +472,7 @@
       "name_en": "Sunamganj",
       "name_bn": "সুনামগঞ্জ",
       "latitude": 25.0658,
-      "longitude": 91.3950
+      "longitude": 91.395
     },
     {
       "id": 53,
@@ -496,7 +496,7 @@
       "name_en": "Gaibandha",
       "name_bn": "গাইবান্ধা",
       "latitude": 25.3287,
-      "longitude": 89.5280
+      "longitude": 89.528
     },
     {
       "id": 56,
@@ -520,7 +520,7 @@
       "name_en": "Nilphamari",
       "name_bn": "নীলফামারী",
       "latitude": 25.9317,
-      "longitude": 88.8560
+      "longitude": 88.856
     },
     {
       "id": 59,
@@ -574,83 +574,3963 @@
   "upazilas": [
     {
       "id": 1,
-      "district_id": 1,
-      "name_en": "Dhanmondi",
-      "name_bn": "ধানমন্ডি",
-      "latitude": 23.7465,
-      "longitude": 90.3763
+      "district_id": 16,
+      "name_en": "Debidwar",
+      "name_bn": "দেবিদ্বার",
+      "latitude": 23.578271,
+      "longitude": 90.997854
     },
     {
       "id": 2,
-      "district_id": 1,
-      "name_en": "Gulshan",
-      "name_bn": "গুলশান",
-      "latitude": 23.7808,
-      "longitude": 90.4168
+      "district_id": 16,
+      "name_en": "Barura",
+      "name_bn": "বরুড়া",
+      "latitude": 23.355705,
+      "longitude": 91.039412
     },
     {
       "id": 3,
-      "district_id": 1,
-      "name_en": "Mirpur",
-      "name_bn": "মিরপুর",
-      "latitude": 23.8223,
-      "longitude": 90.3654
+      "district_id": 16,
+      "name_en": "Brahmanpara",
+      "name_bn": "ব্রাহ্মণপাড়া",
+      "latitude": 23.645245,
+      "longitude": 91.096597
     },
     {
       "id": 4,
-      "district_id": 1,
-      "name_en": "Mohammadpur",
-      "name_bn": "মোহাম্মদপুর",
-      "latitude": 23.7679,
-      "longitude": 90.3535
+      "district_id": 16,
+      "name_en": "Chandina",
+      "name_bn": "চান্দিনা",
+      "latitude": 23.445899,
+      "longitude": 90.946455
     },
     {
       "id": 5,
-      "district_id": 1,
-      "name_en": "Uttara",
-      "name_bn": "উত্তরা",
-      "latitude": 23.8759,
-      "longitude": 90.3795
+      "district_id": 16,
+      "name_en": "Chauddagram",
+      "name_bn": "চৌদ্দগ্রাম",
+      "latitude": 23.220331,
+      "longitude": 91.280378
     },
     {
       "id": 6,
-      "district_id": 14,
-      "name_en": "Hathazari",
-      "name_bn": "হাটহাজারী",
-      "latitude": 22.5207,
-      "longitude": 91.7919
+      "district_id": 16,
+      "name_en": "Daudkandi",
+      "name_bn": "দাউদকান্দি",
+      "latitude": 23.502668,
+      "longitude": 90.773082
     },
     {
       "id": 7,
-      "district_id": 14,
-      "name_en": "Raozan",
-      "name_bn": "রাউজান",
-      "latitude": 22.5431,
-      "longitude": 91.9615
+      "district_id": 16,
+      "name_en": "Homna",
+      "name_bn": "হোমনা",
+      "latitude": 23.67915,
+      "longitude": 90.812846
     },
     {
       "id": 8,
-      "district_id": 14,
-      "name_en": "Sitakunda",
-      "name_bn": "সীতাকুণ্ড",
-      "latitude": 22.6333,
-      "longitude": 91.6500
+      "district_id": 16,
+      "name_en": "Laksam",
+      "name_bn": "লাকসাম",
+      "latitude": 23.238786,
+      "longitude": 91.105273
     },
     {
       "id": 9,
-      "district_id": 25,
-      "name_en": "Paba",
-      "name_bn": "পবা",
-      "latitude": 24.3614,
-      "longitude": 88.6201
+      "district_id": 16,
+      "name_en": "Muradnagar",
+      "name_bn": "মুরাদনগর",
+      "latitude": 23.677578,
+      "longitude": 90.943671
     },
     {
       "id": 10,
+      "district_id": 16,
+      "name_en": "Nangalkot",
+      "name_bn": "নাঙ্গলকোট",
+      "latitude": 23.140077,
+      "longitude": 91.209338
+    },
+    {
+      "id": 11,
+      "district_id": 16,
+      "name_en": "Comilla Sadar",
+      "name_bn": "কুমিল্লা সদর",
+      "latitude": 23.469893,
+      "longitude": 91.171198
+    },
+    {
+      "id": 12,
+      "district_id": 16,
+      "name_en": "Meghna",
+      "name_bn": "মেঘনা",
+      "latitude": 23.624775,
+      "longitude": 90.690857
+    },
+    {
+      "id": 13,
+      "district_id": 16,
+      "name_en": "Monohargonj",
+      "name_bn": "মনোহরগঞ্জ",
+      "latitude": 23.140234,
+      "longitude": 91.066968
+    },
+    {
+      "id": 14,
+      "district_id": 16,
+      "name_en": "Sadarsouth",
+      "name_bn": "সদর দক্ষিণ",
+      "latitude": 23.358018,
+      "longitude": 91.183261
+    },
+    {
+      "id": 15,
+      "district_id": 16,
+      "name_en": "Titas",
+      "name_bn": "তিতাস",
+      "latitude": 23.589655,
+      "longitude": 90.796969
+    },
+    {
+      "id": 16,
+      "district_id": 16,
+      "name_en": "Burichang",
+      "name_bn": "বুড়িচং",
+      "latitude": 23.533709,
+      "longitude": 91.117008
+    },
+    {
+      "id": 17,
+      "district_id": 16,
+      "name_en": "Lalmai",
+      "name_bn": "লালমাই",
+      "latitude": 23.359,
+      "longitude": 91.139
+    },
+    {
+      "id": 18,
+      "district_id": 17,
+      "name_en": "Chhagalnaiya",
+      "name_bn": "ছাগলনাইয়া",
+      "latitude": 23.016982,
+      "longitude": 91.506995
+    },
+    {
+      "id": 19,
+      "district_id": 17,
+      "name_en": "Feni Sadar",
+      "name_bn": "ফেনী সদর",
+      "latitude": 22.990027,
+      "longitude": 91.415923
+    },
+    {
+      "id": 20,
+      "district_id": 17,
+      "name_en": "Sonagazi",
+      "name_bn": "সোনাগাজী",
+      "latitude": 22.861059,
+      "longitude": 91.39559
+    },
+    {
+      "id": 21,
+      "district_id": 17,
+      "name_en": "Fulgazi",
+      "name_bn": "ফুলগাজী",
+      "latitude": 23.118004,
+      "longitude": 91.442519
+    },
+    {
+      "id": 22,
+      "district_id": 17,
+      "name_en": "Parshuram",
+      "name_bn": "পরশুরাম",
+      "latitude": 23.201252,
+      "longitude": 91.439737
+    },
+    {
+      "id": 23,
+      "district_id": 17,
+      "name_en": "Daganbhuiyan",
+      "name_bn": "দাগনভূঞা",
+      "latitude": 22.970564,
+      "longitude": 91.299728
+    },
+    {
+      "id": 24,
+      "district_id": 18,
+      "name_en": "Brahmanbaria Sadar",
+      "name_bn": "ব্রাহ্মণবাড়িয়া সদর",
+      "latitude": 23.950555,
+      "longitude": 91.119017
+    },
+    {
+      "id": 25,
+      "district_id": 18,
+      "name_en": "Kasba",
+      "name_bn": "কসবা",
+      "latitude": 23.763032,
+      "longitude": 91.130315
+    },
+    {
+      "id": 26,
+      "district_id": 18,
+      "name_en": "Nasirnagar",
+      "name_bn": "নাসিরনগর",
+      "latitude": 24.182206,
+      "longitude": 91.187454
+    },
+    {
+      "id": 27,
+      "district_id": 18,
+      "name_en": "Sarail",
+      "name_bn": "সরাইল",
+      "latitude": 24.103234,
+      "longitude": 91.112179
+    },
+    {
+      "id": 28,
+      "district_id": 18,
+      "name_en": "Ashuganj",
+      "name_bn": "আশুগঞ্জ",
+      "latitude": 24.015761,
+      "longitude": 91.018372
+    },
+    {
+      "id": 29,
+      "district_id": 18,
+      "name_en": "Akhaura",
+      "name_bn": "আখাউড়া",
+      "latitude": 23.838587,
+      "longitude": 91.195093
+    },
+    {
+      "id": 30,
+      "district_id": 18,
+      "name_en": "Nabinagar",
+      "name_bn": "নবীনগর",
+      "latitude": 23.863547,
+      "longitude": 90.980371
+    },
+    {
+      "id": 31,
+      "district_id": 18,
+      "name_en": "Bancharampur",
+      "name_bn": "বাঞ্ছারামপুর",
+      "latitude": 23.780114,
+      "longitude": 90.807044
+    },
+    {
+      "id": 32,
+      "district_id": 18,
+      "name_en": "Bijoynagar",
+      "name_bn": "বিজয়নগর",
+      "latitude": 23.994443,
+      "longitude": 91.228242
+    },
+    {
+      "id": 33,
+      "district_id": 19,
+      "name_en": "Rangamati Sadar",
+      "name_bn": "রাঙ্গামাটি সদর",
+      "latitude": 22.636544,
+      "longitude": 92.198984
+    },
+    {
+      "id": 34,
+      "district_id": 19,
+      "name_en": "Kaptai",
+      "name_bn": "কাপ্তাই",
+      "latitude": 22.459925,
+      "longitude": 92.193404
+    },
+    {
+      "id": 35,
+      "district_id": 19,
+      "name_en": "Kawkhali",
+      "name_bn": "কাউখালী",
+      "latitude": 22.620746,
+      "longitude": 92.009507
+    },
+    {
+      "id": 36,
+      "district_id": 19,
+      "name_en": "Baghaichari",
+      "name_bn": "বাঘাইছড়ি",
+      "latitude": 23.373103,
+      "longitude": 92.22938
+    },
+    {
+      "id": 37,
+      "district_id": 19,
+      "name_en": "Barkal",
+      "name_bn": "বরকল",
+      "latitude": 22.845419,
+      "longitude": 92.344653
+    },
+    {
+      "id": 38,
+      "district_id": 19,
+      "name_en": "Langadu",
+      "name_bn": "লংগদু",
+      "latitude": 22.950492,
+      "longitude": 92.208863
+    },
+    {
+      "id": 39,
+      "district_id": 19,
+      "name_en": "Rajasthali",
+      "name_bn": "রাজস্থলী",
+      "latitude": 22.378544,
+      "longitude": 92.241642
+    },
+    {
+      "id": 40,
+      "district_id": 19,
+      "name_en": "Belaichari",
+      "name_bn": "বিলাইছড়ি",
+      "latitude": 22.302771,
+      "longitude": 92.485225
+    },
+    {
+      "id": 41,
+      "district_id": 19,
+      "name_en": "Juraichari",
+      "name_bn": "জুরাছড়ি",
+      "latitude": 22.630903,
+      "longitude": 92.422501
+    },
+    {
+      "id": 42,
+      "district_id": 19,
+      "name_en": "Naniarchar",
+      "name_bn": "নানিয়ারচর",
+      "latitude": 22.821718,
+      "longitude": 92.069383
+    },
+    {
+      "id": 43,
+      "district_id": 22,
+      "name_en": "Noakhali Sadar",
+      "name_bn": "নোয়াখালী সদর",
+      "latitude": 22.80235,
+      "longitude": 91.060616
+    },
+    {
+      "id": 44,
+      "district_id": 22,
+      "name_en": "Companiganj",
+      "name_bn": "কোম্পানীগঞ্জ",
+      "latitude": 25.079613,
+      "longitude": 91.773364
+    },
+    {
+      "id": 45,
+      "district_id": 22,
+      "name_en": "Begumganj",
+      "name_bn": "বেগমগঞ্জ",
+      "latitude": 22.930558,
+      "longitude": 91.095173
+    },
+    {
+      "id": 46,
+      "district_id": 22,
+      "name_en": "Hatia",
+      "name_bn": "হাতিয়া",
+      "latitude": 22.309741,
+      "longitude": 91.09118
+    },
+    {
+      "id": 47,
+      "district_id": 22,
+      "name_en": "Subarnachar",
+      "name_bn": "সুবর্ণচর",
+      "latitude": 22.620401,
+      "longitude": 91.151373
+    },
+    {
+      "id": 48,
+      "district_id": 22,
+      "name_en": "Kabirhat",
+      "name_bn": "কবিরহাট",
+      "latitude": 22.813316,
+      "longitude": 91.199927
+    },
+    {
+      "id": 49,
+      "district_id": 22,
+      "name_en": "Senbug",
+      "name_bn": "সেনবাগ",
+      "latitude": 22.992418,
+      "longitude": 91.212123
+    },
+    {
+      "id": 50,
+      "district_id": 22,
+      "name_en": "Chatkhil",
+      "name_bn": "চাটখিল",
+      "latitude": 23.053807,
+      "longitude": 90.963852
+    },
+    {
+      "id": 51,
+      "district_id": 22,
+      "name_en": "Sonaimori",
+      "name_bn": "সোনাইমুড়ী",
+      "latitude": 23.026241,
+      "longitude": 91.077696
+    },
+    {
+      "id": 52,
+      "district_id": 24,
+      "name_en": "Haimchar",
+      "name_bn": "হাইমচর",
+      "latitude": 23.069747,
+      "longitude": 90.626577
+    },
+    {
+      "id": 53,
+      "district_id": 24,
+      "name_en": "Kachua",
+      "name_bn": "কচুয়া",
+      "latitude": 23.36266,
+      "longitude": 90.881683
+    },
+    {
+      "id": 54,
+      "district_id": 24,
+      "name_en": "Shahrasti",
+      "name_bn": "শাহরাস্তি\t",
+      "latitude": 23.208685,
+      "longitude": 90.956939
+    },
+    {
+      "id": 55,
+      "district_id": 24,
+      "name_en": "Chandpur Sadar",
+      "name_bn": "চাঁদপুর সদর",
+      "latitude": 23.230184,
+      "longitude": 90.685654
+    },
+    {
+      "id": 56,
+      "district_id": 24,
+      "name_en": "Matlab South",
+      "name_bn": "মতলব দক্ষিণ",
+      "latitude": 23.349883,
+      "longitude": 90.746907
+    },
+    {
+      "id": 57,
+      "district_id": 24,
+      "name_en": "Hajiganj",
+      "name_bn": "হাজীগঞ্জ",
+      "latitude": 23.262991,
+      "longitude": 90.837203
+    },
+    {
+      "id": 58,
+      "district_id": 24,
+      "name_en": "Matlab North",
+      "name_bn": "মতলব উত্তর",
+      "latitude": 23.413715,
+      "longitude": 90.641959
+    },
+    {
+      "id": 59,
+      "district_id": 24,
+      "name_en": "Faridgonj",
+      "name_bn": "ফরিদগঞ্জ",
+      "latitude": 23.146198,
+      "longitude": 90.760926
+    },
+    {
+      "id": 60,
+      "district_id": 23,
+      "name_en": "Lakshmipur Sadar",
+      "name_bn": "লক্ষ্মীপুর সদর",
+      "latitude": 22.92115,
+      "longitude": 90.863199
+    },
+    {
+      "id": 61,
+      "district_id": 23,
+      "name_en": "Kamalnagar",
+      "name_bn": "কমলনগর",
+      "latitude": 22.767668,
+      "longitude": 90.865334
+    },
+    {
+      "id": 62,
+      "district_id": 23,
+      "name_en": "Raipur",
+      "name_bn": "রায়পুর",
+      "latitude": 22.999794,
+      "longitude": 90.730974
+    },
+    {
+      "id": 63,
+      "district_id": 23,
+      "name_en": "Ramgati",
+      "name_bn": "রামগতি",
+      "latitude": 22.64492,
+      "longitude": 90.945167
+    },
+    {
+      "id": 64,
+      "district_id": 23,
+      "name_en": "Ramganj",
+      "name_bn": "রামগঞ্জ",
+      "latitude": 23.098931,
+      "longitude": 90.872579
+    },
+    {
+      "id": 65,
+      "district_id": 14,
+      "name_en": "Rangunia",
+      "name_bn": "রাঙ্গুনিয়া",
+      "latitude": 22.465002,
+      "longitude": 92.066572
+    },
+    {
+      "id": 66,
+      "district_id": 14,
+      "name_en": "Sitakunda",
+      "name_bn": "সীতাকুন্ড",
+      "latitude": 22.558826,
+      "longitude": 91.682784
+    },
+    {
+      "id": 67,
+      "district_id": 14,
+      "name_en": "Mirsharai",
+      "name_bn": "মীরসরাই",
+      "latitude": 22.810015,
+      "longitude": 91.550186
+    },
+    {
+      "id": 68,
+      "district_id": 14,
+      "name_en": "Patiya",
+      "name_bn": "পটিয়া",
+      "latitude": 22.292097,
+      "longitude": 91.963837
+    },
+    {
+      "id": 69,
+      "district_id": 14,
+      "name_en": "Sandwip",
+      "name_bn": "সন্দ্বীপ",
+      "latitude": 22.52472,
+      "longitude": 91.453414
+    },
+    {
+      "id": 70,
+      "district_id": 14,
+      "name_en": "Banshkhali",
+      "name_bn": "বাঁশখালী",
+      "latitude": 22.015944,
+      "longitude": 91.939776
+    },
+    {
+      "id": 71,
+      "district_id": 14,
+      "name_en": "Boalkhali",
+      "name_bn": "বোয়ালখালী",
+      "latitude": 22.376792,
+      "longitude": 91.969188
+    },
+    {
+      "id": 72,
+      "district_id": 14,
+      "name_en": "Anwara",
+      "name_bn": "আনোয়ারা",
+      "latitude": 22.201725,
+      "longitude": 91.881199
+    },
+    {
+      "id": 73,
+      "district_id": 14,
+      "name_en": "Chandanaish",
+      "name_bn": "চন্দনাইশ",
+      "latitude": 22.212116,
+      "longitude": 92.06338
+    },
+    {
+      "id": 74,
+      "district_id": 14,
+      "name_en": "Satkania",
+      "name_bn": "সাতকানিয়া",
+      "latitude": 22.105183,
+      "longitude": 92.059553
+    },
+    {
+      "id": 75,
+      "district_id": 14,
+      "name_en": "Lohagara",
+      "name_bn": "লোহাগাড়া",
+      "latitude": 21.98622,
+      "longitude": 92.111033
+    },
+    {
+      "id": 76,
+      "district_id": 14,
+      "name_en": "Hathazari",
+      "name_bn": "হাটহাজারী",
+      "latitude": 22.527895,
+      "longitude": 91.797881
+    },
+    {
+      "id": 77,
+      "district_id": 14,
+      "name_en": "Fatikchhari",
+      "name_bn": "ফটিকছড়ি",
+      "latitude": 22.756337,
+      "longitude": 91.747192
+    },
+    {
+      "id": 78,
+      "district_id": 14,
+      "name_en": "Raozan",
+      "name_bn": "রাউজান",
+      "latitude": 22.520726,
+      "longitude": 91.916942
+    },
+    {
+      "id": 79,
+      "district_id": 14,
+      "name_en": "Karnafuli",
+      "name_bn": "কর্ণফুলী",
+      "latitude": 22.3,
+      "longitude": 91.9
+    },
+    {
+      "id": 80,
+      "district_id": 15,
+      "name_en": "Coxsbazar Sadar",
+      "name_bn": "কক্সবাজার সদর",
+      "latitude": 21.505579,
+      "longitude": 92.034744
+    },
+    {
+      "id": 81,
+      "district_id": 15,
+      "name_en": "Chakaria",
+      "name_bn": "চকরিয়া",
+      "latitude": 21.740201,
+      "longitude": 92.052378
+    },
+    {
+      "id": 82,
+      "district_id": 15,
+      "name_en": "Kutubdia",
+      "name_bn": "কুতুবদিয়া",
+      "latitude": 21.837838,
+      "longitude": 91.862454
+    },
+    {
+      "id": 83,
+      "district_id": 15,
+      "name_en": "Ukhiya",
+      "name_bn": "উখিয়া",
+      "latitude": 21.229461,
+      "longitude": 92.115895
+    },
+    {
+      "id": 84,
+      "district_id": 15,
+      "name_en": "Moheshkhali",
+      "name_bn": "মহেশখালী",
+      "latitude": 21.60912,
+      "longitude": 91.921056
+    },
+    {
+      "id": 85,
+      "district_id": 15,
+      "name_en": "Pekua",
+      "name_bn": "পেকুয়া",
+      "latitude": 21.818183,
+      "longitude": 91.952726
+    },
+    {
+      "id": 86,
+      "district_id": 15,
+      "name_en": "Ramu",
+      "name_bn": "রামু",
+      "latitude": 21.440754,
+      "longitude": 92.121103
+    },
+    {
+      "id": 87,
+      "district_id": 15,
+      "name_en": "Teknaf",
+      "name_bn": "টেকনাফ",
+      "latitude": 20.992161,
+      "longitude": 92.223605
+    },
+    {
+      "id": 88,
+      "district_id": 21,
+      "name_en": "Khagrachhari Sadar",
+      "name_bn": "খাগড়াছড়ি সদর",
+      "latitude": 23.128595,
+      "longitude": 91.986072
+    },
+    {
+      "id": 89,
+      "district_id": 21,
+      "name_en": "Dighinala",
+      "name_bn": "দিঘীনালা",
+      "latitude": 23.399366,
+      "longitude": 92.04981
+    },
+    {
+      "id": 90,
+      "district_id": 21,
+      "name_en": "Panchari",
+      "name_bn": "পানছড়ি",
+      "latitude": 23.319748,
+      "longitude": 91.910114
+    },
+    {
+      "id": 91,
+      "district_id": 21,
+      "name_en": "Laxmichhari",
+      "name_bn": "লক্ষীছড়ি",
+      "latitude": 22.784918,
+      "longitude": 91.929026
+    },
+    {
+      "id": 92,
+      "district_id": 21,
+      "name_en": "Mohalchari",
+      "name_bn": "মহালছড়ি",
+      "latitude": 22.951505,
+      "longitude": 92.023247
+    },
+    {
+      "id": 93,
+      "district_id": 21,
+      "name_en": "Manikchari",
+      "name_bn": "মানিকছড়ি",
+      "latitude": 22.841228,
+      "longitude": 91.819057
+    },
+    {
+      "id": 94,
+      "district_id": 21,
+      "name_en": "Ramgarh",
+      "name_bn": "রামগড়",
+      "latitude": 22.93498,
+      "longitude": 91.830977
+    },
+    {
+      "id": 95,
+      "district_id": 21,
+      "name_en": "Matiranga",
+      "name_bn": "মাটিরাঙ্গা",
+      "latitude": 23.104385,
+      "longitude": 91.854775
+    },
+    {
+      "id": 96,
+      "district_id": 21,
+      "name_en": "Guimara",
+      "name_bn": "গুইমারা",
+      "latitude": 22.983333,
+      "longitude": 91.883333
+    },
+    {
+      "id": 97,
+      "district_id": 20,
+      "name_en": "Bandarban Sadar",
+      "name_bn": "বান্দরবান সদর",
+      "latitude": 22.171117,
+      "longitude": 92.218186
+    },
+    {
+      "id": 98,
+      "district_id": 20,
+      "name_en": "Alikadam",
+      "name_bn": "আলীকদম",
+      "latitude": 21.600085,
+      "longitude": 92.384558
+    },
+    {
+      "id": 99,
+      "district_id": 20,
+      "name_en": "Naikhongchhari",
+      "name_bn": "নাইক্ষ্যংছড়ি",
+      "latitude": 21.468959,
+      "longitude": 92.228667
+    },
+    {
+      "id": 100,
+      "district_id": 20,
+      "name_en": "Rowangchhari",
+      "name_bn": "রোয়াংছড়ি",
+      "latitude": 22.209093,
+      "longitude": 92.339663
+    },
+    {
+      "id": 101,
+      "district_id": 20,
+      "name_en": "Lama",
+      "name_bn": "লামা",
+      "latitude": 21.818131,
+      "longitude": 92.207615
+    },
+    {
+      "id": 102,
+      "district_id": 20,
+      "name_en": "Ruma",
+      "name_bn": "রুমা",
+      "latitude": 22.012605,
+      "longitude": 92.429365
+    },
+    {
+      "id": 103,
+      "district_id": 20,
+      "name_en": "Thanchi",
+      "name_bn": "থানচি",
+      "latitude": 21.637225,
+      "longitude": 92.530964
+    },
+    {
+      "id": 104,
+      "district_id": 28,
+      "name_en": "Belkuchi",
+      "name_bn": "বেলকুচি",
+      "latitude": 24.295268,
+      "longitude": 89.702105
+    },
+    {
+      "id": 105,
+      "district_id": 28,
+      "name_en": "Chauhali",
+      "name_bn": "চৌহালি",
+      "latitude": 24.136281,
+      "longitude": 89.756635
+    },
+    {
+      "id": 106,
+      "district_id": 28,
+      "name_en": "Kamarkhand",
+      "name_bn": "কামারখন্দ",
+      "latitude": 24.375131,
+      "longitude": 89.643414
+    },
+    {
+      "id": 107,
+      "district_id": 28,
+      "name_en": "Kazipur",
+      "name_bn": "কাজীপুর",
+      "latitude": 24.670165,
+      "longitude": 89.687237
+    },
+    {
+      "id": 108,
+      "district_id": 28,
+      "name_en": "Raigonj",
+      "name_bn": "রায়গঞ্জ",
+      "latitude": 24.492265,
+      "longitude": 89.515561
+    },
+    {
+      "id": 109,
+      "district_id": 28,
+      "name_en": "Shahjadpur",
+      "name_bn": "শাহজাদপুর",
+      "latitude": 24.162792,
+      "longitude": 89.630073
+    },
+    {
+      "id": 110,
+      "district_id": 28,
+      "name_en": "Sirajganj Sadar",
+      "name_bn": "সিরাজগঞ্জ সদর",
+      "latitude": 24.494046,
+      "longitude": 89.68849
+    },
+    {
+      "id": 111,
+      "district_id": 28,
+      "name_en": "Tarash",
+      "name_bn": "তাড়াশ",
+      "latitude": 24.44313,
+      "longitude": 89.358146
+    },
+    {
+      "id": 112,
+      "district_id": 28,
+      "name_en": "Ullapara",
+      "name_bn": "উল্লাপাড়া",
+      "latitude": 24.3273,
+      "longitude": 89.518059
+    },
+    {
+      "id": 113,
+      "district_id": 27,
+      "name_en": "Sujanagar",
+      "name_bn": "সুজানগর",
+      "latitude": 23.896721,
+      "longitude": 89.512718
+    },
+    {
+      "id": 114,
+      "district_id": 27,
+      "name_en": "Ishurdi",
+      "name_bn": "ঈশ্বরদী",
+      "latitude": 24.077802,
+      "longitude": 89.097211
+    },
+    {
+      "id": 115,
+      "district_id": 27,
+      "name_en": "Bhangura",
+      "name_bn": "ভাঙ্গুড়া",
+      "latitude": 24.239045,
+      "longitude": 89.392685
+    },
+    {
+      "id": 116,
+      "district_id": 27,
+      "name_en": "Pabna Sadar",
+      "name_bn": "পাবনা সদর",
+      "latitude": 23.993758,
+      "longitude": 89.281446
+    },
+    {
+      "id": 117,
+      "district_id": 27,
+      "name_en": "Bera",
+      "name_bn": "বেড়া",
+      "latitude": 23.942392,
+      "longitude": 89.656039
+    },
+    {
+      "id": 118,
+      "district_id": 27,
+      "name_en": "Atghoria",
+      "name_bn": "আটঘরিয়া",
+      "latitude": 24.108327,
+      "longitude": 89.281923
+    },
+    {
+      "id": 119,
+      "district_id": 27,
+      "name_en": "Chatmohar",
+      "name_bn": "চাটমোহর",
+      "latitude": 24.225188,
+      "longitude": 89.302023
+    },
+    {
+      "id": 120,
+      "district_id": 27,
+      "name_en": "Santhia",
+      "name_bn": "সাঁথিয়া",
+      "latitude": 24.042188,
+      "longitude": 89.516759
+    },
+    {
+      "id": 121,
+      "district_id": 27,
+      "name_en": "Faridpur",
+      "name_bn": "ফরিদপুর",
+      "latitude": 24.1606,
+      "longitude": 89.448808
+    },
+    {
+      "id": 122,
+      "district_id": 26,
+      "name_en": "Kahaloo",
+      "name_bn": "কাহালু",
+      "latitude": 24.832261,
+      "longitude": 89.250485
+    },
+    {
+      "id": 123,
+      "district_id": 26,
+      "name_en": "Bogra Sadar",
+      "name_bn": "বগুড়া সদর",
+      "latitude": 24.895544,
+      "longitude": 89.355668
+    },
+    {
+      "id": 124,
+      "district_id": 26,
+      "name_en": "Shariakandi",
+      "name_bn": "সারিয়াকান্দি",
+      "latitude": 24.881195,
+      "longitude": 89.614058
+    },
+    {
+      "id": 125,
+      "district_id": 26,
+      "name_en": "Shajahanpur",
+      "name_bn": "শাজাহানপুর",
+      "latitude": 24.760135,
+      "longitude": 89.375036
+    },
+    {
+      "id": 126,
+      "district_id": 26,
+      "name_en": "Dupchanchia",
+      "name_bn": "দুপচাচিঁয়া",
+      "latitude": 24.883688,
+      "longitude": 89.139209
+    },
+    {
+      "id": 127,
+      "district_id": 26,
+      "name_en": "Adamdighi",
+      "name_bn": "আদমদিঘি",
+      "latitude": 24.799152,
+      "longitude": 89.059542
+    },
+    {
+      "id": 128,
+      "district_id": 26,
+      "name_en": "Nondigram",
+      "name_bn": "নন্দিগ্রাম",
+      "latitude": 24.681296,
+      "longitude": 89.226759
+    },
+    {
+      "id": 129,
+      "district_id": 26,
+      "name_en": "Sonatala",
+      "name_bn": "সোনাতলা",
+      "latitude": 24.997051,
+      "longitude": 89.513959
+    },
+    {
+      "id": 130,
+      "district_id": 26,
+      "name_en": "Dhunot",
+      "name_bn": "ধুনট",
+      "latitude": 24.682545,
+      "longitude": 89.550314
+    },
+    {
+      "id": 131,
+      "district_id": 26,
+      "name_en": "Gabtali",
+      "name_bn": "গাবতলী",
+      "latitude": 24.88677,
+      "longitude": 89.465026
+    },
+    {
+      "id": 132,
+      "district_id": 26,
+      "name_en": "Sherpur",
+      "name_bn": "শেরপুর",
+      "latitude": 24.629118,
+      "longitude": 89.42234
+    },
+    {
+      "id": 133,
+      "district_id": 26,
+      "name_en": "Shibganj",
+      "name_bn": "শিবগঞ্জ",
+      "latitude": 25.016559,
+      "longitude": 89.306728
+    },
+    {
+      "id": 134,
+      "district_id": 25,
+      "name_en": "Paba",
+      "name_bn": "পবা",
+      "latitude": 24.402178,
+      "longitude": 88.600437
+    },
+    {
+      "id": 135,
+      "district_id": 25,
+      "name_en": "Durgapur",
+      "name_bn": "দুর্গাপুর",
+      "latitude": 24.46674,
+      "longitude": 88.760064
+    },
+    {
+      "id": 136,
+      "district_id": 25,
+      "name_en": "Mohonpur",
+      "name_bn": "মোহনপুর",
+      "latitude": 24.553565,
+      "longitude": 88.64031
+    },
+    {
+      "id": 137,
+      "district_id": 25,
+      "name_en": "Charghat",
+      "name_bn": "চারঘাট",
+      "latitude": 24.300082,
+      "longitude": 88.775417
+    },
+    {
+      "id": 138,
       "district_id": 25,
       "name_en": "Puthia",
       "name_bn": "পুঠিয়া",
-      "latitude": 24.3658,
-      "longitude": 88.8353
+      "latitude": 24.411004,
+      "longitude": 88.82736
+    },
+    {
+      "id": 139,
+      "district_id": 25,
+      "name_en": "Bagha",
+      "name_bn": "বাঘা",
+      "latitude": 24.200421,
+      "longitude": 88.828337
+    },
+    {
+      "id": 140,
+      "district_id": 25,
+      "name_en": "Godagari",
+      "name_bn": "গোদাগাড়ী",
+      "latitude": 24.483556,
+      "longitude": 88.414688
+    },
+    {
+      "id": 141,
+      "district_id": 25,
+      "name_en": "Tanore",
+      "name_bn": "তানোর",
+      "latitude": 24.620242,
+      "longitude": 88.531189
+    },
+    {
+      "id": 142,
+      "district_id": 25,
+      "name_en": "Bagmara",
+      "name_bn": "বাগমারা",
+      "latitude": 24.591094,
+      "longitude": 88.810691
+    },
+    {
+      "id": 143,
+      "district_id": 29,
+      "name_en": "Natore Sadar",
+      "name_bn": "নাটোর সদর",
+      "latitude": 24.443194,
+      "longitude": 88.984088
+    },
+    {
+      "id": 144,
+      "district_id": 29,
+      "name_en": "Singra",
+      "name_bn": "সিংড়া",
+      "latitude": 24.524098,
+      "longitude": 89.186017
+    },
+    {
+      "id": 145,
+      "district_id": 29,
+      "name_en": "Baraigram",
+      "name_bn": "বড়াইগ্রাম",
+      "latitude": 24.273666,
+      "longitude": 89.147597
+    },
+    {
+      "id": 146,
+      "district_id": 29,
+      "name_en": "Bagatipara",
+      "name_bn": "বাগাতিপাড়া",
+      "latitude": 24.312201,
+      "longitude": 88.946663
+    },
+    {
+      "id": 147,
+      "district_id": 29,
+      "name_en": "Lalpur",
+      "name_bn": "লালপুর",
+      "latitude": 24.198323,
+      "longitude": 88.98487
+    },
+    {
+      "id": 148,
+      "district_id": 29,
+      "name_en": "Gurudaspur",
+      "name_bn": "গুরুদাসপুর",
+      "latitude": 24.372762,
+      "longitude": 89.203049
+    },
+    {
+      "id": 149,
+      "district_id": 29,
+      "name_en": "Naldanga",
+      "name_bn": "নলডাঙ্গা",
+      "latitude": 24.496946,
+      "longitude": 88.960536
+    },
+    {
+      "id": 150,
+      "district_id": 31,
+      "name_en": "Akkelpur",
+      "name_bn": "আক্কেলপুর",
+      "latitude": 24.933958,
+      "longitude": 89.042092
+    },
+    {
+      "id": 151,
+      "district_id": 31,
+      "name_en": "Kalai",
+      "name_bn": "কালাই",
+      "latitude": 25.077869,
+      "longitude": 89.197713
+    },
+    {
+      "id": 152,
+      "district_id": 31,
+      "name_en": "Khetlal",
+      "name_bn": "ক্ষেতলাল",
+      "latitude": 25.02249,
+      "longitude": 89.118063
+    },
+    {
+      "id": 153,
+      "district_id": 31,
+      "name_en": "Panchbibi",
+      "name_bn": "পাঁচবিবি",
+      "latitude": 25.202155,
+      "longitude": 89.070393
+    },
+    {
+      "id": 154,
+      "district_id": 31,
+      "name_en": "Joypurhat Sadar",
+      "name_bn": "জয়পুরহাট সদর",
+      "latitude": 25.105546,
+      "longitude": 89.019926
+    },
+    {
+      "id": 155,
+      "district_id": 32,
+      "name_en": "Chapainawabganj Sadar",
+      "name_bn": "চাঁপাইনবাবগঞ্জ সদর",
+      "latitude": 24.564884,
+      "longitude": 88.257989
+    },
+    {
+      "id": 156,
+      "district_id": 32,
+      "name_en": "Gomostapur",
+      "name_bn": "গোমস্তাপুর",
+      "latitude": 24.85689,
+      "longitude": 88.355011
+    },
+    {
+      "id": 157,
+      "district_id": 32,
+      "name_en": "Nachol",
+      "name_bn": "নাচোল",
+      "latitude": 24.726739,
+      "longitude": 88.396416
+    },
+    {
+      "id": 158,
+      "district_id": 32,
+      "name_en": "Bholahat",
+      "name_bn": "ভোলাহাট",
+      "latitude": 24.896315,
+      "longitude": 88.2097
+    },
+    {
+      "id": 159,
+      "district_id": 32,
+      "name_en": "Shibganj",
+      "name_bn": "শিবগঞ্জ",
+      "latitude": 24.704332,
+      "longitude": 88.154813
+    },
+    {
+      "id": 160,
+      "district_id": 30,
+      "name_en": "Mohadevpur",
+      "name_bn": "মহাদেবপুর",
+      "latitude": 24.919922,
+      "longitude": 88.764734
+    },
+    {
+      "id": 161,
+      "district_id": 30,
+      "name_en": "Badalgachi",
+      "name_bn": "বদলগাছী",
+      "latitude": 24.965868,
+      "longitude": 88.94347
+    },
+    {
+      "id": 162,
+      "district_id": 30,
+      "name_en": "Patnitala",
+      "name_bn": "পত্নিতলা",
+      "latitude": 25.075386,
+      "longitude": 88.716509
+    },
+    {
+      "id": 163,
+      "district_id": 30,
+      "name_en": "Dhamoirhat",
+      "name_bn": "ধামইরহাট",
+      "latitude": 25.13042,
+      "longitude": 88.822965
+    },
+    {
+      "id": 164,
+      "district_id": 30,
+      "name_en": "Niamatpur",
+      "name_bn": "নিয়ামতপুর",
+      "latitude": 24.828466,
+      "longitude": 88.551535
+    },
+    {
+      "id": 165,
+      "district_id": 30,
+      "name_en": "Manda",
+      "name_bn": "মান্দা",
+      "latitude": 24.744353,
+      "longitude": 88.713027
+    },
+    {
+      "id": 166,
+      "district_id": 30,
+      "name_en": "Atrai",
+      "name_bn": "আত্রাই",
+      "latitude": 24.625161,
+      "longitude": 88.987885
+    },
+    {
+      "id": 167,
+      "district_id": 30,
+      "name_en": "Raninagar",
+      "name_bn": "রাণীনগর",
+      "latitude": 24.710701,
+      "longitude": 89.021801
+    },
+    {
+      "id": 168,
+      "district_id": 30,
+      "name_en": "Naogaon Sadar",
+      "name_bn": "নওগাঁ সদর",
+      "latitude": 24.811041,
+      "longitude": 88.898147
+    },
+    {
+      "id": 169,
+      "district_id": 30,
+      "name_en": "Porsha",
+      "name_bn": "পোরশা",
+      "latitude": 24.992238,
+      "longitude": 88.517667
+    },
+    {
+      "id": 170,
+      "district_id": 30,
+      "name_en": "Sapahar",
+      "name_bn": "সাপাহার",
+      "latitude": 25.118158,
+      "longitude": 88.530307
+    },
+    {
+      "id": 171,
+      "district_id": 34,
+      "name_en": "Manirampur",
+      "name_bn": "মণিরামপুর",
+      "latitude": 23.00624,
+      "longitude": 89.220152
+    },
+    {
+      "id": 172,
+      "district_id": 34,
+      "name_en": "Abhaynagar",
+      "name_bn": "অভয়নগর",
+      "latitude": 23.017676,
+      "longitude": 89.42039
+    },
+    {
+      "id": 173,
+      "district_id": 34,
+      "name_en": "Bagherpara",
+      "name_bn": "বাঘারপাড়া",
+      "latitude": 23.242382,
+      "longitude": 89.335499
+    },
+    {
+      "id": 174,
+      "district_id": 34,
+      "name_en": "Chougachha",
+      "name_bn": "চৌগাছা",
+      "latitude": 23.263445,
+      "longitude": 89.02182
+    },
+    {
+      "id": 175,
+      "district_id": 34,
+      "name_en": "Jhikargacha",
+      "name_bn": "ঝিকরগাছা",
+      "latitude": 23.068793,
+      "longitude": 89.054193
+    },
+    {
+      "id": 176,
+      "district_id": 34,
+      "name_en": "Keshabpur",
+      "name_bn": "কেশবপুর",
+      "latitude": 22.880118,
+      "longitude": 89.231752
+    },
+    {
+      "id": 177,
+      "district_id": 34,
+      "name_en": "Jessore Sadar",
+      "name_bn": "যশোর সদর",
+      "latitude": 22.342932,
+      "longitude": 91.832519
+    },
+    {
+      "id": 178,
+      "district_id": 34,
+      "name_en": "Sharsha",
+      "name_bn": "শার্শা",
+      "latitude": 23.044859,
+      "longitude": 88.940744
+    },
+    {
+      "id": 179,
+      "district_id": 35,
+      "name_en": "Assasuni",
+      "name_bn": "আশাশুনি",
+      "latitude": 22.519205,
+      "longitude": 89.187394
+    },
+    {
+      "id": 180,
+      "district_id": 35,
+      "name_en": "Debhata",
+      "name_bn": "দেবহাটা",
+      "latitude": 22.597247,
+      "longitude": 89.015279
+    },
+    {
+      "id": 181,
+      "district_id": 35,
+      "name_en": "Kalaroa",
+      "name_bn": "কলারোয়া",
+      "latitude": 22.880714,
+      "longitude": 89.030289
+    },
+    {
+      "id": 182,
+      "district_id": 35,
+      "name_en": "Satkhira Sadar",
+      "name_bn": "সাতক্ষীরা সদর",
+      "latitude": 22.720964,
+      "longitude": 89.038594
+    },
+    {
+      "id": 183,
+      "district_id": 35,
+      "name_en": "Shyamnagar",
+      "name_bn": "শ্যামনগর",
+      "latitude": 22.068982,
+      "longitude": 89.179258
+    },
+    {
+      "id": 184,
+      "district_id": 35,
+      "name_en": "Tala",
+      "name_bn": "তালা",
+      "latitude": 22.740097,
+      "longitude": 89.210451
+    },
+    {
+      "id": 185,
+      "district_id": 35,
+      "name_en": "Kaliganj",
+      "name_bn": "কালিগঞ্জ",
+      "latitude": 22.447252,
+      "longitude": 89.062343
+    },
+    {
+      "id": 186,
+      "district_id": 42,
+      "name_en": "Mujibnagar",
+      "name_bn": "মুজিবনগর",
+      "latitude": 23.668321,
+      "longitude": 88.62129
+    },
+    {
+      "id": 187,
+      "district_id": 42,
+      "name_en": "Meherpur Sadar",
+      "name_bn": "মেহেরপুর সদর",
+      "latitude": 23.766057,
+      "longitude": 88.66114
+    },
+    {
+      "id": 188,
+      "district_id": 42,
+      "name_en": "Gangni",
+      "name_bn": "গাংনী",
+      "latitude": 23.857617,
+      "longitude": 88.770953
+    },
+    {
+      "id": 189,
+      "district_id": 39,
+      "name_en": "Narail Sadar",
+      "name_bn": "নড়াইল সদর",
+      "latitude": 23.15457,
+      "longitude": 89.494804
+    },
+    {
+      "id": 190,
+      "district_id": 39,
+      "name_en": "Lohagara",
+      "name_bn": "লোহাগড়া",
+      "latitude": 23.204844,
+      "longitude": 89.623443
+    },
+    {
+      "id": 191,
+      "district_id": 39,
+      "name_en": "Kalia",
+      "name_bn": "কালিয়া",
+      "latitude": 23.027973,
+      "longitude": 89.64397
+    },
+    {
+      "id": 192,
+      "district_id": 40,
+      "name_en": "Chuadanga Sadar",
+      "name_bn": "চুয়াডাঙ্গা সদর",
+      "latitude": 23.588649,
+      "longitude": 88.884601
+    },
+    {
+      "id": 193,
+      "district_id": 40,
+      "name_en": "Alamdanga",
+      "name_bn": "আলমডাঙ্গা",
+      "latitude": 23.729337,
+      "longitude": 88.908137
+    },
+    {
+      "id": 194,
+      "district_id": 40,
+      "name_en": "Damurhuda",
+      "name_bn": "দামুড়হুদা",
+      "latitude": 23.593137,
+      "longitude": 88.740396
+    },
+    {
+      "id": 195,
+      "district_id": 40,
+      "name_en": "Jibannagar",
+      "name_bn": "জীবননগর",
+      "latitude": 23.441119,
+      "longitude": 88.849083
+    },
+    {
+      "id": 196,
+      "district_id": 41,
+      "name_en": "Kushtia Sadar",
+      "name_bn": "কুষ্টিয়া সদর",
+      "latitude": 23.822265,
+      "longitude": 89.089601
+    },
+    {
+      "id": 197,
+      "district_id": 41,
+      "name_en": "Kumarkhali",
+      "name_bn": "কুমারখালী",
+      "latitude": 23.856698,
+      "longitude": 89.209562
+    },
+    {
+      "id": 198,
+      "district_id": 41,
+      "name_en": "Khoksa",
+      "name_bn": "খোকসা",
+      "latitude": 23.808877,
+      "longitude": 89.299841
+    },
+    {
+      "id": 199,
+      "district_id": 41,
+      "name_en": "Mirpur",
+      "name_bn": "মিরপুর",
+      "latitude": 23.794178,
+      "longitude": 90.361762
+    },
+    {
+      "id": 200,
+      "district_id": 41,
+      "name_en": "Daulatpur",
+      "name_bn": "দৌলতপুর",
+      "latitude": 22.875278,
+      "longitude": 89.509179
+    },
+    {
+      "id": 201,
+      "district_id": 41,
+      "name_en": "Bheramara",
+      "name_bn": "ভেড়ামারা",
+      "latitude": 24.056823,
+      "longitude": 88.981541
+    },
+    {
+      "id": 202,
+      "district_id": 38,
+      "name_en": "Shalikha",
+      "name_bn": "শালিখা",
+      "latitude": 23.348127,
+      "longitude": 89.358526
+    },
+    {
+      "id": 203,
+      "district_id": 38,
+      "name_en": "Sreepur",
+      "name_bn": "শ্রীপুর",
+      "latitude": 24.205176,
+      "longitude": 90.443092
+    },
+    {
+      "id": 204,
+      "district_id": 38,
+      "name_en": "Magura Sadar",
+      "name_bn": "মাগুরা সদর",
+      "latitude": 23.451869,
+      "longitude": 89.41306
+    },
+    {
+      "id": 205,
+      "district_id": 38,
+      "name_en": "Mohammadpur",
+      "name_bn": "মহম্মদপুর",
+      "latitude": 23.758583,
+      "longitude": 90.356491
+    },
+    {
+      "id": 206,
+      "district_id": 33,
+      "name_en": "Paikgasa",
+      "name_bn": "পাইকগাছা",
+      "latitude": 22.590639,
+      "longitude": 89.340267
+    },
+    {
+      "id": 207,
+      "district_id": 33,
+      "name_en": "Fultola",
+      "name_bn": "ফুলতলা",
+      "latitude": 22.95653,
+      "longitude": 89.4419
+    },
+    {
+      "id": 208,
+      "district_id": 33,
+      "name_en": "Digholia",
+      "name_bn": "দিঘলিয়া",
+      "latitude": 22.925189,
+      "longitude": 89.560101
+    },
+    {
+      "id": 209,
+      "district_id": 33,
+      "name_en": "Rupsha",
+      "name_bn": "রূপসা",
+      "latitude": 22.82027,
+      "longitude": 89.636354
+    },
+    {
+      "id": 210,
+      "district_id": 33,
+      "name_en": "Terokhada",
+      "name_bn": "তেরখাদা",
+      "latitude": 22.912646,
+      "longitude": 89.65431
+    },
+    {
+      "id": 211,
+      "district_id": 33,
+      "name_en": "Dumuria",
+      "name_bn": "ডুমুরিয়া",
+      "latitude": 22.805363,
+      "longitude": 89.39804
+    },
+    {
+      "id": 212,
+      "district_id": 33,
+      "name_en": "Botiaghata",
+      "name_bn": "বটিয়াঘাটা",
+      "latitude": 22.714261,
+      "longitude": 89.516225
+    },
+    {
+      "id": 213,
+      "district_id": 33,
+      "name_en": "Dakop",
+      "name_bn": "দাকোপ",
+      "latitude": 22.388929,
+      "longitude": 89.518501
+    },
+    {
+      "id": 214,
+      "district_id": 33,
+      "name_en": "Koyra",
+      "name_bn": "কয়রা",
+      "latitude": 22.145813,
+      "longitude": 89.382091
+    },
+    {
+      "id": 215,
+      "district_id": 36,
+      "name_en": "Fakirhat",
+      "name_bn": "ফকিরহাট",
+      "latitude": 22.742474,
+      "longitude": 89.665737
+    },
+    {
+      "id": 216,
+      "district_id": 36,
+      "name_en": "Bagerhat Sadar",
+      "name_bn": "বাগেরহাট সদর",
+      "latitude": 22.677527,
+      "longitude": 89.763244
+    },
+    {
+      "id": 217,
+      "district_id": 36,
+      "name_en": "Mollahat",
+      "name_bn": "মোল্লাহাট",
+      "latitude": 22.882739,
+      "longitude": 89.773342
+    },
+    {
+      "id": 218,
+      "district_id": 36,
+      "name_en": "Sarankhola",
+      "name_bn": "শরণখোলা",
+      "latitude": 22.110595,
+      "longitude": 89.808138
+    },
+    {
+      "id": 219,
+      "district_id": 36,
+      "name_en": "Rampal",
+      "name_bn": "রামপাল",
+      "latitude": 22.591397,
+      "longitude": 89.652162
+    },
+    {
+      "id": 220,
+      "district_id": 36,
+      "name_en": "Morrelganj",
+      "name_bn": "মোড়েলগঞ্জ",
+      "latitude": 22.483835,
+      "longitude": 89.833552
+    },
+    {
+      "id": 221,
+      "district_id": 36,
+      "name_en": "Kachua",
+      "name_bn": "কচুয়া",
+      "latitude": 22.652286,
+      "longitude": 89.87477
+    },
+    {
+      "id": 222,
+      "district_id": 36,
+      "name_en": "Mongla",
+      "name_bn": "মোংলা",
+      "latitude": 22.127369,
+      "longitude": 89.654536
+    },
+    {
+      "id": 223,
+      "district_id": 36,
+      "name_en": "Chitalmari",
+      "name_bn": "চিতলমারী",
+      "latitude": 22.812346,
+      "longitude": 89.865285
+    },
+    {
+      "id": 224,
+      "district_id": 37,
+      "name_en": "Jhenaidah Sadar",
+      "name_bn": "ঝিনাইদহ সদর",
+      "latitude": 23.516474,
+      "longitude": 89.157731
+    },
+    {
+      "id": 225,
+      "district_id": 37,
+      "name_en": "Shailkupa",
+      "name_bn": "শৈলকুপা",
+      "latitude": 23.663379,
+      "longitude": 89.242237
+    },
+    {
+      "id": 226,
+      "district_id": 37,
+      "name_en": "Harinakundu",
+      "name_bn": "হরিণাকুন্ডু",
+      "latitude": 23.642753,
+      "longitude": 89.076586
+    },
+    {
+      "id": 227,
+      "district_id": 37,
+      "name_en": "Kaliganj",
+      "name_bn": "কালীগঞ্জ",
+      "latitude": 23.369657,
+      "longitude": 89.151771
+    },
+    {
+      "id": 228,
+      "district_id": 37,
+      "name_en": "Kotchandpur",
+      "name_bn": "কোটচাঁদপুর",
+      "latitude": 23.447896,
+      "longitude": 88.998702
+    },
+    {
+      "id": 229,
+      "district_id": 37,
+      "name_en": "Moheshpur",
+      "name_bn": "মহেশপুর",
+      "latitude": 23.319735,
+      "longitude": 88.857836
+    },
+    {
+      "id": 230,
+      "district_id": 47,
+      "name_en": "Jhalakathi Sadar",
+      "name_bn": "ঝালকাঠি সদর",
+      "latitude": 22.679669,
+      "longitude": 90.192207
+    },
+    {
+      "id": 231,
+      "district_id": 47,
+      "name_en": "Kathalia",
+      "name_bn": "কাঠালিয়া",
+      "latitude": 22.420308,
+      "longitude": 90.102395
+    },
+    {
+      "id": 232,
+      "district_id": 47,
+      "name_en": "Nalchity",
+      "name_bn": "নলছিটি",
+      "latitude": 22.600737,
+      "longitude": 90.273561
+    },
+    {
+      "id": 233,
+      "district_id": 47,
+      "name_en": "Rajapur",
+      "name_bn": "রাজাপুর",
+      "latitude": 22.550741,
+      "longitude": 90.131015
+    },
+    {
+      "id": 234,
+      "district_id": 44,
+      "name_en": "Bauphal",
+      "name_bn": "বাউফল",
+      "latitude": 22.435401,
+      "longitude": 90.53895
+    },
+    {
+      "id": 235,
+      "district_id": 44,
+      "name_en": "Patuakhali Sadar",
+      "name_bn": "পটুয়াখালী সদর",
+      "latitude": 22.335817,
+      "longitude": 90.328973
+    },
+    {
+      "id": 236,
+      "district_id": 44,
+      "name_en": "Dumki",
+      "name_bn": "দুমকি",
+      "latitude": 22.45026,
+      "longitude": 90.371882
+    },
+    {
+      "id": 237,
+      "district_id": 44,
+      "name_en": "Dashmina",
+      "name_bn": "দশমিনা",
+      "latitude": 22.264268,
+      "longitude": 90.54897
+    },
+    {
+      "id": 238,
+      "district_id": 44,
+      "name_en": "Kalapara",
+      "name_bn": "কলাপাড়া",
+      "latitude": 21.935689,
+      "longitude": 90.218615
+    },
+    {
+      "id": 239,
+      "district_id": 44,
+      "name_en": "Mirzaganj",
+      "name_bn": "মির্জাগঞ্জ",
+      "latitude": 22.356851,
+      "longitude": 90.216702
+    },
+    {
+      "id": 240,
+      "district_id": 44,
+      "name_en": "Galachipa",
+      "name_bn": "গলাচিপা",
+      "latitude": 22.053757,
+      "longitude": 90.450624
+    },
+    {
+      "id": 241,
+      "district_id": 44,
+      "name_en": "Rangabali",
+      "name_bn": "রাঙ্গাবালী",
+      "latitude": 21.9333,
+      "longitude": 90.4333
+    },
+    {
+      "id": 242,
+      "district_id": 48,
+      "name_en": "Pirojpur Sadar",
+      "name_bn": "পিরোজপুর সদর",
+      "latitude": 22.608625,
+      "longitude": 89.981109
+    },
+    {
+      "id": 243,
+      "district_id": 48,
+      "name_en": "Nazirpur",
+      "name_bn": "নাজিরপুর",
+      "latitude": 22.770309,
+      "longitude": 89.974312
+    },
+    {
+      "id": 244,
+      "district_id": 48,
+      "name_en": "Kawkhali",
+      "name_bn": "কাউখালী",
+      "latitude": 22.606731,
+      "longitude": 90.058466
+    },
+    {
+      "id": 245,
+      "district_id": 48,
+      "name_en": "Indurkani",
+      "name_bn": "ইন্দুরকানী",
+      "latitude": 22.465678,
+      "longitude": 89.934499
+    },
+    {
+      "id": 246,
+      "district_id": 48,
+      "name_en": "Bhandaria",
+      "name_bn": "ভান্ডারিয়া",
+      "latitude": 22.454188,
+      "longitude": 90.021478
+    },
+    {
+      "id": 247,
+      "district_id": 48,
+      "name_en": "Mathbaria",
+      "name_bn": "মঠবাড়ীয়া",
+      "latitude": 22.285243,
+      "longitude": 89.950663
+    },
+    {
+      "id": 248,
+      "district_id": 48,
+      "name_en": "Nesarabad",
+      "name_bn": "নেছারাবাদ",
+      "latitude": 22.722556,
+      "longitude": 90.085696
+    },
+    {
+      "id": 249,
+      "district_id": 43,
+      "name_en": "Barisal Sadar",
+      "name_bn": "বরিশাল সদর",
+      "latitude": 22.713372,
+      "longitude": 90.394033
+    },
+    {
+      "id": 250,
+      "district_id": 43,
+      "name_en": "Bakerganj",
+      "name_bn": "বাকেরগঞ্জ",
+      "latitude": 22.553022,
+      "longitude": 90.384609
+    },
+    {
+      "id": 251,
+      "district_id": 43,
+      "name_en": "Babuganj",
+      "name_bn": "বাবুগঞ্জ",
+      "latitude": 22.823472,
+      "longitude": 90.314583
+    },
+    {
+      "id": 252,
+      "district_id": 43,
+      "name_en": "Wazirpur",
+      "name_bn": "উজিরপুর",
+      "latitude": 22.86562,
+      "longitude": 90.165868
+    },
+    {
+      "id": 253,
+      "district_id": 43,
+      "name_en": "Banaripara",
+      "name_bn": "বানারীপাড়া",
+      "latitude": 22.811759,
+      "longitude": 90.128392
+    },
+    {
+      "id": 254,
+      "district_id": 43,
+      "name_en": "Gournadi",
+      "name_bn": "গৌরনদী",
+      "latitude": 22.966244,
+      "longitude": 90.244664
+    },
+    {
+      "id": 255,
+      "district_id": 43,
+      "name_en": "Agailjhara",
+      "name_bn": "আগৈলঝাড়া",
+      "latitude": 22.968024,
+      "longitude": 90.140754
+    },
+    {
+      "id": 256,
+      "district_id": 43,
+      "name_en": "Mehendiganj",
+      "name_bn": "মেহেন্দিগঞ্জ",
+      "latitude": 22.819503,
+      "longitude": 90.507624
+    },
+    {
+      "id": 257,
+      "district_id": 43,
+      "name_en": "Muladi",
+      "name_bn": "মুলাদী",
+      "latitude": 22.952768,
+      "longitude": 90.376133
+    },
+    {
+      "id": 258,
+      "district_id": 43,
+      "name_en": "Hizla",
+      "name_bn": "হিজলা",
+      "latitude": 22.956254,
+      "longitude": 90.52166
+    },
+    {
+      "id": 259,
+      "district_id": 46,
+      "name_en": "Bhola Sadar",
+      "name_bn": "ভোলা সদর",
+      "latitude": 22.688544,
+      "longitude": 90.615156
+    },
+    {
+      "id": 260,
+      "district_id": 46,
+      "name_en": "Borhanuddin",
+      "name_bn": "বোরহানউদ্দিন",
+      "latitude": 22.482753,
+      "longitude": 90.719036
+    },
+    {
+      "id": 261,
+      "district_id": 46,
+      "name_en": "Charfesson",
+      "name_bn": "চরফ্যাশন",
+      "latitude": 22.086403,
+      "longitude": 90.705172
+    },
+    {
+      "id": 262,
+      "district_id": 46,
+      "name_en": "Doulatkhan",
+      "name_bn": "দৌলতখান",
+      "latitude": 22.611504,
+      "longitude": 90.707081
+    },
+    {
+      "id": 263,
+      "district_id": 46,
+      "name_en": "Monpura",
+      "name_bn": "মনপুরা",
+      "latitude": 22.223585,
+      "longitude": 90.948753
+    },
+    {
+      "id": 264,
+      "district_id": 46,
+      "name_en": "Tazumuddin",
+      "name_bn": "তজুমদ্দিন",
+      "latitude": 22.438786,
+      "longitude": 90.857703
+    },
+    {
+      "id": 265,
+      "district_id": 46,
+      "name_en": "Lalmohan",
+      "name_bn": "লালমোহন",
+      "latitude": 22.31613,
+      "longitude": 90.751722
+    },
+    {
+      "id": 266,
+      "district_id": 45,
+      "name_en": "Amtali",
+      "name_bn": "আমতলী",
+      "latitude": 22.074989,
+      "longitude": 90.202706
+    },
+    {
+      "id": 267,
+      "district_id": 45,
+      "name_en": "Barguna Sadar",
+      "name_bn": "বরগুনা সদর",
+      "latitude": 22.134602,
+      "longitude": 90.10899
+    },
+    {
+      "id": 268,
+      "district_id": 45,
+      "name_en": "Betagi",
+      "name_bn": "বেতাগী",
+      "latitude": 22.347175,
+      "longitude": 90.1482
+    },
+    {
+      "id": 269,
+      "district_id": 45,
+      "name_en": "Bamna",
+      "name_bn": "বামনা",
+      "latitude": 22.272485,
+      "longitude": 90.05807
+    },
+    {
+      "id": 270,
+      "district_id": 45,
+      "name_en": "Pathorghata",
+      "name_bn": "পাথরঘাটা",
+      "latitude": 22.094797,
+      "longitude": 89.966292
+    },
+    {
+      "id": 271,
+      "district_id": 45,
+      "name_en": "Taltali",
+      "name_bn": "তালতলি",
+      "latitude": 22.023739,
+      "longitude": 90.13078
+    },
+    {
+      "id": 272,
+      "district_id": 49,
+      "name_en": "Balaganj",
+      "name_bn": "বালাগঞ্জ",
+      "latitude": 24.695405,
+      "longitude": 91.773364
+    },
+    {
+      "id": 273,
+      "district_id": 49,
+      "name_en": "Beanibazar",
+      "name_bn": "বিয়ানীবাজার",
+      "latitude": 24.848924,
+      "longitude": 92.159058
+    },
+    {
+      "id": 274,
+      "district_id": 49,
+      "name_en": "Bishwanath",
+      "name_bn": "বিশ্বনাথ",
+      "latitude": 24.83495,
+      "longitude": 91.729238
+    },
+    {
+      "id": 275,
+      "district_id": 49,
+      "name_en": "Companiganj",
+      "name_bn": "কোম্পানীগঞ্জ",
+      "latitude": 22.770426,
+      "longitude": 91.282047
+    },
+    {
+      "id": 276,
+      "district_id": 49,
+      "name_en": "Fenchuganj",
+      "name_bn": "ফেঞ্চুগঞ্জ",
+      "latitude": 24.693771,
+      "longitude": 91.961749
+    },
+    {
+      "id": 277,
+      "district_id": 49,
+      "name_en": "Golapganj",
+      "name_bn": "গোলাপগঞ্জ",
+      "latitude": 24.811995,
+      "longitude": 92.01704
+    },
+    {
+      "id": 278,
+      "district_id": 49,
+      "name_en": "Gowainghat",
+      "name_bn": "গোয়াইনঘাট",
+      "latitude": 25.08313,
+      "longitude": 91.958333
+    },
+    {
+      "id": 279,
+      "district_id": 49,
+      "name_en": "Jaintiapur",
+      "name_bn": "জৈন্তাপুর",
+      "latitude": 25.056495,
+      "longitude": 92.101409
+    },
+    {
+      "id": 280,
+      "district_id": 49,
+      "name_en": "Kanaighat",
+      "name_bn": "কানাইঘাট",
+      "latitude": 24.993538,
+      "longitude": 92.218042
+    },
+    {
+      "id": 281,
+      "district_id": 49,
+      "name_en": "Sylhet Sadar",
+      "name_bn": "সিলেট সদর",
+      "latitude": 24.941256,
+      "longitude": 91.847357
+    },
+    {
+      "id": 282,
+      "district_id": 49,
+      "name_en": "Zakiganj",
+      "name_bn": "জকিগঞ্জ",
+      "latitude": 24.926047,
+      "longitude": 92.367123
+    },
+    {
+      "id": 283,
+      "district_id": 49,
+      "name_en": "Dakshinsurma",
+      "name_bn": "দক্ষিণ সুরমা",
+      "latitude": 24.816105,
+      "longitude": 91.877026
+    },
+    {
+      "id": 284,
+      "district_id": 49,
+      "name_en": "Osmaninagar",
+      "name_bn": "ওসমানী নগর",
+      "latitude": 24.718244,
+      "longitude": 91.74657
+    },
+    {
+      "id": 285,
+      "district_id": 50,
+      "name_en": "Barlekha",
+      "name_bn": "বড়লেখা",
+      "latitude": 24.708187,
+      "longitude": 92.175614
+    },
+    {
+      "id": 286,
+      "district_id": 50,
+      "name_en": "Kamolganj",
+      "name_bn": "কমলগঞ্জ",
+      "latitude": 24.315698,
+      "longitude": 91.859193
+    },
+    {
+      "id": 287,
+      "district_id": 50,
+      "name_en": "Kulaura",
+      "name_bn": "কুলাউড়া",
+      "latitude": 24.490283,
+      "longitude": 92.012312
+    },
+    {
+      "id": 288,
+      "district_id": 50,
+      "name_en": "Moulvibazar Sadar",
+      "name_bn": "মৌলভীবাজার সদর",
+      "latitude": 24.499498,
+      "longitude": 91.712288
+    },
+    {
+      "id": 289,
+      "district_id": 50,
+      "name_en": "Rajnagar",
+      "name_bn": "রাজনগর",
+      "latitude": 24.565316,
+      "longitude": 91.860773
+    },
+    {
+      "id": 290,
+      "district_id": 50,
+      "name_en": "Sreemangal",
+      "name_bn": "শ্রীমঙ্গল",
+      "latitude": 24.301017,
+      "longitude": 91.697958
+    },
+    {
+      "id": 291,
+      "district_id": 50,
+      "name_en": "Juri",
+      "name_bn": "জুড়ী",
+      "latitude": 24.553202,
+      "longitude": 92.143235
+    },
+    {
+      "id": 292,
+      "district_id": 51,
+      "name_en": "Nabiganj",
+      "name_bn": "নবীগঞ্জ",
+      "latitude": 24.569632,
+      "longitude": 91.544392
+    },
+    {
+      "id": 293,
+      "district_id": 51,
+      "name_en": "Bahubal",
+      "name_bn": "বাহুবল",
+      "latitude": 24.360602,
+      "longitude": 91.546448
+    },
+    {
+      "id": 294,
+      "district_id": 51,
+      "name_en": "Ajmiriganj",
+      "name_bn": "আজমিরীগঞ্জ",
+      "latitude": 24.553306,
+      "longitude": 91.284273
+    },
+    {
+      "id": 295,
+      "district_id": 51,
+      "name_en": "Baniachong",
+      "name_bn": "বানিয়াচং",
+      "latitude": 24.494739,
+      "longitude": 91.36539
+    },
+    {
+      "id": 296,
+      "district_id": 51,
+      "name_en": "Lakhai",
+      "name_bn": "লাখাই",
+      "latitude": 24.298085,
+      "longitude": 91.2603
+    },
+    {
+      "id": 297,
+      "district_id": 51,
+      "name_en": "Chunarughat",
+      "name_bn": "চুনারুঘাট",
+      "latitude": 24.181621,
+      "longitude": 91.517374
+    },
+    {
+      "id": 298,
+      "district_id": 51,
+      "name_en": "Habiganj Sadar",
+      "name_bn": "হবিগঞ্জ সদর",
+      "latitude": 24.335877,
+      "longitude": 91.41434
+    },
+    {
+      "id": 299,
+      "district_id": 51,
+      "name_en": "Madhabpur",
+      "name_bn": "মাধবপুর",
+      "latitude": 24.120466,
+      "longitude": 91.341455
+    },
+    {
+      "id": 300,
+      "district_id": 52,
+      "name_en": "Sunamganj Sadar",
+      "name_bn": "সুনামগঞ্জ সদর",
+      "latitude": 25.050844,
+      "longitude": 91.395472
+    },
+    {
+      "id": 301,
+      "district_id": 52,
+      "name_en": "Shantiganj",
+      "name_bn": "শান্তিগঞ্জ",
+      "latitude": 24.912562,
+      "longitude": 91.410627
+    },
+    {
+      "id": 302,
+      "district_id": 52,
+      "name_en": "Bishwambarpur",
+      "name_bn": "বিশ্বম্ভরপুর",
+      "latitude": 25.10982,
+      "longitude": 91.315087
+    },
+    {
+      "id": 303,
+      "district_id": 52,
+      "name_en": "Chhatak",
+      "name_bn": "ছাতক",
+      "latitude": 24.943926,
+      "longitude": 91.615538
+    },
+    {
+      "id": 304,
+      "district_id": 52,
+      "name_en": "Jagannathpur",
+      "name_bn": "জগন্নাথপুর",
+      "latitude": 24.74693,
+      "longitude": 91.555839
+    },
+    {
+      "id": 305,
+      "district_id": 52,
+      "name_en": "Dowarabazar",
+      "name_bn": "দোয়ারাবাজার",
+      "latitude": 25.071706,
+      "longitude": 91.56248
+    },
+    {
+      "id": 306,
+      "district_id": 52,
+      "name_en": "Tahirpur",
+      "name_bn": "তাহিরপুর",
+      "latitude": 25.128137,
+      "longitude": 91.163311
+    },
+    {
+      "id": 307,
+      "district_id": 52,
+      "name_en": "Dharmapasha",
+      "name_bn": "ধর্মপাশা",
+      "latitude": 25.010737,
+      "longitude": 91.040657
+    },
+    {
+      "id": 308,
+      "district_id": 52,
+      "name_en": "Jamalganj",
+      "name_bn": "জামালগঞ্জ",
+      "latitude": 24.954195,
+      "longitude": 91.202996
+    },
+    {
+      "id": 309,
+      "district_id": 52,
+      "name_en": "Shalla",
+      "name_bn": "শাল্লা",
+      "latitude": 24.686369,
+      "longitude": 91.256941
+    },
+    {
+      "id": 310,
+      "district_id": 52,
+      "name_en": "Derai",
+      "name_bn": "দিরাই",
+      "latitude": 24.787537,
+      "longitude": 91.335974
+    },
+    {
+      "id": 311,
+      "district_id": 8,
+      "name_en": "Belabo",
+      "name_bn": "বেলাবো",
+      "latitude": 24.098645,
+      "longitude": 90.849322
+    },
+    {
+      "id": 312,
+      "district_id": 8,
+      "name_en": "Monohardi",
+      "name_bn": "মনোহরদী",
+      "latitude": 24.160722,
+      "longitude": 90.730434
+    },
+    {
+      "id": 313,
+      "district_id": 8,
+      "name_en": "Narsingdi Sadar",
+      "name_bn": "নরসিংদী সদর",
+      "latitude": 23.866685,
+      "longitude": 90.708173
+    },
+    {
+      "id": 314,
+      "district_id": 8,
+      "name_en": "Palash",
+      "name_bn": "পলাশ",
+      "latitude": 23.953792,
+      "longitude": 90.649371
+    },
+    {
+      "id": 315,
+      "district_id": 8,
+      "name_en": "Raipura",
+      "name_bn": "রায়পুরা",
+      "latitude": 23.960209,
+      "longitude": 90.872058
+    },
+    {
+      "id": 316,
+      "district_id": 8,
+      "name_en": "Shibpur",
+      "name_bn": "শিবপুর",
+      "latitude": 24.026019,
+      "longitude": 90.745436
+    },
+    {
+      "id": 317,
+      "district_id": 2,
+      "name_en": "Kaliganj",
+      "name_bn": "কালীগঞ্জ",
+      "latitude": 23.964241,
+      "longitude": 90.554865
+    },
+    {
+      "id": 318,
+      "district_id": 2,
+      "name_en": "Kaliakair",
+      "name_bn": "কালিয়াকৈর",
+      "latitude": 24.103274,
+      "longitude": 90.264545
+    },
+    {
+      "id": 319,
+      "district_id": 2,
+      "name_en": "Kapasia",
+      "name_bn": "কাপাসিয়া",
+      "latitude": 24.147215,
+      "longitude": 90.599894
+    },
+    {
+      "id": 320,
+      "district_id": 2,
+      "name_en": "Gazipur Sadar",
+      "name_bn": "গাজীপুর সদর",
+      "latitude": 24.014141,
+      "longitude": 90.396184
+    },
+    {
+      "id": 321,
+      "district_id": 2,
+      "name_en": "Sreepur",
+      "name_bn": "শ্রীপুর",
+      "latitude": 23.59628,
+      "longitude": 89.424419
+    },
+    {
+      "id": 322,
+      "district_id": 10,
+      "name_en": "Shariatpur Sadar",
+      "name_bn": "শরিয়তপুর সদর",
+      "latitude": 23.216082,
+      "longitude": 90.315865
+    },
+    {
+      "id": 323,
+      "district_id": 10,
+      "name_en": "Naria",
+      "name_bn": "নড়িয়া",
+      "latitude": 23.304651,
+      "longitude": 90.427346
+    },
+    {
+      "id": 324,
+      "district_id": 10,
+      "name_en": "Zajira",
+      "name_bn": "জাজিরা",
+      "latitude": 23.365506,
+      "longitude": 90.318278
+    },
+    {
+      "id": 325,
+      "district_id": 10,
+      "name_en": "Gosairhat",
+      "name_bn": "গোসাইরহাট",
+      "latitude": 23.079191,
+      "longitude": 90.448709
+    },
+    {
+      "id": 326,
+      "district_id": 10,
+      "name_en": "Bhedarganj",
+      "name_bn": "ভেদরগঞ্জ",
+      "latitude": 23.238257,
+      "longitude": 90.513774
+    },
+    {
+      "id": 327,
+      "district_id": 10,
+      "name_en": "Damudya",
+      "name_bn": "ডামুড্যা",
+      "latitude": 23.136782,
+      "longitude": 90.421684
+    },
+    {
+      "id": 328,
+      "district_id": 3,
+      "name_en": "Araihazar",
+      "name_bn": "আড়াইহাজার",
+      "latitude": 23.761005,
+      "longitude": 90.668858
+    },
+    {
+      "id": 329,
+      "district_id": 3,
+      "name_en": "Bandar",
+      "name_bn": "বন্দর",
+      "latitude": 23.637707,
+      "longitude": 90.537781
+    },
+    {
+      "id": 330,
+      "district_id": 3,
+      "name_en": "Narayanganj Sadar",
+      "name_bn": "নারায়নগঞ্জ সদর",
+      "latitude": 23.627543,
+      "longitude": 90.481077
+    },
+    {
+      "id": 331,
+      "district_id": 3,
+      "name_en": "Rupganj",
+      "name_bn": "রূপগঞ্জ",
+      "latitude": 23.812833,
+      "longitude": 90.538792
+    },
+    {
+      "id": 332,
+      "district_id": 3,
+      "name_en": "Sonargaon",
+      "name_bn": "সোনারগাঁ",
+      "latitude": 23.675578,
+      "longitude": 90.593285
+    },
+    {
+      "id": 333,
+      "district_id": 4,
+      "name_en": "Basail",
+      "name_bn": "বাসাইল",
+      "latitude": 24.231144,
+      "longitude": 90.039363
+    },
+    {
+      "id": 334,
+      "district_id": 4,
+      "name_en": "Bhuapur",
+      "name_bn": "ভুয়াপুর",
+      "latitude": 24.476684,
+      "longitude": 89.814309
+    },
+    {
+      "id": 335,
+      "district_id": 4,
+      "name_en": "Delduar",
+      "name_bn": "দেলদুয়ার",
+      "latitude": 24.14195,
+      "longitude": 89.937735
+    },
+    {
+      "id": 336,
+      "district_id": 4,
+      "name_en": "Ghatail",
+      "name_bn": "ঘাটাইল",
+      "latitude": 24.473472,
+      "longitude": 90.051648
+    },
+    {
+      "id": 337,
+      "district_id": 4,
+      "name_en": "Gopalpur",
+      "name_bn": "গোপালপুর",
+      "latitude": 24.572026,
+      "longitude": 89.903626
+    },
+    {
+      "id": 338,
+      "district_id": 4,
+      "name_en": "Madhupur",
+      "name_bn": "মধুপুর",
+      "latitude": 24.650156,
+      "longitude": 90.060249
+    },
+    {
+      "id": 339,
+      "district_id": 4,
+      "name_en": "Mirzapur",
+      "name_bn": "মির্জাপুর",
+      "latitude": 24.115886,
+      "longitude": 90.107154
+    },
+    {
+      "id": 340,
+      "district_id": 4,
+      "name_en": "Nagarpur",
+      "name_bn": "নাগরপুর",
+      "latitude": 24.047721,
+      "longitude": 89.874185
+    },
+    {
+      "id": 341,
+      "district_id": 4,
+      "name_en": "Sakhipur",
+      "name_bn": "সখিপুর",
+      "latitude": 24.306581,
+      "longitude": 90.172822
+    },
+    {
+      "id": 342,
+      "district_id": 4,
+      "name_en": "Tangail Sadar",
+      "name_bn": "টাঙ্গাইল সদর",
+      "latitude": 24.256384,
+      "longitude": 89.866094
+    },
+    {
+      "id": 343,
+      "district_id": 4,
+      "name_en": "Kalihati",
+      "name_bn": "কালিহাতী",
+      "latitude": 24.35999,
+      "longitude": 89.944847
+    },
+    {
+      "id": 344,
+      "district_id": 4,
+      "name_en": "Dhanbari",
+      "name_bn": "ধনবাড়ী",
+      "latitude": 24.686657,
+      "longitude": 89.933255
+    },
+    {
+      "id": 345,
+      "district_id": 5,
+      "name_en": "Itna",
+      "name_bn": "ইটনা",
+      "latitude": 24.549124,
+      "longitude": 91.082566
+    },
+    {
+      "id": 346,
+      "district_id": 5,
+      "name_en": "Katiadi",
+      "name_bn": "কটিয়াদী",
+      "latitude": 24.291095,
+      "longitude": 90.823958
+    },
+    {
+      "id": 347,
+      "district_id": 5,
+      "name_en": "Bhairab",
+      "name_bn": "ভৈরব",
+      "latitude": 24.097371,
+      "longitude": 90.981611
+    },
+    {
+      "id": 348,
+      "district_id": 5,
+      "name_en": "Tarail",
+      "name_bn": "তাড়াইল",
+      "latitude": 24.550275,
+      "longitude": 90.890759
+    },
+    {
+      "id": 349,
+      "district_id": 5,
+      "name_en": "Hossainpur",
+      "name_bn": "হোসেনপুর",
+      "latitude": 24.448783,
+      "longitude": 90.662824
+    },
+    {
+      "id": 350,
+      "district_id": 5,
+      "name_en": "Pakundia",
+      "name_bn": "পাকুন্দিয়া",
+      "latitude": 24.32063,
+      "longitude": 90.692647
+    },
+    {
+      "id": 351,
+      "district_id": 5,
+      "name_en": "Kuliarchar",
+      "name_bn": "কুলিয়ারচর",
+      "latitude": 24.152014,
+      "longitude": 90.888109
+    },
+    {
+      "id": 352,
+      "district_id": 5,
+      "name_en": "Kishoreganj Sadar",
+      "name_bn": "কিশোরগঞ্জ সদর",
+      "latitude": 24.423757,
+      "longitude": 90.783302
+    },
+    {
+      "id": 353,
+      "district_id": 5,
+      "name_en": "Karimgonj",
+      "name_bn": "করিমগঞ্জ",
+      "latitude": 24.451279,
+      "longitude": 90.89603
+    },
+    {
+      "id": 354,
+      "district_id": 5,
+      "name_en": "Bajitpur",
+      "name_bn": "বাজিতপুর",
+      "latitude": 24.224529,
+      "longitude": 90.951205
+    },
+    {
+      "id": 355,
+      "district_id": 5,
+      "name_en": "Austagram",
+      "name_bn": "অষ্টগ্রাম",
+      "latitude": 24.323013,
+      "longitude": 91.121484
+    },
+    {
+      "id": 356,
+      "district_id": 5,
+      "name_en": "Mithamoin",
+      "name_bn": "মিঠামইন",
+      "latitude": 24.433043,
+      "longitude": 91.110651
+    },
+    {
+      "id": 357,
+      "district_id": 5,
+      "name_en": "Nikli",
+      "name_bn": "নিকলী",
+      "latitude": 24.336767,
+      "longitude": 90.963145
+    },
+    {
+      "id": 358,
+      "district_id": 6,
+      "name_en": "Harirampur",
+      "name_bn": "হরিরামপুর",
+      "latitude": 23.724218,
+      "longitude": 89.94779
+    },
+    {
+      "id": 359,
+      "district_id": 6,
+      "name_en": "Saturia",
+      "name_bn": "সাটুরিয়া",
+      "latitude": 23.957455,
+      "longitude": 90.001643
+    },
+    {
+      "id": 360,
+      "district_id": 6,
+      "name_en": "Manikganj Sadar",
+      "name_bn": "মানিকগঞ্জ সদর",
+      "latitude": 23.835736,
+      "longitude": 90.030479
+    },
+    {
+      "id": 361,
+      "district_id": 6,
+      "name_en": "Gior",
+      "name_bn": "ঘিওর",
+      "latitude": 23.873232,
+      "longitude": 89.904561
+    },
+    {
+      "id": 362,
+      "district_id": 6,
+      "name_en": "Shibaloy",
+      "name_bn": "শিবালয়",
+      "latitude": 23.838291,
+      "longitude": 89.81017
+    },
+    {
+      "id": 363,
+      "district_id": 6,
+      "name_en": "Doulatpur",
+      "name_bn": "দৌলতপুর",
+      "latitude": 23.955759,
+      "longitude": 89.797685
+    },
+    {
+      "id": 364,
+      "district_id": 6,
+      "name_en": "Singiar",
+      "name_bn": "সিংগাইর",
+      "latitude": 23.783434,
+      "longitude": 90.154304
+    },
+    {
+      "id": 365,
+      "district_id": 1,
+      "name_en": "Savar",
+      "name_bn": "সাভার",
+      "latitude": 23.881083,
+      "longitude": 90.280743
+    },
+    {
+      "id": 366,
+      "district_id": 1,
+      "name_en": "Dhamrai",
+      "name_bn": "ধামরাই",
+      "latitude": 23.937112,
+      "longitude": 90.141398
+    },
+    {
+      "id": 367,
+      "district_id": 1,
+      "name_en": "Keraniganj",
+      "name_bn": "কেরাণীগঞ্জ",
+      "latitude": 23.693535,
+      "longitude": 90.34429
+    },
+    {
+      "id": 368,
+      "district_id": 1,
+      "name_en": "Nawabganj",
+      "name_bn": "নবাবগঞ্জ",
+      "latitude": 23.673457,
+      "longitude": 90.160815
+    },
+    {
+      "id": 369,
+      "district_id": 1,
+      "name_en": "Dohar",
+      "name_bn": "দোহার",
+      "latitude": 23.600913,
+      "longitude": 90.1093
+    },
+    {
+      "id": 370,
+      "district_id": 7,
+      "name_en": "Munshiganj Sadar",
+      "name_bn": "মুন্সিগঞ্জ সদর",
+      "latitude": 23.486502,
+      "longitude": 90.527596
+    },
+    {
+      "id": 371,
+      "district_id": 7,
+      "name_en": "Sreenagar",
+      "name_bn": "শ্রীনগর",
+      "latitude": 23.546954,
+      "longitude": 90.263219
+    },
+    {
+      "id": 372,
+      "district_id": 7,
+      "name_en": "Sirajdikhan",
+      "name_bn": "সিরাজদিখান",
+      "latitude": 23.597775,
+      "longitude": 90.356337
+    },
+    {
+      "id": 373,
+      "district_id": 7,
+      "name_en": "Louhajanj",
+      "name_bn": "লৌহজং",
+      "latitude": 23.470629,
+      "longitude": 90.341285
+    },
+    {
+      "id": 374,
+      "district_id": 7,
+      "name_en": "Gajaria",
+      "name_bn": "গজারিয়া",
+      "latitude": 23.547226,
+      "longitude": 90.629749
+    },
+    {
+      "id": 375,
+      "district_id": 7,
+      "name_en": "Tongibari",
+      "name_bn": "টংগীবাড়ি",
+      "latitude": 23.476115,
+      "longitude": 90.452707
+    },
+    {
+      "id": 376,
+      "district_id": 9,
+      "name_en": "Rajbari Sadar",
+      "name_bn": "রাজবাড়ী সদর",
+      "latitude": 23.717484,
+      "longitude": 89.654168
+    },
+    {
+      "id": 377,
+      "district_id": 9,
+      "name_en": "Goalanda",
+      "name_bn": "গোয়ালন্দ",
+      "latitude": 23.756363,
+      "longitude": 89.766122
+    },
+    {
+      "id": 378,
+      "district_id": 9,
+      "name_en": "Pangsa",
+      "name_bn": "পাংশা",
+      "latitude": 23.787842,
+      "longitude": 89.386913
+    },
+    {
+      "id": 379,
+      "district_id": 9,
+      "name_en": "Baliakandi",
+      "name_bn": "বালিয়াকান্দি",
+      "latitude": 23.649667,
+      "longitude": 89.550662
+    },
+    {
+      "id": 380,
+      "district_id": 9,
+      "name_en": "Kalukhali",
+      "name_bn": "কালুখালী",
+      "latitude": 23.741033,
+      "longitude": 89.474281
+    },
+    {
+      "id": 381,
+      "district_id": 13,
+      "name_en": "Madaripur Sadar",
+      "name_bn": "মাদারীপুর সদর",
+      "latitude": 23.193771,
+      "longitude": 90.175006
+    },
+    {
+      "id": 382,
+      "district_id": 13,
+      "name_en": "Shibchar",
+      "name_bn": "শিবচর",
+      "latitude": 23.375427,
+      "longitude": 90.174219
+    },
+    {
+      "id": 383,
+      "district_id": 13,
+      "name_en": "Kalkini",
+      "name_bn": "কালকিনি",
+      "latitude": 23.070875,
+      "longitude": 90.248146
+    },
+    {
+      "id": 384,
+      "district_id": 13,
+      "name_en": "Rajoir",
+      "name_bn": "রাজৈর",
+      "latitude": 23.201348,
+      "longitude": 90.036995
+    },
+    {
+      "id": 385,
+      "district_id": 12,
+      "name_en": "Gopalganj Sadar",
+      "name_bn": "গোপালগঞ্জ সদর",
+      "latitude": 23.060375,
+      "longitude": 89.848867
+    },
+    {
+      "id": 386,
+      "district_id": 12,
+      "name_en": "Kashiani",
+      "name_bn": "কাশিয়ানী",
+      "latitude": 23.190708,
+      "longitude": 89.796316
+    },
+    {
+      "id": 387,
+      "district_id": 12,
+      "name_en": "Tungipara",
+      "name_bn": "টুংগীপাড়া",
+      "latitude": 22.925555,
+      "longitude": 89.904517
+    },
+    {
+      "id": 388,
+      "district_id": 12,
+      "name_en": "Kotalipara",
+      "name_bn": "কোটালীপাড়া",
+      "latitude": 23.011058,
+      "longitude": 90.020669
+    },
+    {
+      "id": 389,
+      "district_id": 12,
+      "name_en": "Muksudpur",
+      "name_bn": "মুকসুদপুর",
+      "latitude": 23.266675,
+      "longitude": 89.914356
+    },
+    {
+      "id": 390,
+      "district_id": 11,
+      "name_en": "Faridpur Sadar",
+      "name_bn": "ফরিদপুর সদর",
+      "latitude": 23.60481,
+      "longitude": 89.816529
+    },
+    {
+      "id": 391,
+      "district_id": 11,
+      "name_en": "Alfadanga",
+      "name_bn": "আলফাডাঙ্গা",
+      "latitude": 23.296792,
+      "longitude": 89.669936
+    },
+    {
+      "id": 392,
+      "district_id": 11,
+      "name_en": "Boalmari",
+      "name_bn": "বোয়ালমারী",
+      "latitude": 23.404545,
+      "longitude": 89.697066
+    },
+    {
+      "id": 393,
+      "district_id": 11,
+      "name_en": "Sadarpur",
+      "name_bn": "সদরপুর",
+      "latitude": 23.495861,
+      "longitude": 90.052626
+    },
+    {
+      "id": 394,
+      "district_id": 11,
+      "name_en": "Nagarkanda",
+      "name_bn": "নগরকান্দা",
+      "latitude": 23.437261,
+      "longitude": 89.894415
+    },
+    {
+      "id": 395,
+      "district_id": 11,
+      "name_en": "Bhanga",
+      "name_bn": "ভাঙ্গা",
+      "latitude": 23.386736,
+      "longitude": 90.009805
+    },
+    {
+      "id": 396,
+      "district_id": 11,
+      "name_en": "Charbhadrasan",
+      "name_bn": "চরভদ্রাসন",
+      "latitude": 23.592566,
+      "longitude": 89.978042
+    },
+    {
+      "id": 397,
+      "district_id": 11,
+      "name_en": "Madhukhali",
+      "name_bn": "মধুখালী",
+      "latitude": 23.540882,
+      "longitude": 89.612041
+    },
+    {
+      "id": 398,
+      "district_id": 11,
+      "name_en": "Saltha",
+      "name_bn": "সালথা",
+      "latitude": 23.420044,
+      "longitude": 89.799704
+    },
+    {
+      "id": 399,
+      "district_id": 59,
+      "name_en": "Panchagarh Sadar",
+      "name_bn": "পঞ্চগড় সদর",
+      "latitude": 26.367443,
+      "longitude": 88.581837
+    },
+    {
+      "id": 400,
+      "district_id": 59,
+      "name_en": "Debiganj",
+      "name_bn": "দেবীগঞ্জ",
+      "latitude": 26.132063,
+      "longitude": 88.719437
+    },
+    {
+      "id": 401,
+      "district_id": 59,
+      "name_en": "Boda",
+      "name_bn": "বোদা",
+      "latitude": 26.230589,
+      "longitude": 88.612651
+    },
+    {
+      "id": 402,
+      "district_id": 59,
+      "name_en": "Atwari",
+      "name_bn": "আটোয়ারী",
+      "latitude": 26.249553,
+      "longitude": 88.426429
+    },
+    {
+      "id": 403,
+      "district_id": 59,
+      "name_en": "Tetulia",
+      "name_bn": "তেতুলিয়া",
+      "latitude": 26.513436,
+      "longitude": 88.429836
+    },
+    {
+      "id": 404,
+      "district_id": 54,
+      "name_en": "Nawabganj",
+      "name_bn": "নবাবগঞ্জ",
+      "latitude": 25.420404,
+      "longitude": 89.09164
+    },
+    {
+      "id": 405,
+      "district_id": 54,
+      "name_en": "Birganj",
+      "name_bn": "বীরগঞ্জ",
+      "latitude": 25.927924,
+      "longitude": 88.626592
+    },
+    {
+      "id": 406,
+      "district_id": 54,
+      "name_en": "Ghoraghat",
+      "name_bn": "ঘোড়াঘাট",
+      "latitude": 25.28435,
+      "longitude": 89.214304
+    },
+    {
+      "id": 407,
+      "district_id": 54,
+      "name_en": "Birampur",
+      "name_bn": "বিরামপুর",
+      "latitude": 25.379098,
+      "longitude": 88.963666
+    },
+    {
+      "id": 408,
+      "district_id": 54,
+      "name_en": "Parbatipur",
+      "name_bn": "পার্বতীপুর",
+      "latitude": 25.618762,
+      "longitude": 88.925619
+    },
+    {
+      "id": 409,
+      "district_id": 54,
+      "name_en": "Bochaganj",
+      "name_bn": "বোচাগঞ্জ",
+      "latitude": 25.785712,
+      "longitude": 88.453478
+    },
+    {
+      "id": 410,
+      "district_id": 54,
+      "name_en": "Kaharol",
+      "name_bn": "কাহারোল",
+      "latitude": 25.800917,
+      "longitude": 88.598796
+    },
+    {
+      "id": 411,
+      "district_id": 54,
+      "name_en": "Fulbari",
+      "name_bn": "ফুলবাড়ী",
+      "latitude": 25.470139,
+      "longitude": 88.901863
+    },
+    {
+      "id": 412,
+      "district_id": 54,
+      "name_en": "Dinajpur Sadar",
+      "name_bn": "দিনাজপুর সদর",
+      "latitude": 25.608103,
+      "longitude": 88.677374
+    },
+    {
+      "id": 413,
+      "district_id": 54,
+      "name_en": "Hakimpur",
+      "name_bn": "হাকিমপুর",
+      "latitude": 25.292063,
+      "longitude": 89.062013
+    },
+    {
+      "id": 414,
+      "district_id": 54,
+      "name_en": "Khansama",
+      "name_bn": "খানসামা",
+      "latitude": 25.869753,
+      "longitude": 88.765239
+    },
+    {
+      "id": 415,
+      "district_id": 54,
+      "name_en": "Birol",
+      "name_bn": "বিরল",
+      "latitude": 25.646728,
+      "longitude": 88.547661
+    },
+    {
+      "id": 416,
+      "district_id": 54,
+      "name_en": "Chirirbandar",
+      "name_bn": "চিরিরবন্দর",
+      "latitude": 25.665433,
+      "longitude": 88.786471
+    },
+    {
+      "id": 417,
+      "district_id": 57,
+      "name_en": "Lalmonirhat Sadar",
+      "name_bn": "লালমনিরহাট সদর",
+      "latitude": 25.87474,
+      "longitude": 89.452696
+    },
+    {
+      "id": 418,
+      "district_id": 57,
+      "name_en": "Kaliganj",
+      "name_bn": "কালীগঞ্জ",
+      "latitude": 25.985618,
+      "longitude": 89.240177
+    },
+    {
+      "id": 419,
+      "district_id": 57,
+      "name_en": "Hatibandha",
+      "name_bn": "হাতীবান্ধা",
+      "latitude": 26.121533,
+      "longitude": 89.140914
+    },
+    {
+      "id": 420,
+      "district_id": 57,
+      "name_en": "Patgram",
+      "name_bn": "পাটগ্রাম",
+      "latitude": 26.340087,
+      "longitude": 89.024063
+    },
+    {
+      "id": 421,
+      "district_id": 57,
+      "name_en": "Aditmari",
+      "name_bn": "আদিতমারী",
+      "latitude": 25.944961,
+      "longitude": 89.369453
+    },
+    {
+      "id": 422,
+      "district_id": 58,
+      "name_en": "Syedpur",
+      "name_bn": "সৈয়দপুর",
+      "latitude": 25.802828,
+      "longitude": 88.92207
+    },
+    {
+      "id": 423,
+      "district_id": 58,
+      "name_en": "Domar",
+      "name_bn": "ডোমার",
+      "latitude": 26.158579,
+      "longitude": 88.825185
+    },
+    {
+      "id": 424,
+      "district_id": 58,
+      "name_en": "Dimla",
+      "name_bn": "ডিমলা",
+      "latitude": 26.172122,
+      "longitude": 88.972481
+    },
+    {
+      "id": 425,
+      "district_id": 58,
+      "name_en": "Jaldhaka",
+      "name_bn": "জলঢাকা",
+      "latitude": 26.029557,
+      "longitude": 88.99334
+    },
+    {
+      "id": 426,
+      "district_id": 58,
+      "name_en": "Kishorganj",
+      "name_bn": "কিশোরগঞ্জ",
+      "latitude": 25.896055,
+      "longitude": 89.032849
+    },
+    {
+      "id": 427,
+      "district_id": 58,
+      "name_en": "Nilphamari Sadar",
+      "name_bn": "নীলফামারী সদর",
+      "latitude": 25.941706,
+      "longitude": 88.85481
+    },
+    {
+      "id": 428,
+      "district_id": 55,
+      "name_en": "Sadullapur",
+      "name_bn": "সাদুল্লাপুর",
+      "latitude": 25.394759,
+      "longitude": 89.426377
+    },
+    {
+      "id": 429,
+      "district_id": 55,
+      "name_en": "Gaibandha Sadar",
+      "name_bn": "গাইবান্ধা সদর",
+      "latitude": 25.34972,
+      "longitude": 89.566695
+    },
+    {
+      "id": 430,
+      "district_id": 55,
+      "name_en": "Palashbari",
+      "name_bn": "পলাশবাড়ী",
+      "latitude": 25.263605,
+      "longitude": 89.396703
+    },
+    {
+      "id": 431,
+      "district_id": 55,
+      "name_en": "Saghata",
+      "name_bn": "সাঘাটা",
+      "latitude": 25.123357,
+      "longitude": 89.563761
+    },
+    {
+      "id": 432,
+      "district_id": 55,
+      "name_en": "Gobindaganj",
+      "name_bn": "গোবিন্দগঞ্জ",
+      "latitude": 25.157158,
+      "longitude": 89.369105
+    },
+    {
+      "id": 433,
+      "district_id": 55,
+      "name_en": "Sundarganj",
+      "name_bn": "সুন্দরগঞ্জ",
+      "latitude": 25.510005,
+      "longitude": 89.563955
+    },
+    {
+      "id": 434,
+      "district_id": 55,
+      "name_en": "Phulchari",
+      "name_bn": "ফুলছড়ি",
+      "latitude": 25.254314,
+      "longitude": 89.65394
+    },
+    {
+      "id": 435,
+      "district_id": 60,
+      "name_en": "Thakurgaon Sadar",
+      "name_bn": "ঠাকুরগাঁও সদর",
+      "latitude": 26.070652,
+      "longitude": 88.464445
+    },
+    {
+      "id": 436,
+      "district_id": 60,
+      "name_en": "Pirganj",
+      "name_bn": "পীরগঞ্জ",
+      "latitude": 25.423711,
+      "longitude": 89.274283
+    },
+    {
+      "id": 437,
+      "district_id": 60,
+      "name_en": "Ranisankail",
+      "name_bn": "রাণীশংকৈল",
+      "latitude": 25.940052,
+      "longitude": 88.24579
+    },
+    {
+      "id": 438,
+      "district_id": 60,
+      "name_en": "Haripur",
+      "name_bn": "হরিপুর",
+      "latitude": 25.878458,
+      "longitude": 88.1549
+    },
+    {
+      "id": 439,
+      "district_id": 60,
+      "name_en": "Baliadangi",
+      "name_bn": "বালিয়াডাঙ্গী",
+      "latitude": 26.10853,
+      "longitude": 88.263735
+    },
+    {
+      "id": 440,
+      "district_id": 53,
+      "name_en": "Rangpur Sadar",
+      "name_bn": "রংপুর সদর",
+      "latitude": 25.74591,
+      "longitude": 89.212407
+    },
+    {
+      "id": 441,
+      "district_id": 53,
+      "name_en": "Gangachara",
+      "name_bn": "গংগাচড়া",
+      "latitude": 25.874198,
+      "longitude": 89.193323
+    },
+    {
+      "id": 442,
+      "district_id": 53,
+      "name_en": "Taragonj",
+      "name_bn": "তারাগঞ্জ",
+      "latitude": 25.78055,
+      "longitude": 89.03336
+    },
+    {
+      "id": 443,
+      "district_id": 53,
+      "name_en": "Badargonj",
+      "name_bn": "বদরগঞ্জ",
+      "latitude": 25.665931,
+      "longitude": 89.056406
+    },
+    {
+      "id": 444,
+      "district_id": 53,
+      "name_en": "Mithapukur",
+      "name_bn": "মিঠাপুকুর",
+      "latitude": 25.571319,
+      "longitude": 89.26119
+    },
+    {
+      "id": 445,
+      "district_id": 53,
+      "name_en": "Pirgonj",
+      "name_bn": "পীরগঞ্জ",
+      "latitude": 25.841165,
+      "longitude": 88.367896
+    },
+    {
+      "id": 446,
+      "district_id": 53,
+      "name_en": "Kaunia",
+      "name_bn": "কাউনিয়া",
+      "latitude": 25.763863,
+      "longitude": 89.394988
+    },
+    {
+      "id": 447,
+      "district_id": 53,
+      "name_en": "Pirgacha",
+      "name_bn": "পীরগাছা",
+      "latitude": 25.665166,
+      "longitude": 89.420026
+    },
+    {
+      "id": 448,
+      "district_id": 56,
+      "name_en": "Kurigram Sadar",
+      "name_bn": "কুড়িগ্রাম সদর",
+      "latitude": 25.826005,
+      "longitude": 89.690671
+    },
+    {
+      "id": 449,
+      "district_id": 56,
+      "name_en": "Nageshwari",
+      "name_bn": "নাগেশ্বরী",
+      "latitude": 25.958495,
+      "longitude": 89.740085
+    },
+    {
+      "id": 450,
+      "district_id": 56,
+      "name_en": "Bhurungamari",
+      "name_bn": "ভুরুঙ্গামারী",
+      "latitude": 26.116744,
+      "longitude": 89.690251
+    },
+    {
+      "id": 451,
+      "district_id": 56,
+      "name_en": "Phulbari",
+      "name_bn": "ফুলবাড়ী",
+      "latitude": 25.949458,
+      "longitude": 89.570475
+    },
+    {
+      "id": 452,
+      "district_id": 56,
+      "name_en": "Rajarhat",
+      "name_bn": "রাজারহাট",
+      "latitude": 25.786118,
+      "longitude": 89.5424
+    },
+    {
+      "id": 453,
+      "district_id": 56,
+      "name_en": "Ulipur",
+      "name_bn": "উলিপুর",
+      "latitude": 25.689064,
+      "longitude": 89.6689
+    },
+    {
+      "id": 454,
+      "district_id": 56,
+      "name_en": "Chilmari",
+      "name_bn": "চিলমারী",
+      "latitude": 25.566256,
+      "longitude": 89.718361
+    },
+    {
+      "id": 455,
+      "district_id": 56,
+      "name_en": "Rowmari",
+      "name_bn": "রৌমারী",
+      "latitude": 25.591466,
+      "longitude": 89.82754
+    },
+    {
+      "id": 456,
+      "district_id": 56,
+      "name_en": "Charrajibpur",
+      "name_bn": "চর রাজিবপুর",
+      "latitude": 25.443272,
+      "longitude": 89.763957
+    },
+    {
+      "id": 457,
+      "district_id": 64,
+      "name_en": "Sherpur Sadar",
+      "name_bn": "শেরপুর সদর",
+      "latitude": 24.992919,
+      "longitude": 90.019862
+    },
+    {
+      "id": 458,
+      "district_id": 64,
+      "name_en": "Nalitabari",
+      "name_bn": "নালিতাবাড়ী",
+      "latitude": 25.117536,
+      "longitude": 90.183539
+    },
+    {
+      "id": 459,
+      "district_id": 64,
+      "name_en": "Sreebordi",
+      "name_bn": "শ্রীবরদী",
+      "latitude": 25.165645,
+      "longitude": 89.954909
+    },
+    {
+      "id": 460,
+      "district_id": 64,
+      "name_en": "Nokla",
+      "name_bn": "নকলা",
+      "latitude": 24.95683,
+      "longitude": 90.183648
+    },
+    {
+      "id": 461,
+      "district_id": 64,
+      "name_en": "Jhenaigati",
+      "name_bn": "ঝিনাইগাতী",
+      "latitude": 25.181806,
+      "longitude": 90.053008
+    },
+    {
+      "id": 462,
+      "district_id": 61,
+      "name_en": "Fulbaria",
+      "name_bn": "ফুলবাড়ীয়া",
+      "latitude": 24.586535,
+      "longitude": 90.254583
+    },
+    {
+      "id": 463,
+      "district_id": 61,
+      "name_en": "Trishal",
+      "name_bn": "ত্রিশাল",
+      "latitude": 24.563877,
+      "longitude": 90.409311
+    },
+    {
+      "id": 464,
+      "district_id": 61,
+      "name_en": "Bhaluka",
+      "name_bn": "ভালুকা",
+      "latitude": 24.381724,
+      "longitude": 90.353521
+    },
+    {
+      "id": 465,
+      "district_id": 61,
+      "name_en": "Muktagacha",
+      "name_bn": "মুক্তাগাছা",
+      "latitude": 24.742955,
+      "longitude": 90.203827
+    },
+    {
+      "id": 466,
+      "district_id": 61,
+      "name_en": "Mymensingh Sadar",
+      "name_bn": "ময়মনসিংহ সদর",
+      "latitude": 24.774629,
+      "longitude": 90.361446
+    },
+    {
+      "id": 467,
+      "district_id": 61,
+      "name_en": "Dhobaura",
+      "name_bn": "ধোবাউড়া",
+      "latitude": 25.10115,
+      "longitude": 90.52491
+    },
+    {
+      "id": 468,
+      "district_id": 61,
+      "name_en": "Phulpur",
+      "name_bn": "ফুলপুর",
+      "latitude": 24.908527,
+      "longitude": 90.406409
+    },
+    {
+      "id": 469,
+      "district_id": 61,
+      "name_en": "Haluaghat",
+      "name_bn": "হালুয়াঘাট",
+      "latitude": 25.08461,
+      "longitude": 90.351315
+    },
+    {
+      "id": 470,
+      "district_id": 61,
+      "name_en": "Gouripur",
+      "name_bn": "গৌরীপুর",
+      "latitude": 24.756006,
+      "longitude": 90.585838
+    },
+    {
+      "id": 471,
+      "district_id": 61,
+      "name_en": "Gafargaon",
+      "name_bn": "গফরগাঁও",
+      "latitude": 24.393547,
+      "longitude": 90.549541
+    },
+    {
+      "id": 472,
+      "district_id": 61,
+      "name_en": "Iswarganj",
+      "name_bn": "ঈশ্বরগঞ্জ",
+      "latitude": 24.645033,
+      "longitude": 90.599442
+    },
+    {
+      "id": 473,
+      "district_id": 61,
+      "name_en": "Nandail",
+      "name_bn": "নান্দাইল",
+      "latitude": 24.550179,
+      "longitude": 90.677032
+    },
+    {
+      "id": 474,
+      "district_id": 61,
+      "name_en": "Tarakanda",
+      "name_bn": "তারাকান্দা",
+      "latitude": 24.85,
+      "longitude": 90.433333
+    },
+    {
+      "id": 475,
+      "district_id": 62,
+      "name_en": "Jamalpur Sadar",
+      "name_bn": "জামালপুর সদর",
+      "latitude": 24.84417,
+      "longitude": 90.012459
+    },
+    {
+      "id": 476,
+      "district_id": 62,
+      "name_en": "Melandah",
+      "name_bn": "মেলান্দহ",
+      "latitude": 24.957382,
+      "longitude": 89.824708
+    },
+    {
+      "id": 477,
+      "district_id": 62,
+      "name_en": "Islampur",
+      "name_bn": "ইসলামপুর",
+      "latitude": 25.075208,
+      "longitude": 89.761298
+    },
+    {
+      "id": 478,
+      "district_id": 62,
+      "name_en": "Dewangonj",
+      "name_bn": "দেওয়ানগঞ্জ",
+      "latitude": 25.263553,
+      "longitude": 89.765917
+    },
+    {
+      "id": 479,
+      "district_id": 62,
+      "name_en": "Sarishabari",
+      "name_bn": "সরিষাবাড়ী",
+      "latitude": 24.718598,
+      "longitude": 89.830418
+    },
+    {
+      "id": 480,
+      "district_id": 62,
+      "name_en": "Madarganj",
+      "name_bn": "মাদারগঞ্জ",
+      "latitude": 24.881908,
+      "longitude": 89.740847
+    },
+    {
+      "id": 481,
+      "district_id": 62,
+      "name_en": "Bokshiganj",
+      "name_bn": "বকশীগঞ্জ",
+      "latitude": 25.214895,
+      "longitude": 89.852668
+    },
+    {
+      "id": 482,
+      "district_id": 63,
+      "name_en": "Barhatta",
+      "name_bn": "বারহাট্টা",
+      "latitude": 24.919576,
+      "longitude": 90.885197
+    },
+    {
+      "id": 483,
+      "district_id": 63,
+      "name_en": "Durgapur",
+      "name_bn": "দুর্গাপুর",
+      "latitude": 25.089685,
+      "longitude": 90.682054
+    },
+    {
+      "id": 484,
+      "district_id": 63,
+      "name_en": "Kendua",
+      "name_bn": "কেন্দুয়া",
+      "latitude": 24.677304,
+      "longitude": 90.802782
+    },
+    {
+      "id": 485,
+      "district_id": 63,
+      "name_en": "Atpara",
+      "name_bn": "আটপাড়া",
+      "latitude": 24.79138,
+      "longitude": 90.876178
+    },
+    {
+      "id": 486,
+      "district_id": 63,
+      "name_en": "Madan",
+      "name_bn": "মদন",
+      "latitude": 24.677503,
+      "longitude": 90.966943
+    },
+    {
+      "id": 487,
+      "district_id": 63,
+      "name_en": "Khaliajuri",
+      "name_bn": "খালিয়াজুরী",
+      "latitude": 24.702309,
+      "longitude": 91.12122
+    },
+    {
+      "id": 488,
+      "district_id": 63,
+      "name_en": "Kalmakanda",
+      "name_bn": "কলমাকান্দা",
+      "latitude": 25.076988,
+      "longitude": 90.857257
+    },
+    {
+      "id": 489,
+      "district_id": 63,
+      "name_en": "Mohongonj",
+      "name_bn": "মোহনগঞ্জ",
+      "latitude": 24.826808,
+      "longitude": 91.023653
+    },
+    {
+      "id": 490,
+      "district_id": 63,
+      "name_en": "Purbadhala",
+      "name_bn": "পূর্বধলা",
+      "latitude": 24.933771,
+      "longitude": 90.602025
+    },
+    {
+      "id": 491,
+      "district_id": 63,
+      "name_en": "Netrokona Sadar",
+      "name_bn": "নেত্রকোণা সদর",
+      "latitude": 24.88677,
+      "longitude": 90.737365
+    },
+    {
+      "id": 492,
+      "district_id": 15,
+      "name_en": "Eidgaon",
+      "name_bn": "ঈদগাঁও",
+      "latitude": 21.5529,
+      "longitude": 92.0721
+    },
+    {
+      "id": 493,
+      "district_id": 52,
+      "name_en": "Madhyanagar",
+      "name_bn": "মধ্যনগর",
+      "latitude": 24.9,
+      "longitude": 91.0167
+    },
+    {
+      "id": 494,
+      "district_id": 13,
+      "name_en": "Dasar",
+      "name_bn": "ডাসার",
+      "latitude": 23.06092,
+      "longitude": 90.148989
+    },
+    {
+      "id": 495,
+      "district_id": 51,
+      "name_en": "Shaistaganj",
+      "name_bn": "শায়েস্তাগঞ্জ",
+      "latitude": 24.276697,
+      "longitude": 91.455553
     }
   ]
 }

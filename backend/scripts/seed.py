@@ -284,7 +284,7 @@ async def main():
         print("  • Admin:      admin@altcare.com / Admin@1234")
         print("  • Operator:   operator@altcare.com / Operator@1234")
         print("\n📚 Geographic data:")
-        print("  • 8 divisions, 64 districts, 10+ sample upazilas")
+        print("  • 8 divisions, 64 districts, 495 upazilas")
         print("\n🔌 Integration providers:")
         print("  • SMS:     Twilio, Banglalink, Robi")
         print("  • Email:   SendGrid, AWS SES, SMTP")

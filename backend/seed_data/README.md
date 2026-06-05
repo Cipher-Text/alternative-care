@@ -10,7 +10,9 @@ Bangladesh geographic hierarchy for address management.
 **Contents:**
 - **8 Divisions** - All administrative divisions of Bangladesh with Bengali names
 - **64 Districts** - All districts with division mappings
-- **10 Sample Upazilas** - Representative upazilas from major districts (expandable to 490+)
+- **495 Upazilas** - All current upazilas with district mappings and coordinates
+
+Upazila coordinates are approximate WGS84 latitude/longitude points. Most are derived from online administrative boundary geometry centroids; newer upazilas that are missing from the boundary layer use online point-coordinate references.
 
 **Format:**
 ```json
@@ -133,21 +135,21 @@ The seed script is **idempotent** - it checks for existing data before inserting
 |------|-------|-------------|
 | Divisions | 8 | All Bangladesh divisions |
 | Districts | 64 | All Bangladesh districts |
-| Upazilas | 10+ | Sample upazilas (expandable to 490+) |
+| Upazilas | 495 | All current upazilas with coordinates |
 | Integration Providers | 12 | SMS, Email, and Payment providers |
 | Translations | 80+ | Bilingual UI strings (EN/BN) |
 | Sample Tenants | 3 | Test clinics |
 | Sample Users | 6 | Test users (doctors, staff, admins) |
 
-## Expanding Data
+## Maintaining Data
 
-### Adding More Upazilas
+### Updating Upazilas
 
-To add more upazilas, edit `geographic_data.json` and add entries to the `upazilas` array:
+To update upazilas after administrative changes, edit `geographic_data.json` and keep entries in the `upazilas` array in this format:
 
 ```json
 {
-  "id": 11,
+  "id": 496,
   "district_id": 1,
   "name_en": "Savar",
   "name_bn": "সাভার",
