@@ -29,12 +29,53 @@ class Tenant(BaseAuditModel):
 
     # Clinic information
     clinic_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    clinic_address: Mapped[str | None] = mapped_column(Text, nullable=True)
+    clinic_address: Mapped[str | None] = mapped_column(Text, nullable=True)  # Legacy field
+
+    # === PHASE 1: Essential Clinic Fields ===
+
+    # Clinic contact details (separate from owner)
+    clinic_phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    clinic_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    clinic_whatsapp: Mapped[str | None] = mapped_column(String(20), nullable=True)
+
+    # Structured address
+    address_line_1: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    address_line_2: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    postal_code: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    landmark: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     # Geographic location (Bangladesh)
     division_id: Mapped[int | None] = mapped_column(nullable=True)
     district_id: Mapped[int | None] = mapped_column(nullable=True)
     upazila_id: Mapped[int | None] = mapped_column(nullable=True)
+
+    # Geolocation for maps
+    latitude: Mapped[float | None] = mapped_column(nullable=True)
+    longitude: Mapped[float | None] = mapped_column(nullable=True)
+
+    # Branding
+    logo_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    description_en: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description_bn: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Professional credentials (beyond license)
+    registration_body: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+        comment="e.g., BMDC, Bangladesh Homeopathic Board"
+    )
+    registration_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    years_of_experience: Mapped[int | None] = mapped_column(nullable=True)
+
+    # Fees (stored in paisa: 100 paisa = 1 BDT)
+    consultation_fee: Mapped[int | None] = mapped_column(
+        nullable=True,
+        comment="Fee in paisa (100 paisa = 1 BDT)"
+    )
+    follow_up_fee: Mapped[int | None] = mapped_column(
+        nullable=True,
+        comment="Follow-up fee in paisa"
+    )
 
     # Medical specializations (1-4 systems)
     # Options: homeopathy, ayurveda, unani, herbal
