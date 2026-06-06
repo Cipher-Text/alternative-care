@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.base_service import BaseTenantService
 from app.shared.models import Appointment, Visit
 from app.shared.schemas import (
     AppointmentCreate,
@@ -18,13 +19,14 @@ from app.shared.schemas import (
 )
 
 
-class AppointmentService:
+class AppointmentService(BaseTenantService[Appointment, AppointmentCreate, AppointmentUpdate]):
     """Service for managing appointments and visits."""
+
+    model = Appointment
 
     def __init__(self, db: AsyncSession, tenant_id: str):
         """Initialize service with database session and tenant context."""
-        self.db = db
-        self.tenant_id = tenant_id
+        super().__init__(db, tenant_id)
 
     # ===== Appointment Methods =====
 
@@ -140,23 +142,7 @@ class AppointmentService:
 
     async def get_appointment(self, appointment_id: str) -> Appointment:
         """Get appointment by ID with tenant filtering."""
-        result = await self.db.execute(
-            select(Appointment).where(
-                and_(
-                    Appointment.id == appointment_id,
-                    Appointment.tenant_id == self.tenant_id,
-                )
-            )
-        )
-        appointment = result.scalar_one_or_none()
-
-        if not appointment:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Appointment not found",
-            )
-
-        return appointment
+        return await self.get_by_id(appointment_id)
 
     async def list_appointments(
         self,
@@ -168,24 +154,27 @@ class AppointmentService:
         offset: int = 0,
     ) -> List[Appointment]:
         """List appointments with filters."""
-        query = select(Appointment).where(Appointment.tenant_id == self.tenant_id)
+        # Use base class method with custom ordering
+        filters = {}
+        if appointment_date is not None:
+            filters["appointment_date"] = appointment_date
+        if patient_id is not None:
+            filters["patient_id"] = patient_id
+        if doctor_id is not None:
+            filters["doctor_id"] = doctor_id
+        if status_filter is not None:
+            filters["status"] = status_filter
 
-        if appointment_date:
-            query = query.where(Appointment.appointment_date == appointment_date)
-        if patient_id:
-            query = query.where(Appointment.patient_id == patient_id)
-        if doctor_id:
-            query = query.where(Appointment.doctor_id == doctor_id)
-        if status_filter:
-            query = query.where(Appointment.status == status_filter)
+        # Custom ordering: appointment_date desc, appointment_time desc
+        query = self._get_base_query()
 
-        query = (
-            query.order_by(
-                Appointment.appointment_date.desc(), Appointment.appointment_time.desc()
-            )
-            .limit(limit)
-            .offset(offset)
-        )
+        for field, value in filters.items():
+            query = query.where(getattr(Appointment, field) == value)
+
+        query = query.order_by(
+            Appointment.appointment_date.desc(),
+            Appointment.appointment_time.desc()
+        ).limit(limit).offset(offset)
 
         result = await self.db.execute(query)
         return list(result.scalars().all())

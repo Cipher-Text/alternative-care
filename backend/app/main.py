@@ -2,24 +2,20 @@
 
 from contextlib import asynccontextmanager
 import structlog
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
 from app.core.config import settings
-from app.core.rate_limit import close_redis_client, enforce_rate_limit
+from app.core.rate_limit import close_redis_client
+from app.core.middleware import rate_limit_middleware, add_security_headers
 
 # Import all models for Alembic autogenerate
 from app.shared.models import *  # noqa: F401, F403
 
 logger = structlog.get_logger(__name__)
-rate_limit_block_total = Counter(
-    "altcare_rate_limit_block_total",
-    "Total number of blocked requests due to rate limiting.",
-    ["scope"],
-)
 
 
 @asynccontextmanager
@@ -59,83 +55,9 @@ app.add_middleware(
 )
 
 
-@app.middleware("http")
-async def rate_limit_middleware(request: Request, call_next):
-    """Apply baseline rate limiting for auth login and API routes."""
-    path = request.url.path
-    scope = None
-    limit = None
-    window_seconds = settings.RATE_LIMIT_WINDOW_SECONDS
-
-    if request.method == "POST" and path == f"{settings.API_V1_PREFIX}/auth/login":
-        scope = "auth_login"
-        limit = settings.RATE_LIMIT_LOGIN_PER_MINUTE
-    elif request.method == "POST" and path == f"{settings.API_V1_PREFIX}/ai/query":
-        scope = "ai_query"
-        limit = settings.RATE_LIMIT_AI_PER_HOUR
-        window_seconds = settings.RATE_LIMIT_AI_WINDOW_SECONDS
-    elif path.startswith(settings.API_V1_PREFIX):
-        scope = "api"
-        limit = settings.RATE_LIMIT_PER_MINUTE
-
-    if scope and limit is not None:
-        result = await enforce_rate_limit(
-            request, scope=scope, limit=limit, window_seconds=window_seconds
-        )
-        if not result.allowed:
-            rate_limit_block_total.labels(scope=scope).inc()
-            logger.warning(
-                "rate_limit_exceeded",
-                scope=scope,
-                path=path,
-                method=request.method,
-                identifier=result.identifier,
-                retry_after=result.retry_after,
-                limit=result.limit,
-            )
-            return JSONResponse(
-                status_code=429,
-                content={
-                    "detail": "Rate limit exceeded",
-                    "scope": scope,
-                    "limit": result.limit,
-                    "retry_after": result.retry_after,
-                },
-                headers={"Retry-After": str(result.retry_after)},
-            )
-
-        response = await call_next(request)
-        response.headers["X-RateLimit-Limit"] = str(result.limit)
-        response.headers["X-RateLimit-Remaining"] = str(result.remaining)
-        return response
-
-    return await call_next(request)
-
-
-@app.middleware("http")
-async def add_security_headers(request: Request, call_next):
-    """Apply baseline HTTP security headers to all responses."""
-    response = await call_next(request)
-
-    if not settings.SECURITY_HEADERS_ENABLED:
-        return response
-
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Content-Security-Policy"] = settings.SECURITY_CSP_POLICY
-
-    if (
-        settings.SECURITY_HSTS_ENABLED
-        and settings.ENVIRONMENT.lower() == "production"
-    ):
-        hsts = f"max-age={settings.SECURITY_HSTS_MAX_AGE}"
-        if settings.SECURITY_HSTS_INCLUDE_SUBDOMAINS:
-            hsts += "; includeSubDomains"
-        if settings.SECURITY_HSTS_PRELOAD:
-            hsts += "; preload"
-        response.headers["Strict-Transport-Security"] = hsts
-
-    return response
+# Apply middleware (order matters: first added = outermost layer)
+app.middleware("http")(rate_limit_middleware)
+app.middleware("http")(add_security_headers)
 
 
 # Health check

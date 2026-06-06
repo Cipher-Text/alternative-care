@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, and_, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.base_service import BaseTenantService
 from app.shared.models import Patient, PatientTag, PatientDiagnosis
 from app.shared.schemas import (
     PatientCreate,
@@ -19,13 +20,14 @@ from app.shared.schemas import (
 )
 
 
-class PatientService:
+class PatientService(BaseTenantService[Patient, PatientCreate, PatientUpdate]):
     """Service for managing patients, tags, and diagnoses."""
+
+    model = Patient
 
     def __init__(self, db: AsyncSession, tenant_id: str):
         """Initialize service with database session and tenant context."""
-        self.db = db
-        self.tenant_id = tenant_id
+        super().__init__(db, tenant_id)
 
     # ===== Patient Methods =====
 
@@ -42,54 +44,12 @@ class PatientService:
         Returns:
             Created patient
         """
-        patient = Patient(
-            id=str(uuid4()),
-            tenant_id=self.tenant_id,
-            full_name=data.full_name,
-            date_of_birth=data.date_of_birth,
-            gender=data.gender,
-            blood_group=data.blood_group,
-            phone=data.phone,
-            email=data.email,
-            whatsapp=data.whatsapp,
-            address=data.address,
-            division_id=data.division_id,
-            district_id=data.district_id,
-            upazila_id=data.upazila_id,
-            chief_complaint=data.chief_complaint,
-            medical_history=data.medical_history,
-            photo_url=data.photo_url,
-            next_visit_date=data.next_visit_date,
-            is_active=True,
-            created_by=created_by,
-            updated_by=created_by,
-        )
-
-        self.db.add(patient)
-        await self.db.commit()
-        await self.db.refresh(patient)
-
-        return patient
+        # Use base class create method with is_active=True
+        return await self.create(data, created_by, is_active=True)
 
     async def get_patient(self, patient_id: str) -> Patient:
         """Get patient by ID with tenant filtering."""
-        result = await self.db.execute(
-            select(Patient).where(
-                and_(
-                    Patient.id == patient_id,
-                    Patient.tenant_id == self.tenant_id,
-                )
-            )
-        )
-        patient = result.scalar_one_or_none()
-
-        if not patient:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Patient not found",
-            )
-
-        return patient
+        return await self.get_by_id(patient_id)
 
     async def list_patients(
         self,
@@ -112,25 +72,24 @@ class PatientService:
         Returns:
             List of patients
         """
-        query = select(Patient).where(Patient.tenant_id == self.tenant_id)
-
-        # Search filter
-        if search:
-            search_pattern = f"%{search}%"
-            query = query.where(
-                or_(
-                    Patient.full_name.ilike(search_pattern),
-                    Patient.phone.ilike(search_pattern),
-                    Patient.email.ilike(search_pattern),
-                )
-            )
-
-        # Active filter
-        if is_active is not None:
-            query = query.where(Patient.is_active == is_active)
-
-        # Upcoming visit filter
+        # Handle custom upcoming visit filter
         if has_upcoming_visit is not None:
+            # Use manual query for complex filter
+            query = self._get_base_query()
+
+            if search:
+                search_pattern = f"%{search}%"
+                query = query.where(
+                    or_(
+                        Patient.full_name.ilike(search_pattern),
+                        Patient.phone.ilike(search_pattern),
+                        Patient.email.ilike(search_pattern),
+                    )
+                )
+
+            if is_active is not None:
+                query = query.where(Patient.is_active == is_active)
+
             if has_upcoming_visit:
                 query = query.where(
                     and_(
@@ -146,56 +105,32 @@ class PatientService:
                     )
                 )
 
-        query = (
-            query.order_by(Patient.created_at.desc())
-            .limit(limit)
-            .offset(offset)
-        )
+            query = query.order_by(Patient.created_at.desc()).limit(limit).offset(offset)
+            result = await self.db.execute(query)
+            return list(result.scalars().all())
 
-        result = await self.db.execute(query)
-        return list(result.scalars().all())
+        # Use base class method for simple filters
+        return await self.list_with_pagination(
+            limit=limit,
+            offset=offset,
+            filters={"is_active": is_active} if is_active is not None else None,
+            search_fields=["full_name", "phone", "email"] if search else None,
+            search_query=search,
+        )
 
     async def update_patient(
         self, patient_id: str, data: PatientUpdate, updated_by: str
     ) -> Patient:
         """Update patient information."""
-        patient = await self.get_patient(patient_id)
-
-        # Update fields
-        update_data = data.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(patient, field, value)
-
-        patient.updated_by = updated_by
-
-        await self.db.commit()
-        await self.db.refresh(patient)
-
-        return patient
+        return await self.update(patient_id, data, updated_by)
 
     async def delete_patient(self, patient_id: str, updated_by: str) -> Patient:
         """Soft delete a patient (set is_active=False)."""
-        patient = await self.get_patient(patient_id)
-
-        patient.is_active = False
-        patient.updated_by = updated_by
-
-        await self.db.commit()
-        await self.db.refresh(patient)
-
-        return patient
+        return await self.soft_delete(patient_id, updated_by)
 
     async def get_patient_count(self) -> int:
         """Get total count of active patients for tenant."""
-        result = await self.db.execute(
-            select(func.count(Patient.id)).where(
-                and_(
-                    Patient.tenant_id == self.tenant_id,
-                    Patient.is_active == True,  # noqa: E712
-                )
-            )
-        )
-        return result.scalar_one()
+        return await self.count(filters={"is_active": True})
 
     # ===== Patient Tag Methods =====
 
