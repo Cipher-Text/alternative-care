@@ -1,528 +1,562 @@
-# AltCare Product Roadmap
+# AltCare — Product Roadmap & Task Tracker
 
-**Last Updated:** May 19, 2026  
-**Current Version:** MVP v1.0 (Production Ready)
-
----
-
-## 🎯 Vision
-
-Build a comprehensive, multi-tenant SaaS platform for alternative medicine practitioners (Homeopathy, Ayurveda, Unani, Herbal) that streamlines clinical workflows, patient management, and practice operations while maintaining the highest standards of data security and regulatory compliance.
+**Last Updated:** 2026-07-11  
+**Current Version:** MVP v1.0 — Production Ready  
+**Source of truth:** `docs/status/current.md` · `backend/app/main.py` · `frontend/src/app/**`
 
 ---
 
-## 📊 Current State (MVP v1.0)
+## Project At a Glance
 
-### ✅ Phase 1: Core Platform (COMPLETE)
-
-**Authentication & Security** ✅
-- [x] JWT-based authentication
-- [x] Refresh token rotation
-- [x] 2FA/TOTP support
-- [x] Session management
-- [x] Password complexity enforcement
-- [x] Session invalidation on security changes
-- [x] HTTP security headers (CSP, HSTS, X-Frame-Options)
-- [x] Redis-backed rate limiting (login, API, AI-specific)
-- [x] Row-level multi-tenant isolation (16/16 tests passing)
-- [x] Fernet encryption for sensitive data
-
-**Patient Management** ✅
-- [x] Patient CRUD operations
-- [x] Patient search (name, phone, code)
-- [x] Patient tags/labels
-- [x] Diagnosis history
-- [x] Bangladesh geographic data (divisions, districts, upazilas)
-- [x] Demographics tracking
-- [x] Emergency contact management
-- [x] Blood group tracking
-
-**Appointments** ✅
-- [x] Calendar view (react-big-calendar)
-- [x] Appointment scheduling
-- [x] Visit tracking
-- [x] Status management (scheduled, completed, cancelled, no-show)
-- [x] Appointment notes
-- [x] Multiple appointment types
-
-**Dashboard & Analytics** ✅
-- [x] Key metrics (patients, appointments, revenue)
-- [x] Revenue charts (monthly, quarterly)
-- [x] Patient demographics (age, gender distribution)
-- [x] Appointment statistics
-- [x] Date range filtering
-
-**Prescriptions** ✅
-- [x] Complete CRUD workflow
-- [x] Prescription builder (create/edit)
-- [x] Medicine items management
-- [x] Patient selection with search
-- [x] Draft → Issued → Voided workflow
-- [x] Immutability enforcement
-- [x] Clinical information (diagnosis, notes, advice)
-- [x] PDF generation (backend ready)
-- [x] Status filtering
-
-**Doctor Profile** ✅
-- [x] Personal information management
-- [x] Clinic information
-- [x] Geographic location
-- [x] License number tracking
-- [x] Academic degrees (CRUD)
-- [x] Certifications & trainings (CRUD)
-- [x] Expiry tracking for certifications
-- [x] Verification status
-- [x] Language preference (English/Bengali)
-
-**Infrastructure** ✅
-- [x] Docker Compose setup
-- [x] PostgreSQL 16 + pgvector
-- [x] Redis 7 (caching, rate limiting, sessions)
-- [x] MinIO (S3-compatible storage)
-- [x] Celery (background tasks)
-- [x] Alembic migrations
-- [x] Seed data scripts
-- [x] Health check endpoints
-- [x] Metrics endpoints
+| Metric | Value |
+|---|---|
+| Backend modules | 14 registered routers |
+| API endpoints | ~113 (+ `/`, `/health`, `/metrics`) |
+| Database tables | 34 models |
+| Frontend routes | 17 route families |
+| Security score | A (95/100) |
+| Test coverage | Multi-tenant isolation 16/16 ✅ |
+| Status | MVP v1.0 Production Ready 🚀 |
 
 ---
 
-## 🚧 Phase 2: Business Operations (IN PROGRESS)
+## Priority Legend
 
-### ✅ Payments & Billing (COMPLETE)
+```
+🔴 P1 — Critical        Blocks production stability or security
+🟠 P2 — High            Needed for the platform to operate as designed
+🟡 P3 — Medium          Feature completeness, improves UX
+🔵 P4 — Low / Future    Planned but not immediately scheduled
+```
 
-**Completed:** May 19, 2026  
-**Actual Effort:** 5-6 hours frontend development
+---
+
+## What's Done (Complete as of 2026-07-11)
+
+### Core Platform (Phase 1) ✅
+
+| Module | Backend | Frontend | Notes |
+|---|---|---|---|
+| Authentication & 2FA | ✅ | ✅ | JWT, refresh rotation, TOTP, sessions |
+| Patient Management | ✅ | ✅ | CRUD, tags, diagnoses, geographic dropdowns |
+| Appointments | ✅ | ✅ | Calendar, scheduling, visits, statuses |
+| Prescriptions | ✅ | ✅ | Builder, items, draft→issued→voided, PDF |
+| Dashboard Analytics | ✅ | ✅ | KPIs, revenue charts, demographics |
+| Doctor Profile | ✅ | ✅ | Profile, degrees, trainings, expiry tracking |
+| Payments & Invoicing | ✅ | ✅ | bKash, Nagad, Rocket, SSLCommerz, Stripe |
+| Integrations (SMS/Email) | ✅ | ✅ | 12 providers, encrypted credentials, logs |
+| Medicines Library | ✅ | ✅ | CRUD, aliases, autocomplete, mappings |
+| Symptoms Library | ✅ | ✅ | CRUD, aliases, symptom-medicine mappings |
+| Geographic API | ✅ | ✅ | Divisions, districts, upazilas (Bangladesh) |
+| Tenant/Clinic Profile | ✅ | ✅ | Clinic info, specializations, fees |
+| Security Hardening | ✅ | — | Rate limiting, HTTP headers, password rules |
+| Multi-tenant Isolation | ✅ | — | Row-level isolation, 16/16 tests passing |
+
+### Platform Admin (Phase A) ✅ — completed 2026-07-11
+
+| Item | Status |
+|---|---|
+| `app/modules/admin/` dedicated module at `/api/v1/admin` | ✅ |
+| `GET /admin/dashboard` — platform KPI cards | ✅ |
+| `GET /admin/tenants` + `GET /admin/tenants/{id}` + `GET /admin/tenants/pending` | ✅ |
+| `POST /admin/tenants` — provision tenant + doctor | ✅ |
+| `POST /admin/tenants/{id}/approve` — approve pending tenant | ✅ |
+| `PATCH /admin/tenants/{id}` — suspend / reactivate / change plan | ✅ |
+| `GET /admin/users` — view users by role | ✅ |
+| `PATCH /admin/users/{id}` — change role, activate/deactivate | ✅ |
+| Admin-only sidebar (no doctor nav for platform users) | ✅ |
+| `/admin/dashboard` — KPI cards page | ✅ |
+| `/admin/clients` — 3-tab directory (all / provision / pending) | ✅ |
+| `/admin/clients/[tenantId]` — detail view with lifecycle actions | ✅ |
+| `/admin/users` — role distribution + user management | ✅ |
+
+---
+
+## 🔴 P1 — Critical (Fix Now)
+
+These directly affect production stability or security. Address before any new features.
+
+### 1. Tenant Isolation Guard — Missing on 4 modules
+
+**Problem:** Platform users (`tenant_id = null`) hitting these endpoints get `500` instead of `403`.  
+**Pattern already applied in:** `patients/routes.py`  
+**Still missing in:**
+
+- [ ] `appointments/routes.py` — all appointment endpoints
+- [ ] `prescriptions/routes.py` — all prescription endpoints
+- [ ] `payments/routes.py` — all payment endpoints
+- [ ] `dashboard/routes.py` — all dashboard service factories
+
+**Fix:** Apply the same `tenant_id_ctx` check pattern used in patients. One-liner guard at the top of each service factory.
+
+---
+
+### 2. TypeScript Errors — 38 pre-existing errors in 4 modules
+
+**Problem:** Type errors silently accumulate; CI will reject them if strict mode is enforced.
+
+- [ ] `frontend/src/app/(dashboard)/medicines/` — fix TS errors
+- [ ] `frontend/src/app/(dashboard)/symptoms/` — fix TS errors
+- [ ] `frontend/src/app/(dashboard)/settings/integrations/` — fix TS errors
+- [ ] `frontend/src/app/(dashboard)/profile/` (doctor pages) — fix TS errors
+
+**Clean modules for reference:** `patients/`, `appointments/` (zero errors).
+
+---
+
+### 3. Old Admin Endpoints — Cleanup
+
+**Problem:** Legacy endpoints remain in `auth/routes.py` under `/auth/admin/*` alongside the new `/api/v1/admin/*` canonical ones. Creates maintenance confusion and a dual API surface.
+
+- [ ] Confirm frontend has migrated to `/api/v1/admin/*` (already done per `current.md`)
+- [ ] Remove the 5 legacy endpoints from `auth/routes.py`:
+  - `POST /auth/admin/provision-client`
+  - `GET /auth/admin/clients`
+  - `GET /auth/admin/clients/{id}`
+  - `GET /auth/admin/tenants/pending`
+  - `POST /auth/admin/tenants/{id}/approve`
+
+---
+
+### 4. Password Reset Flow
+
+**Problem:** No way for a user to recover access if they forget their password. Blocks production onboarding.
+
+- [ ] Backend: `POST /auth/forgot-password` — send reset email with expiring token
+- [ ] Backend: `POST /auth/reset-password` — validate token, set new password with strength check
+- [ ] Frontend: Forgot password page at `/(auth)/forgot-password`
+- [ ] Frontend: Reset password page at `/(auth)/reset-password?token=...`
+- [ ] Celery task: send password reset email via configured SMTP/SendGrid provider
+
+---
+
+### 5. Email Verification Flow
+
+**Problem:** Users can use unverified email addresses. No confirmation step on registration.
+
+- [ ] Backend: send verification email on registration (`is_email_verified = false`)
+- [ ] Backend: `POST /auth/verify-email?token=...` — mark email verified
+- [ ] Frontend: post-registration "check your email" screen
+- [ ] Frontend: email verified confirmation screen
+- [ ] Restrict certain actions until email is verified (optional, can be soft-block)
+
+---
+
+## 🟠 P2 — High Priority
+
+Core platform functionality that is designed but not yet enforced or built.
+
+### 6. Operator Role Enforcement (Admin Phase B)
+
+**Problem:** `operator` role exists in the DB and RBAC guard is stubbed, but no endpoints actually use it. An `operator` user currently has no access surface.
+
+- [ ] Backend: Wire `RequireAdminOrOperator` to all admin `GET` endpoints (read-only access for operators)
+- [ ] Backend: Protect admin `POST`/`PATCH`/`DELETE` endpoints as `RequireAdmin` only (admin-only write)
+- [ ] Frontend: Operator sees the same admin sidebar but write actions (provision, approve, change plan, suspend) are hidden
+- [ ] Frontend: Role badge visible in topbar for operator users
+- [ ] Test: confirm operator cannot POST/PATCH, can GET all admin data
+
+---
+
+### 7. Receptionist Role Enforcement
+
+**Problem:** `receptionist` role is stored but entirely unenforced. Any receptionist can currently do anything a doctor can.
+
+- [ ] Backend: Apply `require_role("doctor", "receptionist")` to appointment and patient read endpoints
+- [ ] Backend: Restrict prescription creation/editing to `doctor` only (`RequireDoctor`)
+- [ ] Backend: Restrict payment write actions to `doctor` only
+- [ ] Frontend: Hide prescription "Create" / "Edit" buttons for receptionist users
+- [ ] Frontend: Hide payment write actions for receptionist users
+
+---
+
+### 8. Admin — Degree & Training Verification Interface
+
+**Problem:** `DoctorDegree.is_verified` and `DoctorTraining.is_verified` fields exist and are tracked but there is no admin UI or endpoint to verify them.
+
+- [ ] Backend: `PATCH /admin/tenants/{tenant_id}/degrees/{degree_id}/verify`
+- [ ] Backend: `PATCH /admin/tenants/{tenant_id}/trainings/{training_id}/verify`
+- [ ] Frontend: Add degree/training list to `/admin/clients/[tenantId]` with verify toggle
+
+---
+
+### 9. Planning/README.md — Baseline Snapshot Update
+
+**Problem:** `docs/planning/README.md` baseline snapshot says "11 modules, 89 endpoints" (dated 2026-05-29). Now stale.
+
+- [ ] Update baseline: 14 modules, ~113 endpoints, 17 frontend route families
+- [ ] Update date to 2026-07-11
+
+---
+
+## 🟡 P3 — Medium Priority
+
+Feature completeness. These improve the product materially but don't block current use.
+
+### 10. Bengali Translations — Complete Coverage
+
+- [ ] Audit all UI strings that are still English-only
+- [ ] Add missing Bengali translation keys to `translations` table
+- [ ] Test language switcher across all pages
+- [ ] Verify bilingual form labels (patients, prescriptions, profile)
+
+---
+
+### 11. Medicine Seed Data — 1,000+ Curated Medicines
+
+**Current state:** Medicine CRUD, aliases, and symptom mappings are fully implemented. The library is empty in production — doctors must add medicines manually.
+
+- [ ] Curate and import 200+ Homeopathy medicines
+- [ ] Curate and import 150+ Ayurveda medicines
+- [ ] Curate and import 100+ Unani medicines
+- [ ] Curate and import 50+ Herbal medicines
+- [ ] Validate with practitioners (at least 2 reviewers per system)
+- [ ] Bilingual entries (name_en + name_bn) for all medicines
+- [ ] Create seed script: `scripts/seed_medicines.sh`
+
+---
+
+### 12. Symptom Mapping Seed Data — 1,000+ Mappings
+
+**Current state:** `medicine_symptom_mappings` table exists with full CRUD. No data seeded.
+
+- [ ] Map 200+ symptoms to Homeopathy medicines
+- [ ] Map 150+ symptoms to Ayurveda medicines
+- [ ] Map 100+ symptoms to Unani medicines
+- [ ] Create weighted match scores per mapping
+- [ ] Create seed script: `scripts/seed_symptoms.sh`
+
+---
+
+### 13. Prescription Builder — Medicine DB Autocomplete
+
+**Current state:** Free-text medicine name is used (MVP workaround). `MedicineAutocomplete` component exists with 300ms debounce and keyboard nav but works off live API search, not a seeded DB.
+
+- [ ] Once medicine seed data (Task 11) is in: enable full autocomplete from DB
+- [ ] Show dosage suggestions from `medicines.dosage_guidelines`
+- [ ] Show recently used medicines per doctor (track in `usage_tracking`)
+- [ ] Contraindication warnings (red badge) when a medicine has mapped contraindications
+
+---
+
+### 14. Notification & Email Template Management
+
+**Current state:** SMS/Email providers are configured and can send. Templates are hardcoded strings in backend service code.
+
+- [ ] Backend: `translations` table can store email/SMS templates — use it
+- [ ] Backend: `GET /admin/notifications/templates` — list all templates
+- [ ] Backend: `PATCH /admin/notifications/templates/{key}` — update template
+- [ ] Frontend: Notification settings page at `/settings/notifications`
+- [ ] Frontend: Template editor (subject + body, with variable hints)
+
+---
+
+### 15. Tenant Onboarding Wizard
+
+**Current state:** Admin manually provisions tenants. New tenants land on the dashboard with no guidance.
+
+- [ ] Frontend: Post-provisioning onboarding checklist for new doctors:
+  - Step 1: Complete profile & clinic info
+  - Step 2: Add degrees/trainings
+  - Step 3: Configure at least one SMS/email integration
+  - Step 4: Add first patient
+- [ ] Mark each step complete via localStorage or a `usage_tracking` flag
+- [ ] Show wizard on first login only (dismiss once all steps done)
+
+---
+
+### 16. Dashboard — Calendar Heatmap & Top Diagnoses
+
+**Current state:** Dashboard KPI cards, revenue charts, and demographics are complete. Heatmap and "top diagnoses/medicines" widgets are stubbed.
+
+- [ ] Backend: `GET /dashboard/heatmap` — appointment counts per day for calendar heatmap
+- [ ] Backend: `GET /dashboard/top-diagnoses` — top 10 diagnoses by patient count
+- [ ] Backend: `GET /dashboard/top-medicines` — top 10 prescribed medicines
+- [ ] Frontend: Calendar heatmap widget (green dot intensity = patient load)
+- [ ] Frontend: Horizontal bar charts for top diagnoses and top medicines
+
+---
+
+### 17. Appointment Reminders via SMS/Email
+
+**Current state:** Appointments are created and tracked. No automated reminders are sent.
+
+- [ ] Backend: Celery beat task — scan appointments scheduled in next 24h
+- [ ] Backend: Send SMS reminder to patient phone (if SMS provider configured)
+- [ ] Backend: Send email reminder to patient email (if email provider configured)
+- [ ] Backend: Mark reminder sent in `appointments.reminder_sent_at`
+- [ ] Frontend: Reminder opt-in toggle on appointment create/edit form
+
+---
+
+### 18. Bulk Operations
+
+- [ ] Backend: `POST /patients/bulk-delete` (soft delete multiple patients)
+- [ ] Backend: `POST /prescriptions/bulk-export` — batch PDF download
+- [ ] Frontend: Multi-select checkboxes on patient and prescription list tables
+- [ ] Frontend: Bulk action toolbar (appears when items selected)
+
+---
+
+## 🔵 P4 — Future / Planned Phases
+
+These are designed and scoped but not yet scheduled for active development.
+
+---
+
+### Phase C — Book Library & Reader
+
+**Prerequisite:** Medicine seed data (Task 11) should be live first.  
+**Estimated effort:** 20–30 hours
 
 **Backend:**
-- [x] Payment processing
-- [x] Invoice generation
-- [x] bKash integration
-- [x] Nagad integration
-- [x] Rocket integration
-- [x] SSLCommerz integration
-- [x] Stripe integration
-- [x] Payment status tracking
-- [x] Transaction history
-- [x] Refund support
+- [ ] `GET /library/books` — list books (global + tenant)
+- [ ] `GET /library/books/{id}/chapters` — chapter listing
+- [ ] `GET /library/chapters/{id}/sections` — paginated section content
+- [ ] `POST /library/books/{id}/progress` — update reading position
+- [ ] Bookmark and highlight CRUD endpoints
+- [ ] EPUB upload + parsing pipeline (Celery: ebooklib → chapters → sections)
 
 **Frontend:**
-- [x] Payment dashboard with summary cards
-- [x] Invoice creation UI with dynamic items
-- [x] Payment method selection
-- [x] Transaction history view with filters
-- [x] Invoice list with status tabs
-- [x] Invoice detail with actions
-- [x] Payment status tracking
-- [x] Quick payment modal
-- [x] CSV export
-- [x] Toast notifications
-- [x] PDF generation
+- [ ] Book library grid at `/library`
+- [ ] Book reader UI: table of contents sidebar, chapter navigation, progress bar
+- [ ] Reader toolbar: bookmark, highlight, font size, theme (light/dark/sepia)
+- [ ] Reading progress widget on dashboard
 
-**Features Implemented:**
-- Invoice generation with line items
-- Multiple payment gateways (local + international)
-- Payment status tracking (pending, completed, failed, refunded)
-- Transaction history with date/method/status filters
-- Receipt generation
-- Real-time notifications
-
-**Status:** ✅ PRODUCTION READY
+**Content:**
+- [ ] Acquire/digitize 20+ classical texts across all 4 systems
+- [ ] Homeopathy: Organon, Boericke's Materia Medica, Kent's Repertory
+- [ ] Ayurveda: Charaka Samhita, Ashtanga Hridaya
+- [ ] Unani: Canon of Medicine (Ibn Sina)
+- [ ] Herbal: PDR for Herbal Medicines
 
 ---
 
-### 🔌 Integrations Management
+### Phase D — AI Chat Assistant (RAG)
 
-**Status:** ✅ Core provider setup and monitoring UI complete
-
-**Backend Ready:**
-- [x] Integration provider catalog
-- [x] Tenant integration setup
-- [x] Credential encryption (Fernet)
-- [x] SMS providers (Twilio, Banglalink, Robi, BulkSMS BD)
-- [x] Email providers (SendGrid, AWS SES, SMTP)
-- [x] Payment providers (see above)
-- [x] Integration logs
-- [x] Usage tracking
-- [x] Test endpoints
-
-**Frontend Ready:**
-- [x] Integration provider listing
-- [x] Provider setup wizard
-- [x] Credential management UI
-- [x] Test integration interface
-- [x] Integration logs viewer
-- [x] Enable/disable and primary-provider management
-- [x] Local provider logo assets for all 12 seeded providers
-
-**Features:**
-- Visual provider catalog
-- Step-by-step setup wizards
-- Secure credential storage
-- Test sending (SMS/Email)
-- Usage/status monitoring
-- Error log viewing
-
-**Priority:** MEDIUM (enables communication features)
+**Prerequisite:** Book library (Phase C) must be populated and embedded.  
+**Estimated effort:** 40–60 hours  
+**Plan gate:** Pro plan only (`RequireProPlan`). Stub endpoint already exists at `POST /api/v1/ai/query` (returns 501).
 
 ---
 
-## 🛠️ Platform Admin Module (IN PROGRESS)
+#### Knowledge Sources (RAG Input Data)
 
-Full spec: `docs/planning/admin-module.md`
+The AI assistant is grounded in three data sources. Responses must always cite which source the answer came from.
 
-### Phase A — Foundation *(next up)*
+| Source | What it contains | How it's used |
+|---|---|---|
+| **Book library** | Classical medical texts — Organon, Boericke's Materia Medica, Charaka Samhita, Canon of Medicine, etc. | Chunked into sections → embedded → vector search via pgvector |
+| **Medicine database** | `medicines` + `medicine_aliases` + `medicine_symptom_mappings` — names, indications, dosage, potency, system, symptom relationships | Structured DB lookup — no embedding needed, queried directly |
+| **Symptom database** | `symptoms` + `symptom_aliases` + `medicine_symptom_mappings` — symptom names, categories, linked medicines with strength scores | Structured DB lookup — used to suggest medicines for a given symptom set |
 
-**Backend**
-- [ ] Create `app/modules/admin/` (routes, service, schemas)
-- [ ] Register at `/api/v1/admin`
-- [ ] `GET /admin/dashboard` — platform KPIs
-- [ ] `GET /admin/tenants` + `GET /admin/tenants/{id}` + `GET /admin/tenants/pending`
-- [ ] `POST /admin/tenants` — provision (move from auth)
-- [ ] `POST /admin/tenants/{id}/approve` — approve (move from auth)
-- [ ] `PATCH /admin/tenants/{id}` — suspend / reactivate / change plan ← NEW
-- [ ] Deprecate `/auth/admin/*` endpoints
-
-**Frontend**
-- [ ] Admin-only sidebar (no doctor nav items for platform users)
-- [ ] `/admin/dashboard` — KPI cards page
-- [ ] `/admin/clients` — add tenant actions (change plan, suspend)
-- [ ] `/admin/clients/[tenantId]` — add action buttons
-
-### Phase B — Operator role & receptionist enforcement *(after Phase A)*
-
-- [ ] Wire `RequireAdminOrOperator` to all admin GET endpoints
-- [ ] Frontend: operator sees read-only admin nav (no write actions)
-- [ ] Apply `require_role("doctor", "receptionist")` to appropriate tenant endpoints
-- [ ] Frontend: receptionist cannot access prescription write actions
+Responses are **filtered by the doctor's specializations** (`tenant.specializations`). A Homeopathy doctor only gets Homeopathy book sections and medicines.
 
 ---
 
-## 🔮 Phase 3: Advanced Features (PLANNED)
+#### Backend
 
-### 🤖 AI Query Assistant
+- [ ] Implement `POST /api/v1/ai/query` (replace 501 stub)
+- [ ] Embedding pipeline: chunk book sections (800 tokens, 100 overlap) → `text-embedding-3-small` → store in `embeddings` table (pgvector)
+- [ ] HNSW index on `embeddings.vector` for fast cosine similarity search
+- [ ] Celery batch job: embed all book sections on library population
+- [ ] RAG retrieval strategy:
+  - Step 1 — Vector search: top-5 book sections by cosine similarity, filtered by doctor's specializations
+  - Step 2 — Structured lookup: query `medicines` and `symptoms` tables for exact name/alias matches in the query
+  - Step 3 — Assemble context window (max 4,000 tokens): book excerpts + medicine/symptom records
+- [ ] GPT-4o-mini response generation with mandatory source citations
+- [ ] Streaming response (Server-Sent Events)
+- [ ] `GET /api/v1/ai/history` — query history per doctor
+- [ ] `POST /api/v1/ai/feedback` — thumbs up/down per response
+- [ ] Usage quota enforcement (200 queries/month for Pro plan, tracked in `usage_tracking`)
+- [ ] Redis cache for repeated queries (1-hour TTL)
 
-**Status:** Stub endpoint exists, needs implementation
+#### Frontend
 
-**Current State:**
-- [x] `/api/v1/ai/query` endpoint (returns 501)
-- [x] Pro plan-gated
-- [x] Rate limiting (100 req/hour)
-- [ ] Vector search implementation
-- [ ] RAG pipeline
-- [ ] Knowledge base
+- [ ] `/ai` — AI chat page (Pro plan gated, upgrade prompt for others)
+- [ ] Chat interface: user/AI message bubbles, streaming typewriter effect
+- [ ] Citation display per response — expandable source cards:
+  - Book citation: Book title · Chapter · Section (links to `/library` reader)
+  - Medicine citation: Medicine name (links to `/medicines/{id}`)
+  - Symptom citation: Symptom name (links to `/symptoms/{id}`)
+- [ ] Source filter toggle: "Books only / Medicines DB / All sources"
+- [ ] Query history sidebar (last 20 queries)
+- [ ] Usage quota indicator: "X / 200 queries used this month"
+- [ ] Quick prompt chips: common clinical questions per specialization
+- [ ] Clinical disclaimer banner (always visible, cannot be dismissed)
+- [ ] Feedback buttons (thumbs up/down) per response
 
-**Planned Features:**
-- Natural language prescription assistance
-- Symptom-based medicine recommendations
-- Drug interaction checking
-- Homeopathic remedy finder
-- Ayurvedic dosha analysis
-- Medical knowledge Q&A
-- Case history analysis
+#### Safety & Guardrails
 
-**Technical Requirements:**
-- Vector embeddings (pgvector)
-- LLM integration (OpenAI/Anthropic)
-- RAG pipeline (LangChain/LlamaIndex)
-- Knowledge base (medical texts, materia medica)
-- Context-aware responses
+- [ ] System prompt: never make prescriptive decisions, always cite source, state clearly when answer not found
+- [ ] Temperature: 0.3 (factual, low creativity)
+- [ ] Hallucination check: verify every cited section/medicine ID actually exists before responding
+- [ ] Content filter: block non-medical queries, flag dangerous advice
+- [ ] Admin view: token cost per query, feedback ratings, flagged responses
 
-**Estimated Effort:** 40-60 hours
+#### Admin Analytics (Phase D addition to `/admin`)
 
-**Priority:** MEDIUM-HIGH (differentiation feature)
-
----
-
-## ✅ Testing (MVP)
-
-Testing roadmap, standards, module ownership, and quality gates are maintained in:
-- `docs/testing/TEST_STRATEGY.md`
-
-MVP testing priority:
-- Close backend gaps for `integration` module tests, migration safety automation, and contract/schema checks.
-- Establish required frontend component/page integration suites in CI alongside existing E2E coverage.
-
----
-
-### 📚 Medical Library & Knowledge Base
-
-**Status:** Models exist, no routes
-
-**Database Models Ready:**
-- [x] Books
-- [x] Chapters
-- [x] Sections
-- [x] Embeddings (vector search)
-- [x] Reading progress
-- [x] Bookmarks
-- [x] Highlights
-
-**Planned Features:**
-- Digital library of medical texts
-- Materia medica databases
-- Search & filtering
-- Vector-based semantic search
-- Reading progress tracking
-- Bookmarks & highlights
-- Cross-referencing
-- Citation support
-
-**Estimated Effort:** 20-30 hours
-
-**Priority:** MEDIUM (supports AI features)
+- [ ] `GET /admin/ai/usage` — per-tenant query counts, token spend, quota usage
+- [ ] `GET /admin/ai/feedback` — aggregate thumbs up/down ratings
+- [ ] `GET /admin/ai/flagged` — responses flagged for review
 
 ---
 
-### 💊 Medicine Database Management
+### Phase E — Public Doctor Directory
 
-**Status:** Models exist, no routes
+**Context:** Mock UI designed at `mock/doctors.html`. Backend does not yet support this.  
+**Estimated effort:** 25–35 hours
 
-**Database Models Ready:**
-- [x] Medicines (bilingual)
-- [x] Medicine aliases
-- [x] Medicine-symptom mappings
+**New backend infrastructure needed:**
+- [ ] `GET /api/v1/public/doctors` — unauthenticated, filtered by specialization/district/availability
+- [ ] `DoctorSchedule` table — weekly availability (day_of_week, start_time, end_time)
+- [ ] `DoctorReview` table — patient reviews (rating, text, created_at, status)
+- [ ] `User.bio` field — personal doctor bio (separate from clinic `description_en`)
+- [ ] `Tenant.is_publicly_listed` flag — admin controls who appears in directory
 
-**Planned Features:**
-- Medicine CRUD (admin + tenant)
-- Global medicine catalog (curated)
-- Tenant-specific medicines
-- Search with aliases
-- Symptom-based search
-- Bilingual support (English/Bengali)
-- Category management
-- Potency tracking (homeopathy)
-- Indication/contraindication tracking
+**Fields supported today** (no new DB work needed):
+- `User.full_name`, `DoctorDegree` list, `Tenant.specializations`, `Tenant.district_id`
 
-**Estimated Effort:** 15-20 hours
-
-**Priority:** MEDIUM-HIGH (improves prescription workflow)
+**Fields requiring new DB work:**
+- Availability status, weekly schedule, rating/review, personal bio, public listing flag
 
 ---
 
-### 📊 Advanced Analytics & Reports
+### Phase F — Mobile Apps
 
-**Planned Features:**
-- Practice growth metrics
-- Patient retention analysis
-- Revenue forecasting
-- Appointment analytics (no-show rates, peak hours)
-- Prescription patterns
-- Treatment efficacy tracking
-- Custom report builder
-- Data export (PDF, CSV, Excel)
-- Scheduled reports (email delivery)
+**Estimated effort:** 120–160 hours  
+**Platform:** React Native (iOS + Android)
 
-**Estimated Effort:** 25-35 hours
-
-**Priority:** MEDIUM (business intelligence)
+- [ ] Patient app: view prescriptions, book appointments, payment
+- [ ] Doctor app: view schedule, patient lookup, quick prescriptions, push notifications
+- [ ] Shared API client (Axios + React Query)
+- [ ] Push notifications (Expo Notifications or Firebase)
 
 ---
 
-### 📱 Mobile Apps (iOS/Android)
+### Phase G — Enterprise Features
 
-**Planned Features:**
-- Native mobile apps (React Native / Flutter)
-- Patient mobile app:
-  - View prescriptions
-  - Book appointments
-  - Upload documents
-  - Chat with doctor
-  - Payment processing
-- Doctor mobile app:
-  - View schedule
-  - Patient lookup
-  - Quick prescriptions
-  - Notifications
-
-**Estimated Effort:** 120-160 hours
-
-**Priority:** LOW-MEDIUM (future expansion)
+- [ ] Multi-clinic management (clinic chains, cross-clinic reporting)
+- [ ] White-label solution (custom branding, custom domains, logo/colors)
+- [ ] Audit log UI (comprehensive admin view of all system actions)
+- [ ] HIPAA compliance mode (data retention policies, backup/restore UI)
+- [ ] SOC 2 compliance
+- [ ] GraphQL API (in addition to REST)
+- [ ] Keycloak SSO (enterprise authentication)
 
 ---
 
-## 🎨 Phase 4: UX & Polish (ONGOING)
+## Technical Debt
 
-### Product Start Blockers
-- [x] Platform admin client provisioning UI
-  - Create tenant/clinic and primary doctor in one flow
-  - Backend endpoint exists: `POST /api/v1/auth/admin/provision-client`
-  - Required for starting AltCare as an operated SaaS product
-- [x] Platform admin tenant approval UI
-  - List pending tenants from `GET /api/v1/auth/admin/tenants/pending`
-  - Approve tenants with `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
-  - Required if public doctor self-registration remains enabled
-- [x] Platform admin doctor/clinic directory
-  - Backend: admin endpoint lists all tenants with primary doctor summary
-  - Backend: admin endpoint returns tenant/clinic + doctor details
-  - Frontend: searchable approved/pending client list
-  - Frontend: clinic and doctor detail views
-  - Required for operating support, onboarding follow-up, and customer management
+These are not features but quality concerns that should be addressed incrementally.
 
-### User Experience Improvements
-- [ ] Onboarding wizard for new tenants
-- [ ] Interactive product tour
-- [ ] Keyboard shortcuts
-- [ ] Bulk operations
-- [ ] Advanced search & filters
-- [ ] Customizable dashboards
-- [ ] Dark mode improvements
-- [ ] Accessibility (WCAG AA compliance)
-- [ ] Performance optimization
-- [ ] Progressive Web App (PWA) support
-
-### Internationalization
-- [x] English support
-- [x] Bengali support (partial)
-- [ ] Complete Bengali translations
-- [ ] Arabic support (future)
-- [ ] Hindi support (future)
-- [ ] RTL layout support
+| Item | Impact | Effort |
+|---|---|---|
+| Celery worker configuration missing (PDF, email, embeddings queues) | Medium — PDF/email tasks queue but may not process | Low |
+| Structured logging (structlog) not configured | Low — harder to debug in production | Low |
+| Sentry error tracking not wired in | Medium — blind to production errors | Low |
+| Prometheus metrics collection not configured | Low — no operational dashboards | Medium |
+| `pg_stat_statements` not enabled | Low — can't identify slow queries | Low |
+| Database indexes missing on dashboard aggregation queries | Medium — slow dashboards at scale | Medium |
+| File uploads — only URL strings stored, no actual upload UI | Low — MinIO ready but unused | Medium |
+| Email/SMS templates hardcoded in service code | Low — can't customize without deploy | Medium |
+| No prescription templates | Medium — doctors re-enter repeated medicines | High |
+| Appointment reminders not automated | Medium — patients miss appointments | Medium |
 
 ---
 
-## 🔒 Phase 5: Enterprise Features (FUTURE)
+## Timeline
 
-### Multi-Clinic Management
-- Clinic chains/groups
-- Role hierarchy (super admin, clinic admin, doctor, receptionist)
-- Cross-clinic reporting
-- Resource sharing
-- Staff management
-
-### Advanced Security
-- Audit logs (comprehensive)
-- HIPAA compliance mode
-- Data retention policies
-- Backup/restore UI
-- Disaster recovery
-- Penetration testing
-- SOC 2 compliance
-
-### White-Label Solution
-- Custom branding
-- Custom domains
-- Email customization
-- Logo/color themes
-- Custom terminology
-
----
-
-## 📅 Timeline
-
-### Q2 2026 (Current)
-- ✅ MVP v1.0 launch (Core platform)
-- ✅ Payments frontend (Complete - May 19)
-- ✅ Integrations frontend
-- ✅ Medicine and symptom libraries
-
-### Q3 2026
-- AI query assistant (basic)
-- Medical library
-- Advanced analytics
-- Mobile app (alpha)
-- UX improvements
-
-### Q4 2026
-- AI query assistant (advanced)
-- Mobile app (beta launch)
-- Enterprise features (phase 1)
-- Performance optimization
-
-### Q1 2027
-- White-label solution
-- SOC 2 compliance
-- Multi-clinic management
-- International expansion
+```
+2026-07-11  ← TODAY
+│
+├── NOW     🔴 P1 Critical fixes
+│           ├─ Tenant isolation guards (appointments, prescriptions, payments, dashboard)
+│           ├─ TypeScript error cleanup (38 errors, 4 modules)
+│           ├─ Legacy /auth/admin/* endpoint removal
+│           ├─ Password reset flow
+│           └─ Email verification flow
+│
+├── Q3 2026 🟠 P2 + 🟡 P3 — Platform completeness
+│           ├─ Operator & receptionist role enforcement
+│           ├─ Admin degree/training verification UI
+│           ├─ Medicine seed data (1,000+ medicines)
+│           ├─ Symptom mapping seed data (1,000+ mappings)
+│           ├─ Prescription DB autocomplete
+│           ├─ Bengali translations completion
+│           ├─ Dashboard heatmap + top diagnoses/medicines
+│           └─ Appointment SMS/email reminders
+│
+├── Q4 2026 📚 Phase C — Book Library & Reader
+│           ├─ EPUB upload + parsing pipeline
+│           ├─ Book reader UI
+│           └─ 20+ classical medical texts curated
+│
+├── Q1 2027 🤖 Phase D — AI / RAG Assistant
+│           ├─ Vector embedding pipeline (50K+ sections)
+│           ├─ RAG retrieval + GPT-4o-mini
+│           ├─ Chat UI with streaming + citations
+│           └─ Safety guardrails + admin analytics
+│
+├── Q2 2027 🌍 Phase E — Public Doctor Directory
+│           ├─ Public /doctors browse endpoint
+│           ├─ Doctor availability & review system
+│           └─ Public listing controls
+│
+└── Q3 2027+ 📱 Phase F/G — Mobile & Enterprise
+            ├─ React Native apps (iOS + Android)
+            ├─ White-label solution
+            ├─ Multi-clinic management
+            └─ SOC 2 / HIPAA compliance
+```
 
 ---
 
-## 🎯 Success Metrics
+## Success Metrics
 
-### Current (MVP v1.0)
-- ✅ Core product modules with complete frontend, except planned AI/RAG assistant
-- ✅ 89 API endpoints
-- ✅ 90+ frontend files
-- ✅ Security: A (95/100)
-- ✅ Test coverage: Multi-tenant isolation 100%
-- ✅ Production ready
+### Current (MVP v1.0) ✅
+- ~113 API endpoints across 14 modules
+- 34 database tables
+- 110+ frontend source files
+- Security: A (95/100)
+- Multi-tenant isolation: 16/16 tests passing
 
-### Targets (Phase 2)
-- [x] Integrations frontend complete
-- [x] Payment processing live
-- [ ] First paying customers
-- [ ] 90%+ uptime
-- [ ] <500ms API response time
-- [ ] 10+ active tenants
+### Q3 2026 Targets
+- [ ] Zero critical security gaps (P1 items closed)
+- [ ] Zero TypeScript errors
+- [ ] 10+ active paying tenants onboarded
+- [ ] 1,000+ medicines seeded and searchable
+- [ ] 95%+ uptime (Uptime Robot or equivalent)
+- [ ] API P95 response time < 500ms
 
-### Targets (Phase 3)
-- [ ] AI assistant with 80%+ accuracy
-- [ ] 100+ paying customers
-- [ ] 50,000+ prescriptions generated
-- [ ] 99.9% uptime SLA
-- [ ] Mobile apps launched
+### Q1 2027 Targets (Post-AI)
+- [ ] 50+ active paying clinics
+- [ ] AI assistant used by 80%+ of Pro plan doctors
+- [ ] 50,000+ prescriptions generated in system
+- [ ] Monthly recurring revenue: ৳2.5L+ (~$2,500)
 
----
-
-## 🚀 Getting Started (Contributors)
-
-### Immediate Priorities (Next 2 Weeks)
-
-1. **AI/RAG Assistant** (HIGH)
-   - Implement vector-backed assistant behind the existing `/api/v1/ai/query` contract
-   - Add source attribution and plan-aware quotas
-
-2. **Launch Hardening** (HIGH)
-   - Resolve remaining frontend type/lint debt
-   - Add E2E coverage for onboarding, integrations, payments, and admin clients
-   - ~15-20 hours
-
-### How to Contribute
-
-1. Review [CLAUDE.md](../CLAUDE.md) for architecture
-2. Check [GitHub Issues](https://github.com/anthropics/claude-code/issues) for open tasks
-3. Follow conventions in existing modules
-4. Write tests for new features
-5. Update documentation
+### Q3 2027 Targets (Full Platform)
+- [ ] 200+ active paying clinics
+- [ ] Mobile apps launched (iOS + Android)
+- [ ] 99%+ uptime SLA
+- [ ] Expansion to India market initiated
 
 ---
 
-## 📝 Notes
+## Related Documents
 
-### Design Decisions
-- **Free-text medicines (MVP):** Allows immediate functionality without medicine DB dependency
-- **PDF generation:** Backend-only (ReportLab/WeasyPrint), frontend triggers
-- **Immutable prescriptions:** Draft → Issued → Voided workflow ensures audit trail
-- **Row-level tenancy:** Security over performance (acceptable for target scale)
-
-### Technical Debt
-- [ ] Medicine autocomplete (using free-text for now)
-- [ ] File uploads (URLs only currently)
-- [ ] Bulk operations (no batch APIs)
-- [ ] Export functionality (limited)
-- [ ] Email/SMS templates (hardcoded)
-- [ ] Notification system (basic)
-
-### Known Limitations
-- No prescription templates
-- No appointment reminders (SMS/Email)
-- No patient portal
-- No telemedicine/video calls
-- No e-signature for prescriptions
-- No lab integration
-- No pharmacy integration
+| Document | Purpose |
+|---|---|
+| `docs/status/current.md` | Authoritative current implementation status |
+| `docs/planning/admin-module.md` | Admin module Phase A/B spec |
+| `docs/planning/role-distribution.md` | Role distribution spec |
+| `docs/architecture/roles-access.md` | RBAC roles reference |
+| `docs/architecture/database-schema.md` | Database schema reference |
+| `docs/testing/TEST_STRATEGY.md` | Test coverage standards |
+| `CLAUDE.md` | Architecture & conventions (source of truth for AI assistants) |
+| `mock/doctors.html` | Public doctor directory UI prototype |
 
 ---
 
-## 🔗 Related Documentation
-
-- [CLAUDE.md](../CLAUDE.md) - Architecture & conventions
-- [README.md](../README.md) - Getting started
-- [Prescription Progress](archive/PRESCRIPTION_FRONTEND_COMPLETE_2026-05-10.md)
-- [Doctor Profile Progress](archive/DOCTOR_PROFILE_PROGRESS_2026-05-10.md)
-
----
-
-**Last Review:** 2026-05-19  
-**Next Review:** 2026-06-01  
-**Maintained by:** Development Team
+**Maintained by:** Development Team  
+**Review cadence:** Update `docs/status/current.md` after every meaningful commit. Review this roadmap weekly.

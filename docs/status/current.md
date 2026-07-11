@@ -46,8 +46,8 @@ Registered routers in `backend/app/main.py`:
 | prescription | `/api/v1/prescriptions` | 8 | |
 | payment | `/api/v1/payments` | 12 | |
 | integration | `/api/v1/integrations` | 12 | |
-| medicine | `/api/v1/medicines` | 8 | |
-| symptom | `/api/v1/symptoms` | 8 | |
+| medicine | `/api/v1/medicines` | 8 | CRUD, search, aliases, symptom mappings |
+| symptom | `/api/v1/symptoms` | 8 | CRUD, search, aliases |
 | tenant | `/api/v1/tenant` | 2 | Clinic profile |
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
 | admin | `/api/v1/admin` | 9 | Platform admin — tenants + users (NEW) |
@@ -102,11 +102,64 @@ Implemented routes:
 - 38 pre-existing TS errors in: `medicines/`, `symptoms/`, `integrations/`, `doctor/` pages
 - Patient and appointment modules are clean
 
-### Unimplemented features
+### Medicine & Symptom search — backend done, frontend gap
+
+Both modules have a full server-side search API that is **not used by the list pages**:
+
+| Endpoint | Status | Used by |
+|---|---|---|
+| `GET /medicines/search?q=` | ✅ Backend done | `MedicineAutocomplete` in prescription builder only |
+| `GET /symptoms/search?q=` | ✅ Backend done | Nowhere in frontend |
+| `GET /medicines/{id}/symptoms` | ✅ Backend done | Nowhere in frontend |
+| `GET /medicines/symptoms/{id}/medicines` | ✅ Backend done | Nowhere in frontend |
+
+- `/medicines` list page: client-side `.filter()` on first 100 loaded rows — misses anything beyond that
+- `/symptoms` list page: same pattern — client-side only
+- **No dedicated "enter symptom → get recommended medicines" page exists** (key clinical workflow)
+
+Planned frontend work:
+- Wire `/medicines/search` into the medicines list page (replace client-side filter)
+- Wire `/symptoms/search` into the symptoms list page
+- Build `/symptoms/[id]` detail page showing linked medicines (calls `GET /medicines/symptoms/{id}/medicines`)
+- Build a dedicated clinical lookup page: multi-symptom input → ranked medicine results
+
+### Book Library — models exist, nothing else
+
+All DB models are defined and migrated:
+`books`, `chapters`, `sections`, `embeddings`, `reading_progress`, `bookmarks`, `highlights`
+
+Nothing built yet:
+- No backend routes (`app/modules/library/` — no `routes.py`)
+- No frontend pages
+- No EPUB parsing pipeline
+- No reader UI
+
+Planned as **Phase C** in `docs/ROADMAP.md`. Prerequisite for the AI/RAG assistant (Phase D).
+
+### AI Chat Assistant — planned Phase D
+
+Stub endpoint exists: `POST /api/v1/ai/query` returns `501 Not Implemented`. Pro plan gated.
+
+Planned as a doctor-facing chat interface powered by RAG across three knowledge sources:
+
+| Source | Data | Access method |
+|---|---|---|
+| Book library | Classical medical texts (books → chapters → sections) | Vector similarity search via pgvector (`embeddings` table) |
+| Medicine database | Medicines, aliases, indications, dosage, potency | Structured DB query (`medicines` + `medicine_aliases`) |
+| Symptom database | Symptoms, aliases, symptom→medicine mappings with strength scores | Structured DB query (`symptoms` + `medicine_symptom_mappings`) |
+
+Responses filtered by doctor's specializations. Every answer cites which source it came from (book section / medicine / symptom). See `docs/ROADMAP.md` Phase D for full spec.
+
+**Dependencies in order:**
+1. Phase C — Book library routes + EPUB parsing + reader UI
+2. Phase D — Embedding pipeline + RAG retrieval + chat UI
+
+### Other unimplemented features
 - `receptionist` role enforcement (RBAC not applied)
-- Book library (models only, no routes)
-- AI assistant (stub 501)
+- Public doctor directory — mock at `mock/doctors.html` — Phase E
 - Public landing page
+- Password reset flow (no `/auth/forgot-password` endpoint)
+- Email verification flow
 
 ---
 

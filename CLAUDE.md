@@ -19,25 +19,29 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Doctor Profile (Degrees, Trainings) ✅
 - Payments & Invoicing ✅
 - Integrations (SMS/Email/Payment providers) ✅
-- Medicines library (CRUD, Aliases, Autocomplete) ✅
-- Symptoms library (CRUD, Aliases) ✅
+- Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
+- Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
 - Multi-tenant isolation (16/16 tests passing) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
+- Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 
-**Backend:** 13 routed modules, ~104 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
-**Frontend:** 110+ source files
+**Backend:** 14 routed modules, ~113 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Frontend:** 110+ source files, 17 route families
 **Security:** A (95/100)
 
-**Platform Admin (partial):**
-- Client provisioning + directory + approval UI ✅
-- Dedicated admin module, dashboard, tenant lifecycle actions: ⚠️ In progress — see `docs/planning/admin-module.md`
+**Partially built (backend done, frontend missing):**
+- Symptom → Medicine lookup UI — `GET /medicines/symptoms/{id}/medicines` exists, no dedicated page
+- Medicine search page uses client-side filter on 100 rows instead of calling `GET /medicines/search`
 
-**Not yet built:**
-- Platform admin module (Phase A) — dashboard, tenant lifecycle, dedicated nav
-- `operator` / `receptionist` role enforcement (Phase B)
-- Book library (models only)
-- AI assistant (stub 501)
+**Planned (future phases):**
+- Book library reader — DB models exist (`books`, `chapters`, `sections`, `reading_progress`, `bookmarks`, `highlights`, `embeddings`), no routes or UI yet — see `docs/ROADMAP.md` Phase C
+- AI chat assistant (RAG) — stub 501 endpoint exists at `POST /api/v1/ai/query` — see `docs/ROADMAP.md` Phase D
+  - Knowledge sources: book library (vector search via pgvector) + medicine DB + symptom DB (structured lookup)
+  - Responses filtered by doctor's specializations; every answer cites its source
+  - Pro plan only; 200 queries/month quota tracked in `usage_tracking`
+- `operator` / `receptionist` role enforcement — Phase B
+- Public doctor directory — mock designed at `mock/doctors.html` — Phase E
 - Public landing page
 
 ---
@@ -252,7 +256,7 @@ backend/app/
 │   └── dependencies.py    # Auth, RBAC, plan checks
 ├── modules/               # Feature modules (~104 total endpoints)
 │   ├── auth/             # ✅ Login, refresh, 2FA, admin provisioning (12 endpoints)
-│   ├── admin/            # 📋 Planned — will hold platform admin endpoints (Phase A)
+│   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard (9 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
 │   ├── appointments/     # ✅ Scheduling, visits (6 endpoints)
@@ -261,11 +265,12 @@ backend/app/
 │   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
 │   ├── dashboard/        # ✅ Analytics, stats (6 endpoints)
 │   ├── ai/               # ✅ Stub endpoint, pro-plan gated (1 endpoint)
-│   ├── medicine/         # ✅ CRUD, search, aliases, mappings (8 endpoints)
+│   ├── medicine/         # ✅ CRUD, search, aliases, symptom mappings (8 endpoints)
 │   ├── symptom/          # ✅ CRUD, search, aliases (8 endpoints)
 │   ├── geographic/       # ✅ Divisions, districts, upazilas (3 endpoints)
 │   ├── tenant/           # ✅ Clinic profile (2 endpoints)
-│   ├── library/          # 📋 Models exist, no routes
+│   ├── admin/            # ✅ Platform admin — tenants + users (9 endpoints)
+│   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
 │   └── notification/     # 📋 Placeholder
 └── shared/
     ├── models/           # SQLAlchemy models
@@ -285,10 +290,10 @@ frontend/src/
 │   │   ├── prescriptions/# ✅ List, detail, create/edit builder
 │   │   ├── profile/      # ✅ Doctor profile with degrees & trainings
 │   │   ├── payments/     # ✅ Payment dashboard, transactions, invoices
-│   │   ├── medicines/    # ✅ Medicine library CRUD with autocomplete
-│   │   ├── symptoms/     # ✅ Symptom library CRUD
+│   │   ├── medicines/    # ✅ Medicine library CRUD with autocomplete (⚠️ list uses client-side filter, not /search API)
+│   │   ├── symptoms/     # ✅ Symptom library CRUD (⚠️ no symptom→medicine lookup page yet)
 │   │   ├── settings/     # ✅ Integrations management
-│   │   └── admin/        # ✅ Client directory, provision, pending (📋 dashboard planned)
+│   │   └── admin/        # ✅ Dashboard, clients (directory/provision/pending), users (role management)
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/
