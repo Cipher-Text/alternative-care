@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Doctor — AltCare</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --g6: #0F6E56; --g5: #1D9E75; --g4: #5DCAA5; --g1: #E1F5EE;
+            --b5: #185FA5; --b4: #378ADD; --b1: #E6F1FB;
+            --a5: #854F0B; --a4: #BA7517; --a2: #FAC775; --a1: #FAEEDA;
+            --r5: #A32D2D; --r4: #E24B4A; --r1: #FCEBEB;
+            --pu5: #534AB7; --pu1: #EEEDFE;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #F1F3F5;
+        }
+
+        /* ── Header ── */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            padding: 14px 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--g6);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--g6), var(--g5));
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 17px;
+        }
+
+        nav {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        nav a {
+            color: #4a4a4a;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav a:hover { color: var(--g6); }
+        nav a.active { color: var(--g6); font-weight: 600; }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        .btn-outline {
+            background: white;
+            color: var(--g6);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1.5px solid var(--g6);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { background: var(--g6); color: white; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--g6), var(--g5));
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(15, 110, 86, 0.3);
+        }
+
+        /* ── Page Hero ── */
+        .page-hero {
+            margin-top: 62px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 40px 24px 36px;
+            border-bottom: 1px solid #c6f0da;
+        }
+
+        .hero-inner { max-width: 1200px; margin: 0 auto; }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .breadcrumb a { color: var(--g6); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb-sep { color: #bbb; }
+
+        .page-hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--g6);
+            margin-bottom: 6px;
+        }
+
+        .page-hero .hero-sub {
+            font-size: 15px;
+            color: #4a4a4a;
+            margin-bottom: 24px;
+        }
+
+        /* ── Filter Bar ── */
+        .filter-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-wrap svg {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            pointer-events: none;
+        }
+        .search-input {
+            width: 100%;
+            background: #F8F9FA;
+            border: 0.5px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 12px 8px 36px;
+            font-size: 14px;
+            color: #1a1a1a;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .search-input:focus { border-color: var(--g5); background: white; }
+        .search-input::placeholder { color: #aaa; }
+
+        .filter-sep { width: 1px; height: 26px; background: #e5e5e5; flex-shrink: 0; }
+
+        .filter-select {
+            appearance: none;
+            background: #F8F9FA url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+            border: 0.5px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 30px 8px 11px;
+            font-size: 13px;
+            color: #1a1a1a;
+            cursor: pointer;
+            font-family: inherit;
+            outline: none;
+            min-width: 150px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .filter-select:focus { border-color: var(--g5); background-color: white; }
+
+        .results-badge {
+            margin-left: auto;
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .results-badge strong { color: #1a1a1a; font-weight: 600; }
+
+        /* ── Filter Pills ── */
+        .pills-row {
+            max-width: 1200px;
+            margin: 14px auto 0;
+            padding: 0 24px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pills-label { font-size: 12px; color: #888; font-weight: 500; }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            color: #555;
+        }
+        .pill:hover { border-color: var(--g5); color: var(--g6); }
+        .pill.active { background: var(--g1); border-color: var(--g4); color: var(--g6); }
+
+        .pill-avail {
+            margin-left: auto;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            color: #555;
+        }
+        .pill-avail:hover { border-color: var(--g5); color: var(--g6); }
+        .pill-avail.active { background: var(--g1); border-color: var(--g4); color: var(--g6); }
+
+        /* ── Main Layout ── */
+        .main {
+            max-width: 1200px;
+            margin: 28px auto 60px;
+            padding: 0 24px;
+        }
+
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .list-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .list-title span { font-size: 14px; font-weight: 400; color: #888; }
+
+        .sort-wrap { display: flex; align-items: center; gap: 8px; }
+        .sort-label { font-size: 13px; color: #888; }
+        .sort-select {
+            appearance: none;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center;
+            border: 0.5px solid #ddd;
+            border-radius: 8px;
+            padding: 6px 26px 6px 10px;
+            font-size: 13px;
+            color: #1a1a1a;
+            cursor: pointer;
+            font-family: inherit;
+            outline: none;
+        }
+
+        /* ── Doctor Cards Grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .doctor-card {
+            background: white;
+            border: 0.5px solid #e5e5e5;
+            border-radius: 14px;
+            padding: 22px;
+            cursor: pointer;
+            transition: all 0.22s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doctor-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--g6), var(--g5));
+            opacity: 0;
+            transition: opacity 0.22s;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-color: var(--g4);
+        }
+        .doctor-card:hover::after { opacity: 1; }
+
+        /* Card top row */
+        .card-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+
+        .doc-avatar {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .doc-info { flex: 1; min-width: 0; }
+
+        .doc-name { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px; }
+        .doc-degree { font-size: 12px; color: #666; margin-bottom: 7px; }
+
+        .avail-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 10px;
+        }
+        .avail-tag.available { background: var(--g1); color: var(--g6); }
+        .avail-tag.busy { background: var(--a1); color: var(--a5); }
+        .avail-tag.unavailable { background: var(--r1); color: var(--r5); }
+        .avail-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .available .avail-dot { background: var(--g6); }
+        .busy .avail-dot { background: var(--a4); }
+        .unavailable .avail-dot { background: var(--r5); }
+
+        /* Spec badges */
+        .spec-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 11px; }
+
+        .stag {
+            font-size: 10px; font-weight: 500;
+            padding: 2px 9px; border-radius: 10px;
+        }
+        .stag.homeo { background: var(--g1); color: var(--g6); }
+        .stag.ayurveda { background: var(--a1); color: var(--a5); }
+        .stag.unani { background: var(--b1); color: var(--b5); }
+        .stag.herbal { background: var(--pu1); color: var(--pu5); }
+
+        .doc-bio {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.65;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .doc-meta { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .meta-item {
+            display: flex; align-items: center;
+            gap: 7px; font-size: 12px; color: #666;
+        }
+        .meta-item svg { flex-shrink: 0; color: #bbb; }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 0.5px solid #f0f0f0;
+        }
+
+        .rating-row { display: flex; align-items: center; gap: 4px; }
+        .stars { display: flex; gap: 1px; }
+        .star { font-size: 12px; color: #f0c040; }
+        .rating-val { font-size: 12px; font-weight: 600; color: #1a1a1a; }
+        .rating-cnt { font-size: 11px; color: #aaa; }
+
+        .view-btn {
+            background: var(--g1);
+            color: var(--g6);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .view-btn:hover { background: var(--g6); color: white; }
+
+        /* Empty state */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 64px 24px;
+            color: #aaa;
+        }
+        .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 16px; font-weight: 500; color: #666; margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; }
+
+        /* ── Pagination ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 36px;
+        }
+        .page-btn {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            border: 0.5px solid #ddd;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.18s;
+            color: #1a1a1a;
+        }
+        .page-btn:hover { border-color: var(--g5); color: var(--g6); }
+        .page-btn.active { background: var(--g6); color: white; border-color: var(--g6); }
+        .page-btn[disabled] { color: #ddd; cursor: not-allowed; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 740px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.22);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-banner {
+            padding: 28px 28px 72px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px; right: 14px;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.22);
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-size: 16px;
+            transition: background 0.18s;
+            line-height: 1;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.38); }
+
+        .modal-body { padding: 0 28px 28px; flex: 1; }
+
+        .modal-profile-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+            margin-top: -52px;
+            margin-bottom: 18px;
+        }
+
+        .modal-avatar {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 600;
+            flex-shrink: 0;
+            border: 4px solid white;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .modal-name-block { padding-bottom: 2px; }
+        .modal-name { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
+        .modal-degree { font-size: 13px; color: #666; }
+
+        .modal-avail { margin-left: auto; padding-bottom: 2px; }
+
+        .modal-spec-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+        .mstag {
+            font-size: 12px; font-weight: 500;
+            padding: 4px 14px; border-radius: 12px;
+        }
+        .mstag.homeo { background: var(--g1); color: var(--g6); }
+        .mstag.ayurveda { background: var(--a1); color: var(--a5); }
+        .mstag.unani { background: var(--b1); color: var(--b5); }
+        .mstag.herbal { background: var(--pu1); color: var(--pu5); }
+
+        /* Modal section */
+        .m-section { margin-bottom: 22px; }
+        .m-section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        .m-section-body { font-size: 13px; color: #444; line-height: 1.75; }
+
+        /* Info grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .info-item { display: flex; flex-direction: column; gap: 2px; }
+        .info-lbl { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; }
+        .info-val { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+
+        /* Schedule */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 7px;
+        }
+        .sched-day {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 5px;
+            padding: 10px 5px;
+            border-radius: 9px;
+            border: 0.5px solid #e5e5e5;
+            background: #F8F9FA;
+        }
+        .sched-day.on { background: var(--g1); border-color: var(--g4); }
+        .sched-day-name { font-size: 10px; font-weight: 600; color: #aaa; }
+        .sched-day.on .sched-day-name { color: var(--g6); }
+        .sched-dot { width: 7px; height: 7px; border-radius: 50%; background: #ddd; }
+        .sched-day.on .sched-dot { background: var(--g5); }
+        .sched-time { font-size: 9px; color: #aaa; text-align: center; line-height: 1.3; }
+        .sched-day.on .sched-time { color: var(--g5); }
+
+        /* Degree list */
+        .degree-list { display: flex; flex-direction: column; gap: 9px; }
+        .degree-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 12px;
+            border: 0.5px solid #e5e5e5;
+            border-radius: 10px;
+            background: #F8F9FA;
+        }
+        .deg-icon {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--g6), var(--g5));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .deg-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+        .deg-inst { font-size: 12px; color: #666; margin-top: 1px; }
+        .deg-year { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+        /* Reviews */
+        .review-list { display: flex; flex-direction: column; gap: 10px; }
+        .review-item {
+            padding: 13px;
+            border: 0.5px solid #e5e5e5;
+            border-radius: 10px;
+            background: #F8F9FA;
+        }
+        .review-hdr { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+        .review-av {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--g1); color: var(--g6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 600;
+        }
+        .review-name { font-size: 13px; font-weight: 600; }
+        .review-date { margin-left: auto; font-size: 11px; color: #aaa; }
+        .review-stars { display: flex; gap: 1px; margin-bottom: 5px; }
+        .review-text { font-size: 12px; color: #555; line-height: 1.65; }
+
+        /* Modal footer */
+        .modal-footer {
+            padding: 16px 28px;
+            border-top: 0.5px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            background: #F8F9FA;
+            border-radius: 0 0 18px 18px;
+            flex-shrink: 0;
+        }
+
+        .btn-modal-ghost {
+            background: white;
+            color: var(--g6);
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1.5px solid var(--g6);
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .btn-modal-ghost:hover { background: #f0fdf4; }
+
+        .btn-modal-primary {
+            background: linear-gradient(135deg, var(--g6), var(--g5));
+            color: white;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .btn-modal-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(15, 110, 86, 0.28);
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: #1a1a1a;
+            padding: 36px 24px;
+            text-align: center;
+        }
+        .footer-logo { font-size: 18px; font-weight: 700; color: white; margin-bottom: 6px; }
+        .footer-sub { font-size: 13px; color: #555; }
+    </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+    <div class="header-container">
+        <a href="landing.html" class="logo">
+            <div class="logo-icon">🌿</div>
+            AltCare
+        </a>
+        <nav>
+            <a href="landing.html">Home</a>
+            <a href="#" class="active">Find a Doctor</a>
+            <a href="#">Specializations</a>
+            <a href="#">About</a>
+        </nav>
+        <div class="header-actions">
+            <a href="#" class="btn-outline">Doctor Login</a>
+            <a href="#" class="btn-primary">Register Clinic</a>
+        </div>
+    </div>
+</header>
+
+<!-- ── Page Hero + Filters ── -->
+<div class="page-hero">
+    <div class="hero-inner">
+        <div class="breadcrumb">
+            <a href="landing.html">Home</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>Find a Doctor</span>
+        </div>
+        <h1>Find Alternative Medicine Practitioners</h1>
+        <p class="hero-sub">Browse verified doctors in Homeopathy, Ayurveda, Unani &amp; Herbal Medicine across Bangladesh.</p>
+
+        <div class="filter-bar">
+            <div class="search-wrap">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input class="search-input" id="searchInput" type="text" placeholder="Search by doctor name…" oninput="render()">
+            </div>
+
+            <div class="filter-sep"></div>
+
+            <select class="filter-select" id="specFilter" onchange="render()">
+                <option value="">All Specializations</option>
+                <option value="homeopathy">Homeopathy</option>
+                <option value="ayurveda">Ayurveda</option>
+                <option value="unani">Unani</option>
+                <option value="herbal">Herbal Medicine</option>
+            </select>
+
+            <select class="filter-select" id="districtFilter" onchange="render()">
+                <option value="">All Districts</option>
+                <option>Dhaka</option>
+                <option>Chittagong</option>
+                <option>Sylhet</option>
+                <option>Rajshahi</option>
+                <option>Khulna</option>
+                <option>Comilla</option>
+                <option>Mymensingh</option>
+            </select>
+
+            <select class="filter-select" id="availFilter" onchange="render()">
+                <option value="">Any Availability</option>
+                <option value="available">Available Now</option>
+                <option value="busy">Limited Slots</option>
+            </select>
+
+            <div class="results-badge" id="resultsBadge"><strong>12</strong> doctors found</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Specialty Pills ── -->
+<div class="pills-row">
+    <span class="pills-label">Filter:</span>
+    <button class="pill active" onclick="setPill(this,'all')">All</button>
+    <button class="pill" onclick="setPill(this,'homeopathy')">🌿 Homeopathy</button>
+    <button class="pill" onclick="setPill(this,'ayurveda')">🌸 Ayurveda</button>
+    <button class="pill" onclick="setPill(this,'unani')">🌙 Unani</button>
+    <button class="pill" onclick="setPill(this,'herbal')">🍃 Herbal</button>
+    <button class="pill-avail" id="availPill" onclick="toggleAvail(this)">✓ Available Now</button>
+</div>
+
+<!-- ── Main ── -->
+<div class="main">
+    <div class="list-header">
+        <div class="list-title" id="listTitle">All Practitioners <span>(12)</span></div>
+        <div class="sort-wrap">
+            <span class="sort-label">Sort by:</span>
+            <select class="sort-select" onchange="render()">
+                <option>Most Relevant</option>
+                <option>Rating: High to Low</option>
+                <option>Experience: Most</option>
+                <option>Availability</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="pagination">
+        <button class="page-btn" disabled>‹</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">›</button>
+    </div>
+</div>
+
+<!-- ── Doctor Detail Modal ── -->
+<div class="modal-overlay" id="modal" onclick="overlayClose(event)">
+    <div class="modal">
+        <div class="modal-banner" id="mBanner">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-profile-row">
+                <div class="modal-avatar" id="mAvatar"></div>
+                <div class="modal-name-block">
+                    <div class="modal-name" id="mName"></div>
+                    <div class="modal-degree" id="mDegree"></div>
+                </div>
+                <div class="modal-avail" id="mAvail"></div>
+            </div>
+
+            <div class="modal-spec-tags" id="mSpecs"></div>
+
+            <div class="m-section">
+                <div class="m-section-title">About</div>
+                <div class="m-section-body" id="mBio"></div>
+            </div>
+
+            <div class="m-section">
+                <div class="m-section-title">Details</div>
+                <div class="info-grid" id="mInfo"></div>
+            </div>
+
+            <div class="m-section">
+                <div class="m-section-title">Weekly Schedule</div>
+                <div class="schedule-grid" id="mSchedule"></div>
+            </div>
+
+            <div class="m-section">
+                <div class="m-section-title">Qualifications</div>
+                <div class="degree-list" id="mDegrees"></div>
+            </div>
+
+            <div class="m-section">
+                <div class="m-section-title">Patient Reviews</div>
+                <div class="review-list" id="mReviews"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-ghost" onclick="closeModal()">Close</button>
+            <button class="btn-modal-primary">📅 Book Appointment</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+    <div class="footer-logo">🌿 AltCare</div>
+    <p class="footer-sub">© 2025 AltCare — Alternative Medicine Practice Management Platform</p>
+</footer>
+
+<script>
+/* ── Data ── */
+const doctors = [
+  {
+    id: 1, name: 'Dr. Fatima Rahman', initials: 'FR',
+    avatarBg: '#E1F5EE', avatarColor: '#0F6E56',
+    degree: 'DHMS, MD (Homeopathy)',
+    specs: ['homeopathy'], availability: 'available',
+    location: 'Dhaka, Mirpur', experience: '12 years',
+    languages: 'Bengali, English', patients: 1240,
+    rating: 4.9, reviews: 218,
+    bio: 'Specialist in classical homeopathy with over 12 years of clinical experience. Expert in treating chronic conditions including skin disorders, respiratory issues, and digestive ailments using individualized constitutional remedies.',
+    schedule: { Mon:'9–1 PM', Tue:'9–1 PM', Wed:null, Thu:'2–6 PM', Fri:'9–1 PM', Sat:'10–3 PM', Sun:null },
+    degrees: [
+      { name:'DHMS', inst:'Government Homeopathic Medical College, Dhaka', year:'2010' },
+      { name:'MD (Homeopathy)', inst:'Bangladesh Homeopathic University', year:'2014' },
+    ],
+    patientReviews: [
+      { name:'Rina Begum', rating:5, date:'2 weeks ago', text:'Excellent doctor! My chronic eczema improved significantly after just 3 months of treatment. Very patient and thorough in her consultation.' },
+      { name:'Kamal Hossain', rating:5, date:'1 month ago', text:'Dr. Fatima is exceptional. She listened carefully and prescribed constitutional remedies that worked wonders for my asthma.' },
+    ],
+  },
+  {
+    id: 2, name: 'Dr. Arjun Sharma', initials: 'AS',
+    avatarBg: '#FAEEDA', avatarColor: '#854F0B',
+    degree: 'BAMS, MD (Ayurveda)',
+    specs: ['ayurveda'], availability: 'available',
+    location: 'Dhaka, Dhanmondi', experience: '18 years',
+    languages: 'Bengali, English, Hindi', patients: 2850,
+    rating: 4.8, reviews: 347,
+    bio: 'Renowned Ayurvedic physician with 18 years of practice. Specializes in Panchakarma detox treatments, chronic disease management, and preventive healthcare through Ayurvedic principles.',
+    schedule: { Mon:'10–2 PM', Tue:null, Wed:'10–2 PM', Thu:'10–2 PM', Fri:null, Sat:'9–1 PM', Sun:'9–1 PM' },
+    degrees: [
+      { name:'BAMS', inst:'Ayurvedic & Unani Tibbia College, Delhi', year:'2005' },
+      { name:'MD (Ayurveda)', inst:'Rajiv Gandhi University of Health Sciences', year:'2008' },
+    ],
+    patientReviews: [
+      { name:'Salma Ahmed', rating:5, date:'3 weeks ago', text:'The Panchakarma treatment Dr. Sharma prescribed completely transformed my health. I feel 10 years younger!' },
+      { name:'Tariq Islam', rating:4, date:'2 months ago', text:'Very knowledgeable about Ayurveda. The herbal formulations he prescribed helped my digestive issues tremendously.' },
+    ],
+  },
+  {
+    id: 3, name: 'Dr. Nasreen Begum', initials: 'NB',
+    avatarBg: '#E6F1FB', avatarColor: '#185FA5',
+    degree: 'BUMS, Unani Specialist',
+    specs: ['unani'], availability: 'busy',
+    location: 'Chittagong, Agrabad', experience: '9 years',
+    languages: 'Bengali, Urdu, English', patients: 890,
+    rating: 4.7, reviews: 143,
+    bio: 'Experienced Unani medicine practitioner focusing on musculoskeletal disorders, hormonal imbalances, and immune system support using traditional Greco-Arabic medicinal practices.',
+    schedule: { Mon:null, Tue:'3–7 PM', Wed:'3–7 PM', Thu:null, Fri:'10–2 PM', Sat:'10–4 PM', Sun:null },
+    degrees: [
+      { name:'BUMS', inst:'Institute of Applied Health Sciences, Chittagong', year:'2014' },
+      { name:'Dip. Unani Medicine', inst:'Bangladesh Unani Medical College', year:'2016' },
+    ],
+    patientReviews: [
+      { name:'Razia Khatun', rating:5, date:'1 week ago', text:'My joint pain of 5 years is almost completely gone after Dr. Nasreen\'s Unani treatment. Highly recommend!' },
+      { name:'Monir Hossain', rating:4, date:'6 weeks ago', text:'Professional and caring. The traditional remedies she uses are very effective.' },
+    ],
+  },
+  {
+    id: 4, name: 'Dr. Tanvir Ahmed', initials: 'TA',
+    avatarBg: '#EEEDFE', avatarColor: '#534AB7',
+    degree: 'BHMS, Herbal Medicine Cert.',
+    specs: ['homeopathy','herbal'], availability: 'available',
+    location: 'Dhaka, Gulshan', experience: '7 years',
+    languages: 'Bengali, English', patients: 620,
+    rating: 4.6, reviews: 89,
+    bio: 'Young and dynamic practitioner combining homeopathy with modern herbal medicine protocols. Special interest in mental health conditions, stress management, and pediatric care.',
+    schedule: { Mon:'11–3 PM', Tue:'11–3 PM', Wed:'11–3 PM', Thu:null, Fri:'11–3 PM', Sat:null, Sun:null },
+    degrees: [
+      { name:'BHMS', inst:'Dhaka Homeopathic Medical College', year:'2016' },
+      { name:'Cert. Herbal Medicine', inst:'Bangladesh Institute of Natural Medicine', year:'2018' },
+    ],
+    patientReviews: [
+      { name:'Priya Das', rating:5, date:'4 days ago', text:'Wonderful doctor for children. My 4-year-old is no longer getting repeated ear infections since starting homeopathy treatment.' },
+      { name:'Sabbir Rahman', rating:4, date:'3 weeks ago', text:'Helped me manage my anxiety without pharmaceutical drugs. Very appreciative of his approach.' },
+    ],
+  },
+  {
+    id: 5, name: 'Dr. Sumaiya Khatun', initials: 'SK',
+    avatarBg: '#E1F5EE', avatarColor: '#0F6E56',
+    degree: 'BAMS, Yoga & Naturopathy Dip.',
+    specs: ['ayurveda','herbal'], availability: 'available',
+    location: 'Sylhet', experience: '14 years',
+    languages: 'Bengali, English', patients: 1680,
+    rating: 4.9, reviews: 261,
+    bio: 'Integrative medicine specialist blending Ayurveda with naturopathy and yoga therapy. Renowned for her holistic approach to women\'s health, fertility, and reproductive disorders.',
+    schedule: { Mon:'9–1 PM', Tue:'9–1 PM', Wed:null, Thu:'2–6 PM', Fri:'2–6 PM', Sat:'9–1 PM', Sun:null },
+    degrees: [
+      { name:'BAMS', inst:'Rajiv Gandhi University of Health Sciences', year:'2008' },
+      { name:'Dip. Yoga & Naturopathy', inst:'Morarji Desai National Institute, New Delhi', year:'2011' },
+    ],
+    patientReviews: [
+      { name:'Hasna Akhter', rating:5, date:'1 week ago', text:'Dr. Sumaiya helped me conceive after 3 years of struggle with PCOS. Her Ayurvedic approach is truly remarkable.' },
+      { name:'Lovely Islam', rating:5, date:'1 month ago', text:'Best doctor for women\'s health. Her knowledge of Ayurveda and naturopathy is incredible.' },
+    ],
+  },
+  {
+    id: 6, name: 'Dr. Rezaul Karim', initials: 'RK',
+    avatarBg: '#FAEEDA', avatarColor: '#854F0B',
+    degree: 'BUMS, PhD (Herbal Pharmacology)',
+    specs: ['unani','herbal'], availability: 'unavailable',
+    location: 'Rajshahi', experience: '22 years',
+    languages: 'Bengali, English, Arabic', patients: 3200,
+    rating: 4.8, reviews: 415,
+    bio: 'Veteran Unani and herbal medicine researcher with 22 years of practice. Published author on Bangladeshi medicinal plants. Expert in complex chronic diseases and multi-system conditions.',
+    schedule: { Mon:null, Tue:null, Wed:null, Thu:null, Fri:null, Sat:null, Sun:null },
+    degrees: [
+      { name:'BUMS', inst:'Bangladesh Unani Medical College', year:'2001' },
+      { name:'PhD Herbal Pharmacology', inst:'University of Dhaka', year:'2008' },
+    ],
+    patientReviews: [
+      { name:'Abdul Jabbar', rating:5, date:'2 months ago', text:'Dr. Karim\'s expertise is unmatched. His herbal formulations helped my diabetes management alongside conventional medicine.' },
+      { name:'Moriam Begum', rating:5, date:'3 months ago', text:'Very experienced doctor. His research-backed approach gives full confidence in treatment.' },
+    ],
+  },
+  {
+    id: 7, name: 'Dr. Sharmin Akter', initials: 'SA',
+    avatarBg: '#E1F5EE', avatarColor: '#0F6E56',
+    degree: 'DHMS, Pediatric Homeopathy Cert.',
+    specs: ['homeopathy'], availability: 'available',
+    location: 'Dhaka, Uttara', experience: '6 years',
+    languages: 'Bengali, English', patients: 540,
+    rating: 4.7, reviews: 76,
+    bio: 'Dedicated homeopathic specialist in pediatric care. Focuses on childhood developmental issues, frequent infections, allergies, and behavioral health for children aged 0–16.',
+    schedule: { Mon:'10–2 PM', Tue:'10–2 PM', Wed:'10–2 PM', Thu:'10–2 PM', Fri:null, Sat:'9–12 PM', Sun:null },
+    degrees: [
+      { name:'DHMS', inst:'Dhaka Homeopathic Medical College', year:'2017' },
+      { name:'Cert. Pediatric Homeopathy', inst:'International Academy of Classical Homeopathy', year:'2019' },
+    ],
+    patientReviews: [
+      { name:'Jannatul Ferdows', rating:5, date:'2 weeks ago', text:'My son was always sick. Since Dr. Sharmin\'s treatment, he hasn\'t had a single cold in 6 months!' },
+      { name:'Bashir Ahmed', rating:5, date:'5 weeks ago', text:'Excellent bedside manner with children. My daughter actually enjoys going to the doctor now!' },
+    ],
+  },
+  {
+    id: 8, name: 'Dr. Mahbubul Islam', initials: 'MI',
+    avatarBg: '#E6F1FB', avatarColor: '#185FA5',
+    degree: 'BUMS, MD (Unani)',
+    specs: ['unani'], availability: 'busy',
+    location: 'Dhaka, Old Town', experience: '16 years',
+    languages: 'Bengali, Urdu, Arabic', patients: 2100,
+    rating: 4.6, reviews: 198,
+    bio: 'Senior Unani practitioner with expertise in geriatric care, chronic pain management, and neurological disorders. Combines classical Unani protocols with modern clinical assessment.',
+    schedule: { Mon:'8–12 PM', Tue:'8–12 PM', Wed:null, Thu:'8–12 PM', Fri:null, Sat:'2–6 PM', Sun:'2–6 PM' },
+    degrees: [
+      { name:'BUMS', inst:'Hamdard University, Bangladesh', year:'2006' },
+      { name:'MD (Unani Medicine)', inst:'Bangladesh Unani Medical University', year:'2010' },
+    ],
+    patientReviews: [
+      { name:'Azizul Haq', rating:4, date:'3 weeks ago', text:'My father\'s Parkinson\'s symptoms have stabilized noticeably with Dr. Mahbubul\'s treatment protocol.' },
+      { name:'Anwara Begum', rating:5, date:'2 months ago', text:'Excellent doctor. Very knowledgeable and gives time to each patient. Highly recommended.' },
+    ],
+  },
+  {
+    id: 9, name: 'Dr. Farzana Hossain', initials: 'FH',
+    avatarBg: '#EEEDFE', avatarColor: '#534AB7',
+    degree: 'BHMS, Homeopathic Dermatology Dip.',
+    specs: ['homeopathy','herbal'], availability: 'available',
+    location: 'Khulna', experience: '10 years',
+    languages: 'Bengali, English', patients: 1020,
+    rating: 4.8, reviews: 163,
+    bio: 'Dermatology-focused homeopath specializing in skin conditions like psoriasis, eczema, vitiligo, and acne. Uses both oral constitutional remedies and topical herbal preparations.',
+    schedule: { Mon:null, Tue:'1–5 PM', Wed:'1–5 PM', Thu:'1–5 PM', Fri:null, Sat:'10–2 PM', Sun:'10–2 PM' },
+    degrees: [
+      { name:'BHMS', inst:'National Homeopathic Medical College, Dhaka', year:'2013' },
+      { name:'Dip. Homeopathic Dermatology', inst:'European Institute of Homeopathy', year:'2016' },
+    ],
+    patientReviews: [
+      { name:'Nusrat Jahan', rating:5, date:'1 week ago', text:'My psoriasis plaques have reduced by 80% in just 4 months. Dr. Farzana is truly gifted!' },
+      { name:'Saiful Islam', rating:5, date:'1 month ago', text:'Amazing results for my eczema. The treatment was gentle and effective. No side effects at all.' },
+    ],
+  },
+  {
+    id: 10, name: 'Dr. Khalid Bin Omar', initials: 'KO',
+    avatarBg: '#FAEEDA', avatarColor: '#854F0B',
+    degree: 'BAMS, Ayurvedic Cardiology Dip.',
+    specs: ['ayurveda'], availability: 'available',
+    location: 'Mymensingh', experience: '20 years',
+    languages: 'Bengali, English, Arabic', patients: 2680,
+    rating: 4.9, reviews: 329,
+    bio: 'Two decades of experience in Ayurvedic cardiovascular medicine. Pioneer in integrating Ayurvedic heart care with evidence-based medicine. Expert in hypertension, cholesterol, and cardiac rehabilitation.',
+    schedule: { Mon:'9–1 PM', Tue:null, Wed:'9–1 PM', Thu:'9–1 PM', Fri:null, Sat:'10–2 PM', Sun:'10–2 PM' },
+    degrees: [
+      { name:'BAMS', inst:'Banaras Hindu University, Varanasi', year:'2003' },
+      { name:'Dip. Ayurvedic Cardiology', inst:'All India Institute of Ayurveda', year:'2006' },
+    ],
+    patientReviews: [
+      { name:'Jahangir Alam', rating:5, date:'3 days ago', text:'My blood pressure normalized without increasing medication. Dr. Khalid\'s Ayurvedic approach is remarkable.' },
+      { name:'Dilara Begum', rating:5, date:'6 weeks ago', text:'Phenomenal expertise in cardiac Ayurveda. My cholesterol is under control naturally!' },
+    ],
+  },
+  {
+    id: 11, name: 'Dr. Rubina Parvin', initials: 'RP',
+    avatarBg: '#E1F5EE', avatarColor: '#0F6E56',
+    degree: 'DHMS, BHMS',
+    specs: ['homeopathy'], availability: 'busy',
+    location: 'Comilla', experience: '8 years',
+    languages: 'Bengali', patients: 720,
+    rating: 4.5, reviews: 94,
+    bio: 'Homeopathic practitioner with dual qualification and a focus on mental health, anxiety, depression, and stress-related conditions. Uses evidence-informed constitutional prescribing.',
+    schedule: { Mon:'2–6 PM', Tue:'2–6 PM', Wed:null, Thu:'2–6 PM', Fri:'2–6 PM', Sat:null, Sun:null },
+    degrees: [
+      { name:'DHMS', inst:'Comilla Homeopathic College', year:'2015' },
+      { name:'BHMS', inst:'Bangladesh Homeopathic Board', year:'2018' },
+    ],
+    patientReviews: [
+      { name:'Sadia Islam', rating:5, date:'2 weeks ago', text:'Dr. Rubina helped me through a very difficult period of depression. Her holistic approach was exactly what I needed.' },
+      { name:'Ripon Ahmed', rating:4, date:'1 month ago', text:'Good doctor. Her treatment for my insomnia worked well. Very caring and attentive.' },
+    ],
+  },
+  {
+    id: 12, name: 'Dr. Mushfiqur Rahman', initials: 'MR',
+    avatarBg: '#E6F1FB', avatarColor: '#185FA5',
+    degree: 'BUMS, Herbal Research Fellow',
+    specs: ['unani','herbal'], availability: 'available',
+    location: 'Dhaka, Banani', experience: '11 years',
+    languages: 'Bengali, English', patients: 1140,
+    rating: 4.7, reviews: 177,
+    bio: 'Research-oriented Unani physician with expertise in immunology and autoimmune conditions. Active researcher on Bangladeshi medicinal plants with clinical applications in modern practice.',
+    schedule: { Mon:'9–1 PM', Tue:'9–1 PM', Wed:'9–1 PM', Thu:'3–7 PM', Fri:null, Sat:'10–2 PM', Sun:null },
+    degrees: [
+      { name:'BUMS', inst:'Hamdard University, Bangladesh', year:'2012' },
+      { name:'Research Fellowship', inst:'Bangladesh Council of Scientific & Industrial Research', year:'2015' },
+    ],
+    patientReviews: [
+      { name:'Tasnia Amin', rating:5, date:'5 days ago', text:'Dr. Mushfiq\'s treatment for my lupus symptoms has been life-changing. Highly scientific approach.' },
+      { name:'Ruhul Amin', rating:5, date:'7 weeks ago', text:'Very professional and research-backed treatment. My autoimmune issues are much better managed now.' },
+    ],
+  },
+];
+
+/* ── Constants ── */
+const SPEC_CLASS = { homeopathy:'homeo', ayurveda:'ayurveda', unani:'unani', herbal:'herbal' };
+const SPEC_LABEL = { homeopathy:'🌿 Homeopathy', ayurveda:'🌸 Ayurveda', unani:'🌙 Unani', herbal:'🍃 Herbal' };
+const AVAIL_LABEL = { available:'Available Now', busy:'Limited Slots', unavailable:'On Leave' };
+const BANNER_GRAD = {
+    homeopathy: '#0F6E56, #1D9E75',
+    ayurveda:   '#854F0B, #BA7517',
+    unani:      '#185FA5, #378ADD',
+    herbal:     '#534AB7, #7B72E0',
+};
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+/* ── State ── */
+let activePill = 'all';
+let availOnly = false;
+
+/* ── Helpers ── */
+function stars(n) {
+    const full = Math.floor(n), half = (n % 1) >= 0.5 ? 1 : 0;
+    return Array(full).fill('<span class="star">★</span>').join('')
+         + (half ? '<span class="star" style="opacity:.5">★</span>' : '');
+}
+
+function initials(name) {
+    return name.split(' ').filter(Boolean).map(w => w[0]).join('');
+}
+
+/* ── Filter ── */
+function filtered() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    const spec = document.getElementById('specFilter').value;
+    const district = document.getElementById('districtFilter').value.toLowerCase();
+    const avail = document.getElementById('availFilter').value;
+
+    return doctors.filter(d => {
+        if (q && !d.name.toLowerCase().includes(q)) return false;
+        if (activePill !== 'all' && !d.specs.includes(activePill)) return false;
+        if (spec && !d.specs.includes(spec)) return false;
+        if (district && !d.location.toLowerCase().includes(district)) return false;
+        if (availOnly && d.availability !== 'available') return false;
+        if (avail && d.availability !== avail) return false;
+        return true;
+    });
+}
+
+/* ── Render cards ── */
+function render() {
+    const list = filtered();
+    const grid = document.getElementById('grid');
+    const badge = document.getElementById('resultsBadge');
+    const title = document.getElementById('listTitle');
+
+    badge.innerHTML = `<strong>${list.length}</strong> doctor${list.length !== 1 ? 's' : ''} found`;
+    title.innerHTML = `All Practitioners <span>(${list.length})</span>`;
+
+    if (!list.length) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>No doctors found</h3>
+                <p>Try adjusting your search or filters.</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = list.map(d => `
+        <div class="doctor-card" onclick="openModal(${d.id})">
+            <div class="card-top">
+                <div class="doc-avatar" style="background:${d.avatarBg};color:${d.avatarColor}">${d.initials}</div>
+                <div class="doc-info">
+                    <div class="doc-name">${d.name}</div>
+                    <div class="doc-degree">${d.degree}</div>
+                    <div class="avail-tag ${d.availability}">
+                        <span class="avail-dot"></span>${AVAIL_LABEL[d.availability]}
+                    </div>
+                </div>
+            </div>
+            <div class="spec-tags">
+                ${d.specs.map(s => `<span class="stag ${SPEC_CLASS[s]}">${SPEC_LABEL[s]}</span>`).join('')}
+            </div>
+            <div class="doc-bio">${d.bio}</div>
+            <div class="doc-meta">
+                <div class="meta-item">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    ${d.location}
+                </div>
+                <div class="meta-item">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    ${d.experience} · ${d.patients.toLocaleString()} patients
+                </div>
+                <div class="meta-item">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    ${d.languages}
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="rating-row">
+                    <div class="stars">${stars(d.rating)}</div>
+                    <span class="rating-val">${d.rating}</span>
+                    <span class="rating-cnt">(${d.reviews})</span>
+                </div>
+                <button class="view-btn" onclick="event.stopPropagation();openModal(${d.id})">View Profile</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ── Pill controls ── */
+function setPill(el, val) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    activePill = val;
+    render();
+}
+
+function toggleAvail(el) {
+    availOnly = !availOnly;
+    el.classList.toggle('active', availOnly);
+    render();
+}
+
+/* ── Modal ── */
+function openModal(id) {
+    const d = doctors.find(x => x.id === id);
+    if (!d) return;
+
+    const grad = BANNER_GRAD[d.specs[0]] || BANNER_GRAD.homeopathy;
+    document.getElementById('mBanner').style.background = `linear-gradient(135deg, ${grad})`;
+
+    const av = document.getElementById('mAvatar');
+    av.style.background = d.avatarBg;
+    av.style.color = d.avatarColor;
+    av.textContent = d.initials;
+
+    document.getElementById('mName').textContent = d.name;
+    document.getElementById('mDegree').textContent = d.degree;
+    document.getElementById('mAvail').innerHTML = `
+        <div class="avail-tag ${d.availability}" style="font-size:12px;padding:4px 12px;">
+            <span class="avail-dot"></span>${AVAIL_LABEL[d.availability]}
+        </div>`;
+
+    document.getElementById('mSpecs').innerHTML = d.specs
+        .map(s => `<span class="mstag ${SPEC_CLASS[s]}">${SPEC_LABEL[s]}</span>`).join('');
+
+    document.getElementById('mBio').textContent = d.bio;
+
+    document.getElementById('mInfo').innerHTML = `
+        <div class="info-item"><div class="info-lbl">Location</div><div class="info-val">📍 ${d.location}</div></div>
+        <div class="info-item"><div class="info-lbl">Experience</div><div class="info-val">⏱ ${d.experience}</div></div>
+        <div class="info-item"><div class="info-lbl">Total Patients</div><div class="info-val">👥 ${d.patients.toLocaleString()}</div></div>
+        <div class="info-item"><div class="info-lbl">Languages</div><div class="info-val">🗣 ${d.languages}</div></div>`;
+
+    document.getElementById('mSchedule').innerHTML = DAYS.map(day => {
+        const t = d.schedule[day];
+        return `<div class="sched-day ${t ? 'on' : ''}">
+            <span class="sched-day-name">${day}</span>
+            <div class="sched-dot"></div>
+            <span class="sched-time">${t || 'Off'}</span>
+        </div>`;
+    }).join('');
+
+    document.getElementById('mDegrees').innerHTML = d.degrees.map(deg => `
+        <div class="degree-item">
+            <div class="deg-icon">🎓</div>
+            <div>
+                <div class="deg-name">${deg.name}</div>
+                <div class="deg-inst">${deg.inst}</div>
+                <div class="deg-year">Graduated ${deg.year}</div>
+            </div>
+        </div>`).join('');
+
+    document.getElementById('mReviews').innerHTML = d.patientReviews.map(r => `
+        <div class="review-item">
+            <div class="review-hdr">
+                <div class="review-av">${initials(r.name)}</div>
+                <span class="review-name">${r.name}</span>
+                <span class="review-date">${r.date}</span>
+            </div>
+            <div class="review-stars">${stars(r.rating)}</div>
+            <div class="review-text">${r.text}</div>
+        </div>`).join('');
+
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function overlayClose(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ── Boot ── */
+render();
+</script>
+</body>
+</html>
