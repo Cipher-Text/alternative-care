@@ -8,36 +8,37 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **MVP v1.0 - PRODUCTION READY** 🚀
 
-**Implemented:**
-- Authentication (Login, 2FA, JWT, Sessions, Password Security) - Backend + Frontend ✅
-- Patient Management (CRUD, Search, Tags, Diagnoses) - Backend + Frontend ✅
-- Dashboard Analytics (Stats, Revenue, Demographics) - Backend + Frontend ✅
-- Appointments (Scheduling, Visits) - Backend + Frontend ✅
-- Multi-tenant isolation (100% secure, 16/16 tests passing) ✅
+**Last Verified:** 2026-07-11
+
+**Core modules (backend + frontend complete):**
+- Authentication (Login, 2FA, JWT, Sessions, Password Security) ✅
+- Patient Management (CRUD, Tags, Diagnoses, Geographic dropdowns) ✅
+- Dashboard Analytics (Stats, Revenue, Demographics) ✅
+- Appointments (Scheduling, Calendar, Visits) ✅
+- Prescriptions (Builder, Items, Issue/Void workflow) ✅
+- Doctor Profile (Degrees, Trainings) ✅
+- Payments & Invoicing ✅
+- Integrations (SMS/Email/Payment providers) ✅
+- Medicines library (CRUD, Aliases, Autocomplete) ✅
+- Symptoms library (CRUD, Aliases) ✅
+- Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
+- Multi-tenant isolation (16/16 tests passing) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 
-**Backend:** 11 routed modules, 89 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
-**Frontend:** 110+ source files (auth, dashboard, patients, appointments, prescriptions, doctor profile, payments, integrations, medicines, symptoms)
-**Security:** A (95/100), comprehensive auth security tests
+**Backend:** 13 routed modules, ~104 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Frontend:** 110+ source files
+**Security:** A (95/100)
 
-**Last Verified:** 2026-05-22
+**Platform Admin (partial):**
+- Client provisioning + directory + approval UI ✅
+- Dedicated admin module, dashboard, tenant lifecycle actions: ⚠️ In progress — see `docs/planning/admin-module.md`
 
-**Security Features:**
-- ✅ Password complexity enforcement (8+ chars, mixed case, numbers)
-- ✅ Session invalidation on password change
-- ✅ HTTP security headers (CSP, X-Frame-Options, HSTS)
-- ✅ Redis-backed rate limiting (login, API, AI-specific tiers)
-- ✅ JWT token validation (expiry, type checking, claim validation)
-- ✅ 2FA/TOTP support with QR code generation
-
-**Post-MVP (Backend Ready, Frontend Status):**
-- Prescriptions (backend complete, **frontend complete** ✅ - list/detail/builder all done)
-- Doctor Profile (backend complete, **frontend complete** ✅ - profile/degrees/trainings all done)
-- Payments (backend complete, **frontend complete** ✅ - dashboard/transactions/invoices/toasts all done)
-- Integrations (backend complete, **frontend complete** ✅ - provider marketplace/config wizard/logs all done)
-- **Medicines** (backend complete ✅, **frontend complete** ✅ - CRUD/search/aliases/autocomplete all done)
-- **Symptoms** (backend complete ✅, **frontend complete** ✅ - CRUD/search/aliases all done)
-- AI Query Module (stub endpoint, plan-gated)
+**Not yet built:**
+- Platform admin module (Phase A) — dashboard, tenant lifecycle, dedicated nav
+- `operator` / `receptionist` role enforcement (Phase B)
+- Book library (models only)
+- AI assistant (stub 501)
+- Public landing page
 
 ---
 
@@ -166,6 +167,17 @@ async def test_tenant_isolation(db_session):
 **Password:** Bcrypt (12 rounds, passlib)
 **Credentials:** Fernet encrypted (JSONB field: `tenant_integrations.credentials`)
 
+**Roles** (see `docs/architecture/roles-access.md` for full reference):
+
+| Role | Level | `tenant_id` | Status |
+|---|---|---|---|
+| `admin` | Platform | `null` | ✅ Full |
+| `operator` | Platform | `null` | ⚠️ RBAC stub, no endpoints |
+| `doctor` | Tenant | `<uuid>` | ✅ Full |
+| `receptionist` | Tenant | `<uuid>` | ⚠️ No enforcement |
+
+Platform users (`tenant_id = null`) are rejected with **403** from all tenant-scoped service factories.
+
 **Role-Based Access:**
 ```python
 from app.core.dependencies import RequireDoctor, RequireAdmin, require_role
@@ -238,8 +250,9 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (89 total endpoints)
-│   ├── auth/             # ✅ Login, refresh, 2FA, password change (12 endpoints)
+├── modules/               # Feature modules (~104 total endpoints)
+│   ├── auth/             # ✅ Login, refresh, 2FA, admin provisioning (12 endpoints)
+│   ├── admin/            # 📋 Planned — will hold platform admin endpoints (Phase A)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
 │   ├── appointments/     # ✅ Scheduling, visits (6 endpoints)
@@ -250,6 +263,8 @@ backend/app/
 │   ├── ai/               # ✅ Stub endpoint, pro-plan gated (1 endpoint)
 │   ├── medicine/         # ✅ CRUD, search, aliases, mappings (8 endpoints)
 │   ├── symptom/          # ✅ CRUD, search, aliases (8 endpoints)
+│   ├── geographic/       # ✅ Divisions, districts, upazilas (3 endpoints)
+│   ├── tenant/           # ✅ Clinic profile (2 endpoints)
 │   ├── library/          # 📋 Models exist, no routes
 │   └── notification/     # 📋 Placeholder
 └── shared/
@@ -272,7 +287,8 @@ frontend/src/
 │   │   ├── payments/     # ✅ Payment dashboard, transactions, invoices
 │   │   ├── medicines/    # ✅ Medicine library CRUD with autocomplete
 │   │   ├── symptoms/     # ✅ Symptom library CRUD
-│   │   └── settings/     # ✅ Integrations management
+│   │   ├── settings/     # ✅ Integrations management
+│   │   └── admin/        # ✅ Client directory, provision, pending (📋 dashboard planned)
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/

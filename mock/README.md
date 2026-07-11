@@ -1,175 +1,74 @@
 # AltCare UI Mockups
 
-Interactive HTML prototypes for the AltCare platform.
+Interactive HTML prototypes built before the React/Next.js app was implemented.
+They serve as **design reference** and **stakeholder demo** artifacts.
+
+> The real application is in `frontend/`. These mocks are read-only historical reference.
+
+---
 
 ## Files
 
-### 🏠 [index.html](./index.html)
-Landing page to choose between mockup views.
+### [index.html](./index.html)
+Navigation hub — links to the three mockup views.
 
-### 🌐 [landing.html](./landing.html)
-**Marketing Landing Page**
+### [landing.html](./landing.html)
+**Public marketing page**
 
-Public-facing website for attracting new practitioners and showcasing the platform.
+- Hero, value proposition, CTAs
+- Feature showcase (12 features)
+- Pricing tiers: Free / Plus / Pro with monthly/annual toggle
+- Multi-specialisation section (Homeopathy, Ayurveda, Unani, Herbal)
 
-**Sections included:**
-- Hero section with value proposition and CTAs
-- Platform statistics and trust indicators
-- Multi-specialization support showcase (Homeopathy, Ayurveda, Unani, Herbal)
-- 12 feature highlights with icons
-- Benefits of alternative medicine (9 key benefits)
-- Complete pricing comparison (Free, Plus, Pro)
-- Monthly/Annual billing toggle with 20% discount
-- Call-to-action sections
-- Comprehensive footer with navigation
+### [doctor-view.html](./doctor-view.html)
+**Practitioner interface**
 
-**Features demonstrated:**
-- Smooth scrolling navigation
-- Interactive pricing toggle
-- Responsive grid layouts
-- Gradient hero section
-- Hover effects and animations
-- Clean, modern design system
-- Mobile-responsive structure
+Screens: Dashboard · Patient management · Prescription builder · Payments · Medicine search · Symptom search · Book library · AI assistant · Settings
+
+### [admin-view.html](./admin-view.html)
+**Platform admin interface**
+
+Screens: Platform dashboard · Doctor approval queue · Tenants/Clinics · Global medicine DB · Global book library · Integration providers · Activity logs · Operators
 
 ---
 
-### 👨‍⚕️ [doctor-view.html](./doctor-view.html)
-**Doctor / Practitioner Interface**
+## Implementation Status
 
-Complete clinic management system for alternative medicine practitioners.
-
-**Screens included:**
-- Dashboard with KPIs, patient calendar, charts
-- Patient management with visit history timeline
-- Prescription builder with PDF preview
-- Payment tracking and invoice generation
-- Medicine database search
-- Symptom-based remedy search
-- Book library with reading progress
-- AI Assistant (RAG-powered clinical reference)
-- Pricing plans comparison
-- Settings (profile, clinic info, integrations)
-
-**Features demonstrated:**
-- Multi-specialization support (Homeopathy, Ayurveda, Unani, Herbal)
-- Doctor credentials management (academic degrees and professional training/certifications)
-- Patient tagging system (special case, chronic, treatment, allergy)
-- Real-time prescription builder
-- Calendar with patient load visualization
-- Charts and analytics
+| Mock feature | Built in app? |
+|---|---|
+| Auth (login, 2FA) | ✅ Complete |
+| Dashboard analytics | ✅ Complete |
+| Patient management | ✅ Complete |
+| Appointments / calendar | ✅ Complete |
+| Prescription builder | ✅ Complete |
+| Doctor profile (degrees, trainings) | ✅ Complete |
+| Payments & invoicing | ✅ Complete |
+| Medicine library | ✅ Complete |
+| Symptom library | ✅ Complete |
+| SMS/Email integrations | ✅ Complete |
+| Book library | ⬜ Backend models only, no routes |
+| AI assistant | ⬜ Stub endpoint (pro plan, not built) |
+| Public landing page | ⬜ Not built (mock only) |
+| Platform admin UI | ⬜ Not built (mock only) |
 
 ---
 
-### 🔧 [admin-view.html](./admin-view.html)
-**Platform Admin Interface**
+## Design Notes
 
-Platform-wide administration and management for admins and operators.
+### Color palette — mocks vs. app
 
-**Screens included:**
-- Platform Dashboard with tenant metrics
-- Doctor Registration Approvals queue
-- Tenants / Clinics management
-- Global Medicine Database
-- Global Book Library
-- Integration Providers catalog (SMS, Email, Payment)
-- Platform Activity Logs
-- Platform Operators management
-
-**Features demonstrated:**
-- Multi-tenant overview and analytics
-- Approval workflow for new doctors with detailed credential review (degrees and training)
-- Global content curation (medicines, books)
-- Integration provider management (Twilio, Banglalink, bKash, Nagad, Stripe, etc.)
-- System-wide audit trail
-- Team management
-
----
-
-## How to Use
-
-1. **Open in Browser:** Simply double-click any HTML file to open it in your default browser
-2. **No Build Required:** These are standalone HTML files with embedded CSS and JavaScript
-3. **Fully Interactive:** Click through navigation, buttons, and tabs to explore different screens
-
-## Design System
-
-### Color Palette
-- **Primary (Green):** `#0F6E56` → `#1D9E75` — Main brand color for doctors
-- **Secondary (Purple):** `#534AB7` → `#6B5FDB` — Platform admin accent
-- **Functional Colors:**
-  - Blue: Informational
-  - Amber: Warnings
-  - Red: Errors / Critical
-  - Orange: Special indicators
+The mocks use a **green** primary (`#0F6E56`) for the doctor view and **purple** (`#534AB7`) for the admin view. The built frontend uses **indigo** (`indigo-600` / `#4F46E5`) throughout. If you revisit the mock design, align to indigo.
 
 ### Typography
-- **Font:** System default (`-apple-system`, `BlinkMacSystemFont`, `SF Pro Display`, `Inter`)
-- **Sizes:** 10px–28px (responsive scaling)
+System default (`-apple-system`, `BlinkMacSystemFont`, `Inter`)
 
-### Components
-- Cards with 1px borders and subtle shadows
-- 8px border-radius for buttons and inputs
-- 12-14px border-radius for cards
-- Consistent 12-16px spacing units
+### Component style
+- 8px border-radius on buttons and inputs
+- 12–14px on cards
+- 1px borders with subtle shadows
 
-## Technologies Demonstrated
+---
 
-- **No Framework:** Pure HTML/CSS/JavaScript
-- **Responsive Grid Layouts:** CSS Grid and Flexbox
-- **Interactive Navigation:** JavaScript-based SPA navigation
-- **Modal Dialogs:** Overlay-based modals
-- **Form Components:** Inputs, selects, textareas, tag inputs
-- **Data Visualization:** CSS-based bar charts
-- **Calendar UI:** Custom calendar with day cells and indicators
+## How to Open
 
-## Design Decisions
-
-### UX Improvements in Admin View
-
-1. **Clear Visual Hierarchy**
-   - Purple accent color distinguishes admin interface from doctor (green)
-   - Larger KPI cards with icons
-   - Better spacing and breathing room
-
-2. **Action-Oriented Layout**
-   - Primary actions in top-right (Add Medicine, Add Provider, etc.)
-   - Quick approval buttons in tables
-   - Inline status badges
-
-3. **Data-Dense Tables**
-   - Uppercase column headers with letter-spacing
-   - Hover states for better scannability
-   - Monospace font for technical data (IDs, timestamps)
-
-4. **Modal Workflows**
-   - Forms in modals keep users in context
-   - Clear cancel/submit actions
-   - Validation-ready input fields
-
-5. **Integration Provider Cards**
-   - Visual branding (icons, colors for bKash, Nagad, etc.)
-   - Usage statistics at a glance
-   - Grid layout for easy scanning
-
-### Mobile Considerations
-
-Current mockups are desktop-optimized. For production:
-- Sidebar collapses to hamburger menu on mobile
-- Tables scroll horizontally or switch to card layout
-- Modal dialogs fill screen on small devices
-- Touch-friendly button sizes (minimum 44x44px)
-
-## Next Steps
-
-1. **Phase 1:** Convert to React/Next.js components with Tailwind CSS + shadcn/ui
-2. **Phase 2:** Connect to FastAPI backend endpoints
-3. **Phase 3:** Add real-time data updates via WebSockets
-4. **Phase 4:** Implement mobile-responsive layouts
-
-## Notes
-
-- These are **visual prototypes**, not functional applications
-- Data is static and hardcoded
-- No actual API calls or database connections
-- Perfect for stakeholder reviews, design feedback, and frontend development specs
+Double-click any `.html` file — no build step, no server needed. All styles and scripts are embedded.

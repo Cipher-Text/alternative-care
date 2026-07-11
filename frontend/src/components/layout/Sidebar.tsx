@@ -12,11 +12,13 @@ import {
   Pill,
   BookOpen,
   Settings,
-  ShieldCheck,
+  LayoutDashboard,
+  Building2,
+  UserCog,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
-const navigation = [
+const doctorNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Patients', href: '/patients', icon: Users },
   { name: 'Appointments', href: '/appointments', icon: Calendar },
@@ -28,13 +30,17 @@ const navigation = [
 ]
 
 const adminNavigation = [
-  { name: 'Admin Clients', href: '/admin/clients', icon: ShieldCheck },
+  { name: 'Platform Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Clients', href: '/admin/clients', icon: Building2 },
+  { name: 'Users', href: '/admin/users', icon: UserCog },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const user = useAuthStore((state) => state.user)
-  const items = user?.role === 'admin' ? [...navigation, ...adminNavigation] : navigation
+
+  // Platform admins see only admin nav — no patient/appointment/prescription items
+  const items = user?.role === 'admin' ? adminNavigation : doctorNavigation
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">

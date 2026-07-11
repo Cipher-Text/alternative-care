@@ -167,6 +167,37 @@ Build a comprehensive, multi-tenant SaaS platform for alternative medicine pract
 
 ---
 
+## 🛠️ Platform Admin Module (IN PROGRESS)
+
+Full spec: `docs/planning/admin-module.md`
+
+### Phase A — Foundation *(next up)*
+
+**Backend**
+- [ ] Create `app/modules/admin/` (routes, service, schemas)
+- [ ] Register at `/api/v1/admin`
+- [ ] `GET /admin/dashboard` — platform KPIs
+- [ ] `GET /admin/tenants` + `GET /admin/tenants/{id}` + `GET /admin/tenants/pending`
+- [ ] `POST /admin/tenants` — provision (move from auth)
+- [ ] `POST /admin/tenants/{id}/approve` — approve (move from auth)
+- [ ] `PATCH /admin/tenants/{id}` — suspend / reactivate / change plan ← NEW
+- [ ] Deprecate `/auth/admin/*` endpoints
+
+**Frontend**
+- [ ] Admin-only sidebar (no doctor nav items for platform users)
+- [ ] `/admin/dashboard` — KPI cards page
+- [ ] `/admin/clients` — add tenant actions (change plan, suspend)
+- [ ] `/admin/clients/[tenantId]` — add action buttons
+
+### Phase B — Operator role & receptionist enforcement *(after Phase A)*
+
+- [ ] Wire `RequireAdminOrOperator` to all admin GET endpoints
+- [ ] Frontend: operator sees read-only admin nav (no write actions)
+- [ ] Apply `require_role("doctor", "receptionist")` to appropriate tenant endpoints
+- [ ] Frontend: receptionist cannot access prescription write actions
+
+---
+
 ## 🔮 Phase 3: Advanced Features (PLANNED)
 
 ### 🤖 AI Query Assistant

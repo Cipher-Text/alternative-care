@@ -105,8 +105,10 @@ from app.modules.medicine import router as medicine_router
 from app.modules.symptom import router as symptom_router
 from app.modules.tenant import router as tenant_router
 from app.modules.geographic import router as geographic_router
+from app.modules.admin import router as admin_router
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
+app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Platform Admin"])
 app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"])
 app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"])
 app.include_router(appointments_router, prefix=f"{settings.API_V1_PREFIX}/appointments", tags=["Appointments"])

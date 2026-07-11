@@ -1,103 +1,120 @@
 # Current Project Status
 
-Last Updated: 2026-05-29
+Last Updated: 2026-07-11
+
+---
 
 ## Summary
 
-AltCare currently has a working FastAPI backend with 11 registered API modules and a working Next.js frontend with auth, dashboard, profile, patients, appointments, prescriptions, payments, integrations, medicines, and symptoms flows implemented.
+AltCare has a working FastAPI backend (14 registered modules) and a Next.js frontend covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
 
-Product-start onboarding path: platform admins can now use `/admin/clients` to create a tenant + primary doctor through `POST /api/v1/auth/admin/provision-client`, and to approve pending self-registered tenants.
+Recent work (2026-07-11):
+- Added geographic API (`/api/v1/geographic/`) — divisions, districts, upazilas (Bangladesh)
+- Fixed patient creation: 403 guard for platform users, unhandled promise fix in form
+- Implemented Platform Admin Phase A: dedicated `app/modules/admin/` module at `/api/v1/admin`
+- Implemented Role Distribution: `GET /admin/users` + `PATCH /admin/users/{id}` — view users by role, change roles, activate/deactivate
+- Frontend: admin-only sidebar, `/admin/dashboard` (KPI cards), `/admin/users` (role distribution + user management)
+- `/admin/clients` now uses new admin API endpoints
 
-Settings integration provider cards now use stable local logo assets for all seeded providers instead of relying on external logo URLs.
+---
 
-Recent launch-readiness work completed on 2026-05-08:
-- P0 auth fixes completed: password complexity enforcement and session invalidation on password change
-- Baseline HTTP security headers middleware enabled for all responses (CSP, X-Frame-Options, X-Content-Type-Options; HSTS in production)
-- Redis-backed baseline rate limiting enabled (strict login scope + per-IP/per-user API scope)
-- AI query endpoint now has dedicated hourly quota scope (`/api/v1/ai/query`)
+## Roles
 
-## Code-Verified State
+See `docs/architecture/roles-access.md` for the full authoritative reference.
 
-### Backend
-- Registered routers in `backend/app/main.py`:
-  - `auth`
-  - `ai`
-  - `appointments`
-  - `dashboard`
-  - `doctor`
-  - `patient`
-  - `prescription`
-  - `payment`
-  - `integration`
-  - `medicine` (NEW)
-  - `symptom` (NEW)
-- Endpoint count from route decorators: 89 module endpoints
-- System endpoints: `/`, `/health`, `/metrics`
-- Data model scope: 34 table models (+ 3 base classes, multi-tenant pattern)
-- Onboarding/auth reality:
-  - `POST /api/v1/auth/register` creates both doctor user and tenant (clinic) in one flow
-  - New doctor tenants are created with `is_approved = false`
-  - Admin provisioning endpoint available: `POST /api/v1/auth/admin/provision-client` (creates tenant + primary doctor)
-  - Admin approval endpoints available:
-    - `GET /api/v1/auth/admin/tenants/pending`
-    - `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
+| Role | Level | Status |
+|---|---|---|
+| `admin` | Platform | ✅ Implemented |
+| `operator` | Platform | ⚠️ RBAC stub, no endpoints |
+| `doctor` | Tenant | ✅ Implemented |
+| `receptionist` | Tenant | ⚠️ Role string only, no enforcement |
 
-### Frontend
-- Stack: Next.js 16, React 19, TypeScript
-- Implemented app routes:
-  - `/` (landing page)
-  - `/login`
-  - `/dashboard`
-  - `/profile`
-  - `/patients`, `/patients/new`, `/patients/[id]`, `/patients/[id]/edit`
-  - `/appointments`, `/appointments/new`, `/appointments/[id]`, `/appointments/[id]/edit`
-  - `/prescriptions`, `/prescriptions/new`, `/prescriptions/[id]`, `/prescriptions/[id]/edit`
-  - `/payments`, `/payments/transactions`, `/payments/invoices`, `/payments/invoices/[id]`, `/payments/invoices/new`
-  - `/medicines`, `/medicines/new`, `/medicines/[id]`, `/medicines/[id]/edit`
-  - `/symptoms`, `/symptoms/new`, `/symptoms/[id]`, `/symptoms/[id]/edit`
-  - `/settings`, `/settings/integrations`
-  - `/admin/clients`
-- Dashboard layout/auth shell is in place
-- UI Components: shadcn/ui (button, card, input, select, badge, table, dialog, dropdown-menu, tabs)
-- Custom Components: MedicineAutocomplete (smart search with keyboard navigation)
-- Platform admin onboarding UI:
-  - Provision client: create tenant/clinic + primary doctor from admin UI
-  - Pending tenants: list and approve self-registered doctor tenants
-- Platform admin client directory:
-  - Full list view for clinics/tenants with primary doctor summary
-  - Clinic/tenant detail page with attached doctors
-  - Backend admin list/detail endpoints are implemented
-- Settings integrations:
-  - Provider marketplace/config wizard/logs are implemented
-  - All 12 seeded providers have local logo assets under `frontend/public/integrations/`
-  - `frontend/src/lib/integration-logos.ts` keeps logos visible even when existing DB rows still have null or legacy external `logo_url` values
+---
 
-### AI / QAI-Related Features
-- `/api/v1/ai/query` is now exposed as a plan-gated stub endpoint
-- Current behavior returns `501 Not Implemented`
-- AI/RAG remains planned work beyond this contract endpoint
+## Backend
 
-## What Is Implemented End-to-End
-- Authentication flows (including 2FA support) across backend and frontend login flow
-- Patient management APIs and corresponding frontend patient screens (CRUD complete)
-- Appointment scheduling APIs and corresponding frontend calendar/list views
-- Dashboard analytics APIs and dashboard UI
-- Prescription list/create/detail/edit views with medicine item builder
-- Doctor profile management (degrees, trainings)
-- Payment processing with invoice management and transaction tracking
-- Integrations management (SMS/Email/Payment provider setup and monitoring)
-- Multi-tenant enforcement patterns in backend architecture and tests
-- Baseline API security response headers middleware
-- Doctor self-registration with pending-approval gate before first login
-- Platform-admin provisioning and approval are available in the frontend at `/admin/clients`
-- Platform-admin doctor/clinic directory and detail views are available under `/admin/clients`
-- **Medicine Module**: Backend complete (8 endpoints) + full frontend UI (4 pages, autocomplete, prescription integration)
-- **Symptom Module**: Backend complete (8 endpoints) + full frontend UI (4 pages)
+Registered routers in `backend/app/main.py`:
 
-## Documentation Source-of-Truth Rules
+| Module | Prefix | Endpoints | Notes |
+|---|---|---|---|
+| auth | `/api/v1/auth` | 12 | Login, 2FA, register, admin provisioning |
+| ai | `/api/v1/ai` | 1 | Stub, returns 501 |
+| appointments | `/api/v1/appointments` | 6 | |
+| dashboard | `/api/v1/dashboard` | 6 | Tenant-scoped analytics |
+| doctor | `/api/v1/doctor` | 12 | Profile, degrees, trainings |
+| patient | `/api/v1/patients` | 14 | CRUD, tags, diagnoses |
+| prescription | `/api/v1/prescriptions` | 8 | |
+| payment | `/api/v1/payments` | 12 | |
+| integration | `/api/v1/integrations` | 12 | |
+| medicine | `/api/v1/medicines` | 8 | |
+| symptom | `/api/v1/symptoms` | 8 | |
+| tenant | `/api/v1/tenant` | 2 | Clinic profile |
+| geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
+| admin | `/api/v1/admin` | 9 | Platform admin — tenants + users (NEW) |
 
-For factual checks:
-1. `backend/app/main.py` for active modules
-2. `backend/app/modules/*/routes.py` for endpoint truth
-3. `frontend/src/app/**` for implemented UI routes
-4. planning docs for future scope
+**Total:** ~113 module endpoints + `/`, `/health`, `/metrics`
+
+Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
+New canonical endpoints are at `/api/v1/admin`.
+
+---
+
+## Frontend
+
+Implemented routes:
+
+| Route | Status |
+|---|---|
+| `/login` | ✅ |
+| `/dashboard` | ✅ |
+| `/profile` | ✅ |
+| `/patients`, `/patients/new`, `/patients/[id]`, `/patients/[id]/edit` | ✅ |
+| `/appointments`, `/appointments/new`, `/appointments/[id]` | ✅ |
+| `/prescriptions`, `/prescriptions/new`, `/prescriptions/[id]`, `/prescriptions/[id]/edit` | ✅ |
+| `/payments`, `/payments/transactions`, `/payments/invoices/*` | ✅ |
+| `/medicines`, `/medicines/new`, `/medicines/[id]`, `/medicines/[id]/edit` | ✅ |
+| `/symptoms`, `/symptoms/new`, `/symptoms/[id]`, `/symptoms/[id]/edit` | ✅ |
+| `/settings`, `/settings/integrations` | ✅ |
+| `/admin/clients` | ✅ (3-tab: directory / provision / pending) |
+| `/admin/clients/[tenantId]` | ✅ |
+| `/admin/dashboard` | ✅ KPI cards |
+| `/admin/users` | ✅ Role distribution + user management |
+
+---
+
+## Known gaps
+
+### Platform admin (see `docs/planning/admin-module.md` for full spec)
+- ✅ Dedicated `app/modules/admin/` module at `/api/v1/admin`
+- ✅ Platform KPI dashboard (`/admin/dashboard`)
+- ✅ Tenant lifecycle actions (PATCH /admin/tenants/{id} — suspend/reactivate/change plan)
+- ✅ Role distribution (`GET /admin/users`) + user management (`PATCH /admin/users/{id}`)
+- ✅ Admin-only sidebar (no doctor nav items for platform users)
+- ⚠️ Old endpoints remain in `auth/routes.py` — can be removed once confirmed stable
+- `operator` role: RBAC guard exists, no endpoints use it (Phase B)
+
+### Tenant isolation guard
+- Pattern applied in: `patients/routes.py`
+- Still missing in: `appointments`, `prescriptions`, `payments`, `dashboard` service factories
+  (platform users would get 500 instead of 403 if they hit those endpoints)
+
+### TypeScript
+- 38 pre-existing TS errors in: `medicines/`, `symptoms/`, `integrations/`, `doctor/` pages
+- Patient and appointment modules are clean
+
+### Unimplemented features
+- `receptionist` role enforcement (RBAC not applied)
+- Book library (models only, no routes)
+- AI assistant (stub 501)
+- Public landing page
+
+---
+
+## Documentation source-of-truth rules
+
+1. `backend/app/main.py` — active module list
+2. `backend/app/modules/*/routes.py` — endpoint truth
+3. `frontend/src/app/**` — implemented UI routes
+4. `docs/architecture/roles-access.md` — roles and RBAC
+5. `docs/planning/admin-module.md` — admin Phase A spec
+6. `docs/ROADMAP.md` — product roadmap and priorities

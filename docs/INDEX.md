@@ -1,9 +1,9 @@
 ---
 title: "AltCare Documentation Index"
 type: "navigation"
-last_updated: "2026-05-29"
+last_updated: "2026-07-11"
 ai_purpose: "Fast navigation map for AI assistants"
-version: "1.0.0"
+version: "1.1.0"
 ---
 
 # AltCare Documentation Index (Code-Aligned)
@@ -36,6 +36,7 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 
 ### Architecture
 - `architecture/README.md`
+- `architecture/roles-access.md` — **Roles, RBAC guards, platform vs tenant access** *(updated 2026-07-11)*
 - `architecture/database.md`
 - `architecture/database-schema.md`
 - `architecture/authentication.md`
@@ -48,20 +49,23 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `development/theme-system.md`
 
 ### Planning and Status
-- `ROADMAP.md`
-- `status/current.md`
+- `ROADMAP.md` — product roadmap with Platform Admin Phase A/B added
+- `status/current.md` — current implementation status *(updated 2026-07-11)*
+- `planning/admin-module.md` — **Platform Admin Phase A spec** *(new 2026-07-11)*
+- `planning/role-distribution.md` — **Role distribution & user management spec** *(new 2026-07-11)*
 - `testing/TEST_STRATEGY.md`
 - `planning/roadmap-detailed.md`
 
-## Code-Verified Snapshot (2026-05-29)
+## Code-Verified Snapshot (2026-07-11)
 
-- Backend routers registered in `backend/app/main.py`: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`
-- API endpoints in module route files: 89 total
+- Backend routers registered in `backend/app/main.py`: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
+- API endpoints: ~104 module endpoints (+ platform admin 5 in auth)
 - Database table models: 34 (plus 3 base classes)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
-- Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin clients
-- Settings integrations use local provider logo assets for all 12 seeded providers
+- Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin/clients
+- Roles: `admin` (platform, full), `operator` (platform, stub), `doctor` (tenant, full), `receptionist` (tenant, stub)
+- Platform admin endpoints: 5 endpoints currently in `auth/routes.py`, moving to `admin/` module in Phase A
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes
