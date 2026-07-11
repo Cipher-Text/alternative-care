@@ -1,12 +1,23 @@
 # Current Project Status
 
-Last Updated: 2026-07-11
+Last Updated: 2026-07-12
 
 ---
 
 ## Summary
 
 AltCare has a working FastAPI backend (14 registered modules) and a Next.js frontend covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+
+Recent work (2026-07-12):
+- **P1 #1 — Tenant Isolation Guard:** Applied 403 guard to 4 previously unprotected service factories (`appointments`, `prescriptions`, `payments`, `dashboard`) — platform users now get proper 403 instead of 500
+- **P1 #2 — TypeScript:** Resolved all 38 pre-existing TS errors across `medicines/`, `symptoms/`, `integrations/`, `doctor/` — project now compiles clean (exit 0)
+  - Root fix: `useCrudFactory.ts` imported from `@tanstack/react-query` (not installed); corrected to `react-query` v3
+  - Added `TList` generic to `CrudApi` so list endpoint can return lightweight type (`MedicineListItem`) while get/create/update use full type (`Medicine`)
+  - Alias forms in `medicines/[id]` and `symptoms/[id]` corrected to use `alias_en`/`alias_bn` (backend schema fields)
+  - `ProfileForm.tsx`: geographic ID string↔number conversions fixed; `SelectItem` values converted to strings
+  - `MedicineSearchResult` type extended with optional `is_global`, `dosage_guidance_en`, `indications_en`
+  - `ConfigurationWizard.tsx`: `unknown` values from `Record<string, unknown>` properly cast
+  - `RevenueByMethodChart.tsx`: `percent ?? 0` guard added
 
 Recent work (2026-07-11):
 - Added geographic API (`/api/v1/geographic/`) — divisions, districts, upazilas (Bangladesh)
@@ -94,13 +105,11 @@ Implemented routes:
 - `operator` role: RBAC guard exists, no endpoints use it (Phase B)
 
 ### Tenant isolation guard
-- Pattern applied in: `patients/routes.py`
-- Still missing in: `appointments`, `prescriptions`, `payments`, `dashboard` service factories
-  (platform users would get 500 instead of 403 if they hit those endpoints)
+- ✅ Guard applied in all tenant-scoped service factories: `patients`, `appointments`, `prescriptions`, `payments`, `dashboard`
+- Platform users (`tenant_id = null`) get proper **403** from all tenant endpoints
 
 ### TypeScript
-- 38 pre-existing TS errors in: `medicines/`, `symptoms/`, `integrations/`, `doctor/` pages
-- Patient and appointment modules are clean
+- ✅ 0 errors — frontend compiles clean (`npx tsc --noEmit` exits 0 as of 2026-07-12)
 
 ### Medicine & Symptom search — backend done, frontend gap
 

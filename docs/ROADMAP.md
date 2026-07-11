@@ -1,6 +1,6 @@
 # AltCare — Product Roadmap & Task Tracker
 
-**Last Updated:** 2026-07-11  
+**Last Updated:** 2026-07-12  
 **Current Version:** MVP v1.0 — Production Ready  
 **Source of truth:** `docs/status/current.md` · `backend/app/main.py` · `frontend/src/app/**`
 
@@ -31,7 +31,7 @@
 
 ---
 
-## What's Done (Complete as of 2026-07-11)
+## What's Done (Complete as of 2026-07-12)
 
 ### Core Platform (Phase 1) ✅
 
@@ -51,6 +51,13 @@
 | Tenant/Clinic Profile | ✅ | ✅ | Clinic info, specializations, fees |
 | Security Hardening | ✅ | — | Rate limiting, HTTP headers, password rules |
 | Multi-tenant Isolation | ✅ | — | Row-level isolation, 16/16 tests passing |
+
+### P1 Fixes ✅ — completed 2026-07-12
+
+| Item | Status |
+|---|---|
+| Tenant isolation 403 guard on `appointments`, `prescriptions`, `payments`, `dashboard` | ✅ |
+| TypeScript: 38 errors → 0 across `medicines/`, `symptoms/`, `integrations/`, `doctor/` | ✅ |
 
 ### Platform Admin (Phase A) ✅ — completed 2026-07-11
 
@@ -76,31 +83,24 @@
 
 These directly affect production stability or security. Address before any new features.
 
-### 1. Tenant Isolation Guard — Missing on 4 modules
+### 1. Tenant Isolation Guard ✅ — Done 2026-07-12
 
 **Problem:** Platform users (`tenant_id = null`) hitting these endpoints get `500` instead of `403`.  
-**Pattern already applied in:** `patients/routes.py`  
-**Still missing in:**
+**Fixed in:**
 
-- [ ] `appointments/routes.py` — all appointment endpoints
-- [ ] `prescriptions/routes.py` — all prescription endpoints
-- [ ] `payments/routes.py` — all payment endpoints
-- [ ] `dashboard/routes.py` — all dashboard service factories
+- [x] `appointments/routes.py`
+- [x] `prescriptions/routes.py`
+- [x] `payments/routes.py`
+- [x] `dashboard/routes.py`
 
-**Fix:** Apply the same `tenant_id_ctx` check pattern used in patients. One-liner guard at the top of each service factory.
+All tenant-scoped service factories now return **403** for platform users.
 
 ---
 
-### 2. TypeScript Errors — 38 pre-existing errors in 4 modules
+### 2. TypeScript Errors ✅ — Done 2026-07-12
 
-**Problem:** Type errors silently accumulate; CI will reject them if strict mode is enforced.
-
-- [ ] `frontend/src/app/(dashboard)/medicines/` — fix TS errors
-- [ ] `frontend/src/app/(dashboard)/symptoms/` — fix TS errors
-- [ ] `frontend/src/app/(dashboard)/settings/integrations/` — fix TS errors
-- [ ] `frontend/src/app/(dashboard)/profile/` (doctor pages) — fix TS errors
-
-**Clean modules for reference:** `patients/`, `appointments/` (zero errors).
+**Problem:** 38 type errors silently accumulated across 4 modules.  
+**Fixed:** `npx tsc --noEmit` exits 0. Root cause was `useCrudFactory.ts` importing from `@tanstack/react-query` (not installed) instead of `react-query` v3. Additional fixes: alias form fields, geographic ID types, `MedicineSearchResult` extended, `ConfigurationWizard` casts, `RevenueByMethodChart` null guard.
 
 ---
 
