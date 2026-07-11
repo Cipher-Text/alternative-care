@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -29,6 +29,11 @@ def get_patient_service(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ) -> PatientService:
     """Dependency for patient service with tenant context."""
+    if not current_user.tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Platform users cannot manage patient records. Use a tenant account.",
+        )
     return PatientService(db=db, tenant_id=current_user.tenant_id)
 
 

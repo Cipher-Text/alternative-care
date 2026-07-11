@@ -85,14 +85,14 @@ export default function NewAppointmentPage() {
               <SelectContent>
                 {patients?.map((patient) => (
                   <SelectItem key={patient.id} value={patient.id}>
-                    {patient.first_name} {patient.last_name} ({patient.patient_code})
+                    {patient.full_name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {selectedPatient ? (
               <p className="text-xs text-muted-foreground">
-                Selected: {selectedPatient.first_name} {selectedPatient.last_name} | {selectedPatient.phone}
+                Selected: {selectedPatient.full_name}{selectedPatient.phone ? ` | ${selectedPatient.phone}` : ''}
               </p>
             ) : null}
           </div>

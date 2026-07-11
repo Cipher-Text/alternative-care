@@ -58,8 +58,7 @@ export default function AppointmentDetailPage({ params }: { params: Promise<{ id
           <User className="h-5 w-5 text-muted-foreground mt-0.5" />
           <div>
             <p className="text-sm text-muted-foreground">Patient</p>
-            <p className="font-medium">{patient ? `${patient.first_name} ${patient.last_name}` : appointment.patient_id}</p>
-            <p className="text-xs text-muted-foreground">{patient?.patient_code || 'Unknown code'}</p>
+            <p className="font-medium">{patient ? patient.full_name : appointment.patient_id}</p>
           </div>
         </div>
 

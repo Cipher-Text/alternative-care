@@ -1,14 +1,11 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { usePatient, useSearchPatients } from '@/lib/hooks/usePatients'
+import { usePatient, usePatients } from '@/lib/hooks/usePatients'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Search, User, Loader2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { Patient } from '@/types/patient'
-import { format } from 'date-fns'
 
 interface PatientSelectorProps {
   value: string
@@ -22,7 +19,9 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   const { data: selectedPatient } = usePatient(value)
-  const { data: searchResults, isLoading } = useSearchPatients(searchQuery)
+  const { data: searchResults, isLoading } = usePatients(
+    searchQuery.length >= 2 ? { search: searchQuery, limit: 20 } : undefined
+  )
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -35,8 +34,8 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleSelectPatient = (patient: Patient) => {
-    onChange(patient.id)
+  const handleSelectPatient = (id: string) => {
+    onChange(id)
     setSearchQuery('')
     setShowDropdown(false)
   }
@@ -51,15 +50,14 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
     setShowDropdown(true)
   }
 
-  const getAge = (dob: string) => {
+  const getAge = (dob: string | null): string => {
+    if (!dob) return 'Unknown age'
     const birthDate = new Date(dob)
     const today = new Date()
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--
-    }
-    return age
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--
+    return `${age} years`
   }
 
   return (
@@ -72,21 +70,15 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                 <User className="h-5 w-5 text-indigo-600 dark:text-indigo-300" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold">
-                    {selectedPatient.first_name} {selectedPatient.last_name}
-                  </h4>
-                  <Badge variant="outline" className="text-xs">
-                    {selectedPatient.patient_code}
-                  </Badge>
-                </div>
+                <h4 className="font-semibold mb-1">{selectedPatient.full_name}</h4>
                 <div className="text-sm text-muted-foreground space-y-0.5">
                   <p>
-                    {getAge(selectedPatient.date_of_birth)} years old •{' '}
-                    {selectedPatient.gender.charAt(0).toUpperCase() +
-                      selectedPatient.gender.slice(1)}
+                    {getAge(selectedPatient.date_of_birth)}
+                    {selectedPatient.gender
+                      ? ` • ${selectedPatient.gender.charAt(0).toUpperCase() + selectedPatient.gender.slice(1)}`
+                      : ''}
                   </p>
-                  <p>{selectedPatient.phone}</p>
+                  {selectedPatient.phone && <p>{selectedPatient.phone}</p>}
                   {selectedPatient.email && <p>{selectedPatient.email}</p>}
                 </div>
               </div>
@@ -108,7 +100,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, phone, or patient code..."
+              placeholder="Search by name or phone..."
               value={searchQuery}
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}
@@ -120,7 +112,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
             )}
           </div>
 
-          {showDropdown && searchQuery && (
+          {showDropdown && searchQuery.length >= 2 && (
             <Card className="absolute z-50 w-full mt-2 max-h-80 overflow-y-auto shadow-lg">
               {isLoading ? (
                 <div className="p-8 text-center">
@@ -132,28 +124,17 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                   {searchResults.map((patient) => (
                     <button
                       key={patient.id}
-                      onClick={() => handleSelectPatient(patient)}
+                      onClick={() => handleSelectPatient(patient.id)}
                       className="w-full px-4 py-3 hover:bg-accent text-left transition-colors"
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium">
-                              {patient.first_name} {patient.last_name}
-                            </p>
-                            <Badge variant="outline" className="text-xs">
-                              {patient.patient_code}
-                            </Badge>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            <p>
-                              {getAge(patient.date_of_birth)} years •{' '}
-                              {patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1)}{' '}
-                              • {patient.phone}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="font-medium">{patient.full_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {getAge(patient.date_of_birth)}
+                        {patient.gender
+                          ? ` • ${patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1)}`
+                          : ''}
+                        {patient.phone ? ` • ${patient.phone}` : ''}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -161,7 +142,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                 <div className="p-8 text-center">
                   <User className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
                   <p className="text-muted-foreground">
-                    No patients found matching "{searchQuery}"
+                    No patients found matching &quot;{searchQuery}&quot;
                   </p>
                 </div>
               )}

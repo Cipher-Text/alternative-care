@@ -76,7 +76,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const age = calculateAge(patient.date_of_birth)
-  const fullName = formatPatientName(patient.first_name, patient.last_name)
+  const fullName = formatPatientName(patient.full_name)
 
   return (
     <div className="space-y-6">
@@ -90,7 +90,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </Link>
           <div>
             <h1 className="text-3xl font-bold">{fullName}</h1>
-            <p className="text-muted-foreground">{patient.patient_code}</p>
+            <p className="text-muted-foreground">{patient.is_active ? 'Active' : 'Inactive'}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -130,7 +130,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               <div>
                 <p className="text-sm text-muted-foreground">Age</p>
                 <p className="font-medium">
-                  {age} years ({formatDate(patient.date_of_birth)})
+                  {age !== null ? `${age} years` : 'Unknown'}
+                  {patient.date_of_birth ? ` (${formatDate(patient.date_of_birth)})` : ''}
                 </p>
               </div>
             </div>
@@ -182,39 +183,6 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
         </CardContent>
       </Card>
 
-      {/* Emergency Contact */}
-      {(patient.emergency_contact_name || patient.emergency_contact_phone) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Emergency Contact</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {patient.emergency_contact_name && (
-                <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Contact Name</p>
-                    <p className="font-medium">{patient.emergency_contact_name}</p>
-                  </div>
-                </div>
-              )}
-              {patient.emergency_contact_phone && (
-                <div className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Contact Phone</p>
-                    <p className="font-medium">
-                      {formatPhone(patient.emergency_contact_phone)}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Tags */}
       {tags && tags.length > 0 && (
         <Card>
@@ -225,7 +193,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <Badge key={tag.id} variant="secondary">
-                  {tag.tag}
+                  {tag.tag_value}
                 </Badge>
               ))}
             </div>
@@ -246,12 +214,12 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
                   key={diagnosis.id}
                   className="border-l-4 border-indigo-500 pl-4 py-2"
                 >
-                  <p className="font-medium">{diagnosis.diagnosis}</p>
+                  <p className="font-medium">{diagnosis.description}</p>
                   <p className="text-sm text-muted-foreground">
                     {formatDate(diagnosis.diagnosed_at)}
                   </p>
-                  {diagnosis.notes && (
-                    <p className="text-sm mt-1">{diagnosis.notes}</p>
+                  {diagnosis.icd_code && (
+                    <p className="text-sm mt-1 text-muted-foreground">ICD: {diagnosis.icd_code}</p>
                   )}
                 </div>
               ))}

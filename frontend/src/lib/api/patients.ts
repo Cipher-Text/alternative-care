@@ -1,6 +1,7 @@
 import apiClient from './client'
 import type {
   Patient,
+  PatientListItem,
   PatientCreateRequest,
   PatientUpdateRequest,
   PatientListParams,
@@ -12,40 +13,28 @@ import type {
 } from '@/types/patient'
 
 export const patientsApi = {
-  // List all patients
-  list: async (params?: PatientListParams): Promise<Patient[]> => {
+  list: async (params?: PatientListParams): Promise<PatientListItem[]> => {
     const response = await apiClient.get('/patients', { params })
     return response.data
   },
 
-  // Get single patient
   get: async (id: string): Promise<Patient> => {
     const response = await apiClient.get(`/patients/${id}`)
     return response.data
   },
 
-  // Create patient
   create: async (data: PatientCreateRequest): Promise<Patient> => {
     const response = await apiClient.post('/patients', data)
     return response.data
   },
 
-  // Update patient
   update: async (id: string, data: PatientUpdateRequest): Promise<Patient> => {
-    const response = await apiClient.put(`/patients/${id}`, data)
+    const response = await apiClient.patch(`/patients/${id}`, data)
     return response.data
   },
 
-  // Delete patient
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete(`/patients/${id}`)
-  },
-
-  // Search patients
-  search: async (query: string): Promise<Patient[]> => {
-    const response = await apiClient.get('/patients/search', {
-      params: { q: query },
-    })
+  delete: async (id: string): Promise<Patient> => {
+    const response = await apiClient.delete(`/patients/${id}`)
     return response.data
   },
 
@@ -55,13 +44,16 @@ export const patientsApi = {
     return response.data
   },
 
-  addTag: async (patientId: string, tag: string): Promise<PatientTag> => {
-    const response = await apiClient.post(`/patients/${patientId}/tags`, { tag })
+  addTag: async (
+    patientId: string,
+    data: { tag_type: PatientTag['tag_type']; tag_value: string; notes?: string }
+  ): Promise<PatientTag> => {
+    const response = await apiClient.post(`/patients/${patientId}/tags`, data)
     return response.data
   },
 
-  deleteTag: async (patientId: string, tagId: string): Promise<void> => {
-    await apiClient.delete(`/patients/${patientId}/tags/${tagId}`)
+  deleteTag: async (tagId: number): Promise<void> => {
+    await apiClient.delete(`/patients/tags/${tagId}`)
   },
 
   // Patient diagnoses
@@ -72,53 +64,39 @@ export const patientsApi = {
 
   addDiagnosis: async (
     patientId: string,
-    data: {
-      diagnosis: string
-      diagnosed_at?: string
-      notes?: string
-    }
+    data: { description: string; icd_code?: string; diagnosed_at: string }
   ): Promise<PatientDiagnosis> => {
     const response = await apiClient.post(`/patients/${patientId}/diagnoses`, data)
     return response.data
   },
 
   updateDiagnosis: async (
-    patientId: string,
-    diagnosisId: string,
-    data: {
-      diagnosis?: string
-      diagnosed_at?: string
-      notes?: string
-    }
+    diagnosisId: number,
+    data: { description?: string; icd_code?: string; diagnosed_at?: string; is_active?: boolean }
   ): Promise<PatientDiagnosis> => {
-    const response = await apiClient.put(
-      `/patients/${patientId}/diagnoses/${diagnosisId}`,
-      data
-    )
+    const response = await apiClient.patch(`/patients/diagnoses/${diagnosisId}`, data)
     return response.data
   },
 
-  deleteDiagnosis: async (patientId: string, diagnosisId: string): Promise<void> => {
-    await apiClient.delete(`/patients/${patientId}/diagnoses/${diagnosisId}`)
+  deleteDiagnosis: async (diagnosisId: number): Promise<PatientDiagnosis> => {
+    const response = await apiClient.delete(`/patients/diagnoses/${diagnosisId}`)
+    return response.data
   },
 }
 
-// Geographic API (for address fields)
+// Geographic API
 export const geographicApi = {
-  // Get all divisions
   getDivisions: async (): Promise<Division[]> => {
     const response = await apiClient.get('/geographic/divisions')
     return response.data
   },
 
-  // Get districts by division
-  getDistricts: async (divisionId: string): Promise<District[]> => {
+  getDistricts: async (divisionId: number): Promise<District[]> => {
     const response = await apiClient.get(`/geographic/divisions/${divisionId}/districts`)
     return response.data
   },
 
-  // Get upazilas by district
-  getUpazilas: async (districtId: string): Promise<Upazila[]> => {
+  getUpazilas: async (districtId: number): Promise<Upazila[]> => {
     const response = await apiClient.get(`/geographic/districts/${districtId}/upazilas`)
     return response.data
   },

@@ -104,6 +104,7 @@ from app.modules.integration import router as integration_router
 from app.modules.medicine import router as medicine_router
 from app.modules.symptom import router as symptom_router
 from app.modules.tenant import router as tenant_router
+from app.modules.geographic import router as geographic_router
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"])
@@ -117,6 +118,7 @@ app.include_router(payment_router, prefix=f"{settings.API_V1_PREFIX}/payments", 
 app.include_router(integration_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"])
 app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"])
 app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"])
+app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])
 
 
 if __name__ == "__main__":

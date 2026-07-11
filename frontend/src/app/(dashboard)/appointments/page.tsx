@@ -70,12 +70,9 @@ export default function AppointmentsPage() {
   const { data: patients, isLoading: isLoadingPatients } = usePatients({ limit: 500 })
 
   const patientById = useMemo(() => {
-    const map = new Map<string, { name: string; code: string }>()
+    const map = new Map<string, { name: string }>()
     for (const patient of patients || []) {
-      map.set(patient.id, {
-        name: `${patient.first_name} ${patient.last_name}`,
-        code: patient.patient_code,
-      })
+      map.set(patient.id, { name: patient.full_name })
     }
     return map
   }, [patients])
@@ -97,8 +94,7 @@ export default function AppointmentsPage() {
 
       const query = patientQuery.toLowerCase()
       return (
-        lookup.name.toLowerCase().includes(query) ||
-        lookup.code.toLowerCase().includes(query)
+        lookup.name.toLowerCase().includes(query)
       )
     })
   }, [appointments, patientById, patientQuery, statusFilter])
@@ -111,7 +107,7 @@ export default function AppointmentsPage() {
 
       return {
         id: appointment.id,
-        title: patient ? `${patient.name} (${patient.code})` : appointment.patient_id,
+        title: patient ? patient.name : appointment.patient_id,
         start,
         end,
         resource: appointment,
@@ -248,7 +244,7 @@ export default function AppointmentsPage() {
                     <td className="px-4 py-3">
                       <div className="font-medium">{patient?.name || 'Unknown patient'}</div>
                       <div className="text-xs text-muted-foreground">
-                        {patient?.code || appointment.patient_id}
+                        {appointment.patient_id}
                       </div>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">{appointment.doctor_id}</td>

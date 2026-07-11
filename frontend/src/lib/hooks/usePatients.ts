@@ -1,21 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { patientsApi, geographicApi } from '@/lib/api/patients'
 import type {
-  Patient,
   PatientCreateRequest,
   PatientUpdateRequest,
   PatientListParams,
 } from '@/types/patient'
 import { toast } from 'react-hot-toast'
 
-// List patients
 export function usePatients(params?: PatientListParams) {
   return useQuery(['patients', params], () => patientsApi.list(params), {
-    staleTime: 30000, // 30 seconds
+    staleTime: 30000,
   })
 }
 
-// Get single patient
 export function usePatient(id: string) {
   return useQuery(['patient', id], () => patientsApi.get(id), {
     enabled: !!id,
@@ -23,7 +20,6 @@ export function usePatient(id: string) {
   })
 }
 
-// Create patient
 export function useCreatePatient() {
   const queryClient = useQueryClient()
 
@@ -41,7 +37,6 @@ export function useCreatePatient() {
   )
 }
 
-// Update patient
 export function useUpdatePatient() {
   const queryClient = useQueryClient()
 
@@ -61,7 +56,6 @@ export function useUpdatePatient() {
   )
 }
 
-// Delete patient
 export function useDeletePatient() {
   const queryClient = useQueryClient()
 
@@ -76,26 +70,12 @@ export function useDeletePatient() {
   })
 }
 
-// Search patients
-export function useSearchPatients(query: string) {
-  return useQuery(
-    ['patients', 'search', query],
-    () => patientsApi.search(query),
-    {
-      enabled: query.length > 0,
-      staleTime: 10000,
-    }
-  )
-}
-
 // Patient tags
 export function usePatientTags(patientId: string) {
   return useQuery(
     ['patient', patientId, 'tags'],
     () => patientsApi.getTags(patientId),
-    {
-      enabled: !!patientId,
-    }
+    { enabled: !!patientId }
   )
 }
 
@@ -103,8 +83,13 @@ export function useAddPatientTag() {
   const queryClient = useQueryClient()
 
   return useMutation(
-    ({ patientId, tag }: { patientId: string; tag: string }) =>
-      patientsApi.addTag(patientId, tag),
+    ({
+      patientId,
+      data,
+    }: {
+      patientId: string
+      data: Parameters<typeof patientsApi.addTag>[1]
+    }) => patientsApi.addTag(patientId, data),
     {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries(['patient', variables.patientId, 'tags'])
@@ -121,8 +106,8 @@ export function useDeletePatientTag() {
   const queryClient = useQueryClient()
 
   return useMutation(
-    ({ patientId, tagId }: { patientId: string; tagId: string }) =>
-      patientsApi.deleteTag(patientId, tagId),
+    ({ patientId, tagId }: { patientId: string; tagId: number }) =>
+      patientsApi.deleteTag(tagId),
     {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries(['patient', variables.patientId, 'tags'])
@@ -140,9 +125,7 @@ export function usePatientDiagnoses(patientId: string) {
   return useQuery(
     ['patient', patientId, 'diagnoses'],
     () => patientsApi.getDiagnoses(patientId),
-    {
-      enabled: !!patientId,
-    }
+    { enabled: !!patientId }
   )
 }
 
@@ -155,7 +138,7 @@ export function useAddPatientDiagnosis() {
       data,
     }: {
       patientId: string
-      data: { diagnosis: string; diagnosed_at?: string; notes?: string }
+      data: Parameters<typeof patientsApi.addDiagnosis>[1]
     }) => patientsApi.addDiagnosis(patientId, data),
     {
       onSuccess: (_, variables) => {
@@ -172,14 +155,14 @@ export function useAddPatientDiagnosis() {
 // Geographic hooks
 export function useDivisions() {
   return useQuery('divisions', geographicApi.getDivisions, {
-    staleTime: Infinity, // Divisions rarely change
+    staleTime: Infinity,
   })
 }
 
-export function useDistricts(divisionId: string) {
+export function useDistricts(divisionId: number | null) {
   return useQuery(
     ['districts', divisionId],
-    () => geographicApi.getDistricts(divisionId),
+    () => geographicApi.getDistricts(divisionId!),
     {
       enabled: !!divisionId,
       staleTime: Infinity,
@@ -187,10 +170,10 @@ export function useDistricts(divisionId: string) {
   )
 }
 
-export function useUpazilas(districtId: string) {
+export function useUpazilas(districtId: number | null) {
   return useQuery(
     ['upazilas', districtId],
-    () => geographicApi.getUpazilas(districtId),
+    () => geographicApi.getUpazilas(districtId!),
     {
       enabled: !!districtId,
       staleTime: Infinity,

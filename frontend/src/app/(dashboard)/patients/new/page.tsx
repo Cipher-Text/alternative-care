@@ -13,8 +13,12 @@ export default function NewPatientPage() {
   const createPatient = useCreatePatient()
 
   const handleSubmit = async (data: PatientCreateRequest) => {
-    await createPatient.mutateAsync(data)
-    router.push('/patients')
+    try {
+      await createPatient.mutateAsync(data)
+      router.push('/patients')
+    } catch {
+      // error is handled by onError in useCreatePatient (shows toast)
+    }
   }
 
   return (

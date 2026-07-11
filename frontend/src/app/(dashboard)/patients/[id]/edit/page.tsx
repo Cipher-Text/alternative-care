@@ -16,8 +16,12 @@ export default function EditPatientPage({ params }: { params: Promise<{ id: stri
   const updatePatient = useUpdatePatient()
 
   const handleSubmit = async (data: PatientUpdateRequest) => {
-    await updatePatient.mutateAsync({ id, data })
-    router.push(`/patients/${id}`)
+    try {
+      await updatePatient.mutateAsync({ id, data })
+      router.push(`/patients/${id}`)
+    } catch {
+      // error is handled by onError in useUpdatePatient (shows toast)
+    }
   }
 
   if (isLoading) {
@@ -51,7 +55,7 @@ export default function EditPatientPage({ params }: { params: Promise<{ id: stri
         <div>
           <h1 className="text-3xl font-bold">Edit Patient</h1>
           <p className="text-muted-foreground">
-            Update patient information for {patient.first_name} {patient.last_name}
+            Update patient information for {patient.full_name}
           </p>
         </div>
       </div>

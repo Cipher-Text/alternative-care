@@ -11,22 +11,24 @@ export function formatDate(date: string | Date, formatStr: string = 'MMM dd, yyy
 /**
  * Calculate age from date of birth
  */
-export function calculateAge(dateOfBirth: string | Date): number {
+export function calculateAge(dateOfBirth: string | Date | null | undefined): number | null {
+  if (!dateOfBirth) return null
   const dob = typeof dateOfBirth === 'string' ? parseISO(dateOfBirth) : dateOfBirth
   return differenceInYears(new Date(), dob)
 }
 
 /**
- * Format patient name
+ * Format patient name — returns the full name or a fallback
  */
-export function formatPatientName(firstName: string, lastName: string): string {
-  return `${firstName} ${lastName}`
+export function formatPatientName(fullName: string | null | undefined): string {
+  return fullName?.trim() || 'Unknown Patient'
 }
 
 /**
  * Format phone number
  */
-export function formatPhone(phone: string): string {
+export function formatPhone(phone: string | null | undefined): string {
+  if (!phone) return '—'
   // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, '')
 
@@ -46,14 +48,15 @@ export function formatPhone(phone: string): string {
 /**
  * Format gender for display
  */
-export function formatGender(gender: string): string {
+export function formatGender(gender: string | null | undefined): string {
+  if (!gender) return 'Not specified'
   return gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase()
 }
 
 /**
  * Format blood group
  */
-export function formatBloodGroup(bloodGroup?: string): string {
+export function formatBloodGroup(bloodGroup?: string | null): string {
   if (!bloodGroup) return 'Not specified'
   return bloodGroup.toUpperCase()
 }

@@ -19,14 +19,16 @@ export default function PatientsPage() {
   const [search, setSearch] = useState('')
   const [gender, setGender] = useState<string>('')
 
-  const { data: patients, isLoading, error } = usePatients({ gender: gender || undefined })
+  const { data: patients, isLoading, error } = usePatients()
 
-  // Client-side filtering for search
-  const filteredPatients = patients?.filter((patient) =>
-    `${patient.first_name} ${patient.last_name} ${patient.phone} ${patient.patient_code}`
+  // Client-side filtering
+  const filteredPatients = patients?.filter((patient) => {
+    const matchesSearch = `${patient.full_name} ${patient.phone ?? ''}`
       .toLowerCase()
       .includes(search.toLowerCase())
-  )
+    const matchesGender = !gender || patient.gender === gender
+    return matchesSearch && matchesGender
+  })
 
   if (isLoading) {
     return (

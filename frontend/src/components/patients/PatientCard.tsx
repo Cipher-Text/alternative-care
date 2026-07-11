@@ -5,16 +5,16 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { User, Phone, Calendar, MapPin } from 'lucide-react'
-import type { Patient } from '@/types/patient'
+import type { PatientListItem } from '@/types/patient'
 import { formatPatientName, calculateAge, formatPhone, formatGender } from '@/lib/utils/format'
 
 interface PatientCardProps {
-  patient: Patient
+  patient: PatientListItem
 }
 
 export function PatientCard({ patient }: PatientCardProps) {
   const age = calculateAge(patient.date_of_birth)
-  const fullName = formatPatientName(patient.first_name, patient.last_name)
+  const fullName = formatPatientName(patient.full_name)
 
   return (
     <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
@@ -26,7 +26,6 @@ export function PatientCard({ patient }: PatientCardProps) {
             </div>
             <div>
               <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{fullName}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{patient.patient_code}</p>
             </div>
           </div>
           <Badge
@@ -40,16 +39,16 @@ export function PatientCard({ patient }: PatientCardProps) {
       <CardContent className="space-y-2">
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <Calendar className="h-4 w-4" />
-          <span>{age} years old</span>
+          <span>{age !== null ? `${age} years old` : 'Age unknown'}</span>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <Phone className="h-4 w-4" />
           <span>{formatPhone(patient.phone)}</span>
         </div>
-        {patient.address && (
+        {patient.next_visit_date && (
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <MapPin className="h-4 w-4" />
-            <span className="truncate">{patient.address}</span>
+            <span>Next visit: {patient.next_visit_date}</span>
           </div>
         )}
         <div className="pt-2 border-t border-gray-200 dark:border-slate-700">

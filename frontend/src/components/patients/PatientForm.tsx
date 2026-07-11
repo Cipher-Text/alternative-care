@@ -20,19 +20,16 @@ import type { Patient, PatientCreateRequest } from '@/types/patient'
 import { Loader2 } from 'lucide-react'
 
 const patientSchema = z.object({
-  first_name: z.string().min(1, 'First name is required'),
-  last_name: z.string().min(1, 'Last name is required'),
-  date_of_birth: z.string().min(1, 'Date of birth is required'),
-  gender: z.enum(['male', 'female', 'other']),
-  phone: z.string().min(11, 'Valid phone number is required'),
+  full_name: z.string().min(1, 'Full name is required'),
+  date_of_birth: z.string().optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  phone: z.string().max(20).optional().or(z.literal('')),
   email: z.string().email('Invalid email').optional().or(z.literal('')),
+  blood_group: z.string().optional(),
   address: z.string().optional(),
   division_id: z.string().optional(),
   district_id: z.string().optional(),
   upazila_id: z.string().optional(),
-  emergency_contact_name: z.string().optional(),
-  emergency_contact_phone: z.string().optional(),
-  blood_group: z.string().optional(),
 })
 
 type PatientFormData = z.infer<typeof patientSchema>
@@ -45,15 +42,15 @@ interface PatientFormProps {
 
 export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProps) {
   const [selectedDivision, setSelectedDivision] = useState<string>(
-    patient?.division_id || ''
+    patient?.division_id?.toString() || ''
   )
   const [selectedDistrict, setSelectedDistrict] = useState<string>(
-    patient?.district_id || ''
+    patient?.district_id?.toString() || ''
   )
 
   const { data: divisions } = useDivisions()
-  const { data: districts } = useDistricts(selectedDivision)
-  const { data: upazilas } = useUpazilas(selectedDistrict)
+  const { data: districts } = useDistricts(selectedDivision ? Number(selectedDivision) : null)
+  const { data: upazilas } = useUpazilas(selectedDistrict ? Number(selectedDistrict) : null)
 
   const {
     register,
@@ -65,23 +62,18 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
     resolver: zodResolver(patientSchema),
     defaultValues: patient
       ? {
-          first_name: patient.first_name,
-          last_name: patient.last_name,
-          date_of_birth: patient.date_of_birth,
-          gender: patient.gender,
-          phone: patient.phone,
+          full_name: patient.full_name,
+          date_of_birth: patient.date_of_birth || '',
+          gender: patient.gender || undefined,
+          phone: patient.phone || '',
           email: patient.email || '',
-          address: patient.address || '',
-          division_id: patient.division_id || '',
-          district_id: patient.district_id || '',
-          upazila_id: patient.upazila_id || '',
-          emergency_contact_name: patient.emergency_contact_name || '',
-          emergency_contact_phone: patient.emergency_contact_phone || '',
           blood_group: patient.blood_group || '',
+          address: patient.address || '',
+          division_id: patient.division_id?.toString() || '',
+          district_id: patient.district_id?.toString() || '',
+          upazila_id: patient.upazila_id?.toString() || '',
         }
-      : {
-          gender: 'male',
-        },
+      : {},
   })
 
   const watchedGender = watch('gender')
@@ -107,16 +99,22 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
     }
   }, [watchedDistrict, selectedDistrict, setValue])
 
-  const handleFormSubmit = (data: PatientFormData) => {
-    // Remove empty strings
-    const cleanedData = Object.entries(data).reduce((acc, [key, value]) => {
-      if (value !== '') {
-        acc[key as keyof PatientCreateRequest] = value as any
-      }
-      return acc
-    }, {} as PatientCreateRequest)
+  const handleFormSubmit = async (data: PatientFormData) => {
+    const payload: PatientCreateRequest = {
+      full_name: data.full_name,
+    }
 
-    onSubmit(cleanedData)
+    if (data.date_of_birth) payload.date_of_birth = data.date_of_birth
+    if (data.gender) payload.gender = data.gender
+    if (data.phone) payload.phone = data.phone
+    if (data.email) payload.email = data.email
+    if (data.blood_group) payload.blood_group = data.blood_group as PatientCreateRequest['blood_group']
+    if (data.address) payload.address = data.address
+    if (data.division_id) payload.division_id = Number(data.division_id)
+    if (data.district_id) payload.district_id = Number(data.district_id)
+    if (data.upazila_id) payload.upazila_id = Number(data.upazila_id)
+
+    await onSubmit(payload)
   }
 
   return (
@@ -128,47 +126,33 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="first_name">First Name *</Label>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="full_name">Full Name *</Label>
               <Input
-                id="first_name"
-                {...register('first_name')}
+                id="full_name"
+                placeholder="Patient's full name"
+                {...register('full_name')}
                 disabled={isSubmitting}
               />
-              {errors.first_name && (
-                <p className="text-sm text-red-500">{errors.first_name.message}</p>
+              {errors.full_name && (
+                <p className="text-sm text-red-500">{errors.full_name.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="last_name">Last Name *</Label>
-              <Input
-                id="last_name"
-                {...register('last_name')}
-                disabled={isSubmitting}
-              />
-              {errors.last_name && (
-                <p className="text-sm text-red-500">{errors.last_name.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date_of_birth">Date of Birth *</Label>
+              <Label htmlFor="date_of_birth">Date of Birth</Label>
               <Input
                 id="date_of_birth"
                 type="date"
                 {...register('date_of_birth')}
                 disabled={isSubmitting}
               />
-              {errors.date_of_birth && (
-                <p className="text-sm text-red-500">{errors.date_of_birth.message}</p>
-              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Gender *</Label>
+              <Label htmlFor="gender">Gender</Label>
               <Select
-                value={watchedGender}
+                value={watchedGender || ''}
                 onValueChange={(value) =>
                   setValue('gender', value as 'male' | 'female' | 'other')
                 }
@@ -183,13 +167,10 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.gender && (
-                <p className="text-sm text-red-500">{errors.gender.message}</p>
-              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone *</Label>
+              <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -271,7 +252,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 </SelectTrigger>
                 <SelectContent>
                   {divisions?.map((division) => (
-                    <SelectItem key={division.id} value={division.id}>
+                    <SelectItem key={division.id} value={division.id.toString()}>
                       {division.name_en}
                     </SelectItem>
                   ))}
@@ -291,7 +272,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 </SelectTrigger>
                 <SelectContent>
                   {districts?.map((district) => (
-                    <SelectItem key={district.id} value={district.id}>
+                    <SelectItem key={district.id} value={district.id.toString()}>
                       {district.name_en}
                     </SelectItem>
                   ))}
@@ -311,7 +292,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 </SelectTrigger>
                 <SelectContent>
                   {upazilas?.map((upazila) => (
-                    <SelectItem key={upazila.id} value={upazila.id}>
+                    <SelectItem key={upazila.id} value={upazila.id.toString()}>
                       {upazila.name_en}
                     </SelectItem>
                   ))}
@@ -322,38 +303,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
         </CardContent>
       </Card>
 
-      {/* Emergency Contact */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Emergency Contact</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="emergency_contact_name">Contact Name</Label>
-              <Input
-                id="emergency_contact_name"
-                placeholder="Guardian/Relative name"
-                {...register('emergency_contact_name')}
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="emergency_contact_phone">Contact Phone</Label>
-              <Input
-                id="emergency_contact_phone"
-                type="tel"
-                placeholder="01XXXXXXXXX"
-                {...register('emergency_contact_phone')}
-                disabled={isSubmitting}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Submit Button */}
+      {/* Submit */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" disabled={isSubmitting}>
           Cancel
