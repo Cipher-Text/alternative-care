@@ -89,3 +89,9 @@ When docs disagree with behavior, verify in this order:
 1. `backend/app/main.py` (active routers)
 2. `backend/app/modules/*/routes.py` (actual endpoints)
 3. `frontend/src/app/**` (implemented UI coverage)
+
+## Documentation Maintenance
+
+- Long-form docs live under `docs/` — keep root to onboarding, release notes, security, and agent guidance
+- Update `docs/status/current.md` after any feature-state change
+- Move dated progress reports to `docs/archive/` once they stop guiding active work
