@@ -98,6 +98,7 @@ alembic downgrade -1                        # Rollback
 pytest --cov=app --cov-report=html          # All tests with coverage
 pytest tests/unit/test_auth.py -v           # Specific test
 pytest tests/integration/ -v                # Integration tests
+pytest tests/unit/test_route_registration.py tests/integration/test_route_path_regressions.py -v
 
 # Code Quality
 black app/                                  # Format

@@ -79,6 +79,7 @@ npm start                # Start production server
 npm run lint             # Lint code
 
 # Testing
+npm run test:unit                   # Unit/regression tests
 npx playwright test                 # Run E2E tests
 npx playwright test --ui            # Interactive mode
 npx playwright show-report          # View report

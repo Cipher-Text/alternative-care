@@ -1,6 +1,6 @@
 # AltCare Testing Strategy (Single Source of Truth)
 
-**Last Updated:** May 23, 2026  
+**Last Updated:** July 12, 2026
 **Scope:** MVP v1.0 backend + frontend quality gates
 
 ## Purpose
@@ -43,7 +43,7 @@ Standard per-module template:
 Current module status (MVP):
 - `auth`: covered (unit + integration + security). Contract checks pending.
 - `patient`: covered (unit + integration). Contract checks pending.
-- `appointment`: covered (unit + integration). Contract checks pending.
+- `appointment`: covered (unit + integration + route path regression). Contract checks present.
 - `prescription`: covered (unit + integration + tenant isolation). Contract checks pending.
 - `payment`: covered (unit + integration). Contract checks pending.
 - `doctor`: covered (unit + integration). Contract checks pending.
@@ -51,7 +51,8 @@ Current module status (MVP):
 - `integration`: partial for MVP test standards; needs dedicated unit/integration/tenant tests.
 - `ai`: out of MVP scope (stub endpoint), no full module test pack yet.
 - `library`: out of MVP scope, no module tests yet.
-- `medicine`: out of MVP core test scope, no module tests yet.
+- `medicine`: route/search regression coverage exists; full module test pack still pending.
+- `symptom`: route/search regression coverage exists; full module test pack still pending.
 
 ## Frontend Module Matrix
 
@@ -69,7 +70,9 @@ MVP current reality:
   - token refresh retry behavior (mocked 401 + refresh)
   - patient CRUD flow (create/read/update/delete)
   - cross-tenant patient access blocked (API-level E2E assertion)
+  - API path regressions for payments and appointments
 - Component/integration test harness is not yet established as a required CI gate.
+- A lightweight frontend unit-test script exists for API path regressions: `npm -C frontend run test:unit`.
 
 ## Cross-Cutting Required Suites
 
@@ -94,6 +97,10 @@ MVP current reality:
 ## Test Organization
 
 - Backend tests: `backend/tests/unit`, `backend/tests/integration`, `backend/tests/performance`
+- Backend route regressions:
+  - `backend/tests/unit/test_route_registration.py`
+  - `backend/tests/integration/test_route_path_regressions.py`
+- Frontend unit tests: `frontend/tests/unit`
 - Frontend/E2E tests: `tests/e2e/specs`
 - Conventions:
   - file pattern: `test_*.py` for backend, `*.spec.ts` for e2e
@@ -146,17 +153,24 @@ MVP current reality:
 - [ ] Add API error-state tests in UI (4xx/5xx/timeout rendering behavior)
 - [ ] Add required CI frontend test job (component/integration + e2e smoke)
 - [ ] Add i18n and accessibility baseline checks for critical screens
+- [x] Add API path regression tests:
+  - [x] frontend payment client unit regression (`/payments`, no `/api/v1/api/v1/payments`)
+  - [x] Playwright payments page URL regression
+  - [x] Playwright appointments page URL regression
 
 ## Run Commands (Reference)
 
 Backend:
 - `cd backend && pytest`
+- `cd backend && pytest tests/unit/test_route_registration.py tests/integration/test_route_path_regressions.py`
 
 E2E:
 - `npx playwright test -c tests/e2e/playwright.config.ts`
+- `cd frontend && NODE_PATH=$PWD/node_modules E2E_BASE_URL=http://localhost:3000 ./node_modules/.bin/playwright test ../tests/e2e/specs/regression/api-paths.spec.ts --config ../tests/e2e/playwright.config.ts --project chromium`
 
-Frontend unit/integration (to add with harness):
-- `npm -C frontend run test`
+Frontend unit/integration:
+- `npm -C frontend run test:unit`
+- Component/page integration harness is still pending.
 
 ## PR Checklist (Testing)
 
