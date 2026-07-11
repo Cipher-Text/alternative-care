@@ -23,7 +23,7 @@ export const symptomsApi = {
   },
 
   // Get symptom by ID
-  get: async (id: number): Promise<Symptom> => {
+  get: async (id: string | number): Promise<Symptom> => {
     const { data } = await apiClient.get(`/symptoms/${id}`);
     return data;
   },
@@ -35,13 +35,13 @@ export const symptomsApi = {
   },
 
   // Update symptom
-  update: async (id: number, payload: SymptomUpdate): Promise<Symptom> => {
+  update: async (id: string | number, payload: SymptomUpdate): Promise<Symptom> => {
     const { data} = await apiClient.patch(`/symptoms/${id}`, payload);
     return data;
   },
 
   // Delete symptom
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string | number): Promise<void> => {
     await apiClient.delete(`/symptoms/${id}`);
   },
 

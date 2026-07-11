@@ -9,6 +9,7 @@ import { createCrudHooks } from './useCrudFactory';
 import { symptomsApi } from '@/lib/api/symptoms';
 import type {
   Symptom,
+  SymptomListItem,
   SymptomCreate,
   SymptomUpdate,
   SymptomFilters,
@@ -17,7 +18,7 @@ import type {
 } from '@/types/symptom';
 
 // Create base CRUD hooks using factory
-const symptomCrudHooks = createCrudHooks<Symptom, SymptomCreate, SymptomUpdate>(
+const symptomCrudHooks = createCrudHooks<Symptom, SymptomCreate, SymptomUpdate, SymptomListItem>(
   'symptoms',
   symptomsApi
 );

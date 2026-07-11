@@ -10,15 +10,15 @@
  *   const { mutate } = patientHooks.useCreate();
  */
 
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, UseQueryOptions } from 'react-query';
 import type { AxiosError } from 'axios';
 
 /**
  * Base CRUD API interface
  * Your API clients should implement these methods
  */
-export interface CrudApi<T, CreateData = Partial<T>, UpdateData = Partial<T>> {
-  list?: (params?: any) => Promise<T[]>;
+export interface CrudApi<T, CreateData = Partial<T>, UpdateData = Partial<T>, TList = T> {
+  list?: (params?: any) => Promise<TList[]>;
   get?: (id: string | number) => Promise<T>;
   create?: (data: CreateData) => Promise<T>;
   update?: (id: string | number, data: UpdateData) => Promise<T>;
@@ -55,9 +55,9 @@ export interface CrudHooksConfig {
  * @param api - API client implementing CrudApi interface
  * @param config - Optional configuration
  */
-export function createCrudHooks<T, CreateData = Partial<T>, UpdateData = Partial<T>>(
+export function createCrudHooks<T, CreateData = Partial<T>, UpdateData = Partial<T>, TList = T>(
   resource: string,
-  api: CrudApi<T, CreateData, UpdateData>,
+  api: CrudApi<T, CreateData, UpdateData, TList>,
   config: CrudHooksConfig = {}
 ) {
   const {
@@ -76,8 +76,8 @@ export function createCrudHooks<T, CreateData = Partial<T>, UpdateData = Partial
    * @param params - Query parameters (search, filters, pagination)
    * @param options - React Query options
    */
-  function useList<P = any>(params?: P, options?: Omit<UseQueryOptions<T[], AxiosError>, 'queryKey' | 'queryFn'>) {
-    return useQuery<T[], AxiosError>({
+  function useList<P = any>(params?: P, options?: Omit<UseQueryOptions<TList[], AxiosError>, 'queryKey' | 'queryFn'>) {
+    return useQuery<TList[], AxiosError>({
       queryKey: keyGenerator(resource, undefined, params),
       queryFn: () => {
         if (!api.list) {
@@ -123,21 +123,23 @@ export function createCrudHooks<T, CreateData = Partial<T>, UpdateData = Partial
   }) {
     const queryClient = useQueryClient();
 
-    return useMutation<T, AxiosError, CreateData>({
-      mutationFn: (data: CreateData) => {
+    return useMutation<T, AxiosError, CreateData>(
+      (data: CreateData) => {
         if (!api.create) {
           throw new Error(`${resource} API does not implement create()`);
         }
         return api.create(data);
       },
-      onSuccess: (data) => {
-        if (invalidateListOnMutation) {
-          queryClient.invalidateQueries({ queryKey: [resource] });
-        }
-        options?.onSuccess?.(data);
-      },
-      onError: options?.onError,
-    });
+      {
+        onSuccess: (data: T) => {
+          if (invalidateListOnMutation) {
+            queryClient.invalidateQueries([resource]);
+          }
+          options?.onSuccess?.(data);
+        },
+        onError: options?.onError,
+      }
+    );
   }
 
   /**
@@ -151,24 +153,26 @@ export function createCrudHooks<T, CreateData = Partial<T>, UpdateData = Partial
   }) {
     const queryClient = useQueryClient();
 
-    return useMutation<T, AxiosError, { id: string | number; data: UpdateData }>({
-      mutationFn: ({ id, data }) => {
+    return useMutation<T, AxiosError, { id: string | number; data: UpdateData }>(
+      ({ id, data }: { id: string | number; data: UpdateData }) => {
         if (!api.update) {
           throw new Error(`${resource} API does not implement update()`);
         }
         return api.update(id, data);
       },
-      onSuccess: (data, variables) => {
-        if (invalidateListOnMutation) {
-          queryClient.invalidateQueries({ queryKey: [resource] });
-        }
-        if (invalidateDetailOnMutation) {
-          queryClient.invalidateQueries({ queryKey: keyGenerator(resource, variables.id) });
-        }
-        options?.onSuccess?.(data);
-      },
-      onError: options?.onError,
-    });
+      {
+        onSuccess: (data: T, variables: { id: string | number; data: UpdateData }) => {
+          if (invalidateListOnMutation) {
+            queryClient.invalidateQueries([resource]);
+          }
+          if (invalidateDetailOnMutation) {
+            queryClient.invalidateQueries(keyGenerator(resource, variables.id));
+          }
+          options?.onSuccess?.(data);
+        },
+        onError: options?.onError,
+      }
+    );
   }
 
   /**
@@ -182,24 +186,26 @@ export function createCrudHooks<T, CreateData = Partial<T>, UpdateData = Partial
   }) {
     const queryClient = useQueryClient();
 
-    return useMutation<void, AxiosError, string | number>({
-      mutationFn: (id: string | number) => {
+    return useMutation<void, AxiosError, string | number>(
+      (id: string | number) => {
         if (!api.delete) {
           throw new Error(`${resource} API does not implement delete()`);
         }
         return api.delete(id);
       },
-      onSuccess: (_, id) => {
-        if (invalidateListOnMutation) {
-          queryClient.invalidateQueries({ queryKey: [resource] });
-        }
-        if (invalidateDetailOnMutation) {
-          queryClient.invalidateQueries({ queryKey: keyGenerator(resource, id) });
-        }
-        options?.onSuccess?.();
-      },
-      onError: options?.onError,
-    });
+      {
+        onSuccess: (_: void, id: string | number) => {
+          if (invalidateListOnMutation) {
+            queryClient.invalidateQueries([resource]);
+          }
+          if (invalidateDetailOnMutation) {
+            queryClient.invalidateQueries(keyGenerator(resource, id));
+          }
+          options?.onSuccess?.();
+        },
+        onError: options?.onError,
+      }
+    );
   }
 
   return {

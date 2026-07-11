@@ -28,7 +28,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
 
   const [showAddAlias, setShowAddAlias] = useState(false);
   const [aliasForm, setAliasForm] = useState({
-    alias_name: '',
+    alias_en: '',
     alias_type: '' as MedicineAliasType,
   });
 
@@ -45,14 +45,21 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
 
   const handleAddAlias = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!aliasForm.alias_name.trim() || !aliasForm.alias_type) return;
+    if (!aliasForm.alias_en.trim() || !aliasForm.alias_type) return;
 
     try {
       await createAlias.mutateAsync({
         medicineId,
-        payload: aliasForm,
+        payload: {
+          alias_en: aliasForm.alias_en,
+          alias_bn: null,
+          alias_type: aliasForm.alias_type,
+          medicine_id: medicineId,
+          priority: 1,
+          is_active: true,
+        },
       });
-      setAliasForm({ alias_name: '', alias_type: '' as MedicineAliasType });
+      setAliasForm({ alias_en: '', alias_type: '' as MedicineAliasType });
       setShowAddAlias(false);
     } catch (error) {
       alert('Failed to add alias');
@@ -285,9 +292,9 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
               <div>
                 <label className="text-sm font-medium mb-2 block">Alias Name</label>
                 <Input
-                  value={aliasForm.alias_name}
+                  value={aliasForm.alias_en}
                   onChange={(e) =>
-                    setAliasForm({ ...aliasForm, alias_name: e.target.value })
+                    setAliasForm({ ...aliasForm, alias_en: e.target.value })
                   }
                   placeholder="e.g., Arnica, Mountain Daisy"
                 />
@@ -334,7 +341,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
                 className="flex items-center justify-between p-3 border rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-medium">{alias.alias_name}</span>
+                  <span className="font-medium">{alias.alias_en || alias.alias_bn}</span>
                   <Badge variant="outline" className="text-xs">
                     {alias.alias_type}
                   </Badge>

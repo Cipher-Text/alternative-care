@@ -9,6 +9,7 @@ import { createCrudHooks } from './useCrudFactory';
 import { medicinesApi } from '@/lib/api/medicines';
 import type {
   Medicine,
+  MedicineListItem,
   MedicineCreate,
   MedicineUpdate,
   MedicineFilters,
@@ -17,7 +18,7 @@ import type {
 } from '@/types/medicine';
 
 // Create base CRUD hooks using factory
-const medicineCrudHooks = createCrudHooks<Medicine, MedicineCreate, MedicineUpdate>(
+const medicineCrudHooks = createCrudHooks<Medicine, MedicineCreate, MedicineUpdate, MedicineListItem>(
   'medicines',
   medicinesApi
 );

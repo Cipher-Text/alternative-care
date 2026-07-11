@@ -68,8 +68,8 @@ export function ConfigurationWizard({
 
       const payload: TenantIntegrationCreate | TenantIntegrationUpdate = {
         provider_id: provider.id,
-        display_name: display_name || provider.display_name,
-        credentials,
+        display_name: (display_name as string | undefined) || provider.display_name,
+        credentials: credentials as Record<string, string>,
         is_active: true,
       };
 
@@ -99,8 +99,8 @@ export function ConfigurationWizard({
         await testIntegration.mutateAsync({
           integrationId: integrationIdToTest,
           payload: {
-            test_phone,
-            test_email,
+            test_phone: test_phone as string | undefined,
+            test_email: test_email as string | undefined,
           },
         });
       }

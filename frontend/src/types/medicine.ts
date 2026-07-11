@@ -60,6 +60,10 @@ export interface MedicineSearchResult {
   category: string | null;
   matched_alias: string | null;
   rank: number;
+  // Optional fields present in full medicine but not guaranteed in search results
+  is_global?: boolean;
+  dosage_guidance_en?: string | null;
+  indications_en?: string | null;
 }
 
 export interface MedicineCreate extends MedicineBase {}

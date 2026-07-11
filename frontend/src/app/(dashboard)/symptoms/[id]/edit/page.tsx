@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, ArrowLeft, Save } from 'lucide-react';
-import type { SymptomCategory } from '@/types/symptom';
+import type { SymptomUpdate } from '@/types/symptom';
 
 export default function EditSymptomPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
   const [formData, setFormData] = useState({
     name_en: '',
     name_bn: '',
-    category: '' as SymptomCategory,
+    category: '',
     description_en: '',
     description_bn: '',
   });
@@ -38,7 +38,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
       setFormData({
         name_en: symptom.name_en,
         name_bn: symptom.name_bn || '',
-        category: symptom.category || ('' as SymptomCategory),
+        category: symptom.category || '',
         description_en: symptom.description_en || '',
         description_bn: symptom.description_bn || '',
       });
@@ -70,7 +70,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
         description_bn: formData.description_bn || undefined,
       };
 
-      await updateSymptom.mutateAsync({ id: symptomId, payload: payload as any });
+      await updateSymptom.mutateAsync({ id: symptomId, data: payload as SymptomUpdate });
       router.push(`/symptoms/${symptomId}`);
     } catch (error) {
       alert('Failed to update symptom');
@@ -155,7 +155,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
                   <Select
                     value={formData.category}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, category: value as SymptomCategory })
+                      setFormData({ ...formData, category: value })
                     }
                   >
                     <SelectTrigger>

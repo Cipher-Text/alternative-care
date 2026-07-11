@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, ArrowLeft, Save } from 'lucide-react';
-import type { MedicalSystem } from '@/types/medicine';
+import type { MedicalSystem, MedicineUpdate } from '@/types/medicine';
 
 export default function EditMedicinePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -96,7 +96,7 @@ export default function EditMedicinePage({ params }: { params: Promise<{ id: str
         contraindications_bn: formData.contraindications_bn || undefined,
       };
 
-      await updateMedicine.mutateAsync({ id: medicineId, payload: payload as any });
+      await updateMedicine.mutateAsync({ id: medicineId, data: payload as MedicineUpdate });
       router.push(`/medicines/${medicineId}`);
     } catch (error) {
       alert('Failed to update medicine');

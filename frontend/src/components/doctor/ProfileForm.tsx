@@ -34,8 +34,8 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
   const [selectedDistrict, setSelectedDistrict] = useState<string>(
     profile.district_id?.toString() || ''
   )
-  const { data: districts } = useDistricts(selectedDivision)
-  const { data: upazilas } = useUpazilas(selectedDistrict)
+  const { data: districts } = useDistricts(selectedDivision ? parseInt(selectedDivision) : null)
+  const { data: upazilas } = useUpazilas(selectedDistrict ? parseInt(selectedDistrict) : null)
 
   const [formData, setFormData] = useState<DoctorProfileUpdate>({
     full_name: profile.full_name,
@@ -199,7 +199,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                 </SelectTrigger>
                 <SelectContent>
                   {divisions?.map((division) => (
-                    <SelectItem key={division.id} value={division.id}>
+                    <SelectItem key={division.id} value={division.id.toString()}>
                       {division.name_en}
                     </SelectItem>
                   ))}
@@ -222,7 +222,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                 </SelectTrigger>
                 <SelectContent>
                   {districts?.map((district) => (
-                    <SelectItem key={district.id} value={district.id}>
+                    <SelectItem key={district.id} value={district.id.toString()}>
                       {district.name_en}
                     </SelectItem>
                   ))}
@@ -244,7 +244,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                 </SelectTrigger>
                 <SelectContent>
                   {upazilas?.map((upazila) => (
-                    <SelectItem key={upazila.id} value={upazila.id}>
+                    <SelectItem key={upazila.id} value={upazila.id.toString()}>
                       {upazila.name_en}
                     </SelectItem>
                   ))}
