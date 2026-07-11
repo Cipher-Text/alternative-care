@@ -35,15 +35,20 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP, Fernet
 │   ├── celery.py       # Background tasks
 │   └── dependencies.py # Auth, RBAC, plan checks
-├── modules/             # Feature modules (87 endpoints)
-│   ├── auth/           # Login, refresh, 2FA (16)
+├── modules/             # Feature modules (127 endpoints)
+│   ├── admin/          # Platform tenants, users, dashboard (9)
+│   ├── auth/           # Login, refresh, 2FA, legacy admin compatibility (14)
 │   ├── ai/             # Query stub (1)
 │   ├── doctor/         # Profile, degrees (12)
 │   ├── patient/        # CRUD, search, tags (14)
-│   ├── appointments/   # Scheduling, visits (6)
+│   ├── appointments/   # Scheduling, visits (10)
 │   ├── prescription/   # Builder, PDF (8)
 │   ├── payment/        # Processing, bKash (12)
 │   ├── integration/    # SMS/Email/Payment (12)
+│   ├── medicine/       # Medicines, aliases, symptom mappings (15)
+│   ├── symptom/        # Symptoms and aliases (9)
+│   ├── tenant/         # Clinic profile (2)
+│   ├── geographic/     # Bangladesh locations (3)
 │   └── dashboard/      # Analytics, stats (6)
 └── shared/
     ├── models/         # SQLAlchemy models (34 table models)
@@ -52,24 +57,24 @@ backend/app/
 **Note:** Module API docs are in `../docs/api/` directory
 ```
 
-**Implemented:** 9 modules, 87 endpoints, 34 table models  
-**Placeholder:** medicine, library, notification (not implemented)
+**Implemented:** 14 modules, 127 endpoints, 34 table models
+**Placeholder:** library and notification modules have package stubs but no active routes.
 
 ---
 
 ## Database (34 Tables)
 
-**Core:** tenants, users, user_sessions  
-**Doctor:** doctor_degrees, doctor_trainings  
-**Geographic:** divisions, districts, upazilas (Bangladesh)  
-**Patient:** patients, patient_tags, patient_diagnoses  
-**Appointments:** appointments, visits  
-**Prescription:** prescriptions, prescription_items  
-**Payment:** payments, invoices  
-**Medicine:** medicines, medicine_aliases  
-**Symptom:** symptoms, symptom_aliases, medicine_symptom_mappings  
-**Library:** books, chapters, sections, embeddings, reading_progress, bookmarks, highlights  
-**Integration:** integration_providers, tenant_integrations, integration_logs  
+**Core:** tenants, users, user_sessions
+**Doctor:** doctor_degrees, doctor_trainings
+**Geographic:** divisions, districts, upazilas (Bangladesh)
+**Patient:** patients, patient_tags, patient_diagnoses
+**Appointments:** appointments, visits
+**Prescription:** prescriptions, prescription_items
+**Payment:** payments, invoices
+**Medicine:** medicines, medicine_aliases
+**Symptom:** symptoms, symptom_aliases, medicine_symptom_mappings
+**Library:** books, chapters, sections, embeddings, reading_progress, bookmarks, highlights
+**Integration:** integration_providers, tenant_integrations, integration_logs
 **System:** translations, usage_tracking
 
 **Pattern:** All tenant-scoped tables have `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_at` (soft deletes)

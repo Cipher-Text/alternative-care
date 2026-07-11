@@ -101,7 +101,7 @@ async def create_symptom(
     return symptom
 
 
-@router.get("/{symptom_id}", response_model=SymptomResponse)
+@router.get("/{symptom_id:int}", response_model=SymptomResponse)
 async def get_symptom(
     symptom_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -134,7 +134,7 @@ async def get_symptom(
     return symptom
 
 
-@router.patch("/{symptom_id}", response_model=SymptomResponse)
+@router.patch("/{symptom_id:int}", response_model=SymptomResponse)
 async def update_symptom(
     symptom_id: int,
     data: SymptomUpdate,
@@ -175,7 +175,7 @@ async def update_symptom(
     return symptom
 
 
-@router.delete("/{symptom_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{symptom_id:int}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_symptom(
     symptom_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -304,7 +304,7 @@ async def search_symptoms(
 # ===== Symptom Aliases =====
 
 
-@router.post("/{symptom_id}/aliases", response_model=SymptomAliasResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/{symptom_id:int}/aliases", response_model=SymptomAliasResponse, status_code=status.HTTP_201_CREATED)
 async def create_symptom_alias(
     symptom_id: int,
     data: SymptomAliasCreate,
@@ -348,7 +348,7 @@ async def create_symptom_alias(
     return alias
 
 
-@router.get("/{symptom_id}/aliases", response_model=list[SymptomAliasResponse])
+@router.get("/{symptom_id:int}/aliases", response_model=list[SymptomAliasResponse])
 async def list_symptom_aliases(
     symptom_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],

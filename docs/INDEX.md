@@ -1,7 +1,7 @@
 ---
 title: "AltCare Documentation Index"
 type: "navigation"
-last_updated: "2026-07-11"
+last_updated: "2026-07-12"
 ai_purpose: "Fast navigation map for AI assistants"
 version: "1.1.0"
 ---
@@ -58,14 +58,14 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 
 ## Code-Verified Snapshot (2026-07-11)
 
-- Backend routers registered in `backend/app/main.py`: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- API endpoints: ~104 module endpoints (+ platform admin 5 in auth)
+- Backend routers registered in `backend/app/main.py`: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
+- API endpoints: 127 module endpoints
 - Database table models: 34 (plus 3 base classes)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
-- Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin/clients
+- Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin/clients, admin/dashboard, admin/users
 - Roles: `admin` (platform, full), `operator` (platform, stub), `doctor` (tenant, full), `receptionist` (tenant, stub)
-- Platform admin endpoints: 5 endpoints currently in `auth/routes.py`, moving to `admin/` module in Phase A
+- Platform admin endpoints: 9 canonical endpoints in `admin/routes.py`; legacy compatibility endpoints remain under `auth/routes.py`
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes

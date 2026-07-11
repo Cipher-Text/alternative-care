@@ -1,6 +1,6 @@
 /**
  * Payment and Invoice API Client
- * Base URL: /api/v1/payments
+ * Base path: /payments
  */
 
 import { apiClient } from './client';
@@ -20,7 +20,7 @@ import type {
   BkashPaymentResponse,
 } from '@/types/payment';
 
-const BASE_PATH = '/api/v1/payments';
+const BASE_PATH = '/payments';
 
 // ===== Payment APIs =====
 

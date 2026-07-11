@@ -48,22 +48,22 @@ Registered routers in `backend/app/main.py`:
 
 | Module | Prefix | Endpoints | Notes |
 |---|---|---|---|
-| auth | `/api/v1/auth` | 12 | Login, 2FA, register, admin provisioning |
+| auth | `/api/v1/auth` | 14 | Login, 2FA, register, legacy admin compatibility |
 | ai | `/api/v1/ai` | 1 | Stub, returns 501 |
-| appointments | `/api/v1/appointments` | 6 | |
+| appointments | `/api/v1/appointments` | 10 | Scheduling and visits |
 | dashboard | `/api/v1/dashboard` | 6 | Tenant-scoped analytics |
 | doctor | `/api/v1/doctor` | 12 | Profile, degrees, trainings |
 | patient | `/api/v1/patients` | 14 | CRUD, tags, diagnoses |
 | prescription | `/api/v1/prescriptions` | 8 | |
 | payment | `/api/v1/payments` | 12 | |
 | integration | `/api/v1/integrations` | 12 | |
-| medicine | `/api/v1/medicines` | 8 | CRUD, search, aliases, symptom mappings |
-| symptom | `/api/v1/symptoms` | 8 | CRUD, search, aliases |
+| medicine | `/api/v1/medicines` | 15 | CRUD, search, aliases, symptom mappings |
+| symptom | `/api/v1/symptoms` | 9 | CRUD, search, aliases |
 | tenant | `/api/v1/tenant` | 2 | Clinic profile |
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
 | admin | `/api/v1/admin` | 9 | Platform admin — tenants + users (NEW) |
 
-**Total:** ~113 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 127 module endpoints + `/`, `/health`, `/metrics`
 
 Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
 New canonical endpoints are at `/api/v1/admin`.

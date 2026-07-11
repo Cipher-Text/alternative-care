@@ -313,10 +313,10 @@ class PatientService:
 → Row-level isolation with tenant_id in JWT → auto-filtered queries
 
 **Q: How many API endpoints?**
-→ 71 endpoints across 7 modules
+→ 127 API endpoints across 14 modules
 
 **Q: What database tables exist?**
-→ 30 tables (see database-schema.md)
+→ 34 tables (see database-schema.md)
 
 **Q: How is authentication handled?**
 → JWT with 30-min access tokens, 7-day refresh tokens, optional 2FA
@@ -326,8 +326,8 @@ class PatientService:
 **See Also:**
 - [Multi-Tenancy](multi-tenancy.md) - Tenant isolation details
 - [Authentication](authentication.md) - JWT + 2FA implementation
-- [Database Schema](database-schema.md) - All 30 tables
-- [API Reference](../api/README.md) - 71 endpoints
+- [Database Schema](database-schema.md) - All 34 tables
+- [API Reference](../api/README.md) - 127 endpoints
 
 ---
 

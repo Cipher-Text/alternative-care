@@ -58,7 +58,7 @@ cd backend
 3. ✅ Installs dependencies
 4. ✅ Creates `.env` file
 5. ✅ Installs pgvector extension
-6. ✅ Runs database migrations (creates 30 tables)
+6. ✅ Runs database migrations (creates 34 tables)
 7. ✅ Seeds initial data
 8. ✅ Verifies installation
 
@@ -161,7 +161,7 @@ docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
 
 ```bash
 # Generate initial migration (first time only)
-alembic revision --autogenerate -m "Initial schema with 30 tables"
+alembic revision --autogenerate -m "Initial schema"
 
 # Check generated migration
 ls -la alembic/versions/
@@ -169,12 +169,12 @@ ls -la alembic/versions/
 # Apply migrations
 alembic upgrade head
 
-# Verify tables were created (should show 30 tables)
+# Verify tables were created (should show 34 tables)
 docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
   -c "\dt"
 ```
 
-**30 Tables Created:**
+**34 Tables Created:**
 - Core: `tenants`, `users`, `user_sessions`
 - Doctor: `doctor_degrees`, `doctor_trainings`
 - Geographic: `divisions`, `districts`, `upazilas`
@@ -182,7 +182,7 @@ docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
 - Appointments: `appointments`, `visits`
 - Prescription: `prescriptions`, `prescription_items`
 - Payment: `payments`, `invoices`
-- Medicine: `medicines`, `medicine_symptoms`
+- Medicine: `medicines`, `medicine_aliases`, `symptoms`, `symptom_aliases`, `medicine_symptom_mappings`
 - Library: `books`, `chapters`, `sections`, `embeddings`, `reading_progress`, `bookmarks`, `highlights`
 - Integration: `integration_providers`, `tenant_integrations`, `integration_logs`
 - System: `translations`, `usage_tracking`
@@ -243,7 +243,7 @@ curl http://localhost:8000/health
 ### 2. API Documentation
 Visit: http://localhost:8000/docs
 
-**Should see:** Swagger UI with 71 endpoints across 7 modules
+**Should see:** Swagger UI with 127 API endpoints across 14 modules
 
 ### 3. Root Endpoint
 Visit: http://localhost:8000/

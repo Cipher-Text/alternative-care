@@ -2,14 +2,14 @@
 
 Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 
-## Current State (Code-Verified: 2026-05-29)
+## Current State (Code-Verified: 2026-07-12)
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
-- Active API modules: `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`
-- Module endpoints: 89 total (auth: 18, ai: 1, appointments: 6, dashboard: 6, doctor: 12, integration: 12, medicine: 8, patient: 14, payment: 12, prescription: 8, symptom: 8)
+- Active API modules: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
+- Module endpoints: 127 total (admin: 9, auth: 14, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend: Next.js 16 + React 19 (90+ source files)
-  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`
+  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`, `/admin/dashboard`, `/admin/users`
   - 📋 Pending: AI/RAG assistant UI
 
 ## Feature Snapshot

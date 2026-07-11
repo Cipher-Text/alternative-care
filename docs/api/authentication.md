@@ -3,16 +3,16 @@ title: "Authentication API"
 type: "api-reference"
 module: "authentication"
 version: "0.9.0"
-last_updated: "2026-05-29"
-ai_summary: "18 endpoints for auth, self-registration, admin client provisioning, client directory, tenant approval, JWT session lifecycle, and 2FA"
-endpoints: 18
+last_updated: "2026-07-12"
+ai_summary: "14 endpoints for auth, self-registration, legacy admin compatibility, JWT session lifecycle, and 2FA"
+endpoints: 14
 authentication: "public + protected"
 ---
 
 # Authentication API
 
-**Module:** Authentication  
-**Endpoints:** 18  
+**Module:** Authentication
+**Endpoints:** 14
 **Base Path:** `/api/v1/auth`
 
 ## Overview
@@ -26,9 +26,9 @@ Authentication and onboarding endpoints for:
 - Password change
 - Current user profile
 
-## Admin Endpoints
+## Legacy Admin Compatibility Endpoints
 
-Frontend status: platform-admin client provisioning and tenant approval are implemented at `/admin/clients`.
+Canonical platform-admin endpoints live under `/api/v1/admin`. The `/api/v1/auth/admin/*` endpoints remain for backwards compatibility.
 
 ### List Clients
 `GET /api/v1/auth/admin/clients`

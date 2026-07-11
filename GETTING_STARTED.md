@@ -45,7 +45,7 @@ cd backend
 - Creates Python virtual environment
 - Installs dependencies
 - Installs pgvector extension
-- Runs database migrations (creates 30 tables)
+- Runs database migrations (creates 34 tables)
 - Seeds initial data
 
 **Duration:** ~5-10 minutes
@@ -69,7 +69,7 @@ npm run dev
 
 **Should see:**
 - Frontend login page
-- Swagger UI with 87 endpoints
+- Swagger UI with 127 API endpoints
 - Health check: `{"status": "healthy"}`
 
 **Success!** You're ready to develop.
@@ -164,7 +164,7 @@ cd backend && black app && ruff check app
 ### Understand the Codebase
 
 1. **Read CLAUDE.md** - Architecture, patterns, conventions
-2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 87 endpoints)
+2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 127 API endpoints)
 3. **Browse frontend/src/** - Component structure
 4. **Check docs/** - Detailed documentation by area (setup, architecture, API)
 

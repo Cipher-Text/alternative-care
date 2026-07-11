@@ -21,7 +21,7 @@ class Medicine(TenantScopedModel):
     name_bn: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     # Medical system: homeopathy, ayurveda, unani, herbal
-    system: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
+    system: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # Category (system-specific)
     category: Mapped[str | None] = mapped_column(String(255), nullable=True)

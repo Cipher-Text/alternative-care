@@ -110,7 +110,7 @@ async def create_medicine(
     return medicine
 
 
-@router.get("/{medicine_id}", response_model=MedicineResponse)
+@router.get("/{medicine_id:int}", response_model=MedicineResponse)
 async def get_medicine(
     medicine_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -143,7 +143,7 @@ async def get_medicine(
     return medicine
 
 
-@router.patch("/{medicine_id}", response_model=MedicineResponse)
+@router.patch("/{medicine_id:int}", response_model=MedicineResponse)
 async def update_medicine(
     medicine_id: int,
     data: MedicineUpdate,
@@ -184,7 +184,7 @@ async def update_medicine(
     return medicine
 
 
-@router.delete("/{medicine_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{medicine_id:int}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_medicine(
     medicine_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -321,7 +321,7 @@ async def search_medicines(
 # ===== Medicine Aliases =====
 
 
-@router.post("/{medicine_id}/aliases", response_model=MedicineAliasResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/{medicine_id:int}/aliases", response_model=MedicineAliasResponse, status_code=status.HTTP_201_CREATED)
 async def create_medicine_alias(
     medicine_id: int,
     data: MedicineAliasCreate,
@@ -365,7 +365,7 @@ async def create_medicine_alias(
     return alias
 
 
-@router.get("/{medicine_id}/aliases", response_model=list[MedicineAliasResponse])
+@router.get("/{medicine_id:int}/aliases", response_model=list[MedicineAliasResponse])
 async def list_medicine_aliases(
     medicine_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -611,7 +611,7 @@ async def delete_mapping(
 # ===== Get Symptoms for Medicine =====
 
 
-@router.get("/{medicine_id}/symptoms", response_model=list[SymptomListItem])
+@router.get("/{medicine_id:int}/symptoms", response_model=list[SymptomListItem])
 async def get_medicine_symptoms(
     medicine_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],

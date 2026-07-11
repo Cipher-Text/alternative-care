@@ -1,9 +1,11 @@
 # AltCare API Endpoints
 
-**Total:** 83 endpoints across 8 modules  
-**Base URL:** `http://localhost:8000/api/v1`  
-**Auth:** Bearer JWT (except `/auth/register` and `/auth/login`)  
+**Total:** 127 endpoints across 14 modules
+**Base URL:** `http://localhost:8000/api/v1`
+**Auth:** Bearer JWT (except `/auth/register` and `/auth/login`)
 **Interactive Docs:** http://localhost:8000/docs
+
+> This file is a human-maintained overview. For the authoritative route table, use the live Swagger UI or `docs/api/README.md`.
 
 ---
 
@@ -75,21 +77,21 @@
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/appointments/appointments` | Create appointment | Yes |
-| GET | `/appointments/appointments` | List appointments | Yes |
-| GET | `/appointments/appointments/{id}` | Get appointment details | Yes |
-| PATCH | `/appointments/appointments/{id}` | Update appointment | Yes |
-| POST | `/appointments/appointments/{id}/cancel` | Cancel appointment | Yes |
-| DELETE | `/appointments/appointments/{id}` | Delete appointment | Yes |
+| POST | `/appointments` | Create appointment | Yes |
+| GET | `/appointments` | List appointments | Yes |
+| GET | `/appointments/{id}` | Get appointment details | Yes |
+| PATCH | `/appointments/{id}` | Update appointment | Yes |
+| POST | `/appointments/{id}/cancel` | Cancel appointment | Yes |
+| DELETE | `/appointments/{id}` | Delete appointment | Yes |
 
 ### Visits (4)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/appointments/appointments/visits` | Create visit record | Yes |
-| GET | `/appointments/appointments/visits` | List visits | Yes |
-| GET | `/appointments/appointments/visits/{id}` | Get visit details | Yes |
-| PATCH | `/appointments/appointments/visits/{id}` | Update visit | Yes |
+| POST | `/appointments/visits` | Create visit record | Yes |
+| GET | `/appointments/visits` | List visits | Yes |
+| GET | `/appointments/visits/{id}` | Get visit details | Yes |
+| PATCH | `/appointments/visits/{id}` | Update visit | Yes |
 
 **Query Params:** `date_from`, `date_to`, `status`, `patient_id`
 
@@ -210,7 +212,7 @@ GET /patients?limit=50&offset=0
 ### Filtering
 
 ```
-GET /appointments/appointments?date_from=2026-05-01&date_to=2026-05-31&status=scheduled
+GET /appointments?date_from=2026-05-01&date_to=2026-05-31&status=scheduled
 ```
 
 - `date_from`, `date_to`: Date range (YYYY-MM-DD)

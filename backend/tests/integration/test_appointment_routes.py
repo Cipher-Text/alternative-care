@@ -4,7 +4,7 @@ import pytest
 from datetime import date, time, timedelta
 from uuid import uuid4
 
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 from app.shared.models import User, Tenant
@@ -76,7 +76,10 @@ def patient_id():
 @pytest.mark.asyncio
 async def test_create_appointment_success(auth_headers, test_doctor, patient_id):
     """Test successful appointment creation via API."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         response = await client.post(
             "/api/v1/appointments",
             json={
@@ -102,7 +105,10 @@ async def test_create_appointment_success(auth_headers, test_doctor, patient_id)
 @pytest.mark.asyncio
 async def test_create_appointment_without_auth(test_doctor, patient_id):
     """Test appointment creation without authentication."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         response = await client.post(
             "/api/v1/appointments",
             json={
@@ -125,7 +131,10 @@ async def test_create_appointment_time_conflict(
     apt_date = str(date.today() + timedelta(days=1))
     apt_time = "10:00:00"
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create first appointment
         response1 = await client.post(
             "/api/v1/appointments",
@@ -165,7 +174,10 @@ async def test_create_appointment_time_conflict(
 @pytest.mark.asyncio
 async def test_list_appointments(auth_headers, test_doctor, patient_id):
     """Test listing appointments."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create multiple appointments
         for i in range(3):
             await client.post(
@@ -199,7 +211,10 @@ async def test_list_appointments_with_filters(
     """Test listing appointments with filters."""
     apt_date = date.today() + timedelta(days=1)
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment
         await client.post(
             "/api/v1/appointments",
@@ -232,7 +247,10 @@ async def test_list_appointments_with_filters(
 @pytest.mark.asyncio
 async def test_get_appointment(auth_headers, test_doctor, patient_id):
     """Test getting appointment by ID."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment
         create_response = await client.post(
             "/api/v1/appointments",
@@ -261,7 +279,10 @@ async def test_get_appointment(auth_headers, test_doctor, patient_id):
 @pytest.mark.asyncio
 async def test_get_appointment_not_found(auth_headers):
     """Test getting non-existent appointment."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         response = await client.get(
             f"/api/v1/appointments/{uuid4()}",
             headers=auth_headers,
@@ -276,7 +297,10 @@ async def test_get_appointment_not_found(auth_headers):
 @pytest.mark.asyncio
 async def test_update_appointment(auth_headers, test_doctor, patient_id):
     """Test updating appointment."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment
         create_response = await client.post(
             "/api/v1/appointments",
@@ -316,7 +340,10 @@ async def test_update_appointment(auth_headers, test_doctor, patient_id):
 @pytest.mark.asyncio
 async def test_cancel_appointment(auth_headers, test_doctor, patient_id):
     """Test cancelling appointment."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment
         create_response = await client.post(
             "/api/v1/appointments",
@@ -351,7 +378,10 @@ async def test_cancel_appointment(auth_headers, test_doctor, patient_id):
 @pytest.mark.asyncio
 async def test_delete_appointment(auth_headers, test_doctor, patient_id):
     """Test deleting appointment."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment
         create_response = await client.post(
             "/api/v1/appointments",
@@ -375,7 +405,10 @@ async def test_delete_appointment(auth_headers, test_doctor, patient_id):
     assert response.status_code == 204
 
     # Verify deleted
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         get_response = await client.get(
             f"/api/v1/appointments/{appointment_id}",
             headers=auth_headers,
@@ -389,7 +422,10 @@ async def test_delete_appointment(auth_headers, test_doctor, patient_id):
 @pytest.mark.asyncio
 async def test_create_visit(auth_headers, test_doctor, patient_id):
     """Test creating visit."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         response = await client.post(
             "/api/v1/appointments/visits",
             json={
@@ -416,7 +452,10 @@ async def test_create_visit_with_appointment(
     auth_headers, test_doctor, patient_id
 ):
     """Test creating visit linked to appointment."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment
         apt_response = await client.post(
             "/api/v1/appointments",
@@ -459,7 +498,10 @@ async def test_create_visit_with_appointment(
 @pytest.mark.asyncio
 async def test_update_visit(auth_headers, test_doctor, patient_id):
     """Test updating visit."""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create visit
         create_response = await client.post(
             "/api/v1/appointments/visits",
@@ -545,7 +587,10 @@ async def test_tenant_isolation_appointments(db_session, test_doctor, patient_id
     headers1 = {"Authorization": f"Bearer {token1}"}
     headers2 = {"Authorization": f"Bearer {token2}"}
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         # Create appointment for tenant1
         apt_response = await client.post(
             "/api/v1/appointments",
@@ -569,7 +614,10 @@ async def test_tenant_isolation_appointments(db_session, test_doctor, patient_id
     assert response.status_code == 404
 
     # List appointments for tenant2 - should be empty
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as client:
         list_response = await client.get(
             "/api/v1/appointments",
             headers=headers2,

@@ -21,7 +21,7 @@ from app.shared.schemas import (
     VisitListItem,
 )
 
-router = APIRouter(prefix="/appointments", tags=["appointments"])
+router = APIRouter(tags=["appointments"])
 
 
 def get_appointment_service(
