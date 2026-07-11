@@ -88,6 +88,12 @@ pytest tests/integration/test_mvp_tenant_isolation.py -v
 cd frontend && npx playwright test --ui
 ```
 
+### More Guides
+
+- [Implementation patterns (endpoints, migrations, hooks)](docs/development/implementation-guide.md)
+- [Troubleshooting common issues](docs/development/troubleshooting.md)
+- [Bilingual (i18n) guide](docs/development/i18n.md)
+
 ---
 
 ## 3. TECH STACK
@@ -183,50 +189,14 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
     ...  # Returns 501 Not Implemented (stub)
 ```
 
-**Rate Limiting:**
-```python
-# Redis-backed rate limiting middleware (app/main.py)
-# Applied to:
-# - /api/v1/auth/login: 10 req/min per IP
-# - /api/v1/ai/query: 100 req/hour per user (configurable)
-# - /api/v1/*: 100 req/min per IP (general API)
+**Rate Limiting** (`app/core/rate_limit.py`, Redis-backed):
+- Login: 10 req/min per IP — General API: 100 req/min per IP — AI: 100 req/hour per user
+- Returns `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After` on 429
+- Config keys: `RATE_LIMIT_PER_MINUTE`, `RATE_LIMIT_LOGIN_PER_MINUTE`, `RATE_LIMIT_AI_PER_HOUR`
 
-# Headers returned:
-# X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After (on 429)
+**Security Headers** (`app/main.py` middleware): `X-Content-Type-Options`, `X-Frame-Options: DENY`, CSP, HSTS (production). Config: `SECURITY_HEADERS_ENABLED`, `SECURITY_HSTS_ENABLED`.
 
-# Config (app/core/config.py):
-RATE_LIMIT_PER_MINUTE = 100
-RATE_LIMIT_LOGIN_PER_MINUTE = 10
-RATE_LIMIT_AI_PER_HOUR = 100
-RATE_LIMIT_WINDOW_SECONDS = 60
-```
-
-**Security Headers:**
-```python
-# HTTP security headers middleware (app/main.py)
-# Applied to all responses:
-# - X-Content-Type-Options: nosniff
-# - X-Frame-Options: DENY
-# - Content-Security-Policy: (configurable)
-# - Strict-Transport-Security: (production only, HSTS)
-
-# Config:
-SECURITY_HEADERS_ENABLED = True
-SECURITY_HSTS_ENABLED = True
-SECURITY_HSTS_MAX_AGE = 31536000
-```
-
-**Password Security:**
-```python
-# Password complexity validation (app/modules/auth/schemas.py)
-def _validate_password_strength(password: str):
-    # Requirements:
-    # - Minimum 8 characters
-    # - At least 1 uppercase letter
-    # - At least 1 lowercase letter
-    # - At least 1 number
-    # Applied to: registration, password change, password reset
-```
+**Password Security** (`app/modules/auth/schemas.py:_validate_password_strength`): 8+ chars, upper + lower + number. Applied to registration, password change, password reset.
 
 ### 4.3 Database Schema (34 Tables)
 
@@ -330,87 +300,24 @@ frontend/src/
 │   ├── dashboard.ts
 │   ├── payment.ts
 │   ├── integration.ts
-│   ├── medicine.ts       # ✅ NEW
-│   └── symptom.ts        # ✅ NEW
+│   ├── medicine.ts
+│   └── symptom.ts
 └── stores/
     └── authStore.ts      # ✅ Zustand auth state
 ```
 
 ### 4.6 Prescription Builder (Frontend)
 
-**Components:**
-```typescript
-// PrescriptionBuilder - Main form component
-// - Patient selection (searchable)
-// - Clinical info (diagnosis, notes, advice)
-// - Medicine items builder (with autocomplete)
-// - Draft/Issue workflow
-// - Validation and error handling
+**Components:** `PrescriptionBuilder` (main form) → `MedicineItemsBuilder` (dynamic list with autocomplete, auto-fill dosage) → `MedicineAutocomplete` (300ms debounce, keyboard nav, alias search, match-rank scoring) + `PatientSelector` (real-time search by name/phone/code).
 
-// MedicineItemsBuilder - Dynamic medicine list
-// - Medicine autocomplete with smart search
-// - Auto-fill dosage guidance from database
-// - Toggle between autocomplete and free-text
-// - Add/Edit/Delete medicines
-// - Required: name, dosage, frequency
-// - Shows selected medicine details (indications, contraindications)
+**Routes:** `/prescriptions`, `/prescriptions/new`, `/prescriptions/[id]`, `/prescriptions/[id]/edit`
 
-// MedicineAutocomplete - Smart search component
-// - Type-ahead search with 300ms debouncing
-// - Searches medicine names and aliases
-// - Keyboard navigation (arrow keys, enter, escape)
-// - Match rank scoring (name: 100%, alias: 80%)
-// - Shows medicine details (system, potency, category)
-// - Mobile-friendly dropdown
-// - Optional: duration, quantity, instructions
-// - Table view with modal dialog
-
-// PatientSelector - Smart patient search
-// - Real-time search (name, phone, code)
-// - Autocomplete dropdown
-// - Selected patient card with details
-// - Clear selection
+**Workflow (immutable):**
 ```
-
-**Routes:**
-- `/prescriptions` - List all prescriptions (filter by status)
-- `/prescriptions/new` - Create new prescription
-- `/prescriptions/[id]` - View prescription details
-- `/prescriptions/[id]/edit` - Edit draft prescription
-
-**Workflow:**
-```typescript
-// 1. Create Draft
-const draft = await createPrescription({
-  patient_id,
-  diagnosis,
-  doctors_notes,
-  advice,
-  items: [/* medicines */],
-  status: 'draft'
-})
-
-// 2. Edit Draft (only drafts editable)
-await updatePrescription(id, { diagnosis: '...' })
-await addPrescriptionItem(id, { medicine_name: '...' })
-
-// 3. Issue Prescription (becomes immutable)
-await updatePrescription(id, { status: 'issued' })
-
-// 4. Immutability enforced
-// - Cannot update issued/voided prescriptions
-// - Cannot add/delete items
-// - Can only void
+draft → issued → voided
 ```
-
-**Key Features:**
-- Patient search with autocomplete
-- Free-text medicine names (no DB dependency yet)
-- Form validation (patient + ≥1 medicine required)
-- Draft/Issue status workflow
-- Immutability enforcement
-- Responsive design
-- TypeScript type safety
+- Only drafts are editable; issued/voided cannot be modified or have items added/deleted
+- Medicine items: `medicine_id` (DB) OR `medicine_name` (free-text)
 
 ### 4.7 Critical Patterns
 
@@ -473,181 +380,7 @@ authStore.setTokens(tokens.access_token, tokens.refresh_token);
 
 ---
 
-## 5. IMPLEMENTATION GUIDE
-
-### 5.1 Add Backend Endpoint
-
-```python
-# 1. Schema (app/modules/<module>/schemas.py)
-class PatientCreate(BaseModel):
-    name: str
-    phone: str
-    
-class PatientResponse(BaseModel):
-    id: UUID
-    name: str
-    tenant_id: UUID
-    model_config = ConfigDict(from_attributes=True)
-
-# 2. Router (app/modules/<module>/router.py)
-from app.core.dependencies import RequireDoctor
-
-@router.post("/", response_model=PatientResponse)
-async def create_patient(
-    data: PatientCreate,
-    user: RequireDoctor,
-    db: AsyncSession = Depends(get_db)
-):
-    patient = Patient(**data.dict(), tenant_id=user.tenant_id)
-    db.add(patient)
-    await db.commit()
-    return patient
-
-# 3. Register (app/main.py)
-from app.modules.patient import router as patient_router
-app.include_router(patient_router, prefix="/api/v1/patients", tags=["Patients"])
-```
-
-### 5.2 Database Migration
-
-```bash
-# 1. Auto-generate (REVIEW BEFORE APPLYING!)
-alembic revision --autogenerate -m "Add table"
-
-# 2. Review backend/alembic/versions/<hash>.py
-# Check: data migrations, indexes, constraints, enum changes
-
-# 3. Apply
-alembic upgrade head
-
-# 4. Rollback if needed
-alembic downgrade -1
-```
-
-### 5.3 Add Frontend Feature
-
-```typescript
-// 1. API client (lib/api/patients.ts)
-export const patientsApi = {
-  list: async (params?: { search?: string }) => {
-    const { data } = await apiClient.get('/api/v1/patients', { params });
-    return data;
-  },
-  create: async (patient: PatientCreate) => {
-    const { data } = await apiClient.post('/api/v1/patients', patient);
-    return data;
-  },
-};
-
-// 2. React Query hook (lib/hooks/usePatients.ts)
-export function usePatients(search?: string) {
-  return useQuery(['patients', search], () => patientsApi.list({ search }));
-}
-
-export function useCreatePatient() {
-  const queryClient = useQueryClient();
-  return useMutation(patientsApi.create, {
-    onSuccess: () => queryClient.invalidateQueries(['patients']),
-  });
-}
-
-// 3. Page component (app/(dashboard)/patients/page.tsx)
-"use client";
-
-export default function PatientsPage() {
-  const { data, isLoading, error } = usePatients();
-  
-  if (isLoading) return <Skeleton />;
-  if (error) return <ErrorMessage />;
-  
-  return <PatientList patients={data} />;
-}
-
-// 4. TypeScript types (match backend schemas EXACTLY)
-export interface PatientResponse {
-  id: string;
-  name: string;
-  phone: string;
-  tenant_id: string;
-  created_at: string;
-}
-
-export interface PatientCreate {
-  name: string;
-  phone: string;
-}
-```
-
-### 5.4 Seed Data
-
-```bash
-cd backend && ./scripts/run_seed.sh
-```
-
-Seeds:
-- Bangladesh geographic data (8 divisions, 64 districts, upazilas)
-- Integration providers (12: SMS, Email, Payment, with local logo paths)
-- UI translations (80+ English/Bengali)
-- Sample tenants/users (dev only)
-
----
-
-## 6. TROUBLESHOOTING
-
-### Backend
-
-**pgvector missing:**
-```bash
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
-  -c "CREATE EXTENSION IF NOT EXISTS vector;"
-```
-
-**Port 8000 in use:**
-```bash
-lsof -ti:8000 | xargs kill -9
-# Or: uvicorn app.main:app --reload --port 8001
-```
-
-**Migration stuck:**
-```bash
-alembic current && alembic history
-
-# Reset (DEV ONLY - destroys data):
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
-  -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
-alembic upgrade head
-```
-
-**Test DB errors:**
-Tests use `altcare_test` database (auto-created by conftest.py). Ensure PostgreSQL running.
-
-### Frontend
-
-**CORS errors:**
-Check `backend/.env`: `CORS_ORIGINS=["http://localhost:3000"]`
-
-**API connection refused:**
-Check `frontend/.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:8000`
-
-**Port 3000 in use:**
-```bash
-lsof -ti:3000 | xargs kill -9
-# Or: PORT=3001 npm run dev
-```
-
-**Module not found:**
-```bash
-cd frontend
-rm -rf .next node_modules
-npm install && npm run dev
-```
-
-**TypeScript errors:**
-Update `frontend/src/types/` to match backend schemas. Run `npm run build`.
-
----
-
-## 7. CONVENTIONS
+## 5. CONVENTIONS
 
 ### Backend Rules
 
@@ -677,7 +410,7 @@ Update `frontend/src/types/` to match backend schemas. Run `npm run build`.
 
 ---
 
-## 8. REFERENCE
+## 6. REFERENCE
 
 ### URLs
 
