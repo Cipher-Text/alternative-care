@@ -28,8 +28,9 @@ async def test_auth_me_response_contract(authenticated_client):
 
     body = response.json()
     assert {"id", "email", "role", "is_active", "is_2fa_enabled"}.issubset(
-        body.keys()
+        body["user"].keys()
     )
+    assert {"id", "clinic_name", "is_active"}.issubset(body["tenant"].keys())
 
 
 @pytest.mark.asyncio

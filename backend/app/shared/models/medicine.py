@@ -69,8 +69,18 @@ class Medicine(TenantScopedModel):
     )
 
     __table_args__ = (
-        Index("ix_medicines_name_en_trgm", "name_en", postgresql_using="gin"),
-        Index("ix_medicines_name_bn_trgm", "name_bn", postgresql_using="gin"),
+        Index(
+            "ix_medicines_name_en_trgm",
+            "name_en",
+            postgresql_using="gin",
+            postgresql_ops={"name_en": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_medicines_name_bn_trgm",
+            "name_bn",
+            postgresql_using="gin",
+            postgresql_ops={"name_bn": "gin_trgm_ops"},
+        ),
         Index("ix_medicines_system", "system"),
     )
 
@@ -116,6 +126,16 @@ class MedicineAlias(TenantScopedModel):
     medicine: Mapped["Medicine"] = relationship("Medicine", back_populates="aliases")
 
     __table_args__ = (
-        Index("ix_medicine_aliases_alias_en_trgm", "alias_en", postgresql_using="gin"),
-        Index("ix_medicine_aliases_alias_bn_trgm", "alias_bn", postgresql_using="gin"),
+        Index(
+            "ix_medicine_aliases_alias_en_trgm",
+            "alias_en",
+            postgresql_using="gin",
+            postgresql_ops={"alias_en": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_medicine_aliases_alias_bn_trgm",
+            "alias_bn",
+            postgresql_using="gin",
+            postgresql_ops={"alias_bn": "gin_trgm_ops"},
+        ),
     )

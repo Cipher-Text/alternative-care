@@ -45,11 +45,13 @@ async def test_engine():
 
     # Drop all tables first
     async with engine.begin() as conn:
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
         await conn.run_sync(Base.metadata.drop_all)
 
     # Try to create all tables
     try:
         async with engine.begin() as conn:
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
             await conn.run_sync(Base.metadata.create_all)
     except Exception as e:
         # If creation fails (likely due to pgvector or pg_trgm),

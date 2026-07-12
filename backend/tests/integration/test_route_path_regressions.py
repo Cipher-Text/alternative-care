@@ -1,69 +1,10 @@
 """Integration regressions for API route path sync."""
 
-from datetime import date, datetime, timedelta, timezone
-from types import SimpleNamespace
+from datetime import date, timedelta
 
 import pytest
-from httpx import ASGITransport, AsyncClient
 
-from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
-from app.main import app
-
-
-class _FakeScalarResult:
-    def __init__(self, rows):
-        self._rows = rows
-
-    def all(self):
-        return self._rows
-
-
-class _FakeExecuteResult:
-    def __init__(self, *, scalars=None, rows=None):
-        self._scalars = scalars or []
-        self._rows = rows or []
-
-    def scalars(self):
-        return _FakeScalarResult(self._scalars)
-
-    def all(self):
-        return self._rows
-
-
-class _FakeSession:
-    def __init__(self, results):
-        self._results = list(results)
-
-    async def execute(self, _query):
-        return self._results.pop(0)
-
-
-async def _fake_current_user():
-    return CurrentUser(
-        user_id="test-user",
-        tenant_id="test-tenant",
-        role="doctor",
-        email="doctor@test.local",
-        plan="free",
-    )
-
-
-async def _request_with_fake_db(path: str, results, query: str = "bruise"):
-    async def fake_get_db():
-        yield _FakeSession(results)
-
-    app.dependency_overrides[get_current_user] = _fake_current_user
-    app.dependency_overrides[get_db] = fake_get_db
-    try:
-        async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test",
-        ) as client:
-            return await client.get(path, params={"q": query})
-    finally:
-        app.dependency_overrides.pop(get_current_user, None)
-        app.dependency_overrides.pop(get_db, None)
+from app.shared.models import Medicine, MedicineAlias, Symptom, SymptomAlias
 
 
 @pytest.mark.asyncio
@@ -93,21 +34,38 @@ async def test_appointments_endpoint_uses_canonical_path(
 
 @pytest.mark.asyncio
 async def test_medicine_search_endpoint_is_not_captured_by_id_route(
+    authenticated_client,
+    db_session,
+    test_tenant,
+    test_user,
 ):
-    medicine = SimpleNamespace(
-        id=42,
+    medicine = Medicine(
+        tenant_id=test_tenant.id,
         name_en="Arnica Montana",
         name_bn="আর্নিকা",
         system="homeopathy",
         category="Plant",
         potency="30C",
+        is_active=True,
+        created_by=test_user.id,
     )
-    response = await _request_with_fake_db(
+    db_session.add(medicine)
+    await db_session.flush()
+    db_session.add(
+        MedicineAlias(
+            tenant_id=test_tenant.id,
+            medicine_id=medicine.id,
+            alias_en="Bruise remedy",
+            alias_type="common_name",
+            is_active=True,
+            created_by=test_user.id,
+        )
+    )
+    await db_session.commit()
+
+    response = await authenticated_client.get(
         "/api/v1/medicines/search",
-        [
-            _FakeExecuteResult(scalars=[]),
-            _FakeExecuteResult(rows=[(medicine, "Bruise remedy")]),
-        ],
+        params={"q": "bruise"},
     )
 
     assert response.status_code == 200
@@ -118,10 +76,13 @@ async def test_medicine_search_endpoint_is_not_captured_by_id_route(
 
 @pytest.mark.asyncio
 async def test_symptom_search_endpoint_is_not_captured_by_id_route(
+    authenticated_client,
+    db_session,
+    test_tenant,
+    test_user,
 ):
-    symptom = SimpleNamespace(
-        id=24,
-        tenant_id="test-tenant",
+    symptom = Symptom(
+        tenant_id=test_tenant.id,
         name_en="Headache",
         name_bn="মাথাব্যথা",
         description_en=None,
@@ -129,16 +90,25 @@ async def test_symptom_search_endpoint_is_not_captured_by_id_route(
         category="neurological",
         is_global=False,
         is_active=True,
-        created_at=datetime.now(timezone.utc),
-        updated_at=None,
+        created_by=test_user.id,
     )
-    response = await _request_with_fake_db(
+    db_session.add(symptom)
+    await db_session.flush()
+    db_session.add(
+        SymptomAlias(
+            tenant_id=test_tenant.id,
+            symptom_id=symptom.id,
+            alias_en="Migraine",
+            alias_type="common_name",
+            is_active=True,
+            created_by=test_user.id,
+        )
+    )
+    await db_session.commit()
+
+    response = await authenticated_client.get(
         "/api/v1/symptoms/search",
-        [
-            _FakeExecuteResult(scalars=[]),
-            _FakeExecuteResult(rows=[(symptom, "Migraine")]),
-        ],
-        query="migraine",
+        params={"q": "migraine"},
     )
 
     assert response.status_code == 200

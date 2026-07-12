@@ -47,8 +47,18 @@ class Symptom(TenantScopedModel):
     )
 
     __table_args__ = (
-        Index("ix_symptoms_name_en_trgm", "name_en", postgresql_using="gin"),
-        Index("ix_symptoms_name_bn_trgm", "name_bn", postgresql_using="gin"),
+        Index(
+            "ix_symptoms_name_en_trgm",
+            "name_en",
+            postgresql_using="gin",
+            postgresql_ops={"name_en": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_symptoms_name_bn_trgm",
+            "name_bn",
+            postgresql_using="gin",
+            postgresql_ops={"name_bn": "gin_trgm_ops"},
+        ),
     )
 
 
@@ -93,8 +103,18 @@ class SymptomAlias(TenantScopedModel):
     symptom: Mapped["Symptom"] = relationship("Symptom", back_populates="aliases")
 
     __table_args__ = (
-        Index("ix_symptom_aliases_alias_en_trgm", "alias_en", postgresql_using="gin"),
-        Index("ix_symptom_aliases_alias_bn_trgm", "alias_bn", postgresql_using="gin"),
+        Index(
+            "ix_symptom_aliases_alias_en_trgm",
+            "alias_en",
+            postgresql_using="gin",
+            postgresql_ops={"alias_en": "gin_trgm_ops"},
+        ),
+        Index(
+            "ix_symptom_aliases_alias_bn_trgm",
+            "alias_bn",
+            postgresql_using="gin",
+            postgresql_ops={"alias_bn": "gin_trgm_ops"},
+        ),
     )
 
 
