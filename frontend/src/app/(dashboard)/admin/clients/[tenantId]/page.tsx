@@ -1,6 +1,7 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState } from 'react'
+import type { FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
@@ -10,15 +11,33 @@ import {
   Loader2,
   Mail,
   Phone,
+  Plus,
   ShieldAlert,
   Stethoscope,
   User,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
-import { useAdminClient } from '@/lib/hooks/useAdminClients'
+import { useAdminClient, useCreateTenantDoctor } from '@/lib/hooks/useAdminClients'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -28,12 +47,28 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
+type DoctorForm = {
+  email: string
+  password: string
+  full_name: string
+  phone: string
+  language: 'en' | 'bn'
+}
+
 function formatDate(value: string | null) {
   if (!value) return 'Not available'
   return new Intl.DateTimeFormat('en', {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(value))
+}
+
+const emptyDoctorForm: DoctorForm = {
+  email: '',
+  password: '',
+  full_name: '',
+  phone: '',
+  language: 'en',
 }
 
 export default function AdminClientDetailPage({
@@ -46,6 +81,26 @@ export default function AdminClientDetailPage({
   const user = useAuthStore((state) => state.user)
   const isAdmin = user?.role === 'admin'
   const { data, isLoading, error } = useAdminClient(tenantId, isAdmin)
+  const createDoctor = useCreateTenantDoctor(tenantId)
+  const [isDoctorDialogOpen, setIsDoctorDialogOpen] = useState(false)
+  const [doctorForm, setDoctorForm] = useState(emptyDoctorForm)
+
+  function updateDoctorForm<Field extends keyof DoctorForm>(field: Field, value: DoctorForm[Field]) {
+    setDoctorForm((current) => ({
+      ...current,
+      [field]: value,
+    }))
+  }
+
+  async function handleCreateDoctor(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    await createDoctor.mutateAsync({
+      ...doctorForm,
+      phone: doctorForm.phone || null,
+    })
+    setDoctorForm(emptyDoctorForm)
+    setIsDoctorDialogOpen(false)
+  }
 
   if (!isAdmin) {
     return (
@@ -199,13 +254,21 @@ export default function AdminClientDetailPage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Stethoscope className="h-5 w-5 text-indigo-600" />
-            Doctors
-          </CardTitle>
-          <CardDescription>
-            Doctor users attached to this tenant.
-          </CardDescription>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Stethoscope className="h-5 w-5 text-indigo-600" />
+                Doctors
+              </CardTitle>
+              <CardDescription>
+                Doctor users attached to this tenant.
+              </CardDescription>
+            </div>
+            <Button onClick={() => setIsDoctorDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Doctor
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {doctors.length > 0 ? (
@@ -277,6 +340,90 @@ export default function AdminClientDetailPage({
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={isDoctorDialogOpen} onOpenChange={setIsDoctorDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Doctor</DialogTitle>
+            <DialogDescription>
+              Create a doctor login under {tenant.clinic_name || tenant.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <form className="space-y-4" onSubmit={handleCreateDoctor}>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="doctor-full-name">Full Name</Label>
+                <Input
+                  id="doctor-full-name"
+                  value={doctorForm.full_name}
+                  onChange={(event) => updateDoctorForm('full_name', event.target.value)}
+                  minLength={2}
+                  maxLength={255}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="doctor-email">Email</Label>
+                <Input
+                  id="doctor-email"
+                  type="email"
+                  value={doctorForm.email}
+                  onChange={(event) => updateDoctorForm('email', event.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="doctor-phone">Phone</Label>
+                <Input
+                  id="doctor-phone"
+                  value={doctorForm.phone}
+                  onChange={(event) => updateDoctorForm('phone', event.target.value)}
+                  maxLength={20}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="doctor-password">Password</Label>
+                <Input
+                  id="doctor-password"
+                  type="password"
+                  value={doctorForm.password}
+                  onChange={(event) => updateDoctorForm('password', event.target.value)}
+                  minLength={8}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Language</Label>
+                <Select
+                  value={doctorForm.language}
+                  onValueChange={(value) => updateDoctorForm('language', value as DoctorForm['language'])}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="bn">Bangla</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsDoctorDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createDoctor.isLoading}>
+                {createDoctor.isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Create Doctor
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -7,6 +7,8 @@ import type {
   AdminUpdateTenantRequest,
   AdminProvisionRequest,
   AdminProvisionResponse,
+  AdminAddTenantDoctorRequest,
+  AdminAddTenantDoctorResponse,
   AdminUsersResponse,
   AdminUpdateUserRequest,
   AdminUpdateUserResponse,
@@ -47,6 +49,14 @@ export const adminApi = {
 
   updateTenant: async (tenantId: string, data: AdminUpdateTenantRequest): Promise<AdminTenantItem> => {
     const response = await apiClient.patch(`/admin/tenants/${tenantId}`, data)
+    return response.data
+  },
+
+  createTenantDoctor: async (
+    tenantId: string,
+    data: AdminAddTenantDoctorRequest
+  ): Promise<AdminAddTenantDoctorResponse> => {
+    const response = await apiClient.post(`/admin/tenants/${tenantId}/doctors`, data)
     return response.data
   },
 

@@ -7,10 +7,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-hot-toast'
 import { AxiosError } from 'axios'
 import { adminApi } from '@/lib/api/admin'
-import type { AdminProvisionRequest } from '@/types/admin'
-
-// Keep backward-compatible type alias for the provisioning form
-export type { AdminProvisionRequest as AdminCreateTenantDoctorRequest } from '@/types/admin'
+import type { AdminAddTenantDoctorRequest, AdminProvisionRequest } from '@/types/admin'
 
 function getErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof AxiosError) {
@@ -78,4 +75,24 @@ export function useApproveTenant() {
       toast.error(getErrorMessage(error, 'Failed to approve tenant'))
     },
   })
+}
+
+export function useCreateTenantDoctor(tenantId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation(
+    (payload: AdminAddTenantDoctorRequest) => adminApi.createTenantDoctor(tenantId, payload),
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(['admin', 'tenants'])
+        queryClient.invalidateQueries(['admin', 'tenants', tenantId])
+        queryClient.invalidateQueries(['admin', 'dashboard'])
+        queryClient.invalidateQueries(['admin', 'users'])
+        toast.success(data.message || 'Doctor added to clinic')
+      },
+      onError: (error: unknown) => {
+        toast.error(getErrorMessage(error, 'Failed to add doctor'))
+      },
+    }
+  )
 }

@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.dependencies import RequireAdmin
 from app.modules.admin.schemas import (
+    AdminAddTenantDoctorRequest,
+    AdminAddTenantDoctorResponse,
     AdminDashboardResponse,
     AdminProvisionRequest,
     AdminProvisionResponse,
@@ -136,6 +138,23 @@ async def update_tenant(
 ):
     service = AdminService(db)
     return await service.update_tenant(tenant_id, data)
+
+
+@router.post(
+    "/tenants/{tenant_id}/doctors",
+    response_model=AdminAddTenantDoctorResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add doctor to tenant",
+    description="Create another doctor user under an existing clinic tenant.",
+)
+async def create_tenant_doctor(
+    tenant_id: str,
+    data: AdminAddTenantDoctorRequest,
+    current_user: RequireAdmin,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    service = AdminService(db)
+    return await service.create_tenant_doctor(tenant_id, data, current_user.user_id)
 
 
 # ============================================================================

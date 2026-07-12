@@ -143,6 +143,24 @@ class AdminProvisionResponse(BaseModel):
     requires_approval: bool
 
 
+class AdminAddTenantDoctorRequest(BaseModel):
+    """Admin request to add another doctor user to an existing clinic tenant."""
+
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    full_name: str = Field(..., min_length=2, max_length=255)
+    phone: str | None = Field(None, max_length=20)
+    language: Literal["en", "bn"] = "en"
+
+
+class AdminAddTenantDoctorResponse(BaseModel):
+    """Response after adding a doctor to an existing tenant."""
+
+    message: str
+    tenant_id: str
+    doctor: AdminTenantDoctorItem
+
+
 # ============================================================================
 # User (role distribution) schemas
 # ============================================================================

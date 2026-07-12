@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_password_hash
 from app.modules.admin.schemas import (
+    AdminAddTenantDoctorRequest,
+    AdminAddTenantDoctorResponse,
     AdminDashboardResponse,
     AdminProvisionRequest,
     AdminProvisionResponse,
@@ -269,6 +271,54 @@ class AdminService:
         await self.db.commit()
         await self.db.refresh(tenant)
         return AdminTenantItem.model_validate(tenant)
+
+    async def create_tenant_doctor(
+        self,
+        tenant_id: str,
+        data: AdminAddTenantDoctorRequest,
+        admin_user_id: str,
+    ) -> AdminAddTenantDoctorResponse:
+        """Add another doctor user under an existing clinic tenant."""
+        tenant_result = await self.db.execute(
+            select(Tenant).where(Tenant.id == tenant_id)
+        )
+        tenant = tenant_result.scalar_one_or_none()
+        if not tenant:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tenant not found",
+            )
+
+        email_result = await self.db.execute(select(User).where(User.email == data.email))
+        if email_result.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered",
+            )
+
+        user = User(
+            id=str(uuid.uuid4()),
+            tenant_id=tenant.id,
+            email=data.email,
+            password_hash=get_password_hash(data.password),
+            role="doctor",
+            full_name=data.full_name,
+            phone=data.phone,
+            language=data.language,
+            is_active=True,
+            is_email_verified=False,
+            created_by=admin_user_id,
+            updated_by=admin_user_id,
+        )
+        self.db.add(user)
+        await self.db.commit()
+        await self.db.refresh(user)
+
+        return AdminAddTenantDoctorResponse(
+            message="Doctor added to clinic successfully.",
+            tenant_id=tenant.id,
+            doctor=AdminTenantDoctorItem.model_validate(user),
+        )
 
     # ========================================================================
     # User / role distribution

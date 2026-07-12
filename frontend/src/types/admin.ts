@@ -100,6 +100,20 @@ export interface AdminProvisionResponse {
   requires_approval: boolean
 }
 
+export interface AdminAddTenantDoctorRequest {
+  email: string
+  password: string
+  full_name: string
+  phone?: string | null
+  language: 'en' | 'bn'
+}
+
+export interface AdminAddTenantDoctorResponse {
+  message: string
+  tenant_id: string
+  doctor: AdminTenantDoctorItem
+}
+
 // ============================================================================
 // Users / role distribution
 // ============================================================================
