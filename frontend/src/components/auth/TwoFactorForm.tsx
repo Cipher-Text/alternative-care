@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { authApi } from '@/lib/api/auth'
+import { getPostLoginPath } from '@/lib/auth/redirects'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,7 +50,7 @@ export function TwoFactorForm({ email, password, onBack }: TwoFactorFormProps) {
 
       setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
       toast.success('Login successful!')
-      router.push('/dashboard')
+      router.push(getPostLoginPath(response.user))
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Invalid code')
     } finally {

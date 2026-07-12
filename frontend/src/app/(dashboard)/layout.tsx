@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
-import { Toaster } from 'react-hot-toast'
 import type { ReactNode } from 'react'
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -37,7 +36,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
 
-      <Toaster position="top-right" />
     </div>
   )
 }

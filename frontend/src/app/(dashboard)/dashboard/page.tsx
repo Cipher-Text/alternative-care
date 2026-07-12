@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { useOverviewStats, useFinancialAnalytics, usePatientAnalytics } from '@/lib/hooks/useDashboard'
@@ -27,6 +27,26 @@ import {
 export default function DashboardPage() {
   const router = useRouter()
   const user = useAuthStore((state) => state.user)
+
+  useEffect(() => {
+    if (user?.tenant_id === null && (user.role === 'admin' || user.role === 'operator')) {
+      router.replace('/admin/dashboard')
+    }
+  }, [router, user])
+
+  if (user?.tenant_id === null && (user.role === 'admin' || user.role === 'operator')) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+      </div>
+    )
+  }
+
+  return <TenantDashboardContent userName={user?.full_name} />
+}
+
+function TenantDashboardContent({ userName }: { userName?: string }) {
+  const router = useRouter()
   const [dateRange, setDateRange] = useState<{
     date_from?: string
     date_to?: string
@@ -63,7 +83,7 @@ export default function DashboardPage() {
             Dashboard
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Welcome back, {user?.full_name}!
+            Welcome back, {userName}!
           </p>
         </div>
         <div className="flex items-center gap-3">

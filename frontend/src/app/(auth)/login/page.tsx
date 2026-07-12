@@ -2,26 +2,22 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { getPostLoginPath } from '@/lib/auth/redirects'
 import { useAuthStore } from '@/store/authStore'
 import { LoginForm } from '@/components/auth/LoginForm'
-import { Toaster } from 'react-hot-toast'
 
 export default function LoginPage() {
   const router = useRouter()
+  const user = useAuthStore((state) => state.user)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const hasHydrated = useAuthStore((state) => state.hasHydrated)
 
   useEffect(() => {
     // Redirect to dashboard if already logged in
-    if (hasHydrated && isAuthenticated) {
-      router.push('/dashboard')
+    if (hasHydrated && isAuthenticated && user) {
+      router.push(getPostLoginPath(user))
     }
-  }, [hasHydrated, isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, router, user])
 
-  return (
-    <>
-      <LoginForm />
-      <Toaster position="top-right" />
-    </>
-  )
+  return <LoginForm />
 }
