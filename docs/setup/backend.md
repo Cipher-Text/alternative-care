@@ -28,7 +28,8 @@ Complete guide to set up the AltCare FastAPI backend for development.
 
 **Required Software:**
 - Python 3.12+
-- Docker & Docker Compose
+- Docker & Docker Compose (for Redis and MinIO — PostgreSQL is not containerized, see below)
+- PostgreSQL 16 (installed and running locally, e.g. via Homebrew/Postgres.app)
 - Git
 
 **Check Versions:**
@@ -53,7 +54,7 @@ cd backend
 ```
 
 **What this does:**
-1. ✅ Starts Docker services (PostgreSQL, Redis, MinIO)
+1. ✅ Starts Docker services (Redis, MinIO) — assumes a local PostgreSQL 16 instance is already running on port 5432
 2. ✅ Creates Python virtual environment
 3. ✅ Installs dependencies
 4. ✅ Creates `.env` file
@@ -74,21 +75,24 @@ If automated setup doesn't work, follow these steps:
 
 ### Step 1: Start Infrastructure Services
 
+`docker-compose.yml` manages Redis and MinIO only — PostgreSQL is **not** containerized in this project and must already be installed and running locally.
+
 ```bash
 # Navigate to project root
 cd alternative-care
 
-# Start PostgreSQL, Redis, MinIO
-docker compose up -d postgres redis minio
+# Start Redis and MinIO
+docker compose up -d
 
 # Verify services are running
 docker compose ps
 ```
 
 **Expected Output:**
-- `altcare_postgres` - running on port 5432
 - `altcare_redis` - running on port 6379
 - `altcare_minio` - running on ports 9000, 9001
+
+Make sure a local PostgreSQL 16 server is also running on port 5432 (matching `DATABASE_URL` in `backend/.env`), and that the `altcare` role/database exist.
 
 **Access MinIO Console:** http://localhost:9001
 - Username: `minioadmin`
@@ -144,12 +148,12 @@ cp .env.example .env
 ### Step 4: Install pgvector Extension
 
 ```bash
-# Connect to PostgreSQL and install extension
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+# Connect to your local PostgreSQL and install extension
+psql -U altcare -d altcare_dev -h localhost \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
 # Verify installation
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "\dx"
 
 # Should show pgvector extension
@@ -170,7 +174,7 @@ ls -la alembic/versions/
 alembic upgrade head
 
 # Verify tables were created (should show 34 tables)
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "\dt"
 ```
 
@@ -243,7 +247,7 @@ curl http://localhost:8000/health
 ### 2. API Documentation
 Visit: http://localhost:8000/docs
 
-**Should see:** Swagger UI with 127 API endpoints across 14 modules
+**Should see:** Swagger UI with 128 API endpoints across 14 modules
 
 ### 3. Root Endpoint
 Visit: http://localhost:8000/
@@ -256,18 +260,16 @@ Visit: http://localhost:8000/
 
 ### Database Connection Error
 
+PostgreSQL runs locally, not in Docker — `docker compose ps`/`logs`/`restart` only apply to Redis and MinIO.
+
 ```bash
-# Check if PostgreSQL is running
-docker compose ps postgres
+# Check if your local PostgreSQL is running and reachable
+pg_isready -h localhost -p 5432
+# Or:
+psql -U altcare -d altcare_dev -h localhost -c "SELECT 1;"
 
-# Check logs
-docker compose logs postgres
-
-# Restart if needed
-docker compose restart postgres
-
-# Wait 10 seconds
-sleep 10
+# macOS (Homebrew): restart if needed
+brew services restart postgresql@16
 ```
 
 ---
@@ -275,15 +277,8 @@ sleep 10
 ### pgvector Not Installed
 
 ```bash
-# Recreate database with pgvector image
-docker compose down
-docker compose up -d postgres
-
-# Wait for PostgreSQL to start
-sleep 15
-
-# Install extension
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+# Install extension on your local PostgreSQL
+psql -U altcare -d altcare_dev -h localhost \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
@@ -299,7 +294,7 @@ alembic current
 alembic history
 
 # If stuck, reset database (DEV ONLY - destroys all data!)
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
 # Re-run migrations
@@ -413,17 +408,17 @@ alembic downgrade <revision_id>
 # Generate Fernet key (for INTEGRATION_ENCRYPTION_KEY)
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 
-# Access PostgreSQL directly
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev
+# Access PostgreSQL directly (local instance)
+psql -U altcare -d altcare_dev -h localhost
 
 # View database tables
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "\dt"
 
-# Stop all services
+# Stop Redis/MinIO
 docker compose down
 
-# Stop and remove volumes (clears database)
+# Stop and remove volumes (clears Redis/MinIO data only — PostgreSQL is unaffected)
 docker compose down -v
 ```
 
@@ -455,6 +450,6 @@ docker compose down -v
 
 ---
 
-**Last Updated:** May 1, 2026  
+**Last Updated:** September 21, 2026  
 **Difficulty:** Intermediate  
 **Time Required:** 20-30 minutes ✅

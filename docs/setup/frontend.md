@@ -30,7 +30,7 @@ Complete guide to set up the AltCare Next.js 16 frontend with TypeScript, Tailwi
 
 **Required Software:**
 - Node.js 18+ (LTS 20.x recommended)
-- npm 9+ or pnpm 8+ (pnpm recommended)
+- npm 9+ (this project uses npm/`package-lock.json`, not pnpm or yarn)
 - Git
 - VS Code or WebStorm (recommended IDEs)
 
@@ -52,6 +52,8 @@ curl http://localhost:8000/health
 ```
 
 ---
+
+> **Note:** This section describes how the frontend was originally scaffolded. To work on the existing repo, skip to [Install Dependencies](#install-dependencies) and just run `cd frontend && npm install` against the checked-in `package.json` — do not re-run `create-next-app`.
 
 ## 🚀 Project Initialization
 
@@ -123,7 +125,7 @@ npm install -D @types/js-cookie
 
 ```bash
 # Initialize shadcn/ui
-npx shadcn-ui@latest init
+npx shadcn@latest init
 ```
 
 **Prompts (answer as shown):**
@@ -135,20 +137,20 @@ npx shadcn-ui@latest init
 
 **Install Common Components:**
 ```bash
-npx shadcn-ui@latest add button
-npx shadcn-ui@latest add input
-npx shadcn-ui@latest add card
-npx shadcn-ui@latest add table
-npx shadcn-ui@latest add dialog
-npx shadcn-ui@latest add dropdown-menu
-npx shadcn-ui@latest add select
-npx shadcn-ui@latest add label
-npx shadcn-ui@latest add form
-npx shadcn-ui@latest add toast
-npx shadcn-ui@latest add avatar
-npx shadcn-ui@latest add badge
-npx shadcn-ui@latest add tabs
-npx shadcn-ui@latest add calendar
+npx shadcn@latest add button
+npx shadcn@latest add input
+npx shadcn@latest add card
+npx shadcn@latest add table
+npx shadcn@latest add dialog
+npx shadcn@latest add dropdown-menu
+npx shadcn@latest add select
+npx shadcn@latest add label
+npx shadcn@latest add form
+npx shadcn@latest add toast
+npx shadcn@latest add avatar
+npx shadcn@latest add badge
+npx shadcn@latest add tabs
+npx shadcn@latest add calendar
 ```
 
 ---
@@ -170,7 +172,7 @@ npx shadcn-ui@latest add calendar
 
 ---
 
-### 2. Next.js Configuration (`next.config.mjs`)
+### 2. Next.js Configuration (`next.config.js`)
 
 **Update to proxy API requests:**
 ```javascript
@@ -204,28 +206,21 @@ export default nextConfig
 
 ---
 
-### 3. Tailwind Configuration (`tailwind.config.ts`)
+### 3. Tailwind Configuration (`src/app/globals.css`)
 
-**Already configured by shadcn/ui init, verify:**
-```typescript
-import type { Config } from "tailwindcss"
+**Tailwind CSS 4 does not use `tailwind.config.ts`** — theme and dark-mode variant are configured directly in CSS via `@import` and `@custom-variant`, with color tokens as CSS custom properties:
+```css
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-const config: Config = {
-  darkMode: ["class"],
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
-  theme: {
-    extend: {
-      // ... shadcn/ui colors
-    },
-  },
-  plugins: [require("tailwindcss-animate")],
+:root {
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  --primary: 79 70 229;
+  /* ...remaining design tokens */
 }
-export default config
 ```
+There is no `tailwind.config.ts` file in this project — do not create one; add new tokens as CSS variables in `globals.css` instead.
 
 ---
 
@@ -250,44 +245,45 @@ export default config
 
 ## 📁 Project Structure
 
-**Recommended structure:**
+**Actual structure (as of this audit):**
 ```
 frontend/
 ├── public/
-│   ├── images/
-│   └── icons/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/
-│   │   │   ├── login/
-│   │   │   │   └── page.tsx
-│   │   │   └── layout.tsx
+│   │   │   └── login/
 │   │   ├── (dashboard)/
-│   │   │   ├── patients/
+│   │   │   ├── admin/          # clients, users, KPI dashboard
 │   │   │   ├── appointments/
 │   │   │   ├── dashboard/
-│   │   │   └── layout.tsx
+│   │   │   ├── medicines/
+│   │   │   ├── patients/
+│   │   │   ├── payments/
+│   │   │   ├── prescriptions/
+│   │   │   ├── profile/
+│   │   │   ├── settings/       # integrations
+│   │   │   └── symptoms/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
-│   │   └── globals.css
+│   │   ├── providers.tsx
+│   │   └── globals.css         # Tailwind v4 theme tokens (no tailwind.config.ts)
 │   ├── components/
 │   │   ├── ui/              # shadcn/ui components
 │   │   ├── layout/          # Sidebar, Header
-│   │   ├── patients/        # Patient components
-│   │   └── shared/          # Shared components
+│   │   ├── auth/, doctor/, dashboard/, patients/, prescriptions/,
+│   │   │   payments/, integrations/, medicines/, theme/, shared/
 │   ├── lib/
-│   │   ├── api/             # API clients
-│   │   ├── hooks/           # Custom hooks
-│   │   ├── utils/           # Utilities
-│   │   └── constants/       # Constants
-│   ├── types/               # TypeScript types
-│   ├── store/               # Zustand stores
-│   └── messages/            # i18n translations
+│   │   ├── api/             # API clients (one per module)
+│   │   ├── hooks/           # React Query hooks
+│   │   └── utils/           # Utilities
+│   ├── types/               # TypeScript interfaces
+│   ├── store/                # Zustand stores (authStore.ts, themeStore.ts)
+│   └── messages/            # i18n message files (next-intl installed but not yet wired up)
 │       ├── en.json
 │       └── bn.json
 ├── .env.local
-├── next.config.mjs
-├── tailwind.config.ts
+├── next.config.js
 └── package.json
 ```
 
@@ -302,23 +298,30 @@ frontend/
 cat > .env.local << 'EOF'
 # API Configuration
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_API_TIMEOUT=30000
 
 # Application
 NEXT_PUBLIC_APP_NAME=AltCare
-NEXT_PUBLIC_APP_VERSION=0.9.0
-
-# Features
-NEXT_PUBLIC_ENABLE_2FA=true
+NEXT_PUBLIC_APP_VERSION=0.1.0
 NEXT_PUBLIC_DEFAULT_LANGUAGE=en
+
+# Feature Flags
+NEXT_PUBLIC_FEATURE_2FA=true
+NEXT_PUBLIC_FEATURE_BKASH=true
+NEXT_PUBLIC_FEATURE_AI=false
+
+# Development
+NODE_ENV=development
 EOF
 ```
 
 **Variables:**
 - `NEXT_PUBLIC_API_URL`: Backend API base URL
+- `NEXT_PUBLIC_API_TIMEOUT`: API request timeout in ms
 - `NEXT_PUBLIC_APP_NAME`: Application name
 - `NEXT_PUBLIC_APP_VERSION`: Version number
-- `NEXT_PUBLIC_ENABLE_2FA`: Enable 2FA feature
 - `NEXT_PUBLIC_DEFAULT_LANGUAGE`: Default language (en|bn)
+- `NEXT_PUBLIC_FEATURE_2FA`, `NEXT_PUBLIC_FEATURE_BKASH`, `NEXT_PUBLIC_FEATURE_AI`: Feature flags
 
 ---
 
@@ -373,7 +376,7 @@ lsof -ti:3000 | xargs kill -9
 
 ### API Proxy Not Working
 
-**Check `next.config.mjs` rewrites:**
+**Check `next.config.js` rewrites:**
 ```javascript
 async rewrites() {
   return [
@@ -401,10 +404,10 @@ fetch('/api/health')
 
 ```bash
 # Reinstall shadcn/ui
-npx shadcn-ui@latest init
+npx shadcn@latest init
 
 # Add missing component
-npx shadcn-ui@latest add <component-name>
+npx shadcn@latest add <component-name>
 ```
 
 ---
@@ -575,10 +578,10 @@ After setup:
    - Use API client
    - Create forms with react-hook-form
 
-4. **Add Internationalization:**
-   - Set up next-intl
-   - Create translations
-   - Language switcher
+4. **Wire Up Internationalization** (not done yet — `next-intl` is installed and `src/messages/{en,bn}.json` exist, but there is no `middleware.ts`, `i18n.ts` request config, or `NextIntlClientProvider`; see [i18n guide](../development/i18n.md)):
+   - Add the next-intl middleware/routing config
+   - Wrap the app in `NextIntlClientProvider`
+   - Replace hardcoded strings with `useTranslations`
 
 ---
 
@@ -588,7 +591,7 @@ After setup:
 → `cd frontend && npm run dev`
 
 **Q: How do I add shadcn/ui component?**
-→ `npx shadcn-ui@latest add <component-name>`
+→ `npx shadcn@latest add <component-name>`
 
 **Q: Where do I make API calls?**
 → Create client in `src/lib/api/`, use React Query hooks
@@ -608,6 +611,6 @@ After setup:
 
 ---
 
-**Last Updated:** May 1, 2026  
+**Last Updated:** September 21, 2026  
 **Difficulty:** Intermediate  
 **Time Required:** 30 minutes ✅

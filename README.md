@@ -2,13 +2,13 @@
 
 Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 
-## Current State (Code-Verified: 2026-07-12)
+## Current State (Code-Verified: 2026-09-21)
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
 - Active API modules: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- Module endpoints: 127 total (admin: 9, auth: 14, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
+- Module endpoints: 128 total (admin: 10, auth: 14, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
 - System endpoints: `/`, `/health`, `/metrics`
-- Frontend: Next.js 16 + React 19 (90+ source files)
+- Frontend: Next.js 16 + React 19 (132 source files)
   - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`, `/admin/dashboard`, `/admin/users`
   - 📋 Pending: AI/RAG assistant UI
 
@@ -39,7 +39,7 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 - ✅ Password complexity enforcement (8+ chars, mixed case, numbers)
 - ✅ Session invalidation on password/role change
 - ✅ HTTP security headers (CSP, X-Frame-Options, HSTS)
-- ✅ Redis-backed rate limiting (login: 10/min, API: 100/min, AI: 100/hour)
+- ✅ Redis-backed rate limiting (login: 5/min, API: 60/min, AI: 20/hour)
 - ✅ JWT token validation (expiry, type, claims)
 - ✅ 2FA/TOTP with QR code generation
 - ✅ Fernet encryption for integration credentials
@@ -47,7 +47,7 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 ## Quick Start
 
 ```bash
-# 1) Infrastructure
+# 1) Infrastructure (Redis + MinIO only — PostgreSQL 16 must already be running locally)
 docker compose up -d
 
 # 2) Backend

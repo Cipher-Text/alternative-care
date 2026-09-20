@@ -8,7 +8,8 @@ Get up and running in 10 minutes.
 
 **Required:**
 - Python 3.12+ - [Download](https://www.python.org/downloads/)
-- Docker & Docker Compose - [Download](https://www.docker.com/products/docker-desktop/)
+- Docker & Docker Compose (for Redis and MinIO) - [Download](https://www.docker.com/products/docker-desktop/)
+- PostgreSQL 16 (installed and running locally, e.g. via Homebrew/Postgres.app — **not** containerized in this project)
 - Git - [Download](https://git-scm.com/downloads)
 
 **Verify:**
@@ -41,14 +42,19 @@ cd backend
 ```
 
 **This script:**
-- Starts Docker services (PostgreSQL 16, Redis 7, MinIO)
+- Starts Docker services (Redis 7, MinIO) — assumes a local PostgreSQL 16 instance is already running on port 5432
 - Creates Python virtual environment
 - Installs dependencies
 - Installs pgvector extension
 - Runs database migrations (creates 34 tables)
-- Seeds initial data
 
 **Duration:** ~5-10 minutes
+
+**Then seed initial data** (the script above does not do this automatically):
+
+```bash
+./scripts/run_seed.sh
+```
 
 ### Frontend Setup
 
@@ -69,7 +75,7 @@ npm run dev
 
 **Should see:**
 - Frontend login page
-- Swagger UI with 127 API endpoints
+- Swagger UI with 128 API endpoints
 - Health check: `{"status": "healthy"}`
 
 **Success!** You're ready to develop.
@@ -80,11 +86,13 @@ npm run dev
 
 ### Step 1: Start Infrastructure
 
+`docker-compose.yml` manages Redis and MinIO only — PostgreSQL is **not** containerized and must already be installed and running locally (matching `DATABASE_URL` in `backend/.env`).
+
 ```bash
 # From project root
 docker compose up -d
 
-# Verify services running
+# Verify services running (redis, minio)
 docker compose ps
 ```
 
@@ -101,8 +109,8 @@ source venv/bin/activate  # macOS/Linux
 # Install dependencies
 pip install -e .
 
-# Install pgvector
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+# Install pgvector on your local PostgreSQL
+psql -U altcare -d altcare_dev -h localhost \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
 # Run migrations
@@ -164,7 +172,7 @@ cd backend && black app && ruff check app
 ### Understand the Codebase
 
 1. **Read CLAUDE.md** - Architecture, patterns, conventions
-2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 127 API endpoints)
+2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 128 API endpoints)
 3. **Browse frontend/src/** - Component structure
 4. **Check docs/** - Detailed documentation by area (setup, architecture, API)
 
@@ -216,21 +224,22 @@ uvicorn app.main:app --reload --port 8001
 
 ### Database Connection Failed
 
+PostgreSQL runs locally, not in Docker — `docker compose` only manages Redis and MinIO.
+
 ```bash
-# Check if PostgreSQL running
-docker compose ps postgres
+# Check if your local PostgreSQL is running and reachable
+pg_isready -h localhost -p 5432
+psql -U altcare -d altcare_dev -h localhost -c "SELECT 1;"
 
-# Restart it
-docker compose restart postgres
-
-# Check logs
-docker compose logs postgres
+# macOS (Homebrew): restart if needed
+brew services restart postgresql@16
 ```
 
 ### pgvector Not Installed
 
 ```bash
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+# Install extension on your local PostgreSQL
+psql -U altcare -d altcare_dev -h localhost \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
@@ -238,7 +247,7 @@ docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
 
 ```bash
 # Reset database (DEV ONLY - destroys all data)
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
 # Re-run migrations
@@ -281,9 +290,9 @@ mypy backend/app                  # Type check
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:8000
 - **API Docs:** http://localhost:8000/docs (Swagger), http://localhost:8000/redoc
-- **Database:** localhost:5432 (user: altcare, db: altcare_dev)
-- **Redis:** localhost:6379
-- **MinIO:** http://localhost:9001 (minioadmin/minioadmin)
+- **Database:** localhost:5432 (user: altcare, db: altcare_dev, local install — not in Docker)
+- **Redis:** localhost:6379 (Docker)
+- **MinIO:** http://localhost:9001 (minioadmin/minioadmin, Docker)
 
 ### Key Files
 
@@ -314,6 +323,6 @@ git push origin feat/your-feature
 1. **Architecture & Patterns:** See CLAUDE.md
 2. **API Documentation:** http://localhost:8000/docs
 3. **Troubleshooting:** CLAUDE.md § 6
-4. **Breaking Changes:** See BREAKING_CHANGES.md
+4. **Breaking Changes:** See docs/archive/BREAKING_CHANGES.md
 
 **You're all set!** Start coding with CLAUDE.md as your guide.

@@ -1,23 +1,26 @@
 # Platform Admin Module — Implementation Spec
 
-**Status:** Planning  
-**Last updated:** 2026-07-11
+**Status:** Phase A shipped (2026-07-11) — Phase A2 extended 2026-07-12 with tenant-doctor
+provisioning. Phase B (operator RBAC, receptionist enforcement) is still Planning.
+**Last updated:** 2026-09-21
 
 ---
 
 ## Goal
 
 Give the platform admin a dedicated module (`app/modules/admin/`) with proper navigation,
-a dashboard, and full tenant lifecycle controls. The current state (5 endpoints buried in
-`auth/routes.py`, one nav link) is a functional prototype that needs to be grown into a
-real operator tool.
+a dashboard, and full tenant lifecycle controls. This has been delivered — `app/modules/admin/`
+now holds 10 endpoints (`routes.py`, `service.py`, `schemas.py`) registered at `/api/v1/admin`,
+replacing the old prototype (5 endpoints buried in `auth/routes.py`, one nav link). The legacy
+`/auth/admin/*` endpoints still exist for backwards compatibility (see Roadmap P1 item 3 —
+removal pending).
 
 ---
 
-## Current state (baseline)
+## Current state (baseline, pre-Phase A — kept for history)
 
 ### Backend
-All admin endpoints live in `backend/app/modules/auth/routes.py` (lines 55–131):
+Originally all admin endpoints lived in `backend/app/modules/auth/routes.py` (lines 55–131):
 
 | Endpoint | What it does |
 |---|---|
@@ -27,7 +30,10 @@ All admin endpoints live in `backend/app/modules/auth/routes.py` (lines 55–131
 | `GET /auth/admin/tenants/pending` | Self-registered awaiting approval |
 | `POST /auth/admin/tenants/{id}/approve` | Approve a pending tenant |
 
-### Frontend
+These paths still work (compatibility shim) but are superseded by `app/modules/admin/routes.py`
+below.
+
+### Frontend (pre-Phase A)
 - `frontend/src/app/(dashboard)/admin/clients/page.tsx` — 3-tab page
 - `frontend/src/app/(dashboard)/admin/clients/[tenantId]/page.tsx` — detail view
 - Sidebar: one item "Admin Clients" appended to the doctor nav
@@ -61,6 +67,7 @@ GET  /admin/tenants/pending    Pending approvals (replaces /auth/admin/tenants/p
 GET  /admin/tenants/{id}       Tenant detail + doctors (replaces /auth/admin/clients/{id})
 POST /admin/tenants/{id}/approve  Approve (replaces /auth/admin/tenants/{id}/approve)
 PATCH /admin/tenants/{id}      Update plan / suspend / reactivate   ← NEW
+POST /admin/tenants/{id}/doctors  Add another doctor user under this tenant   ← SHIPPED 2026-07-12
 ```
 
 All guarded by `RequireAdmin`.
@@ -161,20 +168,21 @@ No migration required for Phase A.
 ## File checklist for Phase A
 
 ### Backend
-- [ ] `backend/app/modules/admin/__init__.py`
-- [ ] `backend/app/modules/admin/routes.py`
-- [ ] `backend/app/modules/admin/service.py`
-- [ ] `backend/app/modules/admin/schemas.py`
-- [ ] `backend/app/main.py` — register admin router at `/api/v1/admin`
-- [ ] `backend/app/modules/auth/routes.py` — deprecate/remove old `/auth/admin/*` endpoints
+- [x] `backend/app/modules/admin/__init__.py`
+- [x] `backend/app/modules/admin/routes.py`
+- [x] `backend/app/modules/admin/service.py`
+- [x] `backend/app/modules/admin/schemas.py`
+- [x] `backend/app/main.py` — register admin router at `/api/v1/admin`
+- [ ] `backend/app/modules/auth/routes.py` — deprecate/remove old `/auth/admin/*` endpoints (still pending, see `docs/ROADMAP.md` P1 item 3)
+- [x] `backend/tests/integration/test_admin_tenant_doctors.py` — NEW, covers `POST /admin/tenants/{id}/doctors` (shipped 2026-07-12)
 
 ### Frontend
-- [ ] `frontend/src/lib/api/admin.ts` — update API paths to `/admin/...`
-- [ ] `frontend/src/lib/hooks/useAdminClients.ts` — update hook paths
-- [ ] `frontend/src/components/layout/Sidebar.tsx` — separate admin nav
-- [ ] `frontend/src/app/(dashboard)/admin/dashboard/page.tsx` — NEW platform dashboard
-- [ ] `frontend/src/app/(dashboard)/admin/clients/page.tsx` — add tenant actions
-- [ ] `frontend/src/app/(dashboard)/admin/clients/[tenantId]/page.tsx` — add action buttons
+- [x] `frontend/src/lib/api/admin.ts` — update API paths to `/admin/...`
+- [x] `frontend/src/lib/hooks/useAdminClients.ts` — update hook paths
+- [x] `frontend/src/components/layout/Sidebar.tsx` — separate admin nav
+- [x] `frontend/src/app/(dashboard)/admin/dashboard/page.tsx` — NEW platform dashboard
+- [x] `frontend/src/app/(dashboard)/admin/clients/page.tsx` — add tenant actions
+- [x] `frontend/src/app/(dashboard)/admin/clients/[tenantId]/page.tsx` — add action buttons + add-doctor form (2026-07-12)
 
 ---
 

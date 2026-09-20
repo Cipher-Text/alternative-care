@@ -1,8 +1,8 @@
 ---
 title: "Authentication & Security"
 type: "architecture"
-version: "0.9.0"
-last_updated: "2026-05-01"
+version: "1.0.0"
+last_updated: "2026-09-21"
 ai_summary: "JWT authentication with optional TOTP 2FA, bcrypt password hashing, and role-based access control"
 ---
 
@@ -52,6 +52,7 @@ JWT-based authentication with 2FA support and comprehensive security measures.
   "role": "doctor",
   "email": "doctor@clinic.com",
   "plan": "pro",
+  "token_version": 1,
   "exp": 1234567890,
   "type": "access"
 }
@@ -61,7 +62,7 @@ JWT-based authentication with 2FA support and comprehensive security measures.
 ```json
 {
   "sub": "user-uuid",
-  "jti": "session-uuid",
+  "token_version": 1,
   "exp": 1235194290,
   "type": "refresh"
 }
@@ -73,9 +74,11 @@ JWT-based authentication with 2FA support and comprehensive security measures.
 - `role`: User role (admin, operator, doctor, receptionist)
 - `email`: User email
 - `plan`: Subscription plan (for feature gating)
+- `token_version`: Incremented on password/email/role change to invalidate old tokens (present on both access and refresh tokens — see `app/modules/auth/service.py`)
 - `exp`: Expiration timestamp
 - `type`: Token type (access or refresh)
-- `jti`: JWT ID (for refresh token tracking)
+
+The refresh token does **not** carry a `jti` claim in the current implementation — sessions are tracked via `user_sessions.refresh_token_hash` (a hash of the token) instead.
 
 ---
 
@@ -103,56 +106,38 @@ JWT-based authentication with 2FA support and comprehensive security measures.
 **Implementation:** `app/core/security.py`
 
 ```python
-from jose import jwt
-from datetime import datetime, timedelta
+# app/core/security.py (actual signatures)
+def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
+    """data should include sub, tenant_id, role, email, plan, token_version."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    to_encode.update({"exp": expire, "type": "access"})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
-SECRET_KEY = "your-secret-key"  # From env
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
-
-def create_access_token(user: User) -> str:
-    payload = {
-        "sub": str(user.id),
-        "tenant_id": str(user.tenant_id) if user.tenant_id else None,
-        "role": user.role,
-        "email": user.email,
-        "plan": user.tenant.plan if user.tenant else None,
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-        "type": "access"
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
-def create_refresh_token(user: User, jti: str) -> str:
-    payload = {
-        "sub": str(user.id),
-        "jti": jti,
-        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
-        "type": "refresh"
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+def create_refresh_token(data: dict[str, Any]) -> str:
+    """data should include sub, token_version (minimal payload — no tenant/role/email/plan)."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire, "type": "refresh"})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 ```
+
+The caller (`app/modules/auth/service.py`) builds the `data` dict from the authenticated `User`/`Tenant` records before calling these — `create_access_token`/`create_refresh_token` themselves take a plain dict, not a `User` object.
 
 ---
 
 ### Token Validation
 
 ```python
-from jose import jwt, JWTError
-
-def decode_token(token: str) -> dict:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-def verify_access_token(token: str) -> dict:
-    payload = decode_token(token)
-    if payload.get("type") != "access":
-        raise HTTPException(status_code=401, detail="Invalid token type")
-    return payload
+# app/core/security.py
+def decode_token(token: str) -> dict[str, Any]:
+    """Raises JWTError if invalid or expired — no HTTPException here."""
+    return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
 ```
+
+There is no separate `verify_access_token()` helper — `app/core/dependencies.py:get_current_user()` calls `decode_token()` directly, checks `payload["type"] == "access"`, and additionally validates `token_version` against the database to support invalidation on password/email/role changes.
 
 ---
 
@@ -186,7 +171,7 @@ def verify_access_token(token: str) -> dict:
 6. User verifies with TOTP code
    POST /auth/2fa/verify → {totp_code: "123456"}
    ↓
-7. If valid, set user.two_factor_enabled = true
+7. If valid, set user.is_2fa_enabled = true
 ```
 
 ---
@@ -199,7 +184,7 @@ def verify_access_token(token: str) -> dict:
    ↓
 2. Verify password
    ↓
-3. Check if user.two_factor_enabled
+3. Check if user.is_2fa_enabled
    ↓
 4a. If 2FA disabled:
     → Generate JWT tokens
@@ -269,34 +254,27 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 ### Password Requirements
 
-**Current (Development):**
-- Minimum 6 characters
-
-**Production (Recommended):**
+**Enforced today** (`app/modules/auth/schemas.py:_validate_password_strength`, applied to registration, password change, and password reset):
 - Minimum 8 characters
 - At least 1 uppercase letter
 - At least 1 lowercase letter
 - At least 1 number
-- At least 1 special character
+
+There is no special-character requirement in the current implementation.
 
 **Implementation:**
 ```python
-from pydantic import BaseModel, validator
-
-class UserCreate(BaseModel):
-    password: str
-    
-    @validator('password')
-    def validate_password(cls, v):
-        if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters')
-        if not any(c.isupper() for c in v):
-            raise ValueError('Password must contain uppercase letter')
-        if not any(c.islower() for c in v):
-            raise ValueError('Password must contain lowercase letter')
-        if not any(c.isdigit() for c in v):
-            raise ValueError('Password must contain number')
-        return v
+def _validate_password_strength(v: str) -> str:
+    """Enforce minimum complexity for authentication passwords."""
+    if len(v) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    if not any(c.isupper() for c in v):
+        raise ValueError("Password must contain at least one uppercase letter")
+    if not any(c.islower() for c in v):
+        raise ValueError("Password must contain at least one lowercase letter")
+    if not any(c.isdigit() for c in v):
+        raise ValueError("Password must contain at least one number")
+    return v
 ```
 
 ---
@@ -465,10 +443,14 @@ CREATE TABLE tenant_integrations (
 
 ### 5. Rate Limiting
 
-**Planned (Phase 2):**
-- 5 failed login attempts → 15-minute lockout
-- 100 requests/minute per user
-- DDoS protection via CDN
+**Implemented today** — Redis-backed, enforced in `app/core/middleware.py:rate_limit_middleware` (config in `app/core/config.py` / `app/core/rate_limit.py`):
+- Login: `RATE_LIMIT_LOGIN_PER_MINUTE` (default 5) requests/minute per IP
+- General API: `RATE_LIMIT_PER_MINUTE` (default 60) requests/minute per IP
+- AI endpoints: `RATE_LIMIT_AI_PER_HOUR` (default 20) requests/hour per user
+- Responses include `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `Retry-After` headers on `429`
+- Falls back to an in-memory limiter if Redis is unavailable
+
+There is no login-lockout mechanism (failed attempts don't trigger an account lockout) and no CDN-level DDoS protection configured in this repo.
 
 ---
 
@@ -514,5 +496,5 @@ CREATE TABLE tenant_integrations (
 
 ---
 
-**Last Updated:** May 1, 2026  
-**Security:** JWT + 2FA + bcrypt ✅
+**Last Updated:** 2026-09-21  
+**Security:** JWT + 2FA + bcrypt + Redis-backed rate limiting ✅

@@ -26,17 +26,17 @@
 ✅ **Multi-tenant architecture** with row-level data isolation  
 ✅ **4 distinct user roles** — Platform Admin, Platform Operator, Doctor/Practitioner, Receptionist/Assistant  
 ✅ **Multi-specialization support** — Doctors can practice 1-4 systems (Homeopathy, Ayurveda, Unani, Herbal)  
-✅ **Dynamic resource filtering** — Medicines, books, and AI responses filtered by doctor's active specializations  
+📋 **Dynamic resource filtering** — `tenant.specializations` exists on the schema, but no route/service filters medicines/books/AI by it yet (AI itself is an unbuilt 501 stub)  
 ✅ **Integrated SMS/Email/Payment** — Pluggable integration framework with encrypted credential storage  
 ✅ **Complete audit trail** — All transactions logged with request/response payloads  
-✅ **Vector search with pgvector** — Native PostgreSQL embeddings for RAG/AI assistant  
+📋 **Vector search with pgvector** — `embeddings` table and pgvector column exist in the schema; no code performs a similarity search yet (AI module is a 501 stub, `library` module has zero routes)  
 ✅ **Immutable clinical records** — Prescriptions and payments are append-only  
 ✅ **Flexible tagging system** — JSONB-based extensible metadata  
 ✅ **Doctor credentials** — Multiple degrees and training/certifications with verification support  
 ✅ **Bangladesh geographic system** — Division, District, Upazila hierarchy with Bengali names and geospatial data  
 ✅ **Bilingual support** — English/Bengali content for medicines, symptoms, and UI with language preferences  
 
-**Total tables:** 30 (core entities + doctor credentials + geographic data + i18n + integration framework)
+**Total tables:** 34 (core entities + doctor credentials + geographic data + patient/appointment/clinical tables + medicine & symptom library + book library + i18n + integration framework + usage tracking)
 
 ---
 
@@ -47,8 +47,8 @@
 - **Database:** PostgreSQL 16
 - **Extensions:**
   - `pgvector` — vector similarity search for AI/RAG embeddings
-  - `uuid-ossp` — UUID generation
-  - `pg_trgm` — trigram-based text search for fuzzy matching
+  - `pg_trgm` — trigram-based GIN indexes for fuzzy medicine/symptom search
+  - Primary keys are `VARCHAR(36)` UUID strings generated in application code (Python `uuid4()`), not via a `uuid-ossp` database default; several catalog/lookup tables (medicines, symptoms, doctor credentials, geographic tables) use plain `SERIAL` integer IDs instead
 - **ORM:** SQLAlchemy 2.0 (async)
 - **Migrations:** Alembic
 
@@ -56,7 +56,7 @@
 
 1. **Multi-tenant isolation** — every table carries `tenant_id`, all queries are auto-scoped
 2. **Audit trail** — all entities track `created_at`, `updated_at`, `created_by`, `updated_by`
-3. **Soft deletes** — critical data is never hard-deleted, use `deleted_at` timestamp
+3. **Soft deletes** — critical data is never hard-deleted; the current implementation uses an `is_active` boolean (patients, medicines, symptoms, books) or a `status` field (prescriptions, payments, invoices, appointments) per table rather than a shared `deleted_at` column
 4. **Immutable history** — prescriptions, payments, and invoices are append-only
 5. **Flexible tagging** — use JSONB for extensible metadata and tag systems
 6. **Global vs. tenant data** — medicines and books can be global (admin-curated) or tenant-specific
@@ -76,14 +76,15 @@ CREATE TABLE example (
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   -- ... other columns
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
   created_by UUID REFERENCES users(id),
-  updated_by UUID REFERENCES users(id),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  updated_by UUID REFERENCES users(id)
 );
 
-CREATE INDEX idx_example_tenant_id ON example(tenant_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_example_tenant_id ON example(tenant_id);
 ```
+
+> **Note:** The codebase does not have a `deleted_at` column on any model (`app/shared/models/base.py`). Soft-delete semantics are implemented per-table via `is_active` or a `status` field instead — see the individual table definitions below.
 
 ### Why not schema-per-tenant or database-per-tenant?
 
@@ -108,37 +109,47 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id) WHERE deleted_at IS NUL
 └──────┬──────────────────────────────────────────────────────────────┘
        │
        ├─── USERS (Doctor, Receptionists)
-       │     id, tenant_id, role, email, hashed_password
+       │     id, tenant_id, role, email, password_hash
+       │       ├─── USER_SESSIONS (refresh token tracking)
        │       ├─── DOCTOR_DEGREES (academic qualifications)
-       │       │     degree_name, institution, completion_year, certificate_number
+       │       │     degree_name, institution_name, completion_year
        │       └─── DOCTOR_TRAININGS (certifications, workshops)
-       │             training_name, issuing_organization, completion_date, expiry_date
+       │             title, provider, completion_date, expiry_date
+       │
+       ├─── USAGE_TRACKING (per-tenant, per-day plan-limit counters)
        │
        ├─── TENANT_INTEGRATIONS (SMS, Email, Payment configs)
        │     id, tenant_id, provider_id, credentials (encrypted)
        │       └─── INTEGRATION_LOGS (transaction audit trail)
        │
        ├─── PATIENTS
-       │     id, tenant_id, name, age, contact, created_by
+       │     id, tenant_id, full_name, date_of_birth, phone, is_active
        │       ├─── PATIENT_TAGS (special_case, chronic, treatment, allergy)
-       │       ├─── PATIENT_DIAGNOSES (visit-specific diagnoses)
-       │       └─── VISITS
-       │             id, patient_id, doctor_id, chief_complaint, notes
-       │               ├─── PRESCRIPTIONS
-       │               │     id, visit_id, doctor_id, status
-       │               │       └─── PRESCRIPTION_ITEMS
-       │               │             medicine_id (nullable), custom_medicine,
-       │               │             dosage, frequency, duration
-       │               │
-       │               └─── PAYMENTS
-       │                     id, visit_id, amount, method, status
-       │                       └─── INVOICES
-       │                             id, payment_id, pdf_url
+       │       ├─── PATIENT_DIAGNOSES (diagnosis history, optional visit_id)
+       │       ├─── APPOINTMENTS
+       │       │     id, patient_id, doctor_id, appointment_date/time, status
+       │       │       └─── VISITS (optional appointment_id — walk-ins have none)
+       │       │             id, patient_id, doctor_id, chief_complaint, vitals
+       │       │               ├─── PRESCRIPTIONS
+       │       │               │     id, patient_id, visit_id, status (draft/issued/voided)
+       │       │               │       └─── PRESCRIPTION_ITEMS
+       │       │               │             medicine_id (nullable), medicine_name,
+       │       │               │             dosage, frequency, duration
+       │       │               │
+       │       │               └─── PAYMENTS
+       │       │                     id, patient_id, visit_id, amount, method, status
+       │       │                       └─── INVOICES
+       │       │                             id, payment_id, pdf_url
        │
        ├─── MEDICINES (filtered by doctor's specializations)
-       │     id, tenant_id (nullable), name, system, category,
-       │     description, is_global
-       │       └─── MEDICINE_SYMPTOMS (many-to-many symptom mapping)
+       │     id, tenant_id (nullable), name_en/name_bn, system, category,
+       │     description_en/bn, is_global
+       │       ├─── MEDICINE_ALIASES (transliteration, brand/common names)
+       │       └─── MEDICINE_SYMPTOM_MAPPINGS (many-to-many, references SYMPTOMS)
+       │
+       ├─── SYMPTOMS (normalized master list)
+       │     id, tenant_id (nullable), name_en/name_bn, category, is_global
+       │       └─── SYMPTOM_ALIASES (transliteration, common names)
        │
        ├─── BOOKS (filtered by doctor's specializations)
        │     id, tenant_id (nullable), title, author, epub_url, is_global
@@ -174,23 +185,23 @@ INTEGRATION_PROVIDERS (SMS, Email, Payment provider catalog)
 
 | Role                             | `role` enum value | Scope            | Capabilities                                                                                                  |
 | -------------------------------- | ----------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Platform Admin**               | `admin`           | Platform-wide    | Approve doctor registrations, manage global medicines/books, platform analytics, integration management       |
-| **Platform Operator**            | `operator`        | Platform-wide    | Admin's assistant — support doctor approvals, content moderation, handle support tickets                      |
+| **Platform Admin**               | `admin`           | Platform-wide    | Approve doctor registrations, tenant lifecycle, KPI dashboard, role management — fully implemented (`RequireAdmin`) |
+| **Platform Operator**            | `operator`        | Platform-wide    | ⚠️ Stub — the `RequireAdminOrOperator` guard exists in `app/core/dependencies.py`, but no endpoint uses it yet. No operator-specific capabilities are wired up. |
 | **Doctor / Practitioner**        | `doctor`          | Tenant-scoped    | Full patient & prescription management, payments, symptom search, library, AI assistant (based on specialization) |
-| **Receptionist / Assistant**     | `receptionist`    | Tenant-scoped    | Doctor's assistant — patient management, appointment scheduling, payment recording, invoice generation        |
-| **Patient** _(future — Phase 5)_ | `patient`         | Self-only        | View own prescriptions, visit history, educational content                                                    |
+| **Receptionist / Assistant**     | `receptionist`    | Tenant-scoped    | ⚠️ Stub — the role string exists on `users.role`, but no RBAC guard distinguishes it from `doctor`. A receptionist currently has the same access as a doctor. |
+| **Patient** _(future — Phase 5)_ | `patient`         | Self-only        | Not implemented — no `patient` role, table, or endpoints exist yet                                             |
 
 **Implementation:**
 
-```sql
-CREATE TYPE user_role AS ENUM ('admin', 'operator', 'doctor', 'receptionist', 'patient');
-```
+Role is a plain `VARCHAR(50)` column (`users.role`), not a Postgres enum — see `app/shared/models/tenant.py`.
 
-Each role has a different data access scope:
+Each role has a different intended data access scope:
 
 - **Admin, Operator:** No tenant_id (platform-level) — can see all tenants, used for approval workflows and global data curation
-- **Doctor, Receptionist:** Queries auto-filter by `tenant_id` from JWT (clinic-specific)
-- **Patient:** Queries filter by `user_id` (can only see their own data)
+- **Doctor, Receptionist:** `tenant_id` from the JWT is passed into each service, which explicitly filters by it (not an automatic/global filter — see [Multi-Tenancy](multi-tenancy.md)); the `receptionist` filtering distinction is not yet enforced (see above)
+- **Patient:** Planned for a future phase — no `patient` role exists today
+
+See `docs/architecture/roles-access.md` for the authoritative, code-verified RBAC reference.
 
 ---
 
@@ -201,51 +212,73 @@ Each role has a different data access scope:
 Represents a clinic or organization. Each tenant is fully data-isolated.
 
 ```sql
+-- Reflects app/shared/models/tenant.py:Tenant (id is a String(36) UUID, not a native UUID column)
 CREATE TABLE tenants (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id VARCHAR(36) PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  subdomain VARCHAR(100) UNIQUE,  -- e.g., "dr-rahman" → dr-rahman.altcare.health
   email VARCHAR(255) NOT NULL UNIQUE,
   phone VARCHAR(20),
-  address TEXT,
-  
+
+  -- Clinic profile
+  clinic_name VARCHAR(255),
+  clinic_phone VARCHAR(20),
+  clinic_email VARCHAR(255),
+  clinic_whatsapp VARCHAR(20),
+  address_line_1 VARCHAR(255),
+  address_line_2 VARCHAR(255),
+  postal_code VARCHAR(10),
+  landmark VARCHAR(255),
+  clinic_address TEXT,  -- legacy free-text field
+
   -- Location (Bangladesh administrative divisions)
   division_id INTEGER REFERENCES divisions(id),
   district_id INTEGER REFERENCES districts(id),
   upazila_id INTEGER REFERENCES upazilas(id),
-  
-  -- Subscription
-  subscription_plan VARCHAR(50) NOT NULL DEFAULT 'free',  -- free, plus, pro
-  plan_started_at TIMESTAMP WITH TIME ZONE,
-  plan_expires_at TIMESTAMP WITH TIME ZONE,
-  trial_ends_at TIMESTAMP WITH TIME ZONE,
-  
-  -- Limits tracking (enforced at service layer)
-  patient_limit INTEGER DEFAULT 30,
-  prescription_limit_monthly INTEGER,  -- NULL = unlimited
-  ai_query_count_monthly INTEGER DEFAULT 0,
-  ai_query_limit_monthly INTEGER,  -- NULL = unlimited
-  
-  -- Doctor profile
-  specializations medical_system[],  -- Array: can have 1 to 4 specializations
+  latitude FLOAT,
+  longitude FLOAT,
+
+  -- Branding
+  logo_url VARCHAR(500),
+  description_en TEXT,
+  description_bn TEXT,
+
+  -- Professional credentials
+  registration_body VARCHAR(100),      -- e.g., BMDC, Bangladesh Homeopathic Board
+  registration_number VARCHAR(100),
+  years_of_experience INTEGER,
   license_number VARCHAR(100),
-  registration_status VARCHAR(50) DEFAULT 'pending',  -- pending, approved, suspended
-  
-  -- Integration configurations (encrypted JSON)
-  sms_config JSONB,     -- {provider: 'twilio', api_key: '...', sender_id: '...'}
-  email_config JSONB,   -- {provider: 'smtp', host: '...', port: 587, username: '...'}
-  payment_config JSONB, -- {bkash: {merchant_number: '...'}, nagad: {...}, stripe: {...}}
-  
+
+  -- Fees (stored in paisa: 100 paisa = 1 BDT)
+  consultation_fee INTEGER,
+  follow_up_fee INTEGER,
+
+  -- Specializations (1-4 of: homeopathy, ayurveda, unani, herbal)
+  specializations VARCHAR(50)[] NOT NULL DEFAULT '{}',
+
+  -- Subscription
+  plan VARCHAR(20) NOT NULL DEFAULT 'free',  -- free, plus, pro
+  plan_started_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  plan_expires_at TIMESTAMP WITH TIME ZONE,
+
+  -- Verification / approval (admin onboarding gate)
+  is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  verified_at TIMESTAMP WITH TIME ZONE,
+  is_approved BOOLEAN NOT NULL DEFAULT FALSE,
+  approved_at TIMESTAMP WITH TIME ZONE,
+  approved_by VARCHAR(36),
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
   -- Audit
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
-CREATE INDEX idx_tenants_subdomain ON tenants(subdomain) WHERE deleted_at IS NULL;
-CREATE INDEX idx_tenants_registration_status ON tenants(registration_status) WHERE deleted_at IS NULL;
-CREATE INDEX idx_tenants_location ON tenants(division_id, district_id, upazila_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_tenants_location ON tenants(division_id, district_id, upazila_id);
 ```
+
+Integration credentials (SMS/email/payment) are **not** stored on `tenants` — they live in the separate `tenant_integrations` table (see below), encrypted with Fernet. There is no `subdomain`, `trial_ends_at`, or per-plan usage-limit column on `tenants` today; usage counters live in `usage_tracking`.
 
 ---
 
@@ -254,36 +287,75 @@ CREATE INDEX idx_tenants_location ON tenants(division_id, district_id, upazila_i
 Doctors, operators, and admins. Patients are in a separate table (future Phase 5).
 
 ```sql
+-- Reflects app/shared/models/tenant.py:User
 CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,  -- NULL for platform admins
-  
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) REFERENCES tenants(id),  -- NULL for platform admins/operators
+
   email VARCHAR(255) NOT NULL UNIQUE,
-  hashed_password VARCHAR(255) NOT NULL,
-  
-  role user_role NOT NULL,
-  
+  password_hash VARCHAR(255) NOT NULL,
+
+  role VARCHAR(50) NOT NULL,  -- admin, operator, doctor, receptionist
+
   -- Profile
   full_name VARCHAR(255) NOT NULL,
   phone VARCHAR(20),
-  avatar_url TEXT,
-  preferred_language VARCHAR(5) DEFAULT 'en',  -- 'en' or 'bn' (English/Bengali)
-  
+  avatar_url VARCHAR(500),
+  language VARCHAR(5) NOT NULL DEFAULT 'en',  -- 'en' or 'bn'
+
+  -- 2FA
+  is_2fa_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  totp_secret VARCHAR(32),
+
   -- Status
-  is_active BOOLEAN DEFAULT TRUE,
-  email_verified BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  email_verified_at TIMESTAMP WITH TIME ZONE,
   last_login_at TIMESTAMP WITH TIME ZONE,
-  
+
+  -- JWT invalidation (incremented on password/email/role change)
+  token_version INTEGER NOT NULL DEFAULT 1,
+
   -- Audit
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
-CREATE INDEX idx_users_tenant_id ON users(tenant_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_email ON users(email) WHERE deleted_at IS NULL;
-CREATE INDEX idx_users_role ON users(role) WHERE deleted_at IS NULL;
+CREATE INDEX idx_users_tenant_id ON users(tenant_id);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
 ```
+
+---
+
+### 2a. `user_sessions`
+
+Tracks refresh-token sessions per user (used for revocation, not for `tenant_id` scoping).
+
+```sql
+-- Reflects app/shared/models/tenant.py:UserSession
+CREATE TABLE user_sessions (
+  id VARCHAR(36) PRIMARY KEY,
+  user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+  refresh_token_hash VARCHAR(255) NOT NULL,
+  ip_address VARCHAR(45),
+  user_agent TEXT,
+
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  last_activity_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+
+  is_revoked BOOLEAN NOT NULL DEFAULT FALSE,
+  revoked_at TIMESTAMP WITH TIME ZONE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+The table stores a hash of the refresh token (`refresh_token_hash`), not a `jti` claim.
 
 **Note on geographic references:** The geographic tables (divisions, districts, upazilas) are defined in section "Platform-Level Tables" below. They use INTEGER primary keys as per Bangladesh's standardized geographic coding system.
 
@@ -301,39 +373,37 @@ CREATE INDEX idx_users_role ON users(role) WHERE deleted_at IS NULL;
 Academic degrees and qualifications earned by doctors from colleges/universities.
 
 ```sql
+-- Reflects app/shared/models/doctor.py:DoctorDegree
 CREATE TABLE doctor_degrees (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  user_id VARCHAR(36) NOT NULL,
+
   -- Degree information
-  degree_name VARCHAR(255) NOT NULL,  -- e.g., "BHMS", "BAMS", "MD (Homeopathy)"
-  field_of_study VARCHAR(255),        -- e.g., "Homeopathic Medicine", "Ayurvedic Medicine"
-  institution VARCHAR(255) NOT NULL,  -- College/University name
-  location VARCHAR(255),              -- City, Country
-  
-  -- Timeline
-  start_year INTEGER,                 -- Year started
-  completion_year INTEGER NOT NULL,   -- Year completed/awarded
-  
-  -- Verification
-  certificate_number VARCHAR(100),    -- Degree certificate/registration number
-  is_verified BOOLEAN DEFAULT FALSE,  -- Admin-verified credential
-  
-  -- Metadata
-  display_order INTEGER DEFAULT 0,    -- For sorting in profile display
-  
-  -- Audit
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id),
-  updated_by UUID REFERENCES users(id),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  degree_type VARCHAR(100) NOT NULL,   -- e.g., "Bachelor", "Master", "Diploma", "Fellowship"
+  degree_name VARCHAR(255) NOT NULL,   -- e.g., "BHMS", "BAMS", "MD (Homeopathy)"
+  specialization VARCHAR(255),         -- e.g., "Pediatrics", "Dermatology"
+  institution_name VARCHAR(500) NOT NULL,
+  institution_location VARCHAR(255),
+
+  start_year INTEGER,
+  completion_year INTEGER NOT NULL,
+
+  certificate_url VARCHAR(500),
+  is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  verified_at TIMESTAMP WITH TIME ZONE,
+  verified_by VARCHAR(36),
+
+  display_order INTEGER NOT NULL DEFAULT 0,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
-CREATE INDEX idx_doctor_degrees_tenant_id ON doctor_degrees(tenant_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_doctor_degrees_user_id ON doctor_degrees(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_doctor_degrees_display_order ON doctor_degrees(user_id, display_order) WHERE deleted_at IS NULL;
+CREATE INDEX idx_doctor_degrees_tenant_id ON doctor_degrees(tenant_id);
+CREATE INDEX idx_doctor_degrees_user_id ON doctor_degrees(user_id);
 ```
 
 ---
@@ -343,46 +413,40 @@ CREATE INDEX idx_doctor_degrees_display_order ON doctor_degrees(user_id, display
 Professional training, certifications, workshops, and continuing education completed by doctors.
 
 ```sql
+-- Reflects app/shared/models/doctor.py:DoctorTraining
 CREATE TABLE doctor_trainings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  user_id VARCHAR(36) NOT NULL,
+
   -- Training information
-  training_name VARCHAR(255) NOT NULL,     -- e.g., "Advanced Constitutional Prescribing"
-  training_type VARCHAR(100),              -- e.g., "Certificate", "Diploma", "Workshop", "Seminar"
-  issuing_organization VARCHAR(255) NOT NULL,  -- Organization/Institute that issued
-  location VARCHAR(255),                   -- City, Country (or "Online")
-  
-  -- Timeline
-  start_date DATE,                         -- Training start date
-  completion_date DATE,                    -- Training completion date
-  expiry_date DATE,                        -- For certifications that expire
-  duration_hours INTEGER,                  -- Total training hours (if applicable)
-  
-  -- Verification
-  certificate_number VARCHAR(100),         -- Certificate/credential number
-  is_verified BOOLEAN DEFAULT FALSE,       -- Admin-verified credential
-  
-  -- Additional details
-  description TEXT,                        -- Brief description of training content
-  skills_acquired TEXT[],                  -- Array of skills/competencies gained
-  
-  -- Metadata
-  display_order INTEGER DEFAULT 0,         -- For sorting in profile display
-  
-  -- Audit
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id),
-  updated_by UUID REFERENCES users(id),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  training_type VARCHAR(100) NOT NULL,   -- e.g., "Certification", "Workshop", "Conference", "CE"
+  title VARCHAR(500) NOT NULL,           -- e.g., "Advanced Homeopathic Prescribing"
+  provider VARCHAR(500) NOT NULL,        -- Organization/institution that provided the training
+  description TEXT,
+  skills TEXT,                           -- comma-separated, not a native array
+
+  start_date DATE,
+  completion_date DATE NOT NULL,
+  expiry_date DATE,                      -- for certifications that expire
+
+  certificate_url VARCHAR(500),
+  credential_id VARCHAR(255),
+
+  is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  verified_at TIMESTAMP WITH TIME ZONE,
+  verified_by VARCHAR(36),
+
+  display_order INTEGER NOT NULL DEFAULT 0,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
-CREATE INDEX idx_doctor_trainings_tenant_id ON doctor_trainings(tenant_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_doctor_trainings_user_id ON doctor_trainings(user_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_doctor_trainings_display_order ON doctor_trainings(user_id, display_order) WHERE deleted_at IS NULL;
-CREATE INDEX idx_doctor_trainings_expiry_date ON doctor_trainings(expiry_date) WHERE deleted_at IS NULL AND expiry_date IS NOT NULL;
+CREATE INDEX idx_doctor_trainings_tenant_id ON doctor_trainings(tenant_id);
+CREATE INDEX idx_doctor_trainings_user_id ON doctor_trainings(user_id);
 ```
 
 ---
@@ -390,48 +454,48 @@ CREATE INDEX idx_doctor_trainings_expiry_date ON doctor_trainings(expiry_date) W
 ### 5. `patients`
 
 ```sql
+-- Reflects app/shared/models/patient.py:Patient
 CREATE TABLE patients (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+
   -- Demographics
   full_name VARCHAR(255) NOT NULL,
-  age INTEGER,
   date_of_birth DATE,
-  gender VARCHAR(20),  -- male, female, other, prefer_not_to_say
-  
+  gender VARCHAR(20),  -- male, female, other
+  blood_group VARCHAR(10),
+
   -- Contact
   phone VARCHAR(20),
   email VARCHAR(255),
+  whatsapp VARCHAR(20),
   address TEXT,
-  
+
   -- Location (Bangladesh administrative divisions)
-  division_id INTEGER REFERENCES divisions(id),
-  district_id INTEGER REFERENCES districts(id),
-  upazila_id INTEGER REFERENCES upazilas(id),
-  
-  -- Medical history summary (free text)
+  division_id INTEGER,
+  district_id INTEGER,
+  upazila_id INTEGER,
+
+  -- Medical information
+  chief_complaint TEXT,
   medical_history TEXT,
-  
-  -- Metadata
-  patient_number VARCHAR(50),  -- clinic-specific patient ID (e.g., "P-2024-001")
-  blood_group VARCHAR(5),
-  occupation VARCHAR(100),
-  
+  photo_url VARCHAR(500),
+  next_visit_date DATE,
+
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,  -- soft-delete flag
+
   -- Audit
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id),
-  updated_by UUID REFERENCES users(id),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
-CREATE INDEX idx_patients_tenant_id ON patients(tenant_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_patients_full_name ON patients USING gin(to_tsvector('english', full_name)) WHERE deleted_at IS NULL;
-CREATE INDEX idx_patients_patient_number ON patients(tenant_id, patient_number) WHERE deleted_at IS NULL;
-CREATE INDEX idx_patients_phone ON patients(tenant_id, phone) WHERE deleted_at IS NULL;
-CREATE INDEX idx_patients_location ON patients(division_id, district_id, upazila_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_patients_tenant_id ON patients(tenant_id);
+CREATE INDEX idx_patients_full_name ON patients(full_name);
 ```
+
+There is no `patient_code`/`patient_number` column or `age`/`occupation` fields on the current model — age is derived from `date_of_birth` at the application layer, and there is no clinic-assigned patient ID format (`P-YYYY-NNNN`) implemented today.
 
 ---
 
@@ -440,138 +504,185 @@ CREATE INDEX idx_patients_location ON patients(division_id, district_id, upazila
 Flexible tagging system for special cases, chronic conditions, treatment protocols, allergies, and custom flags.
 
 ```sql
-CREATE TYPE patient_tag_category AS ENUM (
-  'special_case',    -- VIP, elderly, pediatric, requires_home_visit
-  'chronic',         -- diabetes, hypertension, asthma
-  'treatment',       -- constitutional_rx, panchakarma, rasayana
-  'allergy',         -- lactose, gluten, specific_medicine
-  'custom'           -- tenant-defined tags
-);
-
+-- Reflects app/shared/models/patient.py:PatientTag
+-- tag_type values in practice: special_case, chronic, treatment, allergy
 CREATE TABLE patient_tags (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  
-  category patient_tag_category NOT NULL,
-  label VARCHAR(100) NOT NULL,  -- The actual tag text
-  notes TEXT,                   -- Additional context
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id)
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  patient_id VARCHAR(36) NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+
+  tag_type VARCHAR(50) NOT NULL,
+  tag_value VARCHAR(255) NOT NULL,  -- the actual tag text
+  notes TEXT,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
 CREATE INDEX idx_patient_tags_patient_id ON patient_tags(patient_id);
-CREATE INDEX idx_patient_tags_category ON patient_tags(category);
 ```
+
+`tag_type` is a plain `VARCHAR`, not a Postgres enum.
 
 ---
 
 ### 7. `patient_diagnoses`
 
-Visit-specific diagnoses with optional ICD code.
+Diagnosis history for a patient, with an optional link to a visit and optional ICD code.
 
 ```sql
+-- Reflects app/shared/models/patient.py:PatientDiagnosis
 CREATE TABLE patient_diagnoses (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  visit_id UUID REFERENCES visits(id) ON DELETE SET NULL,  -- nullable for pre-visit diagnoses
-  
-  diagnosis TEXT NOT NULL,
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  patient_id VARCHAR(36) NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  visit_id VARCHAR(36),  -- nullable, not a DB foreign key in the current model
+
+  description TEXT NOT NULL,
   icd_code VARCHAR(20),  -- ICD-10 code (optional)
-  
-  diagnosed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  diagnosed_by UUID REFERENCES users(id)
+
+  diagnosed_at DATE NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,  -- soft-delete flag (set false, not deleted_at)
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  created_by VARCHAR(36)
 );
 
 CREATE INDEX idx_patient_diagnoses_patient_id ON patient_diagnoses(patient_id);
-CREATE INDEX idx_patient_diagnoses_visit_id ON patient_diagnoses(visit_id);
+```
+
+---
+
+### 7a. `appointments`
+
+Scheduled patient appointments. Separate from `visits` — an appointment is the booking, a visit is the clinical encounter record.
+
+```sql
+-- Reflects app/shared/models/appointment.py:Appointment
+CREATE TABLE appointments (
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  patient_id VARCHAR(36) NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  doctor_id VARCHAR(36) NOT NULL REFERENCES users(id),
+
+  appointment_date DATE NOT NULL,
+  appointment_time TIME NOT NULL,
+  duration_minutes INTEGER NOT NULL DEFAULT 30,
+
+  status VARCHAR(20) NOT NULL DEFAULT 'scheduled',
+  -- scheduled, confirmed, in_progress, completed, cancelled, no_show
+
+  reason TEXT,
+  notes TEXT,
+  cancelled_at DATE,
+  cancellation_reason TEXT,
+  reminder_sent BOOLEAN NOT NULL DEFAULT FALSE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
+);
+
+CREATE INDEX idx_appointments_tenant_id ON appointments(tenant_id);
+CREATE INDEX idx_appointments_patient_id ON appointments(patient_id);
+CREATE INDEX idx_appointments_date ON appointments(appointment_date);
+CREATE INDEX idx_appointments_status ON appointments(status);
 ```
 
 ---
 
 ### 8. `visits`
 
-Each patient encounter.
+Each patient encounter. Optionally linked back to the `appointments` row that generated it (walk-ins have `appointment_id = NULL`).
 
 ```sql
+-- Reflects app/shared/models/appointment.py:Visit
 CREATE TABLE visits (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  doctor_id UUID NOT NULL REFERENCES users(id),
-  
-  -- Visit details
-  visit_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  chief_complaint TEXT NOT NULL,
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  patient_id VARCHAR(36) NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  doctor_id VARCHAR(36) NOT NULL REFERENCES users(id),
+  appointment_id VARCHAR(36) REFERENCES appointments(id) ON DELETE SET NULL,
+
+  visit_date DATE NOT NULL,
+  visit_type VARCHAR(50) NOT NULL DEFAULT 'consultation',
+  -- consultation, follow_up, emergency, routine_checkup
+
+  -- Clinical information
+  chief_complaint TEXT,
+  history_of_present_illness TEXT,
   examination_notes TEXT,
-  diagnosis_summary TEXT,  -- Free-text summary (detailed diagnoses in patient_diagnoses table)
-  
+
+  -- Vitals (free-text, not structured)
+  temperature VARCHAR(10),
+  blood_pressure VARCHAR(20),
+  pulse_rate VARCHAR(10),
+  weight VARCHAR(10),
+
+  -- Diagnosis and plan
+  provisional_diagnosis TEXT,
+  treatment_plan TEXT,
+
   -- Follow-up
   follow_up_date DATE,
   follow_up_notes TEXT,
-  
-  -- Status
-  visit_status VARCHAR(50) DEFAULT 'completed',  -- scheduled, in_progress, completed, cancelled
-  
-  -- Attachments
-  attachments JSONB,  -- [{url, type, uploaded_at}]
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id)
+
+  status VARCHAR(20) NOT NULL DEFAULT 'in_progress',  -- in_progress, completed
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
 CREATE INDEX idx_visits_tenant_id ON visits(tenant_id);
 CREATE INDEX idx_visits_patient_id ON visits(patient_id);
 CREATE INDEX idx_visits_doctor_id ON visits(doctor_id);
 CREATE INDEX idx_visits_visit_date ON visits(visit_date DESC);
-CREATE INDEX idx_visits_follow_up_date ON visits(follow_up_date) WHERE follow_up_date IS NOT NULL;
 ```
 
 ---
 
 ### 9. `prescriptions`
 
-Immutable prescription records. Once generated, cannot be edited — only voided and replaced.
+Immutable prescription records. `draft` is editable; `issued` and `voided` are not.
 
 ```sql
-CREATE TYPE prescription_status AS ENUM ('draft', 'finalized', 'voided');
-
+-- Reflects app/shared/models/prescription.py:Prescription
 CREATE TABLE prescriptions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  visit_id UUID NOT NULL REFERENCES visits(id) ON DELETE CASCADE,
-  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  doctor_id UUID NOT NULL REFERENCES users(id),
-  
-  prescription_number VARCHAR(50) UNIQUE,  -- e.g., "RX-2024-001234"
-  
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  patient_id VARCHAR(36) NOT NULL,
+  visit_id VARCHAR(36),  -- nullable — not every prescription requires a visit record
+
+  prescribed_by VARCHAR(36) NOT NULL,  -- doctor user id
+
   -- Content
-  notes TEXT,  -- Doctor's general notes/advice
-  
+  diagnosis TEXT,
+  doctors_notes TEXT,
+  advice TEXT,
+
   -- PDF generation
-  pdf_url TEXT,
-  pdf_generated_at TIMESTAMP WITH TIME ZONE,
-  
-  -- Status
-  status prescription_status DEFAULT 'draft',
-  
-  -- Voiding (for corrections)
-  voided_at TIMESTAMP WITH TIME ZONE,
-  voided_by UUID REFERENCES users(id),
-  void_reason TEXT,
-  replacement_prescription_id UUID REFERENCES prescriptions(id),  -- Points to the corrected version
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id)
+  pdf_url VARCHAR(500),
+  pdf_generated_at VARCHAR(50),
+
+  status VARCHAR(20) NOT NULL DEFAULT 'draft',  -- draft, issued, voided
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
 CREATE INDEX idx_prescriptions_tenant_id ON prescriptions(tenant_id);
 CREATE INDEX idx_prescriptions_patient_id ON prescriptions(patient_id);
-CREATE INDEX idx_prescriptions_visit_id ON prescriptions(visit_id);
 CREATE INDEX idx_prescriptions_status ON prescriptions(status);
-CREATE INDEX idx_prescriptions_number ON prescriptions(prescription_number);
 ```
+
+There is no `prescription_number`, `voided_at/voided_by/void_reason`, or `replacement_prescription_id` column in the current model — voiding just sets `status = 'voided'`.
 
 ---
 
@@ -580,38 +691,34 @@ CREATE INDEX idx_prescriptions_number ON prescriptions(prescription_number);
 Individual medicines in a prescription. Either references `medicines` table OR contains free-text medicine name.
 
 ```sql
+-- Reflects app/shared/models/prescription.py:PrescriptionItem
 CREATE TABLE prescription_items (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  prescription_id UUID NOT NULL REFERENCES prescriptions(id) ON DELETE CASCADE,
-  
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  prescription_id VARCHAR(36) NOT NULL REFERENCES prescriptions(id) ON DELETE CASCADE,
+
   -- Medicine reference (nullable — allows free-text entry)
-  medicine_id UUID REFERENCES medicines(id),
-  custom_medicine VARCHAR(255),  -- Used when medicine_id is NULL
-  
-  -- Dosage
-  dosage VARCHAR(100) NOT NULL,       -- "2 tablets", "10 drops", "1 teaspoon"
-  frequency VARCHAR(100) NOT NULL,    -- "twice daily", "after meals", "at bedtime"
-  duration VARCHAR(100),              -- "7 days", "until symptoms resolve", "1 month"
-  
-  -- Instructions
-  instructions TEXT,                  -- Additional patient instructions
-  
-  -- Sequence (display order)
-  sequence_number INTEGER DEFAULT 0,
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  medicine_id INTEGER,          -- references medicines(id) at the app layer
+  medicine_name VARCHAR(500),   -- free-text, used when medicine_id is NULL
+
+  dosage VARCHAR(255) NOT NULL,       -- "30C", "200C", "2 tablets", "5ml"
+  frequency VARCHAR(255) NOT NULL,    -- "3 times daily", "Morning & Evening"
+  duration VARCHAR(100),              -- "7 days", "2 weeks", "1 month"
+  quantity NUMERIC(10, 2),
+
+  instructions TEXT,
+  display_order INTEGER NOT NULL DEFAULT 0,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
 CREATE INDEX idx_prescription_items_prescription_id ON prescription_items(prescription_id);
-CREATE INDEX idx_prescription_items_medicine_id ON prescription_items(medicine_id) WHERE medicine_id IS NOT NULL;
-
--- Ensure either medicine_id OR custom_medicine is present
-ALTER TABLE prescription_items ADD CONSTRAINT check_medicine_source 
-  CHECK (
-    (medicine_id IS NOT NULL AND custom_medicine IS NULL) OR 
-    (medicine_id IS NULL AND custom_medicine IS NOT NULL)
-  );
 ```
+
+The "either `medicine_id` or free-text name" rule is enforced at the Pydantic/service layer, not as a database `CHECK` constraint — there is no such constraint in the Alembic migrations.
 
 ---
 
@@ -620,73 +727,147 @@ ALTER TABLE prescription_items ADD CONSTRAINT check_medicine_source
 Global admin-curated medicines + tenant-specific additions.
 
 ```sql
-CREATE TYPE medical_system AS ENUM ('homeopathy', 'ayurveda', 'unani', 'herbal');
-
+-- Reflects app/shared/models/medicine.py:Medicine
 CREATE TABLE medicines (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,  -- NULL for global medicines
-  
-  name VARCHAR(255) NOT NULL,
-  system medical_system NOT NULL,
-  category VARCHAR(100),  -- remedy, tincture, tablet, powder, oil, etc.
-  
-  -- Content
-  description TEXT,
-  indications TEXT,       -- What it treats
-  contraindications TEXT, -- When NOT to use
-  dosage_guidance TEXT,   -- Standard dosing info
-  
-  -- Metadata
-  potency VARCHAR(50),    -- For homeopathy: 30C, 200C, 1M
-  botanical_name VARCHAR(255),  -- For herbal medicines
-  
-  -- Search optimization
-  symptom_tags TEXT[],    -- Array of symptoms for matching
-  search_vector tsvector, -- Full-text search index
-  
-  -- Global vs. tenant-specific
-  is_global BOOLEAN DEFAULT FALSE,
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) REFERENCES tenants(id),  -- NULL for global medicines
+
+  name_en VARCHAR(500) NOT NULL,
+  name_bn VARCHAR(500),
+  system VARCHAR(50) NOT NULL,  -- homeopathy, ayurveda, unani, herbal
+  category VARCHAR(255),        -- system-specific, e.g. Mineral/Plant/Animal/Nosode
+
+  description_en TEXT,
+  description_bn TEXT,
+  potency VARCHAR(50),          -- For homeopathy: 6C, 30C, 200C, 1M
+  dosage_guidance_en TEXT,
+  dosage_guidance_bn TEXT,
+  indications_en TEXT,
+  indications_bn TEXT,
+  contraindications_en TEXT,
+  contraindications_bn TEXT,
+
+  is_global BOOLEAN NOT NULL DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
-CREATE INDEX idx_medicines_tenant_id ON medicines(tenant_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_medicines_is_global ON medicines(is_global) WHERE deleted_at IS NULL;
-CREATE INDEX idx_medicines_system ON medicines(system) WHERE deleted_at IS NULL;
-CREATE INDEX idx_medicines_name ON medicines USING gin(to_tsvector('english', name)) WHERE deleted_at IS NULL;
-CREATE INDEX idx_medicines_search_vector ON medicines USING gin(search_vector) WHERE deleted_at IS NULL;
-CREATE INDEX idx_medicines_symptom_tags ON medicines USING gin(symptom_tags) WHERE deleted_at IS NULL;
+CREATE INDEX ix_medicines_system ON medicines(system);
+-- Trigram GIN indexes power fuzzy/partial-match search (no tsvector/search_vector column)
+CREATE INDEX ix_medicines_name_en_trgm ON medicines USING gin(name_en gin_trgm_ops);
+CREATE INDEX ix_medicines_name_bn_trgm ON medicines USING gin(name_bn gin_trgm_ops);
+```
 
--- Trigger to auto-update search_vector
-CREATE TRIGGER medicines_search_vector_update BEFORE INSERT OR UPDATE
-ON medicines FOR EACH ROW EXECUTE FUNCTION
-tsvector_update_trigger(search_vector, 'pg_catalog.english', name, description, indications);
+There is no `botanical_name`, `symptom_tags`, or `search_vector` column, and no search-vector trigger — search is done via `pg_trgm` GIN indexes on `name_en`/`name_bn` plus the `medicine_aliases` table below.
+
+---
+
+### 11a. `medicine_aliases`
+
+Alternate spellings, transliterations, and brand names for a medicine — used by the search API to match local/Bengali input.
+
+```sql
+-- Reflects app/shared/models/medicine.py:MedicineAlias
+CREATE TABLE medicine_aliases (
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) REFERENCES tenants(id),
+  medicine_id INTEGER NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
+
+  alias_en VARCHAR(500),
+  alias_bn VARCHAR(500),
+  alias_type VARCHAR(50) NOT NULL DEFAULT 'common_name',
+  -- transliteration, common_name, brand_name, regional
+  priority INTEGER NOT NULL DEFAULT 5,  -- higher = better match
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX ix_medicine_aliases_alias_en_trgm ON medicine_aliases USING gin(alias_en gin_trgm_ops);
+CREATE INDEX ix_medicine_aliases_alias_bn_trgm ON medicine_aliases USING gin(alias_bn gin_trgm_ops);
 ```
 
 ---
 
-### 12. `medicine_symptoms`
+### 11b. `symptoms`
 
-Many-to-many symptom mapping for symptom-based search.
+Normalized master list of symptoms, shared across all medical systems.
 
 ```sql
-CREATE TABLE medicine_symptoms (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  medicine_id UUID NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
-  
-  symptom VARCHAR(255) NOT NULL,
-  match_strength INTEGER DEFAULT 100,  -- 0-100, for ranking
-  modality TEXT,  -- "worse in morning", "better with warmth", etc.
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- Reflects app/shared/models/symptom.py:Symptom
+CREATE TABLE symptoms (
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) REFERENCES tenants(id),  -- NULL for global symptoms
+
+  name_en VARCHAR(500) NOT NULL,
+  name_bn VARCHAR(500),
+  description_en TEXT,
+  description_bn TEXT,
+  category VARCHAR(100),  -- respiratory, digestive, neurological, skin, mental, ...
+
+  is_global BOOLEAN NOT NULL DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX idx_medicine_symptoms_medicine_id ON medicine_symptoms(medicine_id);
-CREATE INDEX idx_medicine_symptoms_symptom ON medicine_symptoms USING gin(to_tsvector('english', symptom));
-CREATE UNIQUE INDEX idx_medicine_symptoms_unique ON medicine_symptoms(medicine_id, symptom);
+CREATE INDEX ix_symptoms_name_en_trgm ON symptoms USING gin(name_en gin_trgm_ops);
+```
+
+---
+
+### 11c. `symptom_aliases`
+
+Alternate spellings/transliterations for a symptom (e.g. "matha byatha" → headache).
+
+```sql
+-- Reflects app/shared/models/symptom.py:SymptomAlias
+CREATE TABLE symptom_aliases (
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) REFERENCES tenants(id),
+  symptom_id INTEGER NOT NULL REFERENCES symptoms(id) ON DELETE CASCADE,
+
+  alias_en VARCHAR(500),
+  alias_bn VARCHAR(500),
+  alias_type VARCHAR(50) NOT NULL DEFAULT 'common_name',
+  priority INTEGER NOT NULL DEFAULT 5,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+---
+
+### 12. `medicine_symptom_mappings`
+
+Many-to-many mapping between `medicines` and the normalized `symptoms` table (not free-text symptom strings). Named `medicine_symptoms` in earlier drafts of this doc — the actual table is `medicine_symptom_mappings`.
+
+```sql
+-- Reflects app/shared/models/symptom.py:MedicineSymptomMapping
+CREATE TABLE medicine_symptom_mappings (
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) REFERENCES tenants(id),
+  medicine_id INTEGER NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
+  symptom_id INTEGER NOT NULL REFERENCES symptoms(id) ON DELETE CASCADE,
+
+  modality_en TEXT,  -- "worse at night", "better from warmth"
+  modality_bn TEXT,
+  strength INTEGER NOT NULL DEFAULT 5,  -- 1-10, for ranking
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE UNIQUE INDEX ix_medicine_symptom_unique ON medicine_symptom_mappings(medicine_id, symptom_id);
 ```
 
 ---
@@ -696,46 +877,32 @@ CREATE UNIQUE INDEX idx_medicine_symptoms_unique ON medicine_symptoms(medicine_i
 Records all patient payments. Digital payments (bKash, Nagad, etc.) are processed via configured `tenant_integrations`.
 
 ```sql
-CREATE TYPE payment_method AS ENUM ('cash', 'bkash', 'nagad', 'rocket', 'upay', 'card', 'bank_transfer');
-CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'overdue', 'refunded', 'failed');
-
+-- Reflects app/shared/models/payment.py:Payment
 CREATE TABLE payments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  visit_id UUID NOT NULL REFERENCES visits(id) ON DELETE CASCADE,
-  patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  
-  amount DECIMAL(10, 2) NOT NULL,
-  method payment_method NOT NULL,
-  status payment_status DEFAULT 'pending',
-  
-  -- Integration tracking (for digital payments)
-  integration_id UUID REFERENCES tenant_integrations(id),
-  integration_log_id UUID REFERENCES integration_logs(id),
-  
-  -- Transaction details
-  transaction_id VARCHAR(100),  -- Provider's transaction ID (bKash TrxID, Stripe charge_id, etc.)
-  paid_at TIMESTAMP WITH TIME ZONE,
-  
-  -- Notes
-  notes TEXT,
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id)
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  patient_id VARCHAR(36) NOT NULL,
+  visit_id VARCHAR(36),  -- nullable
+
+  amount NUMERIC(10, 2) NOT NULL,
+  currency VARCHAR(3) NOT NULL DEFAULT 'BDT',
+  payment_method VARCHAR(50) NOT NULL,  -- cash, bkash, nagad, rocket, card, other
+  status VARCHAR(20) NOT NULL DEFAULT 'paid',  -- paid, pending, failed, refunded
+
+  integration_log_id INTEGER,  -- references integration_logs(id) at the app layer
+  transaction_id VARCHAR(255),
+  description TEXT,
+  payment_date DATE NOT NULL,
+  received_by VARCHAR(36) NOT NULL,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
 CREATE INDEX idx_payments_tenant_id ON payments(tenant_id);
 CREATE INDEX idx_payments_patient_id ON payments(patient_id);
-CREATE INDEX idx_payments_visit_id ON payments(visit_id);
-CREATE INDEX idx_payments_status ON payments(status);
-CREATE INDEX idx_payments_paid_at ON payments(paid_at DESC) WHERE paid_at IS NOT NULL;
-CREATE INDEX idx_payments_integration_id ON payments(integration_id) WHERE integration_id IS NOT NULL;
-CREATE INDEX idx_payments_transaction_id ON payments(transaction_id) WHERE transaction_id IS NOT NULL;
-
--- Payment flow examples:
--- Cash payment: method='cash', integration_id=NULL, status='paid' (recorded manually)
--- bKash payment: method='bkash', integration_id=<bkash_config>, transaction_id=<TrxID>, status='paid'
--- Failed payment: status='failed', error logged in integration_logs
 ```
 
 ---
@@ -743,19 +910,21 @@ CREATE INDEX idx_payments_transaction_id ON payments(transaction_id) WHERE trans
 ### 14. `invoices`
 
 ```sql
+-- Reflects app/shared/models/payment.py:Invoice
 CREATE TABLE invoices (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  payment_id UUID NOT NULL REFERENCES payments(id) ON DELETE CASCADE,
-  
-  invoice_number VARCHAR(50) UNIQUE NOT NULL,  -- "INV-2024-001234"
-  
-  -- PDF
-  pdf_url TEXT,
-  pdf_generated_at TIMESTAMP WITH TIME ZONE,
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id)
+  id VARCHAR(36) PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+  payment_id VARCHAR(36) NOT NULL,
+
+  invoice_number VARCHAR(50) NOT NULL,  -- e.g. "INV-YYYYMM-NNNN"
+  pdf_url VARCHAR(500),
+  status VARCHAR(20) NOT NULL DEFAULT 'draft',  -- draft, sent, paid, overdue, cancelled
+  due_date DATE,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  created_by VARCHAR(36),
+  updated_by VARCHAR(36)
 );
 
 CREATE INDEX idx_invoices_tenant_id ON invoices(tenant_id);
@@ -799,15 +968,16 @@ CREATE TABLE books (
   
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES users(id),
-  deleted_at TIMESTAMP WITH TIME ZONE
+  created_by UUID REFERENCES users(id)
 );
 
-CREATE INDEX idx_books_tenant_id ON books(tenant_id) WHERE deleted_at IS NULL;
-CREATE INDEX idx_books_is_global ON books(is_global) WHERE deleted_at IS NULL;
-CREATE INDEX idx_books_system ON books(system) WHERE deleted_at IS NULL;
-CREATE INDEX idx_books_title ON books USING gin(to_tsvector('english', title)) WHERE deleted_at IS NULL;
+CREATE INDEX idx_books_tenant_id ON books(tenant_id);
+CREATE INDEX idx_books_is_global ON books(is_global);
+CREATE INDEX idx_books_system ON books(system);
+CREATE INDEX idx_books_title ON books USING gin(to_tsvector('english', title));
 ```
+
+The actual model (`app/shared/models/library.py:Book`) uses `is_active`/`is_parsed` booleans (not `deleted_at`/`parsing_status`), tracks `total_chapters`/`total_sections`/`word_count` instead of `page_count`, and has bilingual `title_en`/`title_bn` rather than a single `title` column. The book library has no routes yet — models exist but the reader is unbuilt (see `docs/ROADMAP.md` Phase C).
 
 ---
 
@@ -861,26 +1031,26 @@ CREATE INDEX idx_sections_content ON sections USING gin(to_tsvector('english', c
 Vector embeddings for RAG — one per section.
 
 ```sql
+-- Reflects app/shared/models/library.py:Embedding
 CREATE TABLE embeddings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  section_id UUID NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
-  
-  -- OpenAI text-embedding-3-small produces 1536-dimensional vectors
+  id SERIAL PRIMARY KEY,
+  section_id INTEGER NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
+
+  -- Sized for OpenAI text-embedding-3-small (1536-dimensional); no embedding
+  -- pipeline is wired up yet — the AI assistant is a 501 stub
   embedding vector(1536) NOT NULL,
-  
-  -- Metadata for filtering during retrieval
-  book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-  system medical_system,
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+  chunk_text TEXT NOT NULL,
+  chunk_index INTEGER NOT NULL  -- position within the section for overlapping chunks
 );
 
 CREATE INDEX idx_embeddings_section_id ON embeddings(section_id);
-CREATE INDEX idx_embeddings_book_id ON embeddings(book_id);
 
--- Vector similarity index (HNSW for fast approximate nearest neighbor search)
-CREATE INDEX idx_embeddings_vector ON embeddings USING hnsw (embedding vector_cosine_ops);
+-- Vector similarity index (ivfflat — not HNSW)
+CREATE INDEX idx_embeddings_vector ON embeddings USING ivfflat (embedding vector_cosine_ops);
 ```
+
+There is no `book_id` or `system` column directly on `embeddings` — filtering by book/system happens via a join through `sections → chapters → books`.
 
 ---
 
@@ -955,75 +1125,37 @@ CREATE INDEX idx_highlights_section_id ON highlights(section_id);
 
 ---
 
-### 22. `ai_queries`
+### 22. `usage_tracking`
 
-Log of all AI assistant queries for usage tracking and analytics.
-
-```sql
-CREATE TABLE ai_queries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  
-  query TEXT NOT NULL,
-  response TEXT,
-  
-  -- Retrieval metadata
-  retrieved_sections JSONB,  -- Array of {section_id, book_title, chapter, similarity_score}
-  
-  -- Performance
-  retrieval_time_ms INTEGER,
-  llm_time_ms INTEGER,
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE INDEX idx_ai_queries_tenant_id ON ai_queries(tenant_id);
-CREATE INDEX idx_ai_queries_user_id ON ai_queries(user_id);
-CREATE INDEX idx_ai_queries_created_at ON ai_queries(created_at DESC);
-```
-
----
-
-### 23. `notifications`
-
-Email and SMS notification queue. Notifications are dispatched via tenant's configured integrations.
+**Correction:** earlier drafts of this doc described tables named `ai_queries` and `notifications`. Neither exists in the codebase — there is no `ai_queries` table (the `POST /api/v1/ai/query` endpoint is a 501 stub with no persistence yet) and no `notifications` table (the `notification/` backend module is an unbuilt placeholder). What actually exists for usage/quota tracking is `usage_tracking`:
 
 ```sql
-CREATE TYPE notification_type AS ENUM ('email', 'sms');
-CREATE TYPE notification_status AS ENUM ('pending', 'sent', 'failed');
+-- Reflects app/shared/models/usage.py:UsageTracking
+CREATE TABLE usage_tracking (
+  id SERIAL PRIMARY KEY,
+  tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
 
-CREATE TABLE notifications (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
-  
-  type notification_type NOT NULL,
-  recipient VARCHAR(255) NOT NULL,  -- Email or phone number
-  
-  subject VARCHAR(500),  -- For emails
-  body TEXT NOT NULL,
-  
-  -- Integration tracking
-  integration_id UUID REFERENCES tenant_integrations(id),  -- Which integration was used
-  integration_log_id UUID REFERENCES integration_logs(id), -- Link to the actual transaction
-  
-  -- Status
-  status notification_status DEFAULT 'pending',
-  sent_at TIMESTAMP WITH TIME ZONE,
-  failed_reason TEXT,
-  retry_count INTEGER DEFAULT 0,
-  
-  -- Context (for templating and tracking)
-  context JSONB,  -- {patient_id, visit_id, prescription_id, payment_id}
-  
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  usage_date DATE NOT NULL,  -- one row per tenant per day
+
+  -- Daily counters (reset per plan period)
+  patients_added INTEGER NOT NULL DEFAULT 0,
+  prescriptions_created INTEGER NOT NULL DEFAULT 0,
+  ai_queries_made INTEGER NOT NULL DEFAULT 0,
+  pdfs_generated INTEGER NOT NULL DEFAULT 0,
+
+  -- Running totals (for display)
+  total_patients INTEGER NOT NULL DEFAULT 0,
+  total_prescriptions INTEGER NOT NULL DEFAULT 0,
+  total_ai_queries_this_month INTEGER NOT NULL DEFAULT 0,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX idx_notifications_status ON notifications(status) WHERE status = 'pending';
-CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
-CREATE INDEX idx_notifications_tenant_id ON notifications(tenant_id);
-CREATE INDEX idx_notifications_integration_id ON notifications(integration_id) WHERE integration_id IS NOT NULL;
+CREATE INDEX ix_usage_tracking_usage_date ON usage_tracking(usage_date);
 ```
+
+When the AI assistant (Phase D, see `docs/ROADMAP.md`) and notification queue are actually built, they will need their own tables — this doc should be updated at that point rather than treated as already describing them.
 
 ---
 
@@ -1038,19 +1170,14 @@ These tables have no `tenant_id` — they are shared across all tenants.
 Bangladesh administrative divisions (বিভাগ). There are 8 divisions in Bangladesh.
 
 ```sql
+-- Reflects app/shared/models/geographic.py:Division — no PostGIS extension in use
 CREATE TABLE divisions (
-  id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 10),
-  
-  name VARCHAR(100) NOT NULL,        -- English name (e.g., "Dhaka", "Chittagong")
-  bn_name VARCHAR(100) NOT NULL,     -- Bengali name (e.g., "ঢাকা", "চট্টগ্রাম")
-  url VARCHAR(100),                  -- URL slug for division page
-  
-  -- Geospatial data (PostGIS)
-  geom GEOMETRY(MultiPolygon, 4326)  -- Division boundary polygon
+  id SERIAL PRIMARY KEY,
+  name_en VARCHAR(100) NOT NULL,
+  name_bn VARCHAR(100) NOT NULL,
+  latitude FLOAT,
+  longitude FLOAT
 );
-
-CREATE INDEX idx_divisions_name ON divisions(name);
-CREATE INDEX idx_divisions_geom ON divisions USING GIST(geom);
 ```
 
 **Sample data:** Dhaka (ঢাকা), Chittagong (চট্টগ্রাম), Rajshahi (রাজশাহী), Khulna (খুলনা), Barisal (বরিশাল), Sylhet (সিলেট), Rangpur (রংপুর), Mymensingh (ময়মনসিংহ)
@@ -1062,23 +1189,17 @@ CREATE INDEX idx_divisions_geom ON divisions USING GIST(geom);
 Bangladesh districts (জেলা). There are 64 districts under the 8 divisions.
 
 ```sql
+-- Reflects app/shared/models/geographic.py:District
 CREATE TABLE districts (
-  id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 66),
-  division_id INTEGER NOT NULL REFERENCES divisions(id) ON UPDATE CASCADE,
-  
-  name VARCHAR(100) NOT NULL,        -- English name
-  bn_name VARCHAR(100) NOT NULL,     -- Bengali name
-  lat NUMERIC(12, 9),                -- Latitude of district center
-  lon NUMERIC(12, 9),                -- Longitude of district center
-  url VARCHAR(100),                  -- URL slug
-  
-  -- Geospatial data (PostGIS)
-  geom GEOMETRY(MultiPolygon, 4326)  -- District boundary polygon
+  id SERIAL PRIMARY KEY,
+  division_id INTEGER NOT NULL,
+  name_en VARCHAR(100) NOT NULL,
+  name_bn VARCHAR(100) NOT NULL,
+  latitude FLOAT,
+  longitude FLOAT
 );
 
 CREATE INDEX idx_districts_division_id ON districts(division_id);
-CREATE INDEX idx_districts_name ON districts(name);
-CREATE INDEX idx_districts_geom ON districts USING GIST(geom);
 ```
 
 **Example:** Dhaka district (ঢাকা জেলা) under Dhaka division, Chittagong district (চট্টগ্রাম জেলা) under Chittagong division.
@@ -1090,28 +1211,22 @@ CREATE INDEX idx_districts_geom ON districts USING GIST(geom);
 Bangladesh sub-districts (উপজেলা). There are 490+ upazilas under the 64 districts.
 
 ```sql
+-- Reflects app/shared/models/geographic.py:Upazila
 CREATE TABLE upazilas (
-  id INTEGER PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 493),
-  district_id INTEGER NOT NULL REFERENCES districts(id) ON UPDATE CASCADE,
-  
-  name VARCHAR(100) NOT NULL,        -- English name
-  bn_name VARCHAR(100) NOT NULL,     -- Bengali name
-  lat NUMERIC(12, 9),                -- Latitude of upazila center
-  lon NUMERIC(12, 9),                -- Longitude of upazila center
-  url VARCHAR(100),                  -- URL slug
-  
-  -- Geospatial data (PostGIS)
-  geom GEOMETRY(MultiPolygon, 4326)  -- Upazila boundary polygon
+  id SERIAL PRIMARY KEY,
+  district_id INTEGER NOT NULL,
+  name_en VARCHAR(100) NOT NULL,
+  name_bn VARCHAR(100) NOT NULL,
+  latitude FLOAT,
+  longitude FLOAT
 );
 
 CREATE INDEX idx_upazilas_district_id ON upazilas(district_id);
-CREATE INDEX idx_upazilas_name ON upazilas(name);
-CREATE INDEX idx_upazilas_geom ON upazilas USING GIST(geom);
 ```
 
 **Example:** Dhanmondi (ধানমন্ডি), Mohammadpur (মোহাম্মদপুর), Gulshan (গুলশান) under Dhaka district.
 
-**Note:** These tables use INTEGER primary keys (not UUID) to match Bangladesh's official geographic coding system. The IDENTITY start values align with existing government data standards.
+**Note:** These tables use `SERIAL` (integer) primary keys, not UUID. There is no PostGIS extension, boundary-polygon (`geom`) column, or `url` slug field in the current models — only optional `latitude`/`longitude` floats.
 
 ---
 
@@ -1254,29 +1369,26 @@ CREATE INDEX idx_integration_logs_external_tx ON integration_logs(external_trans
 ### Critical indexes (already defined above)
 
 1. **Tenant scoping:** Every tenant-scoped table has `idx_<table>_tenant_id`
-2. **Foreign keys:** All FK columns are indexed
-3. **Full-text search:** `medicines.name`, `patients.full_name`, `sections.content` use GIN indexes
-4. **Vector search:** `embeddings.embedding` uses HNSW index for fast cosine similarity
-5. **Time-series queries:** `visits.visit_date`, `payments.paid_at`, `ai_queries.created_at` indexed DESC
-6. **Status filters:** `prescriptions.status`, `payments.status`, `notifications.status`
+2. **Foreign keys:** Key FK columns are indexed (`index=True` in the SQLAlchemy models)
+3. **Fuzzy search:** `medicines.name_en/name_bn`, `medicine_aliases.alias_en/alias_bn`, `symptoms.name_en/name_bn`, `symptom_aliases.alias_en/alias_bn` use `pg_trgm` GIN indexes; `patients.full_name` is a plain indexed column, not full-text
+4. **Vector search:** `embeddings.embedding` uses an `ivfflat` index for cosine similarity (not HNSW)
+5. **Time-series queries:** `visits.visit_date`, `appointments.appointment_date` are indexed
+6. **Status filters:** `prescriptions.status`, `payments.status`, `appointments.status` — there is no `notifications` or `ai_queries` table to index
 
 ### Additional performance optimizations
 
 ```sql
 -- Composite index for common patient lookup pattern
-CREATE INDEX idx_patients_tenant_name ON patients(tenant_id, full_name) WHERE deleted_at IS NULL;
+CREATE INDEX idx_patients_tenant_name ON patients(tenant_id, full_name);
 
 -- Composite index for dashboard queries (recent visits)
-CREATE INDEX idx_visits_tenant_date ON visits(tenant_id, visit_date DESC) WHERE visit_status = 'completed';
+CREATE INDEX idx_visits_tenant_date ON visits(tenant_id, visit_date DESC);
 
--- Partial index for pending follow-ups
-CREATE INDEX idx_visits_pending_followup ON visits(tenant_id, follow_up_date) 
-  WHERE follow_up_date >= CURRENT_DATE AND visit_status = 'completed';
-
--- Index for monthly revenue reports
-CREATE INDEX idx_payments_tenant_paid_month ON payments(tenant_id, DATE_TRUNC('month', paid_at)) 
-  WHERE status = 'paid';
+-- Composite index for appointment scheduling views
+CREATE INDEX idx_appointments_tenant_date ON appointments(tenant_id, appointment_date);
 ```
+
+These are illustrative examples of the kind of composite indexes worth adding as query patterns emerge — check `alembic/versions/` for the indexes actually created to date.
 
 ### Query optimization guidelines
 
@@ -1438,9 +1550,9 @@ UPDATE tenants SET specializations = ARRAY['homeopathy'] WHERE id = $1;
 UPDATE tenants SET specializations = ARRAY['homeopathy', 'ayurveda', 'herbal'] WHERE id = $1;
 ```
 
-### Resource filtering based on specialization
+### Resource filtering based on specialization (not implemented)
 
-All resources (medicines, books, symptom searches) are automatically filtered by the doctor's active specializations:
+`tenant.specializations` exists in the schema, but no current route or service actually filters medicines/books/symptoms by it — `app/modules/medicine/routes.py` only filters by `is_global`/`tenant_id`. The query below shows the intended design, not shipped behavior:
 
 ```sql
 -- Get medicines available to this doctor (based on specializations)
@@ -1544,16 +1656,18 @@ VALUES (
 
 #### Scenario 2: Automated appointment reminder SMS
 
+> **Not yet implemented.** There is no `notifications` table in the codebase today (the `notification/` backend module is an unbuilt placeholder). `appointments.reminder_sent` exists as a boolean flag, but no Celery task currently sends reminders. The queries below describe how this *would* work once built, using `appointments` (not `visits`) as the source of truth for scheduled times.
+
 ```sql
 -- 1. Celery worker runs daily at 8 AM to find tomorrow's appointments
-SELECT v.id, p.phone, v.visit_date 
-FROM visits v 
-JOIN patients p ON p.id = v.patient_id
-WHERE v.tenant_id = $1
-  AND v.visit_date::date = CURRENT_DATE + 1
-  AND v.visit_status = 'scheduled';
+SELECT a.id, p.phone, a.appointment_date, a.appointment_time
+FROM appointments a
+JOIN patients p ON p.id = a.patient_id
+WHERE a.tenant_id = $1
+  AND a.appointment_date = CURRENT_DATE + 1
+  AND a.status IN ('scheduled', 'confirmed');
 
--- 2. For each appointment, create notification
+-- 2. For each appointment, create notification (hypothetical — table does not exist yet)
 INSERT INTO notifications (tenant_id, type, recipient, body, context)
 VALUES (
   $1,
@@ -1577,6 +1691,8 @@ WHERE ti.tenant_id = $1 AND ip.type = 'sms' AND ti.is_enabled = true;
 ```
 
 #### Scenario 3: Prescription ready email notification
+
+> **Not yet implemented** — same caveat as Scenario 2, this uses the hypothetical `notifications` table.
 
 ```sql
 -- 1. Doctor finalizes prescription, triggers PDF generation (Celery task)
@@ -1618,17 +1734,17 @@ SELECT
   v.id as visit_id,
   v.visit_date,
   v.chief_complaint,
-  v.diagnosis_summary,
-  p.prescription_number,
+  v.provisional_diagnosis,
+  p.id as prescription_id,
   p.pdf_url,
   json_agg(json_build_object(
-    'medicine', COALESCE(m.name, pi.custom_medicine),
+    'medicine', COALESCE(m.name_en, pi.medicine_name),
     'dosage', pi.dosage,
     'frequency', pi.frequency,
     'duration', pi.duration
   )) as medicines
 FROM visits v
-LEFT JOIN prescriptions p ON p.visit_id = v.id AND p.status = 'finalized'
+LEFT JOIN prescriptions p ON p.visit_id = v.id AND p.status = 'issued'
 LEFT JOIN prescription_items pi ON pi.prescription_id = p.id
 LEFT JOIN medicines m ON m.id = pi.medicine_id
 WHERE v.patient_id = $1
@@ -1728,7 +1844,7 @@ This database schema is designed to:
 
 ✅ **Support multi-tenancy** with full data isolation via row-level `tenant_id` filtering  
 ✅ **4 distinct user roles** with clear separation of platform (admin, operator) and tenant (doctor, receptionist) scopes  
-✅ **Multi-specialization support** — doctors can practice 1-4 systems, resources auto-filter based on active specializations  
+⚠️ **Multi-specialization support (data model only)** — `tenant.specializations` (1-4 systems) exists on the schema, but no route or service currently filters medicines/library resources by it; only `is_global`/`tenant_id` filtering is implemented today  
 ✅ **Integrated SMS/Email/Payment** — pluggable provider framework with 10+ pre-configured providers (bKash, Nagad, Rocket, Twilio, etc.)  
 ✅ **Complete transaction audit** — every SMS, email, and payment logged with request/response payloads  
 ✅ **Scale to thousands of clinics** on a single PostgreSQL instance  
@@ -1736,11 +1852,11 @@ This database schema is designed to:
 ✅ **Power AI/RAG** with vector embeddings stored natively in PostgreSQL (pgvector)  
 ✅ **Maintain audit trails** with automatic timestamp and user tracking on all entities  
 ✅ **Enforce data integrity** with foreign keys, constraints, and check conditions  
-✅ **Optimize query performance** with targeted indexes, partial indexes, and GIN/HNSW indexes  
+✅ **Optimize query performance** with targeted indexes and GIN/ivfflat indexes  
 
-The schema balances **flexibility** (JSONB for extensible metadata, nullable foreign keys for optional data) with **strictness** (immutable prescriptions, strong FK constraints, enum types for controlled vocabularies).
+The schema balances **flexibility** (JSONB for extensible metadata, nullable columns for optional data) with **strictness** (immutable prescriptions, append-only status transitions).
 
-**Total tables:** 24 (core clinic + knowledge base + integrations + usage tracking)
+**Total tables:** 34 — see [Key Features](#key-features) above for the full breakdown. `admin`/`operator` are platform roles with `tenant_id = NULL`; only `admin` has enforced RBAC today (see [User Roles & Permissions](#user-roles--permissions)).
 
 **Integration providers:** SMS (Twilio, Banglalink, Robi, GP), Email (SMTP, SendGrid, AWS SES), Payment (bKash, Nagad, Rocket, Upay, Stripe, Razorpay)
 
@@ -1754,14 +1870,14 @@ It is designed to evolve incrementally — Phase 1 launches with core clinic tab
 
 | Pattern | Implementation | Example |
 |---------|---------------|---------|
-| Multi-tenancy | `tenant_id` on every table + JWT-based filtering | All queries auto-filter: `WHERE tenant_id = $current_tenant` |
+| Multi-tenancy | `tenant_id` on every table; JWT → service constructor → explicit filter | `BaseTenantService` helpers add `WHERE tenant_id = $current_tenant`; hand-written queries must add it themselves (not automatic) |
 | Platform vs Tenant users | `tenant_id IS NULL` for platform users | Admin/Operator: no tenant, Doctor/Receptionist: has tenant |
-| Specialization filtering | Array membership check | `WHERE system = ANY(doctor.specializations)` |
+| Specialization filtering | Not implemented — `tenant.specializations` exists on the schema but no query uses it | Intended: `WHERE system = ANY(tenant.specializations) OR is_global` |
 | Global vs Tenant data | `is_global` flag + nullable `tenant_id` | Medicines: global pool + tenant additions |
-| Immutable records | No UPDATE, only INSERT | Prescriptions/Payments: void and replace, never edit |
-| Soft deletes | `deleted_at` timestamp | Filters: `WHERE deleted_at IS NULL` |
+| Immutable records | Status transitions, not UPDATE-then-delete | Prescriptions: `draft` → `issued` → `voided`, never edited once issued |
+| Soft deletes | Per-table `is_active` boolean or `status` field | Filters: `WHERE is_active = true` (no shared `deleted_at` column) |
 | Integration abstraction | Provider catalog + tenant config + logs | One framework for SMS, Email, Payment |
-| Audit trail | `created_at`, `updated_at`, `created_by`, `updated_by` | Automatic via SQLAlchemy event listeners |
+| Audit trail | `created_at`, `updated_at`, `created_by`, `updated_by` | `created_at`/`updated_at` are DB-level automatic (`server_default`/`onupdate=func.now()`); `created_by`/`updated_by` are plain nullable columns explicitly set by the service layer — no SQLAlchemy event listeners exist in the codebase |
 
 ### Common Operations Quick Reference
 
@@ -1773,7 +1889,7 @@ SELECT specializations FROM tenants WHERE id = $tenant_id;
 SELECT * FROM medicines 
 WHERE (tenant_id = $1 OR is_global = true)
   AND system = ANY(SELECT unnest(specializations) FROM tenants WHERE id = $1)
-  AND deleted_at IS NULL;
+  AND is_active = true;
 
 -- Get tenant's active payment integration
 SELECT ti.*, ip.display_name 
@@ -1784,10 +1900,10 @@ WHERE ti.tenant_id = $1
   AND ti.is_enabled = true 
   AND ti.is_verified = true;
 
--- Create prescription with mixed medicines (DB + custom)
-INSERT INTO prescription_items (prescription_id, medicine_id, custom_medicine, dosage, frequency)
+-- Create prescription with mixed medicines (DB + free-text)
+INSERT INTO prescription_items (prescription_id, medicine_id, medicine_name, dosage, frequency)
 VALUES 
-  ($1, 'uuid-of-existing-medicine', NULL, '2 tablets', 'twice daily'),
+  ($1, 42, NULL, '2 tablets', 'twice daily'),
   ($1, NULL, 'Custom Herbal Mix', '1 teaspoon', 'before bed');
 
 -- Track monthly integration usage
@@ -1807,7 +1923,7 @@ FROM visits v
 JOIN patients p ON p.id = v.patient_id
 WHERE v.tenant_id = $1
   AND v.follow_up_date BETWEEN CURRENT_DATE AND CURRENT_DATE + 7
-  AND v.visit_status = 'completed'
+  AND v.status = 'completed'
 ORDER BY v.follow_up_date;
 ```
 
@@ -1815,7 +1931,7 @@ ORDER BY v.follow_up_date;
 
 - [ ] PostgreSQL 16 installed with extensions: `pgvector`, `uuid-ossp`, `pg_trgm`
 - [ ] Run migrations: `alembic upgrade head`
-- [ ] Seed integration providers: `INSERT INTO integration_providers ...` (see table 22)
+- [ ] Seed integration providers: `INSERT INTO integration_providers ...` (see `usage_tracking` and integration tables above)
 - [ ] Create platform admin user: `role='admin', tenant_id=NULL`
 - [ ] Set up encryption key: `INTEGRATION_ENCRYPTION_KEY` in `.env`
 - [ ] Configure backup schedule: daily `pg_dump` to S3

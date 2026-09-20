@@ -1,7 +1,7 @@
 ---
 title: "Database Schema"
 type: "architecture"
-version: "0.9.0"
+version: "1.0.0"
 last_updated: "2026-07-12"
 ai_summary: "34 PostgreSQL tables with multi-tenant isolation, pgvector for AI, and complete audit trail"
 ---
@@ -30,13 +30,14 @@ Complete database schema for AltCare with 34 tables organized by domain.
 
 **Database:** PostgreSQL 16
 **Total Tables:** 34
-**Extensions:** pgvector, uuid-ossp, pg_trgm
+**Extensions:** pgvector, pg_trgm
 
 **Design Principles:**
 - Multi-tenant isolation (`tenant_id` on all tenant-scoped tables)
 - Audit trail (`created_at`, `updated_at`, `created_by`, `updated_by`)
-- Soft deletes (`deleted_at` for clinical data)
+- Soft deletes — no shared `deleted_at` column; each table uses either an `is_active` boolean (patients, medicines, symptoms, books) or a `status` field (prescriptions, payments, invoices, appointments)
 - Immutable records (prescriptions, payments)
+- Primary keys are app-generated `VARCHAR(36)` UUID strings (Python `uuid4()`) on core entity tables, or plain `SERIAL` integers on catalog/lookup tables — not database-generated via `uuid-ossp`
 
 ---
 
@@ -46,41 +47,46 @@ Complete database schema for AltCare with 34 tables organized by domain.
 **Purpose:** Clinic/Organization records
 
 ```sql
+-- Reflects app/shared/models/tenant.py:Tenant
 CREATE TABLE tenants (
-    id UUID PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    subdomain VARCHAR(100) UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(20),
 
     -- Clinic details
+    clinic_name VARCHAR(255),
     clinic_address TEXT,
-    division_id INTEGER REFERENCES divisions(id),
-    district_id INTEGER REFERENCES districts(id),
-    upazila_id INTEGER REFERENCES upazila(id),
+    division_id INTEGER,
+    district_id INTEGER,
+    upazila_id INTEGER,
 
     -- Specializations (array)
-    specializations TEXT[] DEFAULT ARRAY['homeopathy'],
+    specializations VARCHAR(50)[] NOT NULL DEFAULT '{}',
 
-    -- License
+    -- License / verification / approval
     license_number VARCHAR(100),
-    is_verified BOOLEAN DEFAULT false,
+    is_verified BOOLEAN NOT NULL DEFAULT false,
     verified_at TIMESTAMP,
+    is_approved BOOLEAN NOT NULL DEFAULT false,   -- admin approval gate for onboarding
+    approved_at TIMESTAMP,
+    approved_by VARCHAR(36),
+    is_active BOOLEAN NOT NULL DEFAULT true,
 
     -- Subscription
-    plan VARCHAR(50) DEFAULT 'free',
-    plan_started_at TIMESTAMP,
+    plan VARCHAR(20) NOT NULL DEFAULT 'free',
+    plan_started_at TIMESTAMP NOT NULL DEFAULT NOW(),
     plan_expires_at TIMESTAMP,
 
-    -- Limits
-    max_patients INTEGER DEFAULT 50,
-    max_monthly_patients INTEGER DEFAULT 100,
-
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
 
-**Specializations Enum:** `homeopathy`, `ayurveda`, `unani`, `herbal`
-**Plans:** `free`, `basic`, `pro`, `enterprise`
+**Specializations:** `homeopathy`, `ayurveda`, `unani`, `herbal` (1-4 per tenant)
+**Plans:** `free`, `plus`, `pro` — there is no `basic` or `enterprise` plan in the model's comments, and no `subdomain` or per-plan `max_patients`/`max_monthly_patients` column; usage limits are tracked separately in `usage_tracking`. Integration credentials (SMS/email/payment) live in `tenant_integrations`, not on `tenants`.
 
 ---
 
@@ -88,32 +94,40 @@ CREATE TABLE tenants (
 **Purpose:** All system users (platform + tenant)
 
 ```sql
+-- Reflects app/shared/models/tenant.py:User
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    tenant_id UUID REFERENCES tenants(id),  -- NULL for platform users
+    id VARCHAR(36) PRIMARY KEY,
+    tenant_id VARCHAR(36) REFERENCES tenants(id),  -- NULL for platform users
 
-    email VARCHAR(320) UNIQUE NOT NULL,
-    hashed_password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     avatar_url VARCHAR(500),
 
     role VARCHAR(50) NOT NULL,  -- admin, operator, doctor, receptionist
-    language VARCHAR(10) DEFAULT 'en',  -- en, bn
+    language VARCHAR(5) NOT NULL DEFAULT 'en',  -- en, bn
 
-    is_active BOOLEAN DEFAULT true,
-    is_email_verified BOOLEAN DEFAULT false,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    is_email_verified BOOLEAN NOT NULL DEFAULT false,
+    email_verified_at TIMESTAMP,
+    last_login_at TIMESTAMP,
 
     -- 2FA
-    two_factor_enabled BOOLEAN DEFAULT false,
-    two_factor_secret VARCHAR(255),
+    is_2fa_enabled BOOLEAN NOT NULL DEFAULT false,
+    totp_secret VARCHAR(32),
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    -- JWT invalidation (incremented on password/email/role change)
+    token_version INTEGER NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
 
-**Roles:** `admin`, `operator`, `doctor`, `receptionist`
+**Roles:** `admin`, `operator`, `doctor`, `receptionist` — only `admin` and `doctor` have enforced RBAC today; `operator` has a guard (`RequireAdminOrOperator`) but no endpoint uses it, and `receptionist` has no distinct enforcement from `doctor`. See `roles-access.md`.
 
 ---
 
@@ -121,20 +135,27 @@ CREATE TABLE users (
 **Purpose:** Track active JWT sessions
 
 ```sql
+-- Reflects app/shared/models/tenant.py:UserSession
 CREATE TABLE user_sessions (
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    tenant_id UUID REFERENCES tenants(id),
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
-    refresh_token_jti VARCHAR(255) UNIQUE NOT NULL,
+    refresh_token_hash VARCHAR(255) NOT NULL,  -- not a jti claim
     expires_at TIMESTAMP NOT NULL,
+    last_activity_at TIMESTAMP NOT NULL DEFAULT NOW(),
 
     ip_address VARCHAR(45),
     user_agent TEXT,
 
-    created_at TIMESTAMP DEFAULT NOW()
+    is_revoked BOOLEAN NOT NULL DEFAULT false,
+    revoked_at TIMESTAMP,
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP
 );
 ```
+
+There is no `tenant_id` column on `user_sessions` in the current model.
 
 ---
 
@@ -218,33 +239,35 @@ CREATE TABLE patients (
     id UUID PRIMARY KEY,
     tenant_id UUID REFERENCES tenants(id),
 
-    patient_code VARCHAR(100) UNIQUE NOT NULL,  -- P-2026-0001
+    full_name VARCHAR(255) NOT NULL,
+    date_of_birth DATE,
+    gender VARCHAR(20),  -- male, female, other
+    blood_group VARCHAR(10),
 
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    date_of_birth DATE NOT NULL,
-    gender VARCHAR(20) NOT NULL,  -- male, female, other
-
-    phone VARCHAR(20) NOT NULL,
-    email VARCHAR(320),
+    phone VARCHAR(20),
+    email VARCHAR(255),
+    whatsapp VARCHAR(20),
     address TEXT,
 
     division_id INTEGER REFERENCES divisions(id),
     district_id INTEGER REFERENCES districts(id),
     upazila_id INTEGER REFERENCES upazilas(id),
 
-    emergency_contact_name VARCHAR(200),
-    emergency_contact_phone VARCHAR(20),
+    chief_complaint TEXT,
+    medical_history TEXT,
+    photo_url VARCHAR(500),
+    next_visit_date DATE,
 
-    blood_group VARCHAR(10),
+    is_active BOOLEAN NOT NULL DEFAULT true,  -- soft-delete flag; there is no deleted_at column
 
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id),
-    deleted_at TIMESTAMP
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
+
+There is no `patient_code`/patient-number column in the current model (`app/shared/models/patient.py`) — the `P-2026-0001` format described below is aspirational, not implemented.
 
 ---
 
@@ -253,13 +276,18 @@ CREATE TABLE patients (
 
 ```sql
 CREATE TABLE patient_tags (
-    id UUID PRIMARY KEY,
-    patient_id UUID REFERENCES patients(id),
-    tenant_id UUID REFERENCES tenants(id),
+    id SERIAL PRIMARY KEY,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+    patient_id VARCHAR(36) NOT NULL REFERENCES patients(id),
 
-    tag VARCHAR(100) NOT NULL,  -- diabetes, hypertension, etc.
+    tag_type VARCHAR(50) NOT NULL,    -- special_case, chronic, treatment, allergy
+    tag_value VARCHAR(255) NOT NULL,  -- e.g., diabetes, hypertension
+    notes TEXT,
 
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
 
@@ -270,16 +298,18 @@ CREATE TABLE patient_tags (
 
 ```sql
 CREATE TABLE patient_diagnoses (
-    id UUID PRIMARY KEY,
-    patient_id UUID REFERENCES patients(id),
-    tenant_id UUID REFERENCES tenants(id),
+    id SERIAL PRIMARY KEY,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+    patient_id VARCHAR(36) NOT NULL REFERENCES patients(id),
+    visit_id VARCHAR(36),  -- optional link to a visit
 
-    diagnosis VARCHAR(500) NOT NULL,
+    description TEXT NOT NULL,
+    icd_code VARCHAR(20),
     diagnosed_at DATE NOT NULL,
-    notes TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT true,
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    created_by UUID REFERENCES users(id)
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    created_by VARCHAR(36)
 );
 ```
 
@@ -310,27 +340,31 @@ CREATE TABLE patient_diagnoses (
 ### Bangladesh Administrative Hierarchy
 
 ```sql
+-- Reflects app/shared/models/geographic.py — no `code` column; optional lat/long instead
 CREATE TABLE divisions (
     id SERIAL PRIMARY KEY,
     name_en VARCHAR(100) NOT NULL,
     name_bn VARCHAR(100) NOT NULL,
-    code VARCHAR(10) UNIQUE
+    latitude FLOAT,
+    longitude FLOAT
 );
 
 CREATE TABLE districts (
     id SERIAL PRIMARY KEY,
-    division_id INTEGER REFERENCES divisions(id),
+    division_id INTEGER NOT NULL,
     name_en VARCHAR(100) NOT NULL,
     name_bn VARCHAR(100) NOT NULL,
-    code VARCHAR(10) UNIQUE
+    latitude FLOAT,
+    longitude FLOAT
 );
 
 CREATE TABLE upazilas (
     id SERIAL PRIMARY KEY,
-    district_id INTEGER REFERENCES districts(id),
+    district_id INTEGER NOT NULL,
     name_en VARCHAR(100) NOT NULL,
     name_bn VARCHAR(100) NOT NULL,
-    code VARCHAR(10) UNIQUE
+    latitude FLOAT,
+    longitude FLOAT
 );
 ```
 
@@ -341,7 +375,7 @@ CREATE TABLE upazilas (
 
 ---
 
-## 💊 Medicine & Library (9)
+## 💊 Medicine & Library (12)
 
 ### `medicines`
 **Purpose:** Medicine database with bilingual content
@@ -349,27 +383,49 @@ CREATE TABLE upazilas (
 ```sql
 CREATE TABLE medicines (
     id SERIAL PRIMARY KEY,
-    tenant_id UUID REFERENCES tenants(id),  -- NULL if global
+    tenant_id VARCHAR(36) REFERENCES tenants(id),  -- NULL if global
 
-    name_en VARCHAR(255) NOT NULL,
-    name_bn VARCHAR(255),
+    name_en VARCHAR(500) NOT NULL,
+    name_bn VARCHAR(500),
 
     system VARCHAR(50) NOT NULL,  -- homeopathy, ayurveda, unani, herbal
-    category VARCHAR(100),
+    category VARCHAR(255),
     potency VARCHAR(50),
 
     description_en TEXT,
     description_bn TEXT,
+    dosage_guidance_en TEXT,
+    dosage_guidance_bn TEXT,
+    indications_en TEXT,
+    indications_bn TEXT,
+    contraindications_en TEXT,
+    contraindications_bn TEXT,
 
-    is_global BOOLEAN DEFAULT false,
+    is_global BOOLEAN NOT NULL DEFAULT false,
+    is_active BOOLEAN NOT NULL DEFAULT true,
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
 
-### `medicine_symptoms`
-**Purpose:** Many-to-many medicine-symptom mapping
+Search uses `pg_trgm` GIN indexes on `name_en`/`name_bn` (no `search_vector`/tsvector column).
+
+---
+
+### `medicine_aliases`
+**Purpose:** Alternate spellings, transliterations, and brand names for search (`medicine_id`, `alias_en`/`alias_bn`, `alias_type`, `priority`)
+
+### `symptoms`
+**Purpose:** Normalized master list of symptoms shared across all medical systems (`name_en`/`name_bn`, `description_en`/`bn`, `category`, `is_global`)
+
+### `symptom_aliases`
+**Purpose:** Alternate spellings/transliterations for a symptom (`symptom_id`, `alias_en`/`alias_bn`, `alias_type`, `priority`)
+
+### `medicine_symptom_mappings`
+**Purpose:** Many-to-many mapping between `medicines` and the normalized `symptoms` table (`medicine_id`, `symptom_id`, `modality_en`/`bn`, `strength`). Not named `medicine_symptoms` — see `app/shared/models/symptom.py:MedicineSymptomMapping`.
 
 ---
 
@@ -390,16 +446,20 @@ CREATE TABLE medicines (
 **Purpose:** Global catalog of SMS/Email/Payment providers
 
 ```sql
+-- Reflects app/shared/models/integration.py:IntegrationProvider (platform-level, no tenant_id)
 CREATE TABLE integration_providers (
     id SERIAL PRIMARY KEY,
-    type VARCHAR(50) NOT NULL,  -- sms, email, payment
-    provider_name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,       -- e.g., "twilio", "sendgrid"
+    display_name VARCHAR(255) NOT NULL,
+    provider_type VARCHAR(50) NOT NULL,      -- sms, email, payment
+    description TEXT,
+    logo_url VARCHAR(500),
 
-    config_schema JSONB NOT NULL,
-    supported_countries TEXT[],
+    config_schema JSONB,
+    supported_countries JSONB,
 
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW()
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 ```
 
@@ -411,17 +471,24 @@ CREATE TABLE integration_providers (
 **Purpose:** Tenant-specific integration configs
 
 ```sql
+-- Reflects app/shared/models/integration.py:TenantIntegration
 CREATE TABLE tenant_integrations (
-    id UUID PRIMARY KEY,
-    tenant_id UUID REFERENCES tenants(id),
-    provider_id INTEGER REFERENCES integration_providers(id),
+    id SERIAL PRIMARY KEY,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+    provider_id INTEGER NOT NULL REFERENCES integration_providers(id),
 
-    credentials JSONB NOT NULL,  -- Encrypted with Fernet
-    config JSONB,
+    display_name VARCHAR(255),
+    encrypted_credentials TEXT NOT NULL,  -- Fernet-encrypted JSON, not raw JSONB
+    is_primary BOOLEAN NOT NULL DEFAULT false,
+    is_active BOOLEAN NOT NULL DEFAULT true,
 
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    last_tested_at TIMESTAMP,
+    test_status VARCHAR(20),  -- success, failed
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
 
@@ -431,18 +498,28 @@ CREATE TABLE tenant_integrations (
 **Purpose:** Audit trail for all integration API calls
 
 ```sql
+-- Reflects app/shared/models/integration.py:IntegrationLog
 CREATE TABLE integration_logs (
-    id UUID PRIMARY KEY,
-    tenant_integration_id UUID REFERENCES tenant_integrations(id),
-    tenant_id UUID REFERENCES tenants(id),
+    id SERIAL PRIMARY KEY,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
+    tenant_integration_id INTEGER NOT NULL REFERENCES tenant_integrations(id),
 
+    transaction_type VARCHAR(50) NOT NULL,  -- sms_sent, email_sent, payment_initiated, ...
     request_payload JSONB,
     response_payload JSONB,
+    response_status_code INTEGER,
 
-    status_code INTEGER,
+    status VARCHAR(20) NOT NULL,  -- pending, success, failed
     error_message TEXT,
+    external_reference VARCHAR(255),
+    recipient VARCHAR(255),
+    amount INTEGER,
+    currency VARCHAR(3),
 
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 ```
 
@@ -469,17 +546,25 @@ CREATE TABLE translations (
 **Purpose:** Track tenant usage against plan limits
 
 ```sql
+-- Reflects app/shared/models/usage.py:UsageTracking — one row per tenant per day,
+-- with fixed counter columns rather than a generic metric_name/metric_value pair
 CREATE TABLE usage_tracking (
-    id UUID PRIMARY KEY,
-    tenant_id UUID REFERENCES tenants(id),
+    id SERIAL PRIMARY KEY,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
 
-    metric_name VARCHAR(100) NOT NULL,  -- patients_count, monthly_patients
-    metric_value INTEGER NOT NULL,
+    usage_date DATE NOT NULL,
 
-    period_month INTEGER,
-    period_year INTEGER,
+    patients_added INTEGER NOT NULL DEFAULT 0,
+    prescriptions_created INTEGER NOT NULL DEFAULT 0,
+    ai_queries_made INTEGER NOT NULL DEFAULT 0,
+    pdfs_generated INTEGER NOT NULL DEFAULT 0,
 
-    recorded_at TIMESTAMP DEFAULT NOW()
+    total_patients INTEGER NOT NULL DEFAULT 0,
+    total_prescriptions INTEGER NOT NULL DEFAULT 0,
+    total_ai_queries_this_month INTEGER NOT NULL DEFAULT 0,
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP
 );
 ```
 
@@ -488,14 +573,14 @@ CREATE TABLE usage_tracking (
 ## 🔍 Indexes
 
 **Key indexes automatically created:**
-- All foreign keys
+- Key foreign keys (`index=True` columns in the SQLAlchemy models)
 - `tenant_id` on tenant-scoped tables
-- Unique constraints (email, patient_code, etc.)
-- Soft delete filter: `WHERE deleted_at IS NULL`
+- Unique constraints (`users.email`, `tenants.email`)
+- Fuzzy-search filters via `pg_trgm` GIN indexes: `medicines`/`medicine_aliases`/`symptoms`/`symptom_aliases` name/alias columns
 
 **Performance indexes:**
 ```sql
-CREATE INDEX idx_patients_tenant_id ON patients(tenant_id) WHERE deleted_at IS NULL;
+CREATE INDEX idx_patients_tenant_id ON patients(tenant_id);
 CREATE INDEX idx_appointments_date ON appointments(tenant_id, appointment_date);
 CREATE INDEX idx_prescriptions_status ON prescriptions(tenant_id, status);
 CREATE INDEX idx_embeddings_vector ON embeddings USING ivfflat (embedding vector_cosine_ops);
@@ -509,16 +594,16 @@ CREATE INDEX idx_embeddings_vector ON embeddings USING ivfflat (embedding vector
 → 34 tables
 
 **Q: What's the multi-tenant key?**
-→ tenant_id (UUID) on all tenant-scoped tables
+→ `tenant_id` (a `VARCHAR(36)` UUID string, not a native Postgres `UUID` column) on all tenant-scoped tables
 
 **Q: Which tables don't have tenant_id?**
-→ Platform data: integration_providers, divisions, districts, upazilas, translations
+→ Platform data: `integration_providers`, `divisions`, `districts`, `upazilas`, `translations`, `user_sessions`
 
 **Q: How are soft deletes implemented?**
-→ deleted_at TIMESTAMP column, query with WHERE deleted_at IS NULL
+→ There is no shared `deleted_at` column. Each table uses either an `is_active` boolean (patients, medicines, symptoms, books) or a `status` field (prescriptions, payments, invoices, appointments) instead.
 
 **Q: What's the patient code format?**
-→ P-YYYY-NNNN (e.g., P-2026-0001)
+→ Not implemented — there is no patient-code/patient-number column on `patients` today.
 
 **Q: How are prescriptions made immutable?**
 → Status field: draft (editable) → issued (immutable) → voided
@@ -528,9 +613,9 @@ CREATE INDEX idx_embeddings_vector ON embeddings USING ivfflat (embedding vector
 **See Also:**
 - [Multi-Tenancy](multi-tenancy.md) - Tenant isolation details
 - [Authentication](authentication.md) - User and session tables
-- [API Reference](../api/README.md) - How to query these tables
+- [Roles & Access](roles-access.md) - Authoritative RBAC reference
 
 ---
 
-**Last Updated:** May 1, 2026
-**Tables:** 30 ✅
+**Last Updated:** 2026-07-12
+**Tables:** 34 ✅

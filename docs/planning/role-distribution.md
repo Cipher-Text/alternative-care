@@ -1,8 +1,11 @@
 # Role Distribution — Implementation Spec
 
-**Status:** Planning  
-**Last updated:** 2026-07-11  
-**Depends on:** `docs/planning/admin-module.md` (Phase A must be implemented alongside this)
+**Status:** Shipped — `GET /admin/users` and `PATCH /admin/users/{id}` are live in
+`backend/app/modules/admin/routes.py`, and `/admin/users` (role distribution + user
+management) is live in the frontend. Kept here as the reference spec; see
+`docs/status/current.md` for current-state summary.  
+**Last updated:** 2026-09-21  
+**Depends on:** `docs/planning/admin-module.md` (Phase A — implemented alongside this)
 
 ---
 
@@ -185,16 +188,16 @@ Badge on Clients tab: count of pending approvals.
 ## File checklist
 
 ### Backend
-- [ ] `backend/app/modules/admin/routes.py` — add `GET /admin/users`, `PATCH /admin/users/{id}`
-- [ ] `backend/app/modules/admin/service.py` — add `list_users()`, `update_user()`
-- [ ] `backend/app/modules/admin/schemas.py` — add `AdminUserItem`, `AdminUsersResponse`, `AdminUpdateUserRequest`
+- [x] `backend/app/modules/admin/routes.py` — add `GET /admin/users`, `PATCH /admin/users/{id}`
+- [x] `backend/app/modules/admin/service.py` — add `list_users()`, `update_user()`
+- [x] `backend/app/modules/admin/schemas.py` — add `AdminUserItem`, `AdminUsersResponse`, `AdminUpdateUserRequest`
 
 ### Frontend
-- [ ] `frontend/src/lib/api/admin.ts` — add `getAdminUsers()`, `updateAdminUser()`
-- [ ] `frontend/src/lib/hooks/useAdminUsers.ts` — React Query hooks
-- [ ] `frontend/src/types/admin.ts` — TypeScript interfaces for admin types
-- [ ] `frontend/src/app/(dashboard)/admin/users/page.tsx` — NEW role distribution page
-- [ ] `frontend/src/components/layout/Sidebar.tsx` — add Users nav item for admin
+- [x] `frontend/src/lib/api/admin.ts` — add `getAdminUsers()`, `updateAdminUser()`
+- [x] `frontend/src/lib/hooks/useAdminUsers.ts` — React Query hooks
+- [x] `frontend/src/types/admin.ts` — TypeScript interfaces for admin types
+- [x] `frontend/src/app/(dashboard)/admin/users/page.tsx` — NEW role distribution page
+- [x] `frontend/src/components/layout/Sidebar.tsx` — add Users nav item for admin
 
 ---
 

@@ -1,6 +1,6 @@
 # AltCare API Endpoints
 
-**Total:** 127 endpoints across 14 modules
+**Total:** 128 endpoints across 14 modules
 **Base URL:** `http://localhost:8000/api/v1`
 **Auth:** Bearer JWT (except `/auth/register` and `/auth/login`)
 **Interactive Docs:** http://localhost:8000/docs
@@ -9,11 +9,16 @@
 
 ---
 
-## 1. Authentication (9)
+## 1. Authentication (14)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | POST | `/auth/register` | Register new doctor account | No |
+| POST | `/auth/admin/provision-client` | Admin: create tenant + primary doctor | Admin |
+| GET | `/auth/admin/clients` | Admin: list tenant clients | Admin |
+| GET | `/auth/admin/clients/{tenant_id}` | Admin: get client detail | Admin |
+| GET | `/auth/admin/tenants/pending` | Admin: list pending tenants | Admin |
+| POST | `/auth/admin/tenants/{tenant_id}/approve` | Admin: approve tenant | Admin |
 | POST | `/auth/login` | Login and get JWT tokens | No |
 | POST | `/auth/refresh` | Refresh access token | Refresh token |
 | POST | `/auth/logout` | Logout and invalidate session | Yes |
@@ -151,33 +156,33 @@
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/integration/providers` | List all providers (SMS/Email/Payment) | Yes |
-| GET | `/integration/providers/{provider_id}` | Get provider details | Yes |
+| GET | `/integrations/providers` | List all providers (SMS/Email/Payment) | Yes |
+| GET | `/integrations/providers/{provider_id}` | Get provider details | Yes |
 
 ### Tenant Integrations (7)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/integration/integrations` | Add integration config | Yes |
-| GET | `/integration/integrations` | List tenant integrations | Yes |
-| GET | `/integration/integrations/{integration_id}` | Get integration details | Yes |
-| PATCH | `/integration/integrations/{integration_id}` | Update integration | Yes |
-| DELETE | `/integration/integrations/{integration_id}` | Delete integration | Yes |
-| POST | `/integration/integrations/{integration_id}/test` | Test integration | Yes |
-| POST | `/integration/integrations/{integration_id}/set-primary` | Set as primary | Yes |
+| POST | `/integrations` | Add integration config | Yes |
+| GET | `/integrations` | List tenant integrations | Yes |
+| GET | `/integrations/{integration_id}` | Get integration details | Yes |
+| PATCH | `/integrations/{integration_id}` | Update integration | Yes |
+| DELETE | `/integrations/{integration_id}` | Delete integration | Yes |
+| POST | `/integrations/{integration_id}/test` | Test integration | Yes |
+| POST | `/integrations/{integration_id}/set-primary` | Set as primary | Yes |
 
 ### Send Operations (2)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/integration/send-sms` | Send SMS via configured provider | Yes |
-| POST | `/integration/send-email` | Send email via configured provider | Yes |
+| POST | `/integrations/send/sms` | Send SMS via configured provider | Yes |
+| POST | `/integrations/send/email` | Send email via configured provider | Yes |
 
 ### Logs (1)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/integration/logs` | List integration logs | Yes |
+| GET | `/integrations/logs` | List integration logs | Yes |
 
 **Providers:** bKash, BulkSMSBD, SMTP (credentials encrypted with Fernet)
 

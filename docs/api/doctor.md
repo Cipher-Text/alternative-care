@@ -43,7 +43,7 @@ Complete doctor profile management with academic credentials and professional de
 - ✅ Display order management
 - ✅ Multi-tenant isolation
 
-**Authentication:** Required (JWT, doctor role)
+**Authentication:** Required (JWT). No `RequireDoctor`/role dependency is enforced on these routes — any authenticated user with a `tenant_id` can read/write their own profile, degrees, and trainings.
 
 ---
 
@@ -601,7 +601,7 @@ training = response.json()
 → Platform admins (feature ready, admin UI pending)
 
 **Q: Are degrees tenant-scoped?**
-→ Yes, automatically scoped by tenant_id from JWT
+→ Yes — the service filters by `tenant_id` from the JWT explicitly (not an automatic global filter; see `docs/architecture/multi-tenancy.md`)
 
 ---
 

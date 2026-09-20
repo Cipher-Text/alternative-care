@@ -28,26 +28,45 @@ frontend/src/
 ├── app/                    # Next.js App Router
 │   ├── (auth)/login/      # Authentication routes
 │   ├── (dashboard)/       # Protected routes
+│   │   ├── admin/         # Platform admin (dashboard, clients, users)
+│   │   ├── appointments/  # Appointment scheduling & calendar
 │   │   ├── dashboard/     # Analytics dashboard
-│   │   └── patients/      # Patient management
+│   │   ├── medicines/     # Medicine library
+│   │   ├── patients/      # Patient management
+│   │   ├── payments/      # Payments & invoicing
+│   │   ├── prescriptions/ # Prescription builder
+│   │   ├── profile/       # Doctor profile (degrees, trainings)
+│   │   ├── settings/      # Integrations management
+│   │   └── symptoms/      # Symptom library
 │   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Landing page
 ├── components/            # React components
-│   ├── auth/             # LoginForm, TwoFactorForm
-│   ├── dashboard/        # Charts, Stats
-│   ├── patients/         # PatientCard, PatientForm
-│   ├── layout/           # Header, Sidebar
-│   └── ui/               # shadcn/ui components
+│   ├── auth/              # LoginForm, TwoFactorForm
+│   ├── dashboard/         # Charts, Stats
+│   ├── doctor/            # ProfileForm, DegreesSection, TrainingsSection
+│   ├── integrations/      # ProviderList, ConfigWizard, IntegrationLogs
+│   ├── medicines/         # MedicineAutocomplete
+│   ├── patients/          # PatientCard, PatientForm
+│   ├── payments/          # PaymentDashboard, TransactionList, InvoiceForm
+│   ├── prescriptions/     # PrescriptionBuilder, MedicineItemsBuilder
+│   ├── layout/            # Header, Sidebar
+│   ├── shared/            # Shared utilities
+│   ├── theme/             # Theme provider/toggle
+│   └── ui/                # shadcn/ui components
 ├── lib/
-│   ├── api/              # API clients (auth, patients, dashboard)
-│   ├── hooks/            # React Query hooks
-│   └── utils/            # Helper functions
-└── stores/
-    └── authStore.ts      # Zustand auth state
+│   ├── api/               # API clients (auth, patients, dashboard, appointments, prescriptions, payments, integrations, medicines, symptoms, admin, doctor)
+│   ├── hooks/             # React Query hooks
+│   ├── auth/              # Auth helpers
+│   ├── constants/         # Shared constants
+│   └── utils/             # Helper functions
+├── types/                 # TypeScript interfaces (match backend Pydantic schemas)
+└── store/
+    ├── authStore.ts       # Zustand auth state
+    └── themeStore.ts      # Zustand theme state
 ```
 
-**Implemented:** Auth, Patients, Dashboard (44 source files)  
-**Pending:** Doctor Profile, Appointments, Prescriptions, Payments, Integrations
+**Implemented:** Auth, Patients, Dashboard, Appointments, Prescriptions, Doctor Profile, Payments, Integrations, Medicines, Symptoms, Admin (110+ source files)  
+**Pending:** Symptom → Medicine lookup UI, AI chat assistant, Book library reader
 
 ---
 
@@ -162,7 +181,7 @@ export interface PatientCreate {
 
 - **app/layout.tsx** - Root layout with providers
 - **lib/api/client.ts** - Axios client with auth interceptors
-- **stores/authStore.ts** - Zustand auth state
+- **store/authStore.ts** - Zustand auth state
 - **components/ui/** - shadcn/ui component library
 - **.env.local** - Environment variables
 - **package.json** - Dependencies

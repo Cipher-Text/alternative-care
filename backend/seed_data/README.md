@@ -62,8 +62,20 @@ Catalog of available integration providers for SMS, Email, and Payment processin
 Bilingual UI strings (English/Bengali) for the frontend interface.
 
 **Contents:**
-- **80+ translation keys** organized by category
+- **80 translation keys** organized by category
 - Categories: common, dashboard, patient, prescription, payment, appointment, medicine, settings, auth, error, success
+
+### `medicines.json`
+Starter medicine catalog seeded per medical system (Homeopathy, Ayurveda, Unani, Herbal).
+
+**Contents:**
+- **14 medicines** with bilingual names, potency/dosage guidance, and indications
+
+### `symptoms.json`
+Starter symptom catalog used for medicine-symptom lookups.
+
+**Contents:**
+- **25 symptoms** with bilingual names and categories
 
 **Format:**
 ```json
@@ -137,7 +149,9 @@ The seed script is **idempotent** - it checks for existing data before inserting
 | Districts | 64 | All Bangladesh districts |
 | Upazilas | 495 | All current upazilas with coordinates |
 | Integration Providers | 12 | SMS, Email, and Payment providers |
-| Translations | 80+ | Bilingual UI strings (EN/BN) |
+| Translations | 80 | Bilingual UI strings (EN/BN) |
+| Medicines | 14 | Starter medicine catalog |
+| Symptoms | 25 | Starter symptom catalog |
 | Sample Tenants | 3 | Test clinics |
 | Sample Users | 6 | Test users (doctors, staff, admins) |
 

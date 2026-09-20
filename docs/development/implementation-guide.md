@@ -18,7 +18,7 @@ class PatientResponse(BaseModel):
     tenant_id: UUID
     model_config = ConfigDict(from_attributes=True)
 
-# 2. Router (app/modules/<module>/router.py)
+# 2. Router (app/modules/<module>/routes.py)
 from app.core.dependencies import RequireDoctor
 
 @router.post("/", response_model=PatientResponse)

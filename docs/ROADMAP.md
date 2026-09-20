@@ -1,6 +1,6 @@
 # AltCare — Product Roadmap & Task Tracker
 
-**Last Updated:** 2026-07-12  
+**Last Updated:** 2026-09-21  
 **Current Version:** MVP v1.0 — Production Ready  
 **Source of truth:** `docs/status/current.md` · `backend/app/main.py` · `frontend/src/app/**`
 
@@ -11,9 +11,9 @@
 | Metric | Value |
 |---|---|
 | Backend modules | 14 registered routers |
-| API endpoints | ~113 (+ `/`, `/health`, `/metrics`) |
+| API endpoints | 128 (+ `/`, `/health`, `/metrics`) |
 | Database tables | 34 models |
-| Frontend routes | 17 route families |
+| Frontend routes | 11 route groups (132 source files) |
 | Security score | A (95/100) |
 | Test coverage | Multi-tenant isolation 16/16 ✅ |
 | Status | MVP v1.0 Production Ready 🚀 |
@@ -71,10 +71,11 @@
 | `PATCH /admin/tenants/{id}` — suspend / reactivate / change plan | ✅ |
 | `GET /admin/users` — view users by role | ✅ |
 | `PATCH /admin/users/{id}` — change role, activate/deactivate | ✅ |
+| `POST /admin/tenants/{id}/doctors` — add a doctor under an existing tenant | ✅ — completed 2026-07-12 |
 | Admin-only sidebar (no doctor nav for platform users) | ✅ |
 | `/admin/dashboard` — KPI cards page | ✅ |
 | `/admin/clients` — 3-tab directory (all / provision / pending) | ✅ |
-| `/admin/clients/[tenantId]` — detail view with lifecycle actions | ✅ |
+| `/admin/clients/[tenantId]` — detail view with lifecycle actions + add-doctor form | ✅ |
 | `/admin/users` — role distribution + user management | ✅ |
 
 ---
@@ -180,12 +181,12 @@ Core platform functionality that is designed but not yet enforced or built.
 
 ---
 
-### 9. Planning/README.md — Baseline Snapshot Update
+### 9. Planning/README.md — Baseline Snapshot Update ✅ — Done 2026-09-21
 
-**Problem:** `docs/planning/README.md` baseline snapshot says "11 modules, 89 endpoints" (dated 2026-05-29). Now stale.
+**Problem:** `docs/planning/README.md` baseline snapshot was stale (previously "11 modules, 89 endpoints").
 
-- [ ] Update baseline: 14 modules, ~113 endpoints, 17 frontend route families
-- [ ] Update date to 2026-07-11
+- [x] Update baseline: 14 modules, 128 endpoints, 11 frontend route groups (132 source files)
+- [x] Update date to 2026-09-21
 
 ---
 
@@ -468,14 +469,13 @@ These are not features but quality concerns that should be addressed incremental
 ## Timeline
 
 ```
-2026-07-11  ← TODAY
+2026-09-21  ← TODAY (last major shipped work: 2026-07-12, doctor provisioning under existing tenants)
 │
-├── NOW     🔴 P1 Critical fixes
-│           ├─ Tenant isolation guards (appointments, prescriptions, payments, dashboard)
-│           ├─ TypeScript error cleanup (38 errors, 4 modules)
+├── NOW     🔴 P1 Remaining
 │           ├─ Legacy /auth/admin/* endpoint removal
 │           ├─ Password reset flow
 │           └─ Email verification flow
+│           (Tenant isolation guards and TypeScript cleanup shipped 2026-07-12 — see "What's Done" above)
 │
 ├── Q3 2026 🟠 P2 + 🟡 P3 — Platform completeness
 │           ├─ Operator & receptionist role enforcement
@@ -515,9 +515,9 @@ These are not features but quality concerns that should be addressed incremental
 ## Success Metrics
 
 ### Current (MVP v1.0) ✅
-- ~113 API endpoints across 14 modules
+- 128 API endpoints across 14 modules
 - 34 database tables
-- 110+ frontend source files
+- 132 frontend source files
 - Security: A (95/100)
 - Multi-tenant isolation: 16/16 tests passing
 

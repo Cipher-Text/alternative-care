@@ -1,14 +1,15 @@
 # Current Project Status
 
-Last Updated: 2026-07-12
+Last Updated: 2026-09-21
 
 ---
 
 ## Summary
 
-AltCare has a working FastAPI backend (14 registered modules) and a Next.js frontend covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+AltCare has a working FastAPI backend (14 registered modules, 128 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
 
 Recent work (2026-07-12):
+- **Admin — doctor provisioning under existing tenants:** `POST /admin/tenants/{id}/doctors` added so platform admins can add another doctor user to an already-provisioned clinic without re-running full tenant onboarding. Frontend: `/admin/clients/[tenantId]` detail page now includes an add-doctor form. Integration tests added (`tests/integration/test_admin_tenant_doctors.py`).
 - **P1 #1 — Tenant Isolation Guard:** Applied 403 guard to 4 previously unprotected service factories (`appointments`, `prescriptions`, `payments`, `dashboard`) — platform users now get proper 403 instead of 500
 - **P1 #2 — TypeScript:** Resolved all 38 pre-existing TS errors across `medicines/`, `symptoms/`, `integrations/`, `doctor/` — project now compiles clean (exit 0)
   - Root fix: `useCrudFactory.ts` imported from `@tanstack/react-query` (not installed); corrected to `react-query` v3
@@ -50,7 +51,7 @@ Registered routers in `backend/app/main.py`:
 |---|---|---|---|
 | auth | `/api/v1/auth` | 14 | Login, 2FA, register, legacy admin compatibility |
 | ai | `/api/v1/ai` | 1 | Stub, returns 501 |
-| appointments | `/api/v1/appointments` | 10 | Scheduling and visits |
+| appointments | `/api/v1/appointments` | 10 | Scheduling and visits (includes nested `visits_router`: 4 endpoints under `/visits`) |
 | dashboard | `/api/v1/dashboard` | 6 | Tenant-scoped analytics |
 | doctor | `/api/v1/doctor` | 12 | Profile, degrees, trainings |
 | patient | `/api/v1/patients` | 14 | CRUD, tags, diagnoses |
@@ -61,9 +62,9 @@ Registered routers in `backend/app/main.py`:
 | symptom | `/api/v1/symptoms` | 9 | CRUD, search, aliases |
 | tenant | `/api/v1/tenant` | 2 | Clinic profile |
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
-| admin | `/api/v1/admin` | 9 | Platform admin — tenants + users (NEW) |
+| admin | `/api/v1/admin` | 10 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors` |
 
-**Total:** 127 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 128 module endpoints + `/`, `/health`, `/metrics`
 
 Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
 New canonical endpoints are at `/api/v1/admin`.
@@ -87,7 +88,7 @@ Implemented routes:
 | `/symptoms`, `/symptoms/new`, `/symptoms/[id]`, `/symptoms/[id]/edit` | ✅ |
 | `/settings`, `/settings/integrations` | ✅ |
 | `/admin/clients` | ✅ (3-tab: directory / provision / pending) |
-| `/admin/clients/[tenantId]` | ✅ |
+| `/admin/clients/[tenantId]` | ✅ detail view with lifecycle actions + add-doctor-to-tenant form |
 | `/admin/dashboard` | ✅ KPI cards |
 | `/admin/users` | ✅ Role distribution + user management |
 
@@ -100,6 +101,7 @@ Implemented routes:
 - ✅ Platform KPI dashboard (`/admin/dashboard`)
 - ✅ Tenant lifecycle actions (PATCH /admin/tenants/{id} — suspend/reactivate/change plan)
 - ✅ Role distribution (`GET /admin/users`) + user management (`PATCH /admin/users/{id}`)
+- ✅ Add a doctor under an existing tenant (`POST /admin/tenants/{id}/doctors`)
 - ✅ Admin-only sidebar (no doctor nav items for platform users)
 - ⚠️ Old endpoints remain in `auth/routes.py` — can be removed once confirmed stable
 - `operator` role: RBAC guard exists, no endpoints use it (Phase B)

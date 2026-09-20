@@ -10,7 +10,7 @@ They serve as **design reference** and **stakeholder demo** artifacts.
 ## Files
 
 ### [index.html](./index.html)
-Navigation hub — links to the three mockup views.
+Navigation hub — links to the four mockup views.
 
 ### [landing.html](./landing.html)
 **Public marketing page**
@@ -29,6 +29,11 @@ Screens: Dashboard · Patient management · Prescription builder · Payments · 
 **Platform admin interface**
 
 Screens: Platform dashboard · Doctor approval queue · Tenants/Clinics · Global medicine DB · Global book library · Integration providers · Activity logs · Operators
+
+### [doctors.html](./doctors.html)
+**Public doctor directory**
+
+Search/browse mock for a public "Find a Doctor" page — not yet wired to a real route (no `/doctors` route exists in `frontend/src/app`).
 
 ---
 
@@ -49,6 +54,7 @@ Screens: Platform dashboard · Doctor approval queue · Tenants/Clinics · Globa
 | Book library | ⬜ Backend models only, no routes |
 | AI assistant | ⬜ Stub endpoint (pro plan, not built) |
 | Public landing page | ⬜ Not built (mock only) |
+| Public doctor directory | ⬜ Not built (mock only) |
 | Platform admin UI | ⬜ Not built (mock only) |
 
 ---

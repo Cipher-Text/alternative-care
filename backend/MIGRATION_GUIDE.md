@@ -2,7 +2,7 @@
 
 Practical guide for running and verifying Alembic migrations.
 
-**For breaking changes:** See [BREAKING_CHANGES.md](../BREAKING_CHANGES.md)
+**For breaking changes:** See [BREAKING_CHANGES.md](../docs/archive/BREAKING_CHANGES.md)
 
 ---
 
@@ -219,8 +219,9 @@ SELECT tenant_id, COUNT(*) FROM patients GROUP BY tenant_id;
 
 **Seeds:**
 - Geographic data (divisions, districts, upazilas)
-- Integration providers (11 providers)
-- UI translations (80+ strings)
+- Integration providers (12 providers)
+- UI translations (80 strings)
+- Starter medicines and symptoms data
 - Sample tenants/users (dev only)
 
 ### Populate Alias Tables
@@ -282,8 +283,8 @@ alembic stamp <revision_id>
 
 ```bash
 # If migration says "table already exists"
-# Option 1: Drop and recreate (DEV ONLY)
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+# Option 1: Drop and recreate (DEV ONLY) — PostgreSQL runs locally, not in Docker
+psql -U altcare -d altcare_dev -h localhost \
   -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 alembic upgrade head
 
@@ -305,7 +306,8 @@ alembic stamp head
 ### pgvector Extension Missing
 
 ```bash
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+# Install on your local PostgreSQL instance (not containerized)
+psql -U altcare -d altcare_dev -h localhost \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
@@ -419,7 +421,7 @@ alembic show <rev>                # Show migration
 
 ### Resources
 
-- **Breaking Changes:** [BREAKING_CHANGES.md](../BREAKING_CHANGES.md)
+- **Breaking Changes:** [BREAKING_CHANGES.md](../docs/archive/BREAKING_CHANGES.md)
 - **Alias Examples:** [ALIAS_DATA_EXAMPLES.md](ALIAS_DATA_EXAMPLES.md)
 - **Architecture:** [../CLAUDE.md](../CLAUDE.md)
 - **Alembic Docs:** https://alembic.sqlalchemy.org

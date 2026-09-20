@@ -1,9 +1,9 @@
 ---
 title: "Multi-Tenancy Architecture"
 type: "architecture"
-version: "0.9.0"
-last_updated: "2026-05-01"
-ai_summary: "Row-level multi-tenant isolation with automatic tenant_id filtering from JWT tokens"
+version: "1.0.0"
+last_updated: "2026-09-21"
+ai_summary: "Row-level multi-tenant isolation via tenant_id from JWT, enforced by explicit per-service-method filtering (not an automatic ContextVar-based filter)"
 ---
 
 # Multi-Tenancy Architecture
@@ -27,7 +27,7 @@ Complete row-level isolation ensuring no cross-tenant data leakage.
 
 **Model:** Shared database, row-level isolation  
 **Method:** `tenant_id` column on all tenant-scoped tables  
-**Enforcement:** Automatic filtering via ContextVar from JWT
+**Enforcement:** Explicit `tenant_id` filtering in each service method, using a `tenant_id` passed in from `current_user.tenant_id` at the route's service-factory dependency (see [Tenant Context Flow](#tenant-context-flow) below — a `tenant_id_ctx` ContextVar exists but is not currently read anywhere)
 
 **Benefits:**
 - ✅ Easier migrations (one schema change for all tenants)
@@ -60,23 +60,22 @@ Complete row-level isolation ensuring no cross-tenant data leakage.
 **All tenant-scoped tables have:**
 ```sql
 CREATE TABLE example (
-    id UUID PRIMARY KEY,
-    tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    id VARCHAR(36) PRIMARY KEY,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     
     -- ... business columns ...
     
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id),
-    deleted_at TIMESTAMP
+    created_by VARCHAR(36),
+    updated_by VARCHAR(36)
 );
 
 -- Index for fast tenant filtering
-CREATE INDEX idx_example_tenant_id 
-ON example(tenant_id) 
-WHERE deleted_at IS NULL;
+CREATE INDEX idx_example_tenant_id ON example(tenant_id);
 ```
+
+**Note:** There is no shared `deleted_at` column (`app/shared/models/base.py:BaseAuditModel` doesn't define one). Soft-delete semantics are implemented per-table instead — an `is_active` boolean (e.g. `patients`, `medicines`) or a `status` field (e.g. `prescriptions`, `payments`) — see `database-schema.md` for the per-table pattern.
 
 **Tables WITHOUT tenant_id (global data):**
 - `integration_providers`
@@ -117,25 +116,24 @@ WHERE deleted_at IS NULL;
 ```
 1. Request arrives with JWT token
    ↓
-2. Auth middleware decodes token
+2. get_current_user() dependency decodes token
    app/core/dependencies.py:get_current_user()
    ↓
 3. Extract tenant_id from JWT claims
    tenant_id = payload.get("tenant_id")
    ↓
-4. Set in ContextVar
-   from app.core.context import tenant_id_ctx
-   tenant_id_ctx.set(tenant_id)
+4. tenant_id_ctx.set(tenant_id)  — ContextVar defined in app/core/dependencies.py
    ↓
-5. Service layer uses tenant_id
+5. Route-level service-factory dependency constructs the service explicitly
    service = PatientService(db, tenant_id=current_user.tenant_id)
    ↓
-6. All queries automatically filter
-   WHERE tenant_id = <tenant_id>
-   AND deleted_at IS NULL
+6. Each service method filters explicitly (no automatic/global filter)
+   .where(Patient.tenant_id == self.tenant_id)
    ↓
 7. Return filtered results
 ```
+
+**Correction — `tenant_id_ctx` is not currently used to filter queries.** It is set in `get_current_user()` (`app/core/dependencies.py`), but nothing reads it — there is no SQLAlchemy event listener, `with_loader_criteria`, or session-level hook applying it. The actual isolation mechanism is: each route depends on a small per-module "service factory" function (e.g. `get_patient_service`) that reads `current_user.tenant_id` directly and passes it into the service's constructor; every service method then writes an explicit `.where(Model.tenant_id == self.tenant_id)` clause. It works, but it is manual per-service-method filtering, not automatic ContextVar-based filtering — anyone adding a new service method must remember to add the `tenant_id` filter themselves. There is also no `app/core/context.py` module; `tenant_id_ctx` lives directly in `app/core/dependencies.py`.
 
 ---
 
@@ -151,26 +149,23 @@ class PatientService:
         self.tenant_id = tenant_id  # Set once at initialization
     
     async def list_patients(self):
-        # Automatic tenant filter
-        query = select(Patient).where(
-            Patient.tenant_id == self.tenant_id,
-            Patient.deleted_at.is_(None)
-        )
+        # Explicit tenant filter — written by hand in this method,
+        # not applied automatically by a shared query layer
+        query = select(Patient).where(Patient.tenant_id == self.tenant_id)
         result = await self.db.execute(query)
         return result.scalars().all()
 ```
 
-**Why it's secure:**
+**Why it's secure — and its limitation:**
 - `tenant_id` comes from JWT (cryptographically signed)
 - Service initialized with tenant_id from authenticated user
-- Every query explicitly filters by tenant_id
-- No way to bypass filter without modifying service code
+- Every query filters by tenant_id, but each service method must add the `.where()` clause itself — there is no shared/automatic enforcement layer, so a new method that forgets the filter would leak cross-tenant data. This pattern (per-module "service factory" + explicit filter in each method) is currently applied in `patient/routes.py`; per `roles-access.md`, it still needs to be applied consistently to appointments, prescriptions, payments, integrations, and dashboard.
 
 ---
 
-**2. Dependency Injection:**
+**2. Dependency Injection (service factory):**
 ```python
-# routes.py
+# patient/routes.py
 @router.get("/patients")
 async def list_patients(
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -179,11 +174,12 @@ async def list_patients(
     # service already has current_user.tenant_id
     return await service.list_patients()
 
-# dependencies.py
 def get_patient_service(
     db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[CurrentUser, Depends(get_current_user)]
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ) -> PatientService:
+    if not current_user.tenant_id:
+        raise HTTPException(status_code=403, detail="Platform users cannot access tenant data.")
     return PatientService(db=db, tenant_id=current_user.tenant_id)
 ```
 
@@ -191,18 +187,17 @@ def get_patient_service(
 - `current_user` populated from JWT token
 - Service gets `tenant_id` from authenticated user
 - No manual tenant_id parameter (can't be manipulated by client)
+- Platform users (`tenant_id is None`) are explicitly rejected with 403 before a service is ever constructed
 
 ---
 
 **3. Database Constraints:**
 ```sql
 -- Foreign key ensures tenant_id exists
-tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE
+tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE
 
 -- Index optimizes tenant filtering
-CREATE INDEX idx_patients_tenant_id 
-ON patients(tenant_id) 
-WHERE deleted_at IS NULL;
+CREATE INDEX idx_patients_tenant_id ON patients(tenant_id);
 ```
 
 **Why it's secure:**
@@ -267,11 +262,10 @@ async def get_patient(
 
 # In service.py
 async def get_patient(self, patient_id: str) -> Patient | None:
-    # Automatic tenant filter
+    # Explicit tenant filter
     query = select(Patient).where(
         Patient.id == patient_id,
         Patient.tenant_id == self.tenant_id,  # Tenant A's ID
-        Patient.deleted_at.is_(None)
     )
     result = await self.db.execute(query)
     return result.scalar_one_or_none()  # Returns None (not Tenant B's patient)
@@ -307,12 +301,14 @@ class PlatformService:
 
 **Access Control:**
 ```python
+from app.core.dependencies import RequireAdmin
+
 @router.get("/admin/tenants")
-async def list_tenants(
-    current_user: Annotated[CurrentUser, Depends(require_admin)]
-):
-    # require_admin checks current_user.role == "admin"
-    # and current_user.tenant_id is None
+async def list_tenants(current_user: RequireAdmin):
+    # RequireAdmin = Annotated[CurrentUser, Depends(require_role("admin"))]
+    # This only checks current_user.role == "admin" — it does not independently
+    # verify tenant_id is None (that's guaranteed by how admin accounts are created,
+    # not re-checked at request time).
     ...
 ```
 
@@ -324,16 +320,16 @@ async def list_tenants(
 ```python
 @pytest.mark.asyncio
 async def test_tenant_isolation(db_session):
-    # Create two tenants
-    tenant_a = Tenant(id=uuid4(), name="Clinic A")
-    tenant_b = Tenant(id=uuid4(), name="Clinic B")
+    # Create two tenants (email is required/unique on Tenant)
+    tenant_a = Tenant(id=str(uuid4()), name="Clinic A", email="a@example.com")
+    tenant_b = Tenant(id=str(uuid4()), name="Clinic B", email="b@example.com")
     db_session.add_all([tenant_a, tenant_b])
     
-    # Create patient for Tenant A
+    # Create patient for Tenant A (Patient uses full_name, not first/last_name)
     patient_a = Patient(
+        id=str(uuid4()),
         tenant_id=tenant_a.id,
-        first_name="John",
-        last_name="Doe"
+        full_name="John Doe",
     )
     db_session.add(patient_a)
     await db_session.commit()
@@ -359,10 +355,10 @@ async def test_tenant_isolation(db_session):
 ## 🤖 AI Quick Reference
 
 **Q: How does multi-tenancy work?**
-→ Row-level isolation with tenant_id in JWT → auto-filtered queries
+→ Row-level isolation: `tenant_id` from the JWT is passed into each service, and each service method explicitly filters by it
 
 **Q: Can Tenant A access Tenant B's data?**
-→ No, architecturally impossible (queries auto-filter by tenant_id from JWT)
+→ Not through the modules that follow the pattern correctly (queries filter by tenant_id from JWT). This is enforced per service method, not by a global/automatic filter, so it depends on every method remembering the `.where()` clause.
 
 **Q: What happens if I try to access another tenant's record?**
 → Returns 404 Not Found (looks like doesn't exist)
@@ -371,19 +367,19 @@ async def test_tenant_isolation(db_session):
 → tenant_id = NULL in JWT, service layer doesn't filter by tenant
 
 **Q: Where is tenant_id extracted from?**
-→ JWT token decoded in get_current_user() → set in service layer
+→ JWT token decoded in `get_current_user()` (`app/core/dependencies.py`), then passed explicitly into each service's constructor
 
 **Q: Can I bypass tenant filtering?**
-→ No, unless you modify service code (requires code-level access)
+→ Yes, accidentally — if a new service method omits the `.where(Model.tenant_id == self.tenant_id)` clause, nothing else catches it. There is no shared/automatic enforcement layer today.
 
 ---
 
 **See Also:**
 - [Authentication](authentication.md) - JWT token structure
 - [Database Schema](database-schema.md) - tenant_id on tables
-- [API Reference](../api/README.md) - Tenant-scoped endpoints
+- [Roles & Access](roles-access.md) - RBAC and the tenant-isolation guard pattern
 
 ---
 
-**Last Updated:** May 1, 2026  
-**Security:** Architecturally guaranteed isolation ✅
+**Last Updated:** 2026-09-21  
+**Security:** Row-level isolation enforced by explicit per-method `tenant_id` filtering ✅

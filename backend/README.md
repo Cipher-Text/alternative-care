@@ -9,7 +9,7 @@ FastAPI backend for multi-tenant alternative medicine practice management.
 ## Quick Start
 
 ```bash
-# 1. Start infrastructure
+# 1. Start infrastructure (Redis + MinIO only — PostgreSQL 16 must already be running locally)
 docker compose up -d
 
 # 2. Run automated setup
@@ -35,8 +35,8 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP, Fernet
 │   ├── celery.py       # Background tasks
 │   └── dependencies.py # Auth, RBAC, plan checks
-├── modules/             # Feature modules (127 endpoints)
-│   ├── admin/          # Platform tenants, users, dashboard (9)
+├── modules/             # Feature modules (128 endpoints)
+│   ├── admin/          # Platform tenants, users, dashboard (10)
 │   ├── auth/           # Login, refresh, 2FA, legacy admin compatibility (14)
 │   ├── ai/             # Query stub (1)
 │   ├── doctor/         # Profile, degrees (12)
@@ -57,7 +57,7 @@ backend/app/
 **Note:** Module API docs are in `../docs/api/` directory
 ```
 
-**Implemented:** 14 modules, 127 endpoints, 34 table models
+**Implemented:** 14 modules, 128 endpoints, 34 table models
 **Placeholder:** library and notification modules have package stubs but no active routes.
 
 ---
@@ -77,7 +77,7 @@ backend/app/
 **Integration:** integration_providers, tenant_integrations, integration_logs
 **System:** translations, usage_tracking
 
-**Pattern:** All tenant-scoped tables have `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_at` (soft deletes)
+**Pattern:** All tenant-scoped tables have `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`. There is no shared `deleted_at` column — soft deactivation uses a per-table `is_active` boolean or `status` field instead.
 
 See [../CLAUDE.md § 4.3](../CLAUDE.md) for schema details.
 
@@ -178,9 +178,9 @@ See `.env.example` for all options.
 
 ## Troubleshooting
 
-**pgvector missing:**
+**pgvector missing** (PostgreSQL runs locally, not in Docker):
 ```bash
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
@@ -192,7 +192,7 @@ lsof -ti:8000 | xargs kill -9
 **Migration failed:**
 ```bash
 # DEV ONLY - destroys data
-docker exec -it altcare_postgres psql -U altcare -d altcare_dev \
+psql -U altcare -d altcare_dev -h localhost \
   -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 alembic upgrade head
 ```
@@ -212,4 +212,4 @@ See [../CLAUDE.md § 6](../CLAUDE.md) for more troubleshooting.
 - API Overview: [API_ENDPOINTS.md](API_ENDPOINTS.md)
 - Detailed API Docs: [../docs/api/](../docs/api/)
 - Architecture & Patterns: [../CLAUDE.md](../CLAUDE.md)
-- Breaking Changes: [../BREAKING_CHANGES.md](../BREAKING_CHANGES.md)
+- Breaking Changes: [../docs/archive/BREAKING_CHANGES.md](../docs/archive/BREAKING_CHANGES.md)

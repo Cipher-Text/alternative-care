@@ -409,6 +409,6 @@ This affects:
 
 ---
 
-**Last Updated:** 2026-05-22  
+**Last Updated:** 2026-09-21 (spot-checked against `src/store/themeStore.ts`, `src/components/theme/` — accurate, no changes needed)  
 **Status:** ✅ Production Ready (Core System)  
 **Next Step:** Migrate remaining components to use `dark:` variants

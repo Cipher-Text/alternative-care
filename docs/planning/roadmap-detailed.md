@@ -103,7 +103,7 @@ Build the most comprehensive practice management system for alternative medicine
 **Timeline:** 14 weeks (April 21 - July 26, 2026)  
 **Target Launch:** August 1, 2026  
 **Goal:** Launch a working clinic management tool that 10 pilot doctors can use daily  
-**Status:** ✅ **COMPLETE** (verified May 14, 2026) — Backend APIs complete (Auth, AI stub, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration). Frontend complete for 6/9 modules: Auth, Patients, Appointments, Dashboard, Prescriptions ✅, Doctor Profile ✅ (with list/create/detail/edit flows for Patients, Appointments, and Prescriptions). Security hardening complete (password complexity, session invalidation, HTTP headers, rate limiting). **MVP v1.0 PRODUCTION READY** 🚀
+**Status:** ✅ **COMPLETE** (verified May 14, 2026; frontend coverage re-verified 2026-09-21 — now complete for all modules, not just the 6/9 noted at the May snapshot) — Backend APIs complete (Auth, AI stub, Doctor, Patient, Appointments, Prescriptions, Payments, Dashboard, Integration, Medicine, Symptom, Geographic, Tenant, Admin). Frontend complete for all modules: Auth, Patients, Appointments, Dashboard, Prescriptions, Doctor Profile, Payments, Integrations, Medicines, Symptoms, and a full Platform Admin area. Security hardening complete (password complexity, session invalidation, HTTP headers, rate limiting). **MVP v1.0 PRODUCTION READY** 🚀
 
 ### Week 1-2: Foundation & Infrastructure ✅ COMPLETED
 
@@ -316,14 +316,14 @@ Build the most comprehensive practice management system for alternative medicine
 - [x] Revenue reports (daily, monthly aggregates) ✅
 - [x] Transaction logging ✅
 
-**Frontend** 📋 Pending (Backend Ready - ~5-7 hours)
-- [ ] Payment recording form with method selector
-- [ ] SSLCommerz payment initiation flow
-- [ ] Payment status tracking page
-- [ ] Invoice list view with download links
-- [ ] Revenue dashboard widgets (partial - in Dashboard)
-- [ ] Payment history with filters
-- **Status:** Backend 100% ready, frontend is immediate priority
+**Frontend** ✅ DONE (shipped since this section was drafted)
+- [x] Payment recording form with method selector
+- [x] SSLCommerz payment initiation flow
+- [x] Payment status tracking page
+- [x] Invoice list view with download links
+- [x] Revenue dashboard widgets
+- [x] Payment history with filters
+- **Status:** Backend and frontend both complete — see `docs/status/current.md`
 
 **Database**
 - [ ] Run migration for payments and invoices tables
@@ -516,6 +516,17 @@ Build the most comprehensive practice management system for alternative medicine
 **Timeline:** 8 weeks (August - September 2026)  
 **Goal:** Add medicine database with symptom-based search to help doctors during consultations
 
+**Status update (2026-09-21):** This phase's core scope has shipped ahead of the
+checkboxes below — medicine and symptom CRUD, aliases, search APIs, symptom→medicine
+mappings, and GIN full-text indexes all exist in both backend and frontend (see
+`docs/status/current.md`). Still genuinely open: 1,000+ curated medicine/symptom seed
+data, bulk CSV/Excel import UI, wiring `GET /medicines/search` and `GET /symptoms/search`
+into the list pages (both currently client-side filter on the first 100 rows), a
+dedicated symptom→medicine clinical lookup page, and specialization-based filtering
+(`tenant.specializations` exists on the schema, but no route/service filters
+medicines/books by it yet — see `docs/architecture/database.md`). Treat the per-task
+checkboxes below as historical planning granularity, not current implementation truth.
+
 ### Week 1-2: Medicine Database Foundation
 
 **Backend**
@@ -621,28 +632,28 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Symptom search tutorial video
 - [ ] Admin guide for medicine curation
 
-### Phase 2 Deliverables
+### Phase 2 Deliverables (original target — see 2026-09-21 status update above for what's actually shipped)
 
-✅ **Medicine Database:**
-- 1,000+ curated medicines (global pool)
-- Filterable by specialization automatically
-- Full-text search with <100ms latency
-- Bulk import capability for admins
-- Tenant-specific additions
+📋 **Medicine Database:**
+- 1,000+ curated medicines (global pool) — seed data still pending
+- Filterable by specialization automatically — not implemented; schema field exists, no query uses it
+- Full-text search with <100ms latency — search API + GIN index shipped, not yet wired into the list page
+- Bulk import capability for admins — not implemented
+- Tenant-specific additions — shipped
 
-✅ **Symptom Search:**
-- Multi-symptom input support
-- Weighted matching algorithm
-- Results grouped by medical system
-- Match percentage scoring (>85% accuracy)
-- Quick add to prescription
+📋 **Symptom Search (partially shipped — target, not current state):** `GET /symptoms/search` exists but does single-term exact/alias matching with a fixed relevance score (1.0 exact, 0.8 alias) — not the multi-symptom weighted-matching design described below.
+- Multi-symptom input support — not implemented
+- Weighted matching algorithm — not implemented
+- Results grouped by medical system — not implemented
+- Match percentage scoring (>85% accuracy) — not implemented
+- Quick add to prescription — not implemented (no symptom→medicine lookup page exists yet)
 
-✅ **Enhanced Prescription Builder:**
-- One-click add from symptom search
-- Dosage auto-suggestions
-- Recently used medicines
-- Contraindications warnings
-- Medicine interactions alerts
+📋 **Enhanced Prescription Builder (target, not current state):** the shipped `MedicineItemsBuilder` has autocomplete and dosage auto-fill from the selected medicine; the items below go beyond that.
+- One-click add from symptom search — not implemented
+- Dosage auto-suggestions — partially (auto-fill from medicine record, not suggestion logic)
+- Recently used medicines — not implemented
+- Contraindications warnings — not implemented
+- Medicine interactions alerts — not implemented
 
 ---
 
@@ -790,16 +801,16 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Book upload guide (for doctors)
 - [ ] Reader shortcuts reference
 
-### Phase 3 Deliverables
+### Phase 3 Deliverables (target — not started as of 2026-09-21; `books`/`chapters`/`sections`/`reading_progress`/`bookmarks`/`highlights` tables exist, but the `library` module has zero routes)
 
-✅ **Book Library:**
+📋 **Book Library:**
 - 20+ classical medical texts
 - Filterable by system and author
 - Upload capability for doctors (Pro plan)
 - Cover images and metadata
 - Search across library
 
-✅ **Book Reader:**
+📋 **Book Reader:**
 - Clean, readable interface
 - Table of contents navigation
 - Reading progress tracking
@@ -808,7 +819,7 @@ Build the most comprehensive practice management system for alternative medicine
 - Font and theme controls
 - Mobile-optimized
 
-✅ **Dashboard Integration:**
+📋 **Dashboard Integration:**
 - Currently reading widget
 - Reading progress visualization
 - Recently accessed books
@@ -999,29 +1010,29 @@ Build the most comprehensive practice management system for alternative medicine
 - [ ] Limitations and disclaimers
 - [ ] Admin guide for monitoring
 
-### Phase 4 Deliverables
+### Phase 4 Deliverables (target — not started as of 2026-09-21; `POST /api/v1/ai/query` is still a 501 stub, no `library` routes exist)
 
-✅ **AI Assistant:**
+📋 **AI Assistant:**
 - Chat interface with streaming responses
 - Grounded in 20+ classical texts (50K+ sections)
 - Citations for every answer (book, chapter, section)
 - 200 queries/month for Pro plan
 - Query history and feedback
 
-✅ **Embedding System:**
+📋 **Embedding System:**
 - 50K+ embedded text sections
 - Sub-200ms vector retrieval
 - Filtered by doctor's specializations
 - Automated re-embedding on content updates
 
-✅ **Safety & Guardrails:**
+📋 **Safety & Guardrails:**
 - Clinical disclaimer on every response
 - Guardrails against prescriptive advice
 - Content filtering for inappropriate queries
 - Hallucination detection
 - Human review queue for flagged content
 
-✅ **Analytics:**
+📋 **Analytics:**
 - Query usage tracking
 - Popular topics dashboard
 - Response quality metrics (feedback ratings)
@@ -1452,18 +1463,20 @@ This roadmap represents a **44-week journey** (~11 months) from planning to a co
 ---
 
 **Document Owner:** Product Team  
-**Last Updated:** May 10, 2026  
+**Last Updated:** May 10, 2026 (superseded — see `docs/status/current.md` and `docs/ROADMAP.md`, both refreshed 2026-09-21)  
 **Next Review:** Weekly (every Monday)  
-**Status:** ✅ Phase 1 Complete — MVP v1.0 Production Ready (6/9 modules with full frontend)
+**Status (as of 2026-09-21):** ✅ Phase 1 Complete — MVP v1.0 Production Ready, full frontend across all 14 backend modules including Payments, Integrations, Medicines, Symptoms, and Platform Admin. The "6/9 modules" and "Next: Payments frontend / Integrations frontend" notes below are the original May 10, 2026 snapshot and are no longer accurate — kept for history.
 
-**Recent Progress (Code-Verified - May 10, 2026):**
-- ✅ Backend routed modules: 9 (`auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`)
-- ✅ Module endpoints: 82+ total
-- ✅ Frontend: 68+ source files, 13 routes
-- ✅ Complete modules (backend + frontend): Auth, Patients, Appointments, Dashboard, Prescriptions ✅, Doctor Profile ✅
-- ✅ AI contract route: `POST /api/v1/ai/query` (`501` stub by design)
-- ✅ Security: A (95/100), rate limiting, HTTP headers, password complexity
-- 📋 Next: Payments frontend (~5-7h), Integrations frontend (~4-6h), Medicine database
+**Recent Progress (Code-Verified - May 10, 2026, historical):**
+- Backend routed modules: 9 (`auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`)
+- Module endpoints: 82+ total
+- Frontend: 68+ source files, 13 routes
+- Complete modules (backend + frontend): Auth, Patients, Appointments, Dashboard, Prescriptions, Doctor Profile
+- AI contract route: `POST /api/v1/ai/query` (`501` stub by design — still true today)
+- Security: A (95/100), rate limiting, HTTP headers, password complexity
+- 📋 Next (as planned in May): Payments frontend, Integrations frontend, Medicine database — **all since shipped**
+
+**Current snapshot (2026-09-21):** 14 backend modules, 128 module endpoints, 34 tables, 132 frontend source files across 11 route groups (10 dashboard route groups + login). See `docs/status/current.md` for the authoritative breakdown.
 
 **Questions or feedback?** Contact the product team or open an issue in the repository.
 
@@ -1474,14 +1487,11 @@ This roadmap represents a **44-week journey** (~11 months) from planning to a co
 ### Phase Timeline Summary
 ```
 Phase 0: Planning & Design        ✅ Complete (April 7-20)
-Phase 1: Core Clinic MVP          🔄 In Progress (April 21-July 26, 14 weeks)
-  Week 1-2: Backend Foundation    ✅ Complete (April 21-26)
-  Week 3-4: Authentication        ✅ Complete
-  Week 5-13: Core backend modules ✅ Complete
-  Week 14: Testing & launch prep  🔄 In progress
-Phase 2: Knowledge Base           📋 Planned (Aug-Sep, 8 weeks)
-Phase 3: Book Library             📋 Planned (Oct-Dec, 10 weeks)
-Phase 4: AI/RAG                   📋 Planned (Jan-Mar, 12 weeks)
+Phase 1: Core Clinic MVP          ✅ Complete (April 21-July 26, 14 weeks) — backend + frontend, all 14 modules
+Phase 2: Knowledge Base           🔶 Core shipped (medicine/symptom CRUD + search API, GIN indexes);
+                                      seed data, bulk import, and search-API wiring in list pages still open
+Phase 3: Book Library             📋 Planned — DB models exist, no routes/UI yet
+Phase 4: AI/RAG                   📋 Planned — `/api/v1/ai/query` is a 501 stub
 ```
 
 ### Budget Summary (Year 1)

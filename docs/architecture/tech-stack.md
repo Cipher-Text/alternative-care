@@ -2,8 +2,8 @@
 
 > Comprehensive guide to AltCare's technology choices, rationale, and implementation best practices
 
-**Last updated:** April 2026  
-**Status:** Planning/Pre-implementation
+**Last updated:** 2026-09-21  
+**Status:** MVP v1.0 production-ready (see root `CLAUDE.md`) — several code samples below are illustrative/aspirational rather than a literal copy of the current implementation; see inline corrections where they diverge
 
 ---
 
@@ -54,88 +54,76 @@ AltCare starts as a monolithic application with clear internal module boundaries
 - Type hint improvements (PEP 695)
 - Still has LTS support until 2028
 
-**Key libraries:**
-```python
-# pyproject.toml
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.110.0"
-uvicorn = {extras = ["standard"], version = "^0.28.0"}
-sqlalchemy = "^2.0.28"
-alembic = "^1.13.0"
-pydantic = "^2.6.0"
-pydantic-settings = "^2.2.0"
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-pyotp = "^2.9.0"  # 2FA
-celery = {extras = ["redis"], version = "^5.3.6"}
-redis = "^5.0.2"
-psycopg = {extras = ["binary", "pool"], version = "^3.1.18"}
-asyncpg = "^0.29.0"
-weasyprint = "^61.0"
-ebooklib = "^0.18"
-cryptography = "^42.0.0"
-langchain = "^0.1.11"
-openai = "^1.13.0"
-structlog = "^24.1.0"
-slowapi = "^0.1.9"
-sentry-sdk = {extras = ["fastapi"], version = "^1.40.0"}
-faker = "^24.0.0"  # Test data
-httpx = "^0.27.0"
+**Key libraries (actual pins, from `backend/pyproject.toml` — PEP 621 `[project.dependencies]`, not Poetry):**
+```toml
+# backend/pyproject.toml
+[project]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "sqlalchemy>=2.0.25",
+    "alembic>=1.13.1",
+    "asyncpg>=0.29.0",
+    "pydantic>=2.5.3",
+    "pydantic-settings>=2.1.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt<5",
+    "python-multipart>=0.0.6",
+    "pyotp>=2.9.0",           # 2FA
+    "qrcode>=7.4.2",
+    "celery>=5.3.4",
+    "redis>=5.0.1",
+    "weasyprint>=60.2",
+    "ebooklib>=0.18",
+    "cryptography>=42.0.0",
+    "structlog>=24.1.0",
+    "slowapi>=0.1.9",         # dependency present, but NOT wired up — see Rate Limiting below
+    "babel>=2.14.0",
+    "httpx>=0.26.0",
+    "sentry-sdk[fastapi]>=1.40.0",
+    "prometheus-client>=0.19.0",
+    "python-dotenv>=1.0.0",
+]
 ```
+
+There is **no `langchain`, `openai`, or `psycopg`** dependency in the backend today — the AI/RAG assistant is an unbuilt `501` stub (`POST /api/v1/ai/query`), and the only Postgres driver in use is `asyncpg` (no sync `psycopg` driver).
 
 ### FastAPI Architecture
 
-**Middleware stack (order matters!):**
+**Actual middleware stack (`backend/app/main.py`) — simpler than earlier drafts of this doc described:**
 ```python
 # app/main.py
 from fastapi import FastAPI
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-import structlog
-import sentry_sdk
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.rate_limit import close_redis_client
+from app.core.middleware import rate_limit_middleware, add_security_headers
 
-# Initialize Sentry (before FastAPI app)
-sentry_sdk.init(
-    dsn=settings.SENTRY_DSN,
-    environment=settings.ENVIRONMENT,
-    traces_sample_rate=0.1,  # 10% of transactions
-)
-
-limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
     title="AltCare API",
-    version="1.0.0",
+    description="Alternative Medicine Practice Management System",
+    version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    lifespan=lifespan,
 )
 
-# Middleware order (innermost to outermost)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-# CORS (must be before other middleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Request ID for correlation
-app.add_middleware(RequestIDMiddleware)
-
-# Logging middleware
-app.add_middleware(StructlogMiddleware)
-
-# Security headers
-app.add_middleware(SecurityHeadersMiddleware)
-
-# Tenant context (extracts tenant_id from JWT)
-app.add_middleware(TenantContextMiddleware)
+# Rate limiting is a custom Redis-backed function middleware — NOT slowapi
+app.middleware("http")(rate_limit_middleware)
+app.middleware("http")(add_security_headers)
 ```
+
+There is no `sentry_sdk.init()` call, `RequestIDMiddleware`, `StructlogMiddleware`, or `TenantContextMiddleware` wired up in `app/main.py` today — tenant context is set inside the `get_current_user()` dependency (`app/core/dependencies.py`), not by a request middleware. `sentry-sdk`, `structlog`, and `slowapi` are all listed as dependencies but `slowapi` specifically is unused — rate limiting is hand-rolled in `app/core/rate_limit.py` / `app/core/middleware.py`.
 
 ### SQLAlchemy 2.0 Patterns
 
@@ -171,27 +159,26 @@ async def get_db() -> AsyncSession:
             await session.close()
 ```
 
-**Multi-tenant query pattern:**
+**Multi-tenant query pattern (actual structure: `service.py`, not a `repository.py` layer; there is no `get_current_tenant` dependency):**
 ```python
-# app/modules/patient/repository.py
-from app.core.dependencies import get_current_tenant
+# app/modules/patient/service.py
+class PatientService:
+    def __init__(self, db: AsyncSession, tenant_id: str):
+        self.db = db
+        self.tenant_id = tenant_id  # from get_patient_service() in routes.py
 
-async def get_patients(
-    db: AsyncSession,
-    tenant_id: UUID = Depends(get_current_tenant),
-    skip: int = 0,
-    limit: int = 100,
-) -> list[Patient]:
-    result = await db.execute(
-        select(Patient)
-        .where(Patient.tenant_id == tenant_id)
-        .where(Patient.deleted_at.is_(None))
-        .order_by(Patient.created_at.desc())
-        .offset(skip)
-        .limit(limit)
-    )
-    return result.scalars().all()
+    async def list_patients(self, skip: int = 0, limit: int = 100) -> list[Patient]:
+        result = await self.db.execute(
+            select(Patient)
+            .where(Patient.tenant_id == self.tenant_id)
+            .order_by(Patient.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+        )
+        return result.scalars().all()
 ```
+
+There is no `deleted_at` column — `Patient` soft-deletes via `is_active`, filtered explicitly where needed. See [Multi-Tenancy](multi-tenancy.md) for how `tenant_id` actually flows from the JWT into each service (explicit per-method filtering, not an automatic global filter).
 
 ### Celery Task Queue
 
@@ -339,9 +326,11 @@ apiClient.interceptors.response.use(
 ```
 
 **React Query setup:**
+
+The installed package is `react-query` (v3 — `frontend/package.json` pins `"react-query": "^3.39.3"`), not `@tanstack/react-query` (the v4+ successor package). Import from `react-query` to match what's actually installed:
 ```typescript
 // lib/hooks/usePatients.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { apiClient } from '@/lib/api-client';
 
 export function usePatients(page = 1, limit = 20) {
@@ -472,38 +461,7 @@ async def search_similar_sections(
 
 ### JWT Implementation
 
-**Token structure:**
-```python
-# app/core/security.py
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-
-def create_access_token(
-    data: dict,
-    expires_delta: timedelta = timedelta(hours=1)
-) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire, "type": "access"})
-    return jwt.encode(
-        to_encode,
-        settings.SECRET_KEY,
-        algorithm="HS256"
-    )
-
-def create_refresh_token(user_id: UUID) -> str:
-    expire = datetime.utcnow() + timedelta(days=7)
-    to_encode = {
-        "sub": str(user_id),
-        "exp": expire,
-        "type": "refresh"
-    }
-    return jwt.encode(
-        to_encode,
-        settings.SECRET_KEY,
-        algorithm="HS256"
-    )
-```
+**Token structure:** default access-token lifetime is 30 minutes (`settings.ACCESS_TOKEN_EXPIRE_MINUTES`), not 1 hour, and `create_refresh_token()` takes the same `data: dict` shape as `create_access_token()` (minimally `{sub, token_version}`), not a bare `user_id`. See [Authentication](authentication.md) for the accurate signatures and full claim set (including `token_version` for invalidation).
 
 ### 2FA with TOTP
 
@@ -547,34 +505,16 @@ def verify_2fa_token(user: User, token: str) -> bool:
 
 ### Rate Limiting
 
-**Per-endpoint configuration:**
+**Actual implementation:** a custom Redis-backed function middleware (`app/core/rate_limit.py` + `app/core/middleware.py:rate_limit_middleware`), applied globally in `app/main.py` — not `slowapi` per-route decorators (that dependency is present but unused). Limits come from `app/core/config.py`:
+
 ```python
-# app/api/v1/endpoints/auth.py
-from slowapi import Limiter
-from fastapi import Request
-
-limiter = Limiter(key_func=get_remote_address)
-
-@router.post("/login")
-@limiter.limit("5/minute")  # 5 attempts per minute
-async def login(
-    request: Request,  # Required for slowapi
-    credentials: LoginSchema,
-    db: AsyncSession = Depends(get_db),
-):
-    # ... login logic
-    pass
-
-@router.post("/ai/query")
-@limiter.limit("20/hour", key_func=lambda r: r.state.user_id)  # Per-user
-async def ai_query(
-    request: Request,
-    query: AIQuerySchema,
-    user: User = Depends(get_current_user),
-):
-    # ... AI query logic
-    pass
+# app/core/config.py (defaults; overridable via env vars)
+RATE_LIMIT_PER_MINUTE: int = 60          # general API, per IP
+RATE_LIMIT_LOGIN_PER_MINUTE: int = 5     # login, per IP
+RATE_LIMIT_AI_PER_HOUR: int = 20         # AI endpoints, per user
 ```
+
+The middleware inspects the request path/method to pick a scope (login vs. general vs. AI), builds a Redis key, and returns `429` with `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `Retry-After` headers when exceeded — falling back to an in-memory counter if Redis is unavailable.
 
 ---
 
@@ -972,5 +912,5 @@ async def get_current_user_keycloak(
 
 ---
 
-**Last updated:** April 2026  
+**Last updated:** 2026-09-21  
 **Maintainer:** AltCare Engineering Team

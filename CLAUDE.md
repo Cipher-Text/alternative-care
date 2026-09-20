@@ -8,7 +8,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **MVP v1.0 - PRODUCTION READY** 🚀
 
-**Last Verified:** 2026-07-11
+**Last Verified:** 2026-09-21
 
 **Core modules (backend + frontend complete):**
 - Authentication (Login, 2FA, JWT, Sessions, Password Security) ✅
@@ -26,8 +26,8 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 
-**Backend:** 14 routed modules, ~113 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
-**Frontend:** 110+ source files, 17 route families
+**Backend:** 14 routed modules, 128 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** A (95/100)
 
 **Partially built (backend done, frontend missing):**
@@ -51,8 +51,9 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 ### First Time Setup
 
 ```bash
-# 1. Start infrastructure
+# 1. Start infrastructure (Redis + MinIO; PostgreSQL runs natively, not in Docker)
 docker compose up -d
+# Ensure a local PostgreSQL 16 (+ pgvector) instance is running and DATABASE_URL in backend/.env points to it
 
 # 2. Generate encryption key
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
@@ -118,8 +119,8 @@ cd frontend && npx playwright test --ui
 - next-intl (English/Bengali), Playwright (E2E)
 
 **Infrastructure:**
-- Docker Compose (PostgreSQL, Redis, MinIO)
-- Docker containers: `altcare_postgres`, `altcare_redis`, `altcare_minio`
+- Docker Compose (Redis, MinIO) — PostgreSQL runs natively, not containerized
+- Docker containers: `altcare_redis`, `altcare_minio`
 
 ---
 
@@ -130,16 +131,20 @@ cd frontend && npx playwright test --ui
 **Row-Level Isolation:**
 ```python
 # Every tenant-scoped table has tenant_id
-# Automatic scoping via ContextVar from JWT
 
 # Flow:
-# 1. JWT decoded → app/core/dependencies.py:get_current_user()
-# 2. tenant_id extracted → tenant_id_ctx.set(tenant_id)
-# 3. All queries auto-filter by tenant_id
+# 1. JWT decoded → app/core/dependencies.py:get_current_user() → CurrentUser.tenant_id
+# 2. Route's service-factory dependency (e.g. get_patient_service) constructs
+#    the service with tenant_id passed explicitly: PatientService(db, tenant_id)
+# 3. app/core/base_service.py:BaseTenantService stores self.tenant_id and adds
+#    `.where(model.tenant_id == self.tenant_id)` inside its shared helpers
+#    (_get_base_query, get_by_id, count, list_with_pagination)
 
 # Platform users: tenant_id = NULL (admin, operator)
 # Tenant users: tenant_id = <uuid> (doctor, receptionist)
 ```
+
+> **Not automatic at the query layer:** `app/core/dependencies.py` also defines a `tenant_id_ctx` ContextVar that gets `.set()` once during auth, but nothing in the codebase ever calls `.get()` on it — it's unused/dead code, not a session-level auto-filter. Real isolation only holds for code that goes through `BaseTenantService`'s helpers or that manually adds the `tenant_id` filter itself; a hand-written query that skips both is a tenant-isolation bug the type system won't catch.
 
 **Testing Pattern:**
 ```python
@@ -160,7 +165,7 @@ async def test_tenant_isolation(db_session):
 **JWT Tokens:**
 - Access: 30min expiry, type="access"
 - Refresh: 7d expiry, type="refresh"
-- Claims: `sub` (user_id), `tenant_id`, `role`, `email`, `plan`
+- Claims: `sub` (user_id), `tenant_id`, `role`, `email`, `plan`, `token_version` (bumped on password/email/role change to invalidate old tokens; refresh tokens carry only `sub` + `token_version`)
 - Location: `app/core/security.py` (python-jose)
 
 **2FA (TOTP):**
@@ -206,7 +211,7 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
 ```
 
 **Rate Limiting** (`app/core/rate_limit.py`, Redis-backed):
-- Login: 10 req/min per IP — General API: 100 req/min per IP — AI: 100 req/hour per user
+- Login: 5 req/min per IP — General API: 60 req/min per IP — AI: 20 req/hour per user
 - Returns `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After` on 429
 - Config keys: `RATE_LIMIT_PER_MINUTE`, `RATE_LIMIT_LOGIN_PER_MINUTE`, `RATE_LIMIT_AI_PER_HOUR`
 
@@ -230,16 +235,16 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
 **System:** `translations`, `usage_tracking`
 
 **Table Patterns:**
-- Tenant-scoped: `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_at`
-- Soft deletes: `deleted_at IS NULL` (never hard delete clinical data)
+- Tenant-scoped: `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`
+- Soft deactivation: per-table `is_active: bool` flag (patients, medicines, symptoms, tenants, users, integrations, translations, library) — there is no `deleted_at` column anywhere in the schema. Some child records (e.g. patient tags) are hard-deleted instead — check the specific route/service before assuming soft delete.
 - Immutable: Prescriptions/payments are append-only (draft → issued → voided)
 - Global vs Tenant: `is_global=true` (admin-curated) or tenant-specific
 
 **Model Base Classes:**
 ```python
 # app/shared/models/base.py
-BaseModel → created_at, updated_at
-BaseAuditModel → + created_by, updated_by, deleted_at
+BaseAuditModel → created_at, updated_at, created_by, updated_by
+TenantScopedModel(BaseAuditModel) → + tenant_id
 ```
 
 ### 4.4 Backend Module Structure
@@ -254,22 +259,21 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (~104 total endpoints)
-│   ├── auth/             # ✅ Login, refresh, 2FA, admin provisioning (12 endpoints)
-│   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard (9 endpoints)
+├── modules/               # Feature modules (128 total endpoints)
+│   ├── auth/             # ✅ Login, refresh, 2FA, admin provisioning (14 endpoints)
+│   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning (10 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
-│   ├── appointments/     # ✅ Scheduling, visits (6 endpoints)
+│   ├── appointments/     # ✅ Scheduling, visits (10 endpoints)
 │   ├── prescription/     # ✅ CRUD, items, issue, void, PDF (8 endpoints)
 │   ├── payment/          # ✅ Processing, bKash (12 endpoints)
 │   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
 │   ├── dashboard/        # ✅ Analytics, stats (6 endpoints)
 │   ├── ai/               # ✅ Stub endpoint, pro-plan gated (1 endpoint)
-│   ├── medicine/         # ✅ CRUD, search, aliases, symptom mappings (8 endpoints)
-│   ├── symptom/          # ✅ CRUD, search, aliases (8 endpoints)
+│   ├── medicine/         # ✅ CRUD, search, aliases, symptom mappings (15 endpoints)
+│   ├── symptom/          # ✅ CRUD, search, aliases (9 endpoints)
 │   ├── geographic/       # ✅ Divisions, districts, upazilas (3 endpoints)
 │   ├── tenant/           # ✅ Clinic profile (2 endpoints)
-│   ├── admin/            # ✅ Platform admin — tenants + users (9 endpoints)
 │   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
 │   └── notification/     # 📋 Placeholder
 └── shared/
@@ -360,11 +364,13 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 - Table: `translations` (key-value pairs)
 - User: `users.language` (default: "en")
 
-**Doctor Specialization:**
+**Doctor Specialization (not yet implemented):**
 ```python
-# tenant.specializations = ['homeopathy', 'ayurveda']
-# Medicines/books filtered:
-WHERE system IN tenant.specializations OR is_global = true
+# tenant.specializations = ['homeopathy', 'ayurveda'] exists on the Tenant model,
+# and medicines/library models are documented as "filtered by specialization" —
+# but no route or service currently filters by it. Medicine list/search only
+# filter by is_global / tenant_id (see app/modules/medicine/routes.py).
+# Intended behavior once built: WHERE system IN tenant.specializations OR is_global = true
 ```
 
 **Integration Framework:**
@@ -407,7 +413,7 @@ authStore.setTokens(tokens.access_token, tokens.refresh_token);
 
 1. **NEVER bypass tenant isolation** - all queries MUST filter by `tenant_id`
 2. **Use async/await** - all DB ops are async (`AsyncSession`)
-3. **Soft delete clinical data** - set `deleted_at`, never hard delete
+3. **Soft-deactivate clinical data** - set the table's `is_active=False`, don't hard delete (some child records are intentionally hard-deleted — check the service method)
 4. **Validate plan limits** - check `usage_tracking` before creating records
 5. **Encrypt sensitive data** - Fernet for API keys/credentials
 6. **Log integrations** - all SMS/email/payment logged with full payload
@@ -438,7 +444,7 @@ authStore.setTokens(tokens.access_token, tokens.refresh_token);
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:8000
 - **API Docs:** http://localhost:8000/docs (Swagger), http://localhost:8000/redoc
-- **Database:** localhost:5432 (docker: `altcare_postgres`)
+- **Database:** localhost:5432 (native PostgreSQL 16 + pgvector, not Dockerized)
 - **Redis:** localhost:6379 (docker: `altcare_redis`)
 - **MinIO:** http://localhost:9001 (minioadmin/minioadmin)
 

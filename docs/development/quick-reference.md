@@ -6,16 +6,16 @@ Common patterns and utilities for AltCare development.
 
 ## React Query Setup
 
-```typescript
-// lib/queryClient.ts
-import { QueryClient } from '@tanstack/react-query';
+The project uses `react-query` v3 (not `@tanstack/react-query`) — see `frontend/src/app/providers.tsx`:
 
-export const queryClient = new QueryClient({
+```typescript
+// app/providers.tsx
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,   // 5 minutes
-      gcTime: 10 * 60 * 1000,      // 10 minutes
-      retry: 1,
+      staleTime: 60 * 1000,   // 1 minute
       refetchOnWindowFocus: false,
     },
   },
@@ -28,20 +28,18 @@ export const queryClient = new QueryClient({
 
 ```typescript
 // lib/hooks/usePatients.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 export function usePatients(search?: string) {
-  return useQuery({
-    queryKey: ['patients', search],
-    queryFn: () => patientsApi.list({ search }),
+  return useQuery(['patients', search], () => patientsApi.list({ search }), {
+    staleTime: 30000,
   });
 }
 
 export function useCreatePatient() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: patientsApi.create,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['patients'] }),
+  return useMutation((data) => patientsApi.create(data), {
+    onSuccess: () => queryClient.invalidateQueries('patients'),
   });
 }
 ```
@@ -53,15 +51,16 @@ export function useCreatePatient() {
 ```typescript
 // lib/api/client.ts
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach auth token
+// Attach auth token (stored in cookies via js-cookie, not the Zustand store)
 apiClient.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken;
+  const token = Cookies.get('accessToken');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -83,10 +82,10 @@ apiClient.interceptors.response.use(
 ## Toast Notifications
 
 ```typescript
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 
 toast.success('Patient added successfully!');
-toast.error('Failed to save', { description: 'Check your connection' });
+toast.error('Failed to save');
 
 const id = toast.loading('Saving...');
 toast.success('Saved!', { id });  // replaces the loading toast
@@ -152,7 +151,7 @@ export function MyComponent() {
 }
 ```
 
-Messages live in `frontend/messages/en.json` and `frontend/messages/bn.json`. See [i18n guide](i18n.md) for full details.
+Messages live in `frontend/src/messages/en.json` and `frontend/src/messages/bn.json`. Note: as of this audit, `next-intl` is installed but not yet wired up (no provider/middleware) — see [i18n guide](i18n.md) for details.
 
 ---
 

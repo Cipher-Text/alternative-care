@@ -25,13 +25,13 @@ When any planning document conflicts with implementation:
 3. `frontend/src/app/**` (implemented UI routes)
 4. `../status/current.md` (narrative status)
 
-## Current Baseline Snapshot (2026-07-11)
+## Current Baseline Snapshot (2026-09-21)
 
 - Backend active routers: 14 modules
-- Module endpoints: ~113 total (+ `/`, `/health`, `/metrics`)
-- Frontend implemented route families: auth, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin/dashboard, admin/clients, admin/users
+- Module endpoints: 128 total (+ `/`, `/health`, `/metrics`)
+- Frontend implemented route groups (11): auth/login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin (dashboard, clients, users) — 132 source files total
 - AI route status: `/api/v1/ai/query` exists as a `501 Not Implemented` contract stub
-- Admin Phase A: complete — `app/modules/admin/` at `/api/v1/admin` with 9 endpoints
+- Admin Phase A: complete — `app/modules/admin/` at `/api/v1/admin` with 10 endpoints, including `POST /admin/tenants/{id}/doctors` (add a doctor under an existing tenant, shipped 2026-07-12)
 
 ## Maintenance
 

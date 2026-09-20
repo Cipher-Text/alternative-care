@@ -1,6 +1,6 @@
 # AltCare Testing Strategy (Single Source of Truth)
 
-**Last Updated:** July 12, 2026
+**Last Updated:** September 21, 2026
 **Scope:** MVP v1.0 backend + frontend quality gates
 
 ## Purpose
@@ -94,6 +94,8 @@ MVP current reality:
 - Smoke E2E suite is blocking for merge.
 - Migration safety check is blocking for merge.
 
+> **Accuracy note (2026-09-21):** Only the backend gates are actually wired into CI today — `.github/workflows/backend-tests.yml` runs the backend test/coverage job and a `migration-safety` job (alembic upgrade → downgrade -1 → upgrade). There is no frontend or Playwright/E2E workflow in `.github/workflows/` yet, so the "frontend required suites" and "smoke E2E suite is blocking" bullets above are policy, not enforced CI gates.
+
 ## Test Organization
 
 - Backend tests: `backend/tests/unit`, `backend/tests/integration`, `backend/tests/performance`
@@ -112,7 +114,7 @@ MVP current reality:
 1. Add `integration` module test pack (unit + integration + tenant isolation).
 2. Add migration safety automation (`upgrade head`, downgrade sanity, re-upgrade).
 3. Add contract/schema checks for critical backend APIs.
-4. Enforce CI gates for required suites and backend coverage threshold.
+4. Enforce CI gates for frontend/E2E required suites (backend test job, coverage threshold, and migration safety are already enforced via `.github/workflows/backend-tests.yml`).
 5. Add frontend component/page integration test baseline and make it required.
 
 ## Backend Missing Tests (MVP Scope, Actionable)

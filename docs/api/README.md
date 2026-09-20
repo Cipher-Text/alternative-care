@@ -2,15 +2,15 @@
 title: "AltCare API Overview"
 type: "api-reference"
 version: "1.0.0"
-last_updated: "2026-07-12"
-ai_summary: "127 REST endpoints across 14 modules (including AI stub) with JWT authentication"
+last_updated: "2026-09-21"
+ai_summary: "128 REST endpoints across 14 modules (including AI stub) with JWT authentication"
 base_url: "http://localhost:8000/api/v1"
 ---
 
 # AltCare API Documentation
 
 **Base URL:** `http://localhost:8000/api/v1`
-**Total Endpoints:** 127 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)
+**Total Endpoints:** 128 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)
 **Authentication:** JWT Bearer Token
 **Format:** JSON
 
@@ -20,7 +20,7 @@ base_url: "http://localhost:8000/api/v1"
 
 | Module | Endpoints | Purpose | Docs |
 |--------|-----------|---------|------|
-| **Admin** | 9 | Platform dashboard, tenants, users | N/A |
+| **Admin** | 10 | Platform dashboard, tenants, users | N/A |
 | **Authentication** | 14 | Login, 2FA, registration, session lifecycle, legacy admin compatibility | [authentication.md](authentication.md) |
 | **AI** | 1 | Query stub (`501`) | N/A (stub) |
 | **Patients** | 14 | Patient CRUD, search | [patients.md](patients.md) |
@@ -35,7 +35,7 @@ base_url: "http://localhost:8000/api/v1"
 | **Symptom** | 9 | Global and tenant symptoms, aliases | N/A |
 | **Tenant** | 2 | Clinic profile | N/A |
 
-**Total:** 127 module endpoints
+**Total:** 128 module endpoints
 
 ## Authentication
 

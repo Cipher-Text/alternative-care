@@ -3,8 +3,8 @@ title: "Patient Management API"
 type: "api-reference"
 module: "patients"
 version: "0.9.0"
-last_updated: "2026-05-01"
-ai_summary: "14 endpoints for patient CRUD, search, tags, and diagnoses"
+last_updated: "2026-09-21"
+ai_summary: "14 endpoints for patient CRUD, tags, and diagnoses"
 endpoints: 14
 authentication: "required"
 ---
@@ -22,11 +22,11 @@ authentication: "required"
 - [Overview](#overview)
 - [Endpoints](#endpoints)
   - [List Patients](#list-patients)
+  - [Patient Count](#patient-count)
   - [Get Patient](#get-patient)
   - [Create Patient](#create-patient)
   - [Update Patient](#update-patient)
   - [Delete Patient](#delete-patient)
-  - [Search Patients](#search-patients)
   - [Patient Tags](#patient-tags)
   - [Patient Diagnoses](#patient-diagnoses)
 - [Examples](#examples)
@@ -40,13 +40,13 @@ Patient management endpoints for CRUD operations, search, tags, and medical hist
 
 **Key Features:**
 - ✅ Full CRUD operations
-- ✅ Search by name/phone/code
-- ✅ Filter by gender/tags
-- ✅ Tag management
+- ✅ Search by name/phone/email (via `search` query param on list)
+- ✅ Filter by active status and upcoming visits
+- ✅ Tag management (special_case, chronic, treatment, allergy)
 - ✅ Diagnosis history
 - ✅ Multi-tenant isolation
 
-**Authentication:** Required (JWT)
+**Authentication:** Required (JWT, tenant user — platform users get `403`)
 
 ---
 
@@ -59,37 +59,45 @@ GET /api/v1/patients
 ```
 
 **Query Parameters:**
-- `skip` (int, optional): Offset for pagination (default: 0)
-- `limit` (int, optional): Max results (default: 100)
-- `search` (string, optional): Search by name/phone/code
-- `gender` (string, optional): Filter by gender (male|female|other)
-- `tag_id` (uuid, optional): Filter by tag ID
+- `search` (string, optional): Search by full name, phone, or email
+- `is_active` (bool, optional): Filter by active status
+- `has_upcoming_visit` (bool, optional): Filter patients with/without an upcoming `next_visit_date`
+- `limit` (int, optional): Max results (default: 100, max: 500)
+- `offset` (int, optional): Pagination offset (default: 0)
 
 **Response:** `200 OK`
 ```json
 [
   {
     "id": "uuid",
-    "tenant_id": "uuid",
-    "patient_code": "P-2026-0001",
-    "first_name": "John",
-    "last_name": "Doe",
+    "full_name": "John Doe",
+    "phone": "01712345678",
     "date_of_birth": "1990-01-01",
     "gender": "male",
-    "phone": "01712345678",
-    "email": "john@example.com",
-    "address": "123 Main St",
-    "division_id": "uuid",
-    "district_id": "uuid",
-    "upazila_id": "uuid",
-    "emergency_contact_name": "Jane Doe",
-    "emergency_contact_phone": "01798765432",
-    "blood_group": "A+",
-    "created_at": "2026-05-01T10:00:00Z",
-    "updated_at": "2026-05-01T10:00:00Z"
+    "next_visit_date": "2026-06-01",
+    "is_active": true
   }
 ]
 ```
+
+<!-- AI: There is no separate /patients/search endpoint — search is a query param on this list endpoint -->
+
+---
+
+### Patient Count
+
+```http
+GET /api/v1/patients/count
+```
+
+**Response:** `200 OK`
+```json
+{
+  "count": 150
+}
+```
+
+**Description:** Count of active patients for the tenant.
 
 ---
 
@@ -100,16 +108,33 @@ GET /api/v1/patients/{id}
 ```
 
 **Path Parameters:**
-- `id` (uuid, required): Patient ID
+- `id` (string, required): Patient ID
 
 **Response:** `200 OK`
 ```json
 {
   "id": "uuid",
-  "patient_code": "P-2026-0001",
-  "first_name": "John",
-  "last_name": "Doe",
-  ...
+  "tenant_id": "uuid",
+  "full_name": "John Doe",
+  "date_of_birth": "1990-01-01",
+  "gender": "male",
+  "blood_group": "A+",
+  "phone": "01712345678",
+  "email": "john@example.com",
+  "whatsapp": "01712345678",
+  "address": "123 Main St",
+  "division_id": 1,
+  "district_id": 2,
+  "upazila_id": 3,
+  "chief_complaint": "Recurring headache",
+  "medical_history": "None reported",
+  "photo_url": null,
+  "next_visit_date": null,
+  "is_active": true,
+  "created_at": "2026-05-01T10:00:00Z",
+  "updated_at": "2026-05-01T10:00:00Z",
+  "created_by": "uuid",
+  "updated_by": "uuid"
 }
 ```
 
@@ -127,54 +152,55 @@ POST /api/v1/patients
 **Request Body:**
 ```json
 {
-  "first_name": "John",
-  "last_name": "Doe",
+  "full_name": "John Doe",
   "date_of_birth": "1990-01-01",
   "gender": "male",
+  "blood_group": "A+",
   "phone": "01712345678",
   "email": "john@example.com",
+  "whatsapp": "01712345678",
   "address": "123 Main St",
-  "division_id": "uuid",
-  "district_id": "uuid",
-  "upazila_id": "uuid",
-  "emergency_contact_name": "Jane Doe",
-  "emergency_contact_phone": "01798765432",
-  "blood_group": "A+"
+  "division_id": 1,
+  "district_id": 2,
+  "upazila_id": 3,
+  "chief_complaint": "Recurring headache",
+  "medical_history": "None reported",
+  "next_visit_date": "2026-06-01"
 }
 ```
 
 **Required Fields:**
-- `first_name` (string)
-- `last_name` (string)
+- `full_name` (string)
+
+**Optional Fields:**
 - `date_of_birth` (date)
 - `gender` (enum: male|female|other)
-- `phone` (string, min 11 chars)
+- `blood_group` (enum: A+|A-|B+|B-|AB+|AB-|O+|O-)
+- `phone`, `email`, `whatsapp` (string)
+- `address` (string), `division_id`/`district_id`/`upazila_id` (int, Bangladesh geographic IDs)
+- `chief_complaint`, `medical_history` (string)
+- `photo_url` (string)
+- `next_visit_date` (date)
 
-**Response:** `201 Created`
-```json
-{
-  "id": "uuid",
-  "patient_code": "P-2026-0001",
-  ...
-}
-```
+**Response:** `201 Created` (same shape as [Get Patient](#get-patient))
 
 **Errors:**
-- `400 Bad Request`: Validation error
-- `409 Conflict`: Phone number already exists
+- `422 Unprocessable Entity`: Validation error
+
+<!-- AI: There is no patient_code, first_name, or last_name field — patients use a single full_name field and are identified by their id -->
 
 ---
 
 ### Update Patient
 
 ```http
-PUT /api/v1/patients/{id}
+PATCH /api/v1/patients/{id}
 ```
 
 **Path Parameters:**
-- `id` (uuid, required): Patient ID
+- `id` (string, required): Patient ID
 
-**Request Body:** (partial update supported)
+**Request Body:** (partial update supported — any field from [Create Patient](#create-patient), plus `is_active`)
 ```json
 {
   "phone": "01712345679",
@@ -186,7 +212,7 @@ PUT /api/v1/patients/{id}
 
 **Errors:**
 - `404 Not Found`: Patient doesn't exist
-- `400 Bad Request`: Validation error
+- `422 Unprocessable Entity`: Validation error
 
 ---
 
@@ -197,33 +223,14 @@ DELETE /api/v1/patients/{id}
 ```
 
 **Path Parameters:**
-- `id` (uuid, required): Patient ID
+- `id` (string, required): Patient ID
 
-**Response:** `204 No Content`
+**Response:** `200 OK` (updated patient record with `is_active: false`)
 
 **Errors:**
 - `404 Not Found`: Patient doesn't exist
 
-<!-- AI: This is a soft delete, sets deleted_at timestamp -->
-
----
-
-### Search Patients
-
-```http
-GET /api/v1/patients/search?q={query}
-```
-
-**Query Parameters:**
-- `q` (string, required): Search query (name, phone, or patient code)
-
-**Response:** `200 OK` (same as List Patients)
-
-**Search Fields:**
-- First name
-- Last name
-- Phone number
-- Patient code
+<!-- AI: This is a soft delete — sets is_active=false and returns the updated patient, it does NOT return 204 -->
 
 ---
 
@@ -239,10 +246,14 @@ GET /api/v1/patients/{patient_id}/tags
 ```json
 [
   {
-    "id": "uuid",
+    "id": 1,
     "patient_id": "uuid",
-    "tag": "diabetes",
-    "created_at": "2026-05-01T10:00:00Z"
+    "tenant_id": "uuid",
+    "tag_type": "chronic",
+    "tag_value": "diabetes",
+    "notes": null,
+    "created_at": "2026-05-01T10:00:00Z",
+    "updated_at": null
   }
 ]
 ```
@@ -256,17 +267,37 @@ POST /api/v1/patients/{patient_id}/tags
 **Request Body:**
 ```json
 {
-  "tag": "diabetes"
+  "tag_type": "chronic",
+  "tag_value": "diabetes",
+  "notes": "Type 2, diet-controlled"
 }
 ```
 
+**Required Fields:**
+- `tag_type` (enum: special_case|chronic|treatment|allergy)
+- `tag_value` (string)
+
 **Response:** `201 Created`
+
+#### Update Tag
+
+```http
+PATCH /api/v1/patients/tags/{tag_id}
+```
+
+**Note:** Path does **not** include `patient_id` — tags are addressed by `tag_id` alone.
+
+**Request Body:** (partial update — `tag_type`, `tag_value`, `notes`)
+
+**Response:** `200 OK`
 
 #### Delete Tag
 
 ```http
-DELETE /api/v1/patients/{patient_id}/tags/{tag_id}
+DELETE /api/v1/patients/tags/{tag_id}
 ```
+
+**Note:** Path does **not** include `patient_id` — tags are addressed by `tag_id` alone.
 
 **Response:** `204 No Content`
 
@@ -280,16 +311,23 @@ DELETE /api/v1/patients/{patient_id}/tags/{tag_id}
 GET /api/v1/patients/{patient_id}/diagnoses
 ```
 
+**Query Parameters:**
+- `active_only` (bool, optional, default: `true`): Only show active diagnoses
+
 **Response:** `200 OK`
 ```json
 [
   {
-    "id": "uuid",
+    "id": 1,
     "patient_id": "uuid",
-    "diagnosis": "Hypertension",
+    "visit_id": null,
+    "tenant_id": "uuid",
+    "description": "Hypertension",
+    "icd_code": null,
     "diagnosed_at": "2026-05-01",
-    "notes": "Stage 1, monitoring",
-    "created_at": "2026-05-01T10:00:00Z"
+    "is_active": true,
+    "created_at": "2026-05-01T10:00:00Z",
+    "updated_at": null
   }
 ]
 ```
@@ -303,29 +341,46 @@ POST /api/v1/patients/{patient_id}/diagnoses
 **Request Body:**
 ```json
 {
-  "diagnosis": "Hypertension",
+  "description": "Hypertension",
+  "icd_code": "I10",
   "diagnosed_at": "2026-05-01",
-  "notes": "Stage 1"
+  "visit_id": "uuid"
 }
 ```
+
+**Required Fields:**
+- `description` (string)
+- `diagnosed_at` (date)
+
+**Optional Fields:**
+- `icd_code` (string)
+- `visit_id` (string): Link to a visit
 
 **Response:** `201 Created`
 
 #### Update Diagnosis
 
 ```http
-PUT /api/v1/patients/{patient_id}/diagnoses/{diagnosis_id}
+PATCH /api/v1/patients/diagnoses/{diagnosis_id}
 ```
+
+**Note:** Path does **not** include `patient_id` — diagnoses are addressed by `diagnosis_id` alone.
+
+**Request Body:** (partial update — `description`, `icd_code`, `diagnosed_at`, `is_active`)
 
 **Response:** `200 OK`
 
 #### Delete Diagnosis
 
 ```http
-DELETE /api/v1/patients/{patient_id}/diagnoses/{diagnosis_id}
+DELETE /api/v1/patients/diagnoses/{diagnosis_id}
 ```
 
-**Response:** `204 No Content`
+**Note:** Path does **not** include `patient_id` — diagnoses are addressed by `diagnosis_id` alone.
+
+**Response:** `200 OK` (updated diagnosis record with `is_active: false`)
+
+<!-- AI: This is a soft delete — sets is_active=false and returns the updated diagnosis, it does NOT return 204 -->
 
 ---
 
@@ -338,8 +393,7 @@ curl -X POST http://localhost:8000/api/v1/patients \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "first_name": "John",
-    "last_name": "Doe",
+    "full_name": "John Doe",
     "date_of_birth": "1990-01-01",
     "gender": "male",
     "phone": "01712345678"
@@ -352,18 +406,18 @@ curl -X POST http://localhost:8000/api/v1/patients \
 import requests
 
 response = requests.get(
-    "http://localhost:8000/api/v1/patients/search",
+    "http://localhost:8000/api/v1/patients",
     headers={"Authorization": f"Bearer {token}"},
-    params={"q": "john"}
+    params={"search": "john"}
 )
 patients = response.json()
 ```
 
-### Filter by Gender (JavaScript)
+### Filter Active Patients (JavaScript)
 
 ```javascript
 const response = await fetch(
-  'http://localhost:8000/api/v1/patients?gender=male',
+  'http://localhost:8000/api/v1/patients?is_active=true',
   {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -377,13 +431,13 @@ const patients = await response.json()
 
 ## ❌ Error Handling
 
-### Validation Error (400)
+### Validation Error (422)
 
 ```json
 {
   "detail": [
     {
-      "loc": ["body", "phone"],
+      "loc": ["body", "full_name"],
       "msg": "field required",
       "type": "value_error.missing"
     }
@@ -399,11 +453,11 @@ const patients = await response.json()
 }
 ```
 
-### Conflict (409)
+### Forbidden (403)
 
 ```json
 {
-  "detail": "Patient with this phone number already exists"
+  "detail": "Platform users cannot manage patient records. Use a tenant account."
 }
 ```
 
@@ -412,19 +466,19 @@ const patients = await response.json()
 ## 🤖 AI Quick Reference
 
 **Q: What fields are required to create a patient?**
-→ first_name, last_name, date_of_birth, gender, phone
+→ Only `full_name`
 
 **Q: How do I search for a patient?**
-→ GET /patients/search?q=name_or_phone
+→ GET /patients?search=name_or_phone_or_email (there is no separate /patients/search route)
 
-**Q: Can I filter by gender?**
-→ Yes, GET /patients?gender=male
+**Q: Can I filter by upcoming visits?**
+→ Yes, GET /patients?has_upcoming_visit=true
 
 **Q: How do I add tags to a patient?**
-→ POST /patients/{id}/tags with {"tag": "tag_name"}
+→ POST /patients/{id}/tags with {"tag_type": "chronic", "tag_value": "diabetes"}
 
 **Q: Are patients tenant-scoped?**
-→ Yes, automatically filtered by tenant_id from JWT
+→ Yes — the service filters by `tenant_id` from the JWT explicitly (not an automatic global filter; see `docs/architecture/multi-tenancy.md`)
 
 ---
 
@@ -435,5 +489,5 @@ const patients = await response.json()
 
 ---
 
-**Last Updated:** May 1, 2026  
+**Last Updated:** September 21, 2026  
 **Endpoints:** 14 ✅

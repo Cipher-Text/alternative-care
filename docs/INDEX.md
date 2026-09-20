@@ -1,7 +1,7 @@
 ---
 title: "AltCare Documentation Index"
 type: "navigation"
-last_updated: "2026-07-12"
+last_updated: "2026-09-21"
 ai_purpose: "Fast navigation map for AI assistants"
 version: "1.1.0"
 ---
@@ -50,22 +50,22 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 
 ### Planning and Status
 - `ROADMAP.md` — product roadmap with Platform Admin Phase A/B added
-- `status/current.md` — current implementation status *(updated 2026-07-11)*
+- `status/current.md` — current implementation status *(updated 2026-09-21)*
 - `planning/admin-module.md` — **Platform Admin Phase A spec** *(new 2026-07-11)*
 - `planning/role-distribution.md` — **Role distribution & user management spec** *(new 2026-07-11)*
 - `testing/TEST_STRATEGY.md`
 - `planning/roadmap-detailed.md`
 
-## Code-Verified Snapshot (2026-07-11)
+## Code-Verified Snapshot (2026-09-21)
 
 - Backend routers registered in `backend/app/main.py`: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- API endpoints: 127 module endpoints
+- API endpoints: 128 module endpoints
 - Database table models: 34 (plus 3 base classes)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
 - Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin/clients, admin/dashboard, admin/users
 - Roles: `admin` (platform, full), `operator` (platform, stub), `doctor` (tenant, full), `receptionist` (tenant, stub)
-- Platform admin endpoints: 9 canonical endpoints in `admin/routes.py`; legacy compatibility endpoints remain under `auth/routes.py`
+- Platform admin endpoints: 10 canonical endpoints in `admin/routes.py` (includes `POST /admin/tenants/{id}/doctors` — add a doctor under an existing tenant); legacy compatibility endpoints remain under `auth/routes.py`
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes
@@ -81,4 +81,4 @@ When answering implementation questions, prefer these sources in order:
 - `../CLAUDE.md` - codebase guidance for AI coding agents
 - `../README.md` - public project overview
 - `../CHANGELOG.md` - release notes
-- `../SECURITY_AUDIT_REPORT.md` - security review summary
+- `archive/SECURITY_AUDIT_REPORT.md` - security review summary
