@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { toast } from 'react-hot-toast'
 import { authApi } from '@/lib/api/auth'
 import { getPostLoginPath } from '@/lib/auth/redirects'
@@ -16,12 +17,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { TwoFactorForm } from './TwoFactorForm'
 import { getErrorMessage } from '@/types/api'
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
+type LoginFormData = {
+  email: string
+  password: string
+}
 
 // Dev quick users - only loaded in development mode
 // SECURITY: Never include credentials in production builds
@@ -55,10 +54,16 @@ const DEV_QUICK_USERS = getDevQuickUsers()
 
 export function LoginForm() {
   const router = useRouter()
+  const t = useTranslations('auth')
   const setAuth = useAuthStore((state) => state.setAuth)
   const [loading, setLoading] = useState(false)
   const [needs2FA, setNeeds2FA] = useState(false)
   const [credentials, setCredentials] = useState<LoginFormData | null>(null)
+
+  const loginSchema = z.object({
+    email: z.string().email({ message: t('invalidEmail') }),
+    password: z.string().min(6, t('passwordMinLength')),
+  })
 
   const {
     register,
@@ -82,11 +87,11 @@ export function LoginForm() {
       } else {
         // Login successful
         setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
-        toast.success('Login successful!')
+        toast.success(t('loginSuccess'))
         router.push(getPostLoginPath(response.user))
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Login failed'))
+      toast.error(getErrorMessage(error, t('loginFailed')))
       setLoading(false)
     }
   }
@@ -104,19 +109,19 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl">Login to AltCare</CardTitle>
+        <CardTitle className="text-2xl">{t('loginTitle')}</CardTitle>
         <CardDescription>
-          Enter your email and password to access your account
+          {t('loginDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('email')}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="doctor@clinic.com"
+              placeholder={t('emailPlaceholder')}
               {...register('email')}
               disabled={loading}
             />
@@ -126,11 +131,11 @@ export function LoginForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('password')}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
+              placeholder={t('passwordPlaceholder')}
               {...register('password')}
               disabled={loading}
             />
@@ -140,7 +145,7 @@ export function LoginForm() {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? t('loggingIn') : t('login')}
           </Button>
 
           {process.env.NODE_ENV !== 'production' && (

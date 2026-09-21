@@ -279,7 +279,7 @@ frontend/
 │   │   └── utils/           # Utilities
 │   ├── types/               # TypeScript interfaces
 │   ├── store/                # Zustand stores (authStore.ts, themeStore.ts)
-│   └── messages/            # i18n message files (next-intl installed but not yet wired up)
+│   └── messages/            # i18n message files (next-intl wired up — cookie-based, login/header covered so far)
 │       ├── en.json
 │       └── bn.json
 ├── .env.local
@@ -578,10 +578,10 @@ After setup:
    - Use API client
    - Create forms with react-hook-form
 
-4. **Wire Up Internationalization** (not done yet — `next-intl` is installed and `src/messages/{en,bn}.json` exist, but there is no `middleware.ts`, `i18n.ts` request config, or `NextIntlClientProvider`; see [i18n guide](../development/i18n.md)):
-   - Add the next-intl middleware/routing config
-   - Wrap the app in `NextIntlClientProvider`
-   - Replace hardcoded strings with `useTranslations`
+4. **Extend Internationalization Coverage** (infrastructure is wired up — `src/i18n/request.ts`, `NextIntlClientProvider` in `layout.tsx`, cookie-based locale, `LanguageSwitcher` in the header — but only the login card and header dropdown use `useTranslations` so far; see [i18n guide](../development/i18n.md)):
+   - Add message keys for the next page/component you're translating
+   - Replace its hardcoded strings with `useTranslations`
+   - No middleware or URL routing needed — this app deliberately uses cookie-based locale, not `/en/`/`/bn/` URL prefixes
 
 ---
 

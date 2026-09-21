@@ -6,7 +6,10 @@
     "edit": "সম্পাদনা",
     "search": "অনুসন্ধান",
     "loading": "লোড হচ্ছে...",
-    "error": "একটি ত্রুটি ঘটেছে"
+    "error": "একটি ত্রুটি ঘটেছে",
+    "language": "ভাষা",
+    "english": "English",
+    "bengali": "বাংলা"
   },
   "auth": {
     "login": "লগইন",
@@ -14,14 +17,25 @@
     "email": "ইমেইল",
     "password": "পাসওয়ার্ড",
     "loginSuccess": "সফলভাবে লগইন হয়েছে",
-    "loginFailed": "লগইন ব্যর্থ হয়েছে"
+    "loginFailed": "লগইন ব্যর্থ হয়েছে",
+    "loginTitle": "AltCare-এ লগইন করুন",
+    "loginDescription": "আপনার অ্যাকাউন্ট অ্যাক্সেস করতে ইমেইল ও পাসওয়ার্ড দিন",
+    "emailPlaceholder": "doctor@clinic.com",
+    "passwordPlaceholder": "••••••••",
+    "loggingIn": "লগইন হচ্ছে...",
+    "invalidEmail": "অবৈধ ইমেইল ঠিকানা",
+    "passwordMinLength": "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে"
+  },
+  "nav": {
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "logoutSuccess": "সফলভাবে লগআউট হয়েছে"
   },
   "patients": {
     "title": "রোগীরা",
     "addPatient": "রোগী যোগ করুন",
     "editPatient": "রোগী সম্পাদনা করুন",
-    "firstName": "প্রথম নাম",
-    "lastName": "শেষ নাম",
+    "fullName": "পূর্ণ নাম",
     "phone": "ফোন",
     "gender": "লিঙ্গ",
     "male": "পুরুষ",

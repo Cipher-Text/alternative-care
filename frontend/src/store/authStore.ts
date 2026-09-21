@@ -30,6 +30,8 @@ export const useAuthStore = create<AuthStore>()(
         // Store tokens in httpOnly-like cookies (more secure than localStorage)
         Cookies.set('accessToken', accessToken, { expires: 1/48 }) // 30 minutes
         Cookies.set('refreshToken', refreshToken, { expires: 7 }) // 7 days
+        // Sync UI locale to the account's stored language preference
+        Cookies.set('NEXT_LOCALE', user.language ?? 'en', { expires: 365 })
 
         set({
           user,

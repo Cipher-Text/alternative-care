@@ -16,7 +16,7 @@ services:
 
   # MinIO (S3-compatible storage)
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/minio:latest
     container_name: altcare_minio
     environment:
       # ⚠️ SECURITY WARNING: Change these credentials before production deployment!

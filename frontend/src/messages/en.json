@@ -6,7 +6,10 @@
     "edit": "Edit",
     "search": "Search",
     "loading": "Loading...",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "language": "Language",
+    "english": "English",
+    "bengali": "বাংলা"
   },
   "auth": {
     "login": "Login",
@@ -14,14 +17,25 @@
     "email": "Email",
     "password": "Password",
     "loginSuccess": "Login successful",
-    "loginFailed": "Login failed"
+    "loginFailed": "Login failed",
+    "loginTitle": "Login to AltCare",
+    "loginDescription": "Enter your email and password to access your account",
+    "emailPlaceholder": "doctor@clinic.com",
+    "passwordPlaceholder": "••••••••",
+    "loggingIn": "Logging in...",
+    "invalidEmail": "Invalid email address",
+    "passwordMinLength": "Password must be at least 6 characters"
+  },
+  "nav": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logoutSuccess": "Logged out successfully"
   },
   "patients": {
     "title": "Patients",
     "addPatient": "Add Patient",
     "editPatient": "Edit Patient",
-    "firstName": "First Name",
-    "lastName": "Last Name",
+    "fullName": "Full Name",
     "phone": "Phone",
     "gender": "Gender",
     "male": "Male",

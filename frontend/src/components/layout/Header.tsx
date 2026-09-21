@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,16 +17,19 @@ import { LogOut, User, Settings } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { authApi } from '@/lib/api/auth'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
+import { LanguageSwitcher } from '@/components/language/LanguageSwitcher'
 
 export function Header() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
+  const tAuth = useTranslations('auth')
+  const tNav = useTranslations('nav')
 
   const handleLogout = async () => {
     try {
       await authApi.logout()
       logout()
-      toast.success('Logged out successfully')
+      toast.success(tNav('logoutSuccess'))
       router.push('/login')
     } catch (error) {
       // Even if API call fails, logout locally
@@ -50,6 +54,9 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Language switcher */}
+        <LanguageSwitcher />
+
         {/* Theme toggle */}
         <ThemeToggle />
 
@@ -77,14 +84,14 @@ export function Header() {
               className="hover:bg-gray-100 dark:hover:bg-slate-700 focus:bg-gray-100 dark:focus:bg-slate-700 cursor-pointer"
             >
               <User className="mr-2 h-4 w-4" />
-              Profile
+              {tNav('profile')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push('/settings')}
               className="hover:bg-gray-100 dark:hover:bg-slate-700 focus:bg-gray-100 dark:focus:bg-slate-700 cursor-pointer"
             >
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {tNav('settings')}
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-gray-200 dark:bg-slate-700" />
             <DropdownMenuItem
@@ -92,7 +99,7 @@ export function Header() {
               className="text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-slate-700 focus:bg-gray-100 dark:focus:bg-slate-700 cursor-pointer"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Logout
+              {tAuth('logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

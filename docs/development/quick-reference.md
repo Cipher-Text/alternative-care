@@ -146,12 +146,12 @@ export const formatNumber = (value: number) => {
 import { useTranslations } from 'next-intl';
 
 export function MyComponent() {
-  const t = useTranslations('patient');
-  return <h1>{t('add_new')}</h1>;
+  const t = useTranslations('nav');
+  return <h1>{t('profile')}</h1>;
 }
 ```
 
-Messages live in `frontend/src/messages/en.json` and `frontend/src/messages/bn.json`. Note: as of this audit, `next-intl` is installed but not yet wired up (no provider/middleware) — see [i18n guide](i18n.md) for details.
+Messages live in `frontend/src/messages/en.json` and `frontend/src/messages/bn.json`. Wired up as of 2026-09-21 (cookie-based, no URL routing) but only covers the login card and header so far — see [i18n guide](i18n.md) for the current namespaces and how to extend coverage.
 
 ---
 

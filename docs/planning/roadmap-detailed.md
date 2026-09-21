@@ -138,8 +138,8 @@ Build the most comprehensive practice management system for alternative medicine
 **Frontend Setup**
 - [ ] Initialize/standardize Next.js 16 with App Router
 - [ ] Install Tailwind CSS + shadcn/ui components
-- [ ] Configure next-intl for i18n (English/Bengali)
-- [ ] Create language switcher component (en/bn toggle)
+- [x] Configure next-intl for i18n (English/Bengali) — shipped 2026-09-21, cookie-based (no URL routing); only login/header translated so far, see `docs/development/i18n.md`
+- [x] Create language switcher component (en/bn toggle) — `frontend/src/components/language/LanguageSwitcher.tsx`, shipped 2026-09-21
 - [ ] Configure React Query for server state
 - [ ] Set up Axios instance with JWT interceptors (include Accept-Language header)
 - [ ] Create layout shell (sidebar, topbar with language switcher, content area)

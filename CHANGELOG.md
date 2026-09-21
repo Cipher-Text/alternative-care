@@ -4,6 +4,14 @@ All notable changes to AltCare are documented here.
 
 ---
 
+## [Unreleased] - 2026-09-21
+
+### Frontend
+- next-intl actually wired up (cookie-based locale, no URL routing): `NextIntlClientProvider` in the root layout, `src/i18n/request.ts` request config, `LanguageSwitcher` component in the header, locale synced to the user's stored `language` preference on login. Coverage so far: login card and header user dropdown only — the rest of the app is still hardcoded English.
+  - Note: the `[1.0.0]` entry below lists "Bilingual UI (English/Bengali) via next-intl" as shipped — `next-intl` was installed and message files existed, but no provider/middleware/`useTranslations` call existed anywhere in the code until this change. Left the 1.0.0 entry as-is (historical record); noting the correction here instead.
+
+---
+
 ## [1.0.0] - 2026-05-22 — MVP Production Ready
 
 ### Backend (11 modules, 89 endpoints, 34 tables)
