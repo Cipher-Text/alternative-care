@@ -1,7 +1,7 @@
 [project]
 name = "altcare-backend"
 version = "0.1.0"
-description = "AltCare Backend - Alternative Medicine Practice Management System"
+description = "AltCare Backend - Alternative Medicine Knowledge & Practice Platform"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.109.0",

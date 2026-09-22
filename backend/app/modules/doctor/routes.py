@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, require_tenant_user
 from app.modules.doctor.service import DoctorService
 from app.shared.schemas import (
     DoctorProfileResponse,
@@ -24,7 +24,7 @@ router = APIRouter()
 
 def get_doctor_service(
     db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    current_user: Annotated[CurrentUser, Depends(require_tenant_user)],
 ) -> DoctorService:
     """Dependency for doctor service with user and tenant context."""
     return DoctorService(

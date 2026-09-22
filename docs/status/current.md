@@ -1,3 +1,9 @@
+# AltCare — Alternative Medicine Knowledge & Practice Platform
+
+The product direction preserves working practice-management domains and expands incrementally into platform-global knowledge and content. The current system remains one Next.js frontend, one FastAPI modular monolith, and one PostgreSQL database. Public knowledge, books, colleges, CMS, unified search, and RAG are roadmap capabilities, not delivered features.
+
+Tenant separation currently uses application-level explicit row isolation, not PostgreSQL RLS. See [architecture inventory](../architecture/architecture-inventory.md) for code-verified models, risks, and staged migration plan.
+
 # Current Project Status
 
 Last Updated: 2026-09-21

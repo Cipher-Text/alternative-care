@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app
 app = FastAPI(
     title="AltCare API",
-    description="Alternative Medicine Practice Management System",
+    description="AltCare — Alternative Medicine Knowledge & Practice Platform",
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",

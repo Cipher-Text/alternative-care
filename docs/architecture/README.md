@@ -8,7 +8,7 @@ ai_summary: "Multi-tenant SaaS architecture with FastAPI backend, Next.js fronte
 
 # AltCare Architecture Overview
 
-Multi-tenant SaaS platform for alternative medicine practitioners with row-level data isolation.
+AltCare is evolving as the **Alternative Medicine Knowledge & Practice Platform**. The current deployment is a modular monolith: one Next.js frontend, one FastAPI backend, one PostgreSQL database, Redis, and the existing Celery worker code. Knowledge, library, directory, publishing, search, and RAG capabilities remain roadmap work unless explicitly described as implemented. See the [verified architecture inventory](architecture-inventory.md).
 
 ---
 
@@ -27,7 +27,7 @@ Multi-tenant SaaS platform for alternative medicine practitioners with row-level
 **AltCare** is a clinic management platform for Homeopathy, Ayurveda, Unani, and Herbal practitioners.
 
 **Core Features:**
-- ✅ Multi-tenant SaaS (row-level isolation)
+- ✅ Multi-tenant SaaS (application-level explicit tenant filtering; not PostgreSQL RLS)
 - ✅ Patient management with tags and diagnoses
 - ✅ Appointment scheduling with conflict detection
 - ✅ Prescription builder with custom medicines
@@ -76,7 +76,7 @@ Multi-tenant SaaS platform for alternative medicine practitioners with row-level
 
 ### 1. Multi-Tenancy
 
-**Strategy:** Shared database, row-level isolation
+**Strategy:** Shared database, application-level row isolation through explicit `tenant_id` predicates. PostgreSQL RLS is not configured.
 
 **How it works:**
 ```
@@ -89,7 +89,7 @@ A `tenant_id_ctx` ContextVar exists in `app/core/dependencies.py` but is never r
 - Easier migrations (one schema change for all)
 - Lower operational overhead
 - Better resource utilization
-- Impossible cross-tenant data leakage
+- Cross-tenant isolation depends on every tenant-scoped query including its tenant predicate.
 
 **See:** [Multi-Tenancy](multi-tenancy.md)
 

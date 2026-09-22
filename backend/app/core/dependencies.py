@@ -161,6 +161,21 @@ def require_role(*allowed_roles: str):
     return _check_role
 
 
+async def require_tenant_user(
+    user: Annotated[CurrentUser, Depends(get_current_user)],
+) -> CurrentUser:
+    """Require tenant context before entering tenant-owned application paths.
+
+    This is an application authorization boundary, not PostgreSQL RLS.
+    """
+    if not user.tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="A tenant account is required for this operation.",
+        )
+    return user
+
+
 def require_plan(*allowed_plans: str):
     """
     Dependency factory to require specific subscription plans.

@@ -1,5 +1,7 @@
 # AltCare — Product Roadmap & Task Tracker
 
+Product direction (2026-09-23): AltCare is the **Alternative Medicine Knowledge & Practice Platform**. Keep the modular monolith and existing practice domains. Follow the staged sequence in [architecture inventory](architecture/architecture-inventory.md): foundation, knowledge catalog, library ingestion/access policy, public web, directory/content, PostgreSQL search, then knowledge-only RAG. Roadmap capabilities must not be reported as implemented.
+
 **Last Updated:** 2026-09-21  
 **Current Version:** MVP v1.0 — Production Ready  
 **Source of truth:** `docs/status/current.md` · `backend/app/main.py` · `frontend/src/app/**`

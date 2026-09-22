@@ -91,6 +91,21 @@ async def test_get_profile_without_auth(client):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "path",
+    ["/api/v1/doctor/profile", "/api/v1/patients", "/api/v1/integrations/"],
+)
+async def test_platform_admin_cannot_access_tenant_clinical_endpoints(
+    client, admin_access_token, path
+):
+    """Platform identity does not grant access to tenant clinical endpoints."""
+    response = await client.get(
+        path, headers={"Authorization": f"Bearer {admin_access_token}"}
+    )
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
 async def test_update_doctor_profile(client, auth_headers):
     """Test updating doctor profile."""
     response = await client.patch(

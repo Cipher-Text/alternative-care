@@ -46,7 +46,7 @@ class BaseTenantService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         Args:
             db: SQLAlchemy async session
-            tenant_id: Tenant ID for row-level isolation
+            tenant_id: Tenant ID used for application-level row isolation
         """
         self.db = db
         self.tenant_id = tenant_id

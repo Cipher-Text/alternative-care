@@ -40,8 +40,9 @@ class TenantScopedModel(BaseAuditModel):
     """
     Abstract base model for tenant-scoped entities.
 
-    Adds tenant_id field for multi-tenant isolation.
-    All queries should be automatically filtered by tenant_id.
+    Adds a required tenant_id field for application-level row isolation.
+    SQLAlchemy does not automatically filter queries; services and routes
+    must include the appropriate tenant predicate explicitly.
     """
 
     __abstract__ = True

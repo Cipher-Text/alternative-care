@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, require_tenant_user
 from app.core.security import decrypt_credentials
 from app.modules.integration.factory import IntegrationProviderFactory
 from app.modules.integration.service import IntegrationService
@@ -35,6 +35,14 @@ def get_integration_service(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ) -> IntegrationService:
     """Dependency for integration service with tenant context."""
+    return IntegrationService(db=db, tenant_id=current_user.tenant_id)
+
+
+def get_tenant_integration_service(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[CurrentUser, Depends(require_tenant_user)],
+) -> IntegrationService:
+    """Build an integration service only for tenant-owned settings and logs."""
     return IntegrationService(db=db, tenant_id=current_user.tenant_id)
 
 
@@ -80,7 +88,7 @@ async def get_provider(
 @router.post("/", response_model=TenantIntegrationResponse, status_code=status.HTTP_201_CREATED)
 async def create_integration(
     data: TenantIntegrationCreate,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """
@@ -96,7 +104,7 @@ async def create_integration(
 
 @router.get("/", response_model=list[TenantIntegrationListItem])
 async def list_integrations(
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     provider_type: str | None = Query(None, description="Filter by type"),
     is_active: bool | None = Query(None, description="Filter by active status"),
     is_primary: bool | None = Query(None, description="Filter by primary status"),
@@ -118,7 +126,7 @@ async def list_integrations(
 @router.get("/{integration_id}", response_model=TenantIntegrationResponse)
 async def get_integration(
     integration_id: int,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
 ):
     """
     Get integration details.
@@ -134,7 +142,7 @@ async def get_integration(
 async def update_integration(
     integration_id: int,
     data: TenantIntegrationUpdate,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """
@@ -152,7 +160,7 @@ async def update_integration(
 @router.delete("/{integration_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_integration(
     integration_id: int,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
 ):
     """
     Delete tenant integration.
@@ -167,7 +175,7 @@ async def delete_integration(
 @router.post("/{integration_id}/set-primary", response_model=TenantIntegrationResponse)
 async def set_primary_integration(
     integration_id: int,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """
@@ -187,7 +195,7 @@ async def set_primary_integration(
 async def test_integration(
     integration_id: int,
     data: IntegrationTestRequest,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
@@ -302,7 +310,7 @@ async def test_integration(
 
 @router.get("/logs", response_model=list[IntegrationLogListItem])
 async def list_integration_logs(
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     integration_id: int | None = Query(None, description="Filter by integration ID"),
     transaction_type: str | None = Query(
         None, description="Filter by type (sms_sent, email_sent, etc.)"
@@ -336,7 +344,7 @@ async def list_integration_logs(
 @router.post("/send/sms", response_model=SendOperationResponse)
 async def send_sms(
     data: SendSMSRequest,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """
@@ -385,7 +393,7 @@ async def send_sms(
 @router.post("/send/email", response_model=SendOperationResponse)
 async def send_email(
     data: SendEmailRequest,
-    service: Annotated[IntegrationService, Depends(get_integration_service)],
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ):
     """

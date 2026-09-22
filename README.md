@@ -1,6 +1,6 @@
-# AltCare — Alternative Medicine Practice Management System
+# AltCare — Alternative Medicine Knowledge & Practice Platform
 
-Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
+An integrated alternative medicine practice platform, expanding in stages into public knowledge, books, directories, publishing, search, and knowledge retrieval. Existing clinic workflows remain a core capability.
 
 ## Current State (Code-Verified: 2026-09-21)
 
@@ -25,7 +25,7 @@ Multi-tenant clinic SaaS for Homeopathy, Ayurveda, Unani, and Herbal practices.
 - **Integrations** - SMS/Email/Payment provider setup and monitoring with stable local provider logos
 - **Medicine & Symptom Libraries** - Global and tenant-aware clinical lookup data
 - **Platform Admin Client Management** - Provision tenant + primary doctor, approve tenants, view doctor/clinic directory and details
-- **Multi-tenant Isolation** - 100% secure row-level security (16/16 tests passing)
+- **Multi-tenant isolation** - application-level explicit row filtering (not PostgreSQL RLS); existing tests cover core isolation paths
 
 ### 📋 Backend-Ready, Frontend Pending
 - **AI Query** - Stable backend contract exists as a `501` stub; full AI/RAG remains planned

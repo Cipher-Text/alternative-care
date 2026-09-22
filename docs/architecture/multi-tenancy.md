@@ -3,12 +3,12 @@ title: "Multi-Tenancy Architecture"
 type: "architecture"
 version: "1.0.0"
 last_updated: "2026-09-21"
-ai_summary: "Row-level multi-tenant isolation via tenant_id from JWT, enforced by explicit per-service-method filtering (not an automatic ContextVar-based filter)"
+ai_summary: "Application-level multi-tenant isolation via explicit tenant predicates; PostgreSQL RLS is not enabled"
 ---
 
 # Multi-Tenancy Architecture
 
-Complete row-level isolation ensuring no cross-tenant data leakage.
+Application-level row isolation using explicit tenant predicates. PostgreSQL Row-Level Security (RLS) is not enabled, and no system can guarantee zero leakage solely from this architecture.
 
 ---
 
@@ -25,7 +25,7 @@ Complete row-level isolation ensuring no cross-tenant data leakage.
 
 ## 🌐 Overview
 
-**Model:** Shared database, row-level isolation  
+**Model:** Shared database, application-level row isolation (not PostgreSQL RLS)
 **Method:** `tenant_id` column on all tenant-scoped tables  
 **Enforcement:** Explicit `tenant_id` filtering in each service method, using a `tenant_id` passed in from `current_user.tenant_id` at the route's service-factory dependency (see [Tenant Context Flow](#tenant-context-flow) below — a `tenant_id_ctx` ContextVar exists but is not currently read anywhere)
 
@@ -34,7 +34,7 @@ Complete row-level isolation ensuring no cross-tenant data leakage.
 - ✅ Lower operational overhead (one database to manage)
 - ✅ Better resource utilization (shared connection pool)
 - ✅ Simpler queries (no dynamic schema switching)
-- ✅ Impossible cross-tenant data leakage (architectural guarantee)
+- Explicit filters must be present in every tenant-scoped query; missing filters are a code-level risk.
 
 ---
 
@@ -48,7 +48,7 @@ Complete row-level isolation ensuring no cross-tenant data leakage.
 | **Schema-per-Tenant** | Better isolation, simpler queries | Complex migrations, harder to manage | Future option for enterprise |
 | **DB-per-Tenant** | Maximum isolation | Very complex, expensive, migration nightmare | Not planned |
 
-**Current:** Shared database with row-level isolation  
+**Current:** Shared database with application-level explicit tenant filtering.
 **Future:** Can migrate to schema-per-tenant if enterprise client requires it
 
 ---
@@ -103,7 +103,7 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id);
 ```json
 {
   "sub": "admin-uuid",
-  "tenant_id": null,  // No tenant = platform-wide access
+  "tenant_id": null,  // Platform identity; tenant-owned endpoints must reject this context
   "role": "admin",
   "type": "access"
 }
@@ -139,7 +139,7 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id);
 
 ## 🔐 Security Guarantees
 
-### Architectural Impossibility of Cross-Tenant Access
+### Application-Level Isolation and Its Limits
 
 **1. Service Layer Enforcement:**
 ```python
@@ -156,7 +156,7 @@ class PatientService:
         return result.scalars().all()
 ```
 
-**Why it's secure — and its limitation:**
+**Security properties and limitations:**
 - `tenant_id` comes from JWT (cryptographically signed)
 - Service initialized with tenant_id from authenticated user
 - Every query filters by tenant_id, but each service method must add the `.where()` clause itself — there is no shared/automatic enforcement layer, so a new method that forgets the filter would leak cross-tenant data. This pattern (per-module "service factory" + explicit filter in each method) is currently applied in `patient/routes.py`; per `roles-access.md`, it still needs to be applied consistently to appointments, prescriptions, payments, integrations, and dashboard.
@@ -275,10 +275,11 @@ async def get_patient(self, patient_id: str) -> Patient | None:
 
 ---
 
-### Example 3: Platform Admin (No Tenant Filter)
+### Example 3: Explicitly Authorized Platform Operations
 
 ```python
-# Platform admin can see all tenants
+# Platform admin services may perform authorized platform operations.
+# This is separate from tenant clinical access and must be role-gated.
 class PlatformService:
     def __init__(self, db: AsyncSession):
         self.db = db  # No tenant_id filtering
@@ -363,8 +364,8 @@ async def test_tenant_isolation(db_session):
 **Q: What happens if I try to access another tenant's record?**
 → Returns 404 Not Found (looks like doesn't exist)
 
-**Q: How do platform admins access all tenants?**
-→ tenant_id = NULL in JWT, service layer doesn't filter by tenant
+**Q: How do platform admins access platform records?**
+→ Through platform-admin endpoints guarded by the platform role. A null tenant is not implicit authorization for clinical records.
 
 **Q: Where is tenant_id extracted from?**
 → JWT token decoded in `get_current_user()` (`app/core/dependencies.py`), then passed explicitly into each service's constructor
@@ -382,4 +383,4 @@ async def test_tenant_isolation(db_session):
 ---
 
 **Last Updated:** 2026-09-21  
-**Security:** Row-level isolation enforced by explicit per-method `tenant_id` filtering ✅
+**Security:** Application-level isolation relies on explicit per-method `tenant_id` filtering; PostgreSQL RLS is not enabled.
