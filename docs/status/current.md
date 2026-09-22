@@ -4,6 +4,14 @@ The product direction preserves working practice-management domains and expands 
 
 Tenant separation currently uses application-level explicit row isolation, not PostgreSQL RLS. See [architecture inventory](../architecture/architecture-inventory.md) for code-verified models, risks, and staged migration plan.
 
+> **⚠️ Status claims superseded — 2026-09-23.** See
+> [Plan, Architecture & Technology Revision §1](../planning/revision-2026-09.md#1-verified-reality)
+> for a code-verified reality check. Summary of the corrections: the test suite is not green
+> (322 passed / 76 failed on a clean local run), there is no deployment path (no Dockerfile, no IaC),
+> password reset and email verification exist only as commented-out code, global medicine/symptom
+> creation fails at the database, `usage_tracking` has no writers, and Sentry/structlog are declared
+> but never initialised.
+
 # Current Project Status
 
 Last Updated: 2026-09-21

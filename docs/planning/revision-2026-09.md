@@ -1,0 +1,274 @@
+# AltCare — Plan, Architecture & Technology Revision
+
+**Date:** 2026-09-23
+**Author:** Revision pass against checked-in code, not against existing documentation
+**Supersedes:** the phase sequencing and success metrics in `docs/ROADMAP.md`, the "MVP v1.0 — Production Ready" status claim in `docs/status/current.md`, `README.md`, and `CLAUDE.md`
+**Assumptions this revision was written under:** nothing is deployed yet; one developer (plus AI assistance) is building this; the clinic product and the knowledge platform are both wanted, sequenced rather than parallel
+
+---
+
+## 0. Why a revision
+
+The existing plan is not wrong about direction. It is wrong about *starting position*. It sequences 400+ hours of Phase C–G work on top of a base described as production-ready, when the base has no deployment path, no account recovery, a red test suite, and a schema that physically cannot store the global catalog every later phase depends on.
+
+This document replaces phase-sequencing-by-feature with **stage-sequencing-by-gate**: each stage ends in a condition you can verify, not a checklist you can feel done with. Everything here is grounded in code read on 2026-09-23; claims carry file references so they can be re-verified rather than believed.
+
+---
+
+## 1. Verified reality
+
+| # | Claim in current docs | What the code shows | Evidence |
+|---|---|---|---|
+| 1 | "MVP v1.0 — Production Ready 🚀" | No Dockerfile anywhere, no IaC, no deploy script, compose covers Redis + MinIO only (the `api` service is commented out). Nothing can be deployed reproducibly. | `find . -iname 'Dockerfile*'` → empty; `docker-compose.yml` |
+| 2 | "Multi-tenant isolation 16/16 tests passing" | Clean local run: **322 passed, 76 failed, 1 error** (5m15s), including the tenant-isolation suites. | `pytest -q` |
+| 3 | "Security: A (95/100)" | Score has no source, date, or method attached in any checked-in doc. Meanwhile Sentry and structlog are declared dependencies that are never initialised. | `grep -rn "sentry_sdk\|structlog.configure" app/` → no wiring |
+| 4 | Medicines/symptoms support admin-curated **global** rows | Global creation writes `tenant_id=None` into a `NOT NULL` column. Global catalog writes fail at the database. | `app/modules/medicine/routes.py:102`, `app/modules/symptom/routes.py:93` vs `alembic/versions/000_initial_schema.py:110` and `TenantScopedModel` (`nullable=False`) |
+| 5 | Password reset / email verification are "P1 to do" | The endpoints exist as **commented-out code**. There is no self-serve account recovery at all. | `app/modules/auth/routes.py:285–322` |
+| 6 | Plan-based access + quotas (`usage_tracking`, 200 queries/month) | `usage_tracking` has a model and a table and **zero writers**. `plan_expires_at` is stored and never checked. `RequireProPlan` gates exactly one 501 stub. | `grep -rn UsageTracking app/` → model + export only; `app/modules/ai/routes.py` |
+| 7 | MinIO ready for file storage | No storage client, no SDK dependency, no upload path. All file fields are URL strings. | `grep -rn "boto3\|minio" app/` → no matches |
+| 8 | React Query for server state | `react-query@3.39.3` — the unmaintained pre-TanStack line — across 13 files. | `frontend/package.json`, `grep -rl "from 'react-query'" src` |
+| 9 | "`cd frontend && npx playwright test --ui`" | `@playwright/test` is installed; there are **zero** spec files. | `find frontend -name '*.spec.ts'` → empty |
+| 10 | Uniform module layering | `medicine` and `symptom` are route-only modules: 700 and 418 lines with 30 raw `select()` calls and hand-written tenant predicates. Every other domain has `service.py`. | `app/modules/medicine/routes.py`, `app/modules/symptom/routes.py` |
+
+### 1.1 The test failures, classified
+
+Not all 76 are product bugs, and saying so precisely matters for planning:
+
+- **~60 failures are harness defects, not code defects.** The rate limiter is Redis-backed with production limits and no per-test reset, so tests poison each other (`429` where `200`/`401`/`422` was expected — 30+ assertions). The local `INTEGRATION_ENCRYPTION_KEY` is not a valid Fernet key, which fails 10 more (`binascii.Error: Incorrect padding`). Re-running the isolation and integration suites with limits raised and a valid key drops 35 failures to 6.
+- **The remainder are real.** Two confirmed: `IntegrationService.set_primary` raises `sqlalchemy.exc.InvalidRequestError: Don't know how to join to <Mapper ... IntegrationProvider>` — an ambiguous join that will fail in production whenever a user marks an integration primary; and the registration response no longer carries `tenant_id`, so the API contract has drifted from its own tests (`KeyError: 'tenant_id'`).
+- **Route-count drift:** the app exposes 128 `/api/v1` methods; `tests/unit/test_route_registration.py:44` asserts 127.
+- **Tests build the schema from `Base.metadata.create_all`, not from migrations** (`tests/conftest.py`), so model-vs-migration drift is structurally invisible to the suite. The CI migration-safety job checks that migrations *run*, not that they produce the schema the code expects.
+
+### 1.2 Other findings worth fixing on sight
+
+- **Dependency split-brain.** `backend/pyproject.toml` is what CI installs. `backend/requirements.txt` is a second, divergent manifest pinning `langchain==0.1.16`, `openai==1.16.2`, `pgvector==0.2.5`, `stripe`, `sendgrid`, `twilio` — an AI/vector stack that nothing installs and nothing imports.
+- **Root `.env` is tracked by git.** Its values currently match `.env.example` (only `DATABASE_URL` differs), so nothing is leaked today — but there is no root `.gitignore` rule, so the next real key written into it lands in history. `backend/.env` is correctly ignored.
+- **`.env` advertises `RATE_LIMIT_ENABLED`; `app/core/config.py` has no such setting.** The toggle the test suite needs is already documented and simply not implemented.
+- **Tokens live in JavaScript-readable cookies** (`frontend/src/lib/api/client.ts:51–52`), so any XSS is a full session theft. There is no `frontend/src/middleware.ts`, so route protection is client-side only.
+- **Celery is half-wired**: one task module (integration SMS/email), no beat schedule, no worker in any deployment unit.
+- **Legacy dual API surface**: five `/auth/admin/*` endpoints still shadow `/api/v1/admin/*` (`app/modules/auth/routes.py:56–119`).
+
+---
+
+## 2. Direction: two tracks, one keystone
+
+The answer to "clinic SaaS or knowledge platform" is both, but the current roadmap sequences them as *phases* (C → D → E → F → G) and that sequencing is what makes it unachievable solo. Reframed:
+
+- **Track P (Practice)** is the revenue and the credibility. It is nearly built; what it lacks is not features but *shippability* — recovery, deployment, billing enforcement, backups.
+- **Track K (Knowledge)** is the moat and the reason the product is worth more than a scheduling tool. It is almost entirely unbuilt.
+
+They are not independent. **The keystone is the global-catalog schema fix (§3, D1).** The same migration that lets an admin curate a platform-wide medicine library is what makes the clinic product's prescription autocomplete useful — today the autocomplete component exists and has nothing to autocomplete against, because global rows cannot be written. One migration, two tracks. It is therefore scheduled early, in Stage 2, not deferred into the knowledge phases.
+
+**Sequencing rule:** Track P runs to a shippable, paid, deployed state first (Stages 0–1). Track K's foundation lands next (Stage 2). Content and retrieval follow (Stages 3–4). No Track K work starts before Stage 1's gate, because an undeployed platform with a book reader is worth less than a deployed clinic tool.
+
+### 2.1 What this revision cuts
+
+Cutting is the substance of a solo plan, so these are removals, not deferrals-in-name:
+
+| Cut | From | Why |
+|---|---|---|
+| **Mobile apps (React Native, iOS + Android)** | Phase F, 120–160 h | Two more deployment targets and two app-store relationships for one developer. Responsive web already covers the use case; make it installable as a PWA instead. |
+| **GraphQL API, Keycloak SSO, white-label, multi-clinic chains, SOC 2** | Phase G | Every one is an enterprise-buyer feature, and there are no enterprise buyers in the pipeline. Revisit when a signed contract asks. |
+| **Public doctor directory** | Phase E, 25–35 h | It is a marketplace, and a marketplace with no supply is an empty page. Gate it on ≥20 listed practitioners, which Stage 3's public pages are what actually produce. |
+| **LangChain** | `requirements.txt` | Two major lines stale, and the retrieval this product needs is ~200 lines of pgvector query plus prompt assembly. It is the single largest dependency-risk surface in the repo for the smallest benefit. |
+| **"1,000+ medicines / 1,000+ mappings" targets** | Roadmap tasks 11–12 | Volume targets invite scraping. 300 practitioner-reviewed homeopathy entries beat 1,000 unreviewed ones, and the review capacity is the real constraint. |
+| **Notification template CMS, bulk operations** | Roadmap tasks 14, 18 | Real but small pain, competing against deployment and billing. Deferred behind Stage 3 with no date. |
+
+### 2.2 What this revision adds that the old plan omitted
+
+Deployment and operations (§6), billing enforcement, backup/restore with a rehearsed drill, a storage adapter, RLS as a second isolation layer, an honest test harness, and a content-rights gate before any book is ingested.
+
+---
+
+## 3. Architecture decisions
+
+Each decision states the change, the reason, and the alternative rejected.
+
+### D1 — Two model bases. `GlobalCatalogModel` alongside `TenantScopedModel` — **the keystone**
+
+`TenantScopedModel` forces `tenant_id NOT NULL`, which is correct for clinical rows and wrong for catalog rows. Introduce an audited base with no tenant column, and migrate `medicines`, `symptoms`, `medicine_aliases`, `symptom_aliases`, `medicine_symptom_mappings` to nullable `tenant_id` guarded by a constraint that makes the invalid state unrepresentable:
+
+```sql
+CHECK ( (is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL) )
+```
+
+Additive migration, backfill existing rows as tenant-owned, no destructive step. *Rejected:* a parallel `global_medicines` master table — it doubles every read path, every alias join, and every mapping, to avoid one migration.
+
+### D2 — PostgreSQL RLS as a second layer, not a replacement
+
+Keep application-level filtering exactly as it is. Add RLS policies on the eight clinical tables (`patients`, `appointments`, `visits`, `prescriptions`, `prescription_items`, `payments`, `invoices`, `patient_diagnoses`) keyed on `current_setting('app.tenant_id')`, set per session in `get_db`. The point is not to replace `BaseTenantService`; it is to convert the failure mode of a hand-written query that forgets its predicate from *silent cross-tenant leak* to *hard error*. Catalog tables stay outside RLS; platform users (`tenant_id IS NULL`) connect under a role that is not subject to the clinical policies. *Rejected:* schema-per-tenant — 34 tables × N clinics of migration pain for a product that must query across tenants for platform analytics.
+
+### D3 — No SQL in routes
+
+`medicine` and `symptom` get `service.py` like every other module, with one `_visible_query()` that encodes the global-vs-tenant read rule in a single place. This is not tidiness: 30 hand-written `select()` calls in route handlers is precisely the shape D2 is defending against, in precisely the module Track K expands.
+
+### D4 — Knowledge reads and clinical reads never share a path
+
+Public knowledge endpoints mount under `/api/v1/public/*` with no auth dependency, their own rate-limit bucket, and services that have no import path to any patient model. The boundary is structural, so a future refactor cannot accidentally expose a patient row through a knowledge endpoint.
+
+### D5 — Search: PostgreSQL first, vectors only when there is a corpus
+
+`pg_trgm` GIN indexes already exist on `medicines`. Add generated `tsvector` columns plus GIN indexes on medicines, symptoms, and book sections, behind one `/search` endpoint with per-type ranking. Vector search enters in Stage 4, when there is something embedded to search. *Rejected:* Elasticsearch/Meilisearch — a second datastore to run, back up, and keep in sync, for a corpus that fits comfortably in Postgres.
+
+### D6 — One storage adapter, S3-compatible
+
+`app/core/storage.py` exposing `put_object` / `presigned_url` / `delete`, S3-compatible via `boto3`; MinIO in dev, S3/R2/Spaces in prod. This single missing piece is what blocks EPUB upload, prescription PDF persistence, doctor photos, and clinic logos — four "small" features that all silently depend on it.
+
+### D7 — Celery stays, but becomes real
+
+Add a beat schedule (appointment reminders, plan-expiry sweep, ingestion jobs), queues per class (`default` / `sms` / `email` / `pdf` / `ingest`), and actual `worker` + `beat` processes in the deployment unit. *Rejected:* swapping to `arq`/APScheduler — Celery is already configured and working; replacing it buys nothing.
+
+### D8 — Auth hardening at the browser boundary
+
+Refresh token moves to an httpOnly, `SameSite=Lax`, `Secure` cookie set by the backend; the access token lives in memory (non-persisted Zustand). Add `frontend/src/middleware.ts` for server-side route gating. This closes the "XSS equals full session theft" exposure that the current JS-readable cookies create.
+
+### D9 — Deployment unit: one VPS, one compose stack
+
+Even though nothing is deployed yet, the target is chosen now because it constrains everything else: `caddy` (TLS + reverse proxy) · `api` (uvicorn) · `worker` · `beat` · `web` (Next standalone) · `postgres:16 + pgvector` · `redis` · `minio`, as a single Docker Compose project on one VPS, deployed by `git pull && docker compose up -d --build && alembic upgrade head`. Sized for one developer and a Bangladesh-market price point; revisit at ~200 clinics or the first enterprise contract. *Rejected:* managed PaaS (recurring cost without the ops relief that matters at this size), and AWS/GCP proper (Terraform, IAM, and a VPC to maintain alone).
+
+### D10 — Three environments, secrets never in git
+
+`dev` (local) · `staging` (second compose project on the same box, separate DB) · `prod`. Remove root `.env` from tracking, add a root `.gitignore`, keep `.env.example` as the only committed template. Nightly `pg_dump` to object storage, and a restore drill that is *performed*, not documented.
+
+---
+
+## 4. Technology decisions
+
+| # | Decision | Change from today | Rationale |
+|---|---|---|---|
+| T1 | **One Python manifest** | Delete `backend/requirements.txt`; `pyproject.toml` gains `[ai]` and `[dev]` extras; adopt `uv` with a committed lockfile | Two divergent manifests is an outage waiting for the day someone installs the wrong one |
+| T2 | **TanStack Query v5** | Migrate 13 files off `react-query@3` | v3 is unmaintained and predates React 19; the migration is mechanical now and compounds with every hook added |
+| T3 | **No LangChain** | Provider SDK + pgvector + a small retrieval module | See §2.1 |
+| T4 | **Model choice deferred to a Bangla evaluation** | Do not inherit the `gpt-4o-mini` / `text-embedding-3-small` pins from `requirements.txt` by default | Bengali retrieval and generation quality is the deciding variable for this product and it differs sharply by model. Build a 50-question bilingual eval set *before* committing to a provider, and re-run it when switching. Budget and citation fidelity, not brand, decide |
+| T5 | **`RATE_LIMIT_ENABLED` setting** | Add to `config.py` (default `true`, `false` in tests) + autouse Redis-flush fixture | Turns ~60 red tests green and makes the suite runnable locally — the key is already in `.env`, just unimplemented |
+| T6 | **Tests build the schema from migrations** | `alembic upgrade head` in `conftest.py` instead of `create_all` | Makes model-vs-migration drift a test failure instead of a production surprise |
+| T7 | **Frontend CI + Playwright smoke suite** | New workflow: `tsc --noEmit`, `eslint`, and one end-to-end path (login → patient → prescription → issue → PDF) | The frontend currently has no CI at all, and the documented test command runs zero tests |
+| T8 | **Observability wired, not declared** | `sentry_sdk.init`, `structlog.configure` (JSON in prod), request-ID middleware | Both dependencies are already paid for in install time and deliver nothing until initialised |
+| T9 | **i18n completeness enforced in CI** | Check every `en` key has a `bn` counterpart | Bengali is a market requirement here, not a nice-to-have, and translation coverage rots silently |
+| T10 | **Stack otherwise unchanged** | Python 3.12, FastAPI, SQLAlchemy 2 async, PostgreSQL 16 + pgvector, Redis, Next.js 16 / React 19, Tailwind 4, shadcn/ui | No technology in the core stack is the problem. The problems are unfinished wiring and drift |
+
+---
+
+## 5. The revised roadmap
+
+Five stages, each ending in a gate. Dates assume one developer; a missed date moves the stage, never the gate.
+
+### Stage 0 — Truth & Green · by 2026-10-07
+
+- Add `RATE_LIMIT_ENABLED` + Redis-flush fixture; put a valid Fernet key in the test environment (T5)
+- Fix the two confirmed bugs: `IntegrationService.set_primary` ambiguous join; registration response contract
+- Reconcile the route-count assertion (128 vs 127)
+- Switch `conftest.py` to migrations (T6)
+- Delete `requirements.txt`, adopt `uv` (T1); untrack root `.env`, add root `.gitignore`
+- Wire Sentry + structlog + request IDs (T8)
+- Correct every doc claim contradicted in §1 — including the "Production Ready" and "16/16" lines
+
+**Gate:** `pytest` is green locally *and* in CI with a zero-failure threshold; `alembic upgrade head` against an empty database produces all 34 tables; no checked-in document asserts a capability §1 disproves.
+
+### Stage 1 — Shippable · by 2026-11-21
+
+- Password reset + email verification: implement the commented-out endpoints, Celery email delivery, two frontend pages (§1, finding 5)
+- Dockerfiles for api/worker/web, `compose.prod.yml`, Caddy, `deploy.sh`, staging project on the same box (D9)
+- Nightly `pg_dump` to object storage **and a rehearsed restore** (D10)
+- httpOnly refresh cookie + `middleware.ts` route guard (D8)
+- Remove the five legacy `/auth/admin/*` endpoints
+- Billing enforcement: check `plan_expires_at` on tenant-scoped requests; write `usage_tracking` on prescription issue, SMS send, and AI query; surface usage in the admin area (§1, finding 6)
+- Frontend CI + Playwright smoke path (T7)
+
+**Gate:** a real clinic signs up on a public URL, recovers a forgotten password unaided, uses the product for a full week, and you restore the production database from backup into staging in under 30 minutes.
+
+### Stage 2 — Catalog Foundation · by 2026-12-19 · *the keystone*
+
+- `GlobalCatalogModel` + nullable `tenant_id` + CHECK constraint migration, with backfill (D1)
+- `medicine` / `symptom` service layer; routes thinned to handlers; one `_visible_query()` (D3)
+- RLS on the eight clinical tables (D2)
+- `/api/v1/public/*` router boundary (D4) and unified `tsvector` search (D5)
+- Seed **300 practitioner-reviewed homeopathy medicines** and their symptom mappings — one system done properly, not four done thinly (§2.1)
+
+**Gate:** an admin creates a global medicine successfully — the operation that returns a 500 today; a doctor's prescription autocomplete returns seeded global medicines; and a deliberately mis-written service query against a clinical table raises instead of returning another tenant's rows.
+
+### Stage 3 — Library & Public Web · Q1 2027
+
+- Storage adapter (D6); EPUB ingestion via Celery with checksums and idempotent re-import (D7)
+- Books/chapters/sections become catalog rows; reading progress, bookmarks, and highlights stay user- and tenant-scoped
+- Reader UI; **5 texts whose rights are cleared first** — public-domain classical works only until a rights review says otherwise
+- Public knowledge pages (SSG/ISR) for medicines, symptoms, and books — the SEO surface that also produces the practitioner supply a directory would later need
+
+**Gate:** 5 books ingested, searchable, and readable end to end; public pages served and indexable; re-running an import creates zero duplicate rows.
+
+### Stage 4 — Retrieval Assistant · Q2 2027
+
+- Embed ingested sections; HNSW index; retrieval module without LangChain (T3)
+- Every citation resolved against a real row ID before the response is returned; refuse rather than answer when no source supports the question
+- The 50-question bilingual eval set from T4, run as a gate rather than a demo
+- Pro-plan quota enforced through the `usage_tracking` written in Stage 1
+
+**Gate:** ≥80% of eval answers carry a correct, resolvable citation, and zero answers contain an uncited clinical claim. If that bar is not met, the feature does not ship — an alternative-medicine assistant that invents sources is a liability, not a feature.
+
+### After Stage 4, gated not dated
+
+Public doctor directory (gate: ≥20 practitioners with complete public profiles) · audit log UI · notification templates · bulk operations.
+
+---
+
+## 6. Deployment & operations plan
+
+Because nothing is deployed, this is a plan, not a description.
+
+**Topology (D9):** one VPS; Caddy terminates TLS and proxies `/api` to uvicorn and everything else to Next standalone; `worker` and `beat` run from the same image as `api`; Postgres 16 + pgvector, Redis, and MinIO run as containers with named volumes.
+
+**Deploy:** `deploy.sh` = pull, build, `alembic upgrade head`, `docker compose up -d`, health check, roll back to the previous image tag on failure. Migrations run before the new image serves traffic and stay additive, so rollback never requires a down-migration in production.
+
+**Backups:** nightly `pg_dump` and a MinIO bucket sync to off-box object storage, 30-day retention. The restore drill is quarterly and timed; an untested backup is not a backup.
+
+**Monitoring:** Sentry for errors, `/metrics` scraped by an uptime checker, alerts on 5xx rate and on a failed nightly backup. That is the whole monitoring stack at this size, deliberately.
+
+**Capacity:** this design is sized for ~200 clinics. The trigger to revisit is the first of: p95 latency past 500 ms under normal load, a backup that no longer completes in the nightly window, or a contract that requires an availability SLA.
+
+---
+
+## 7. Risk register
+
+| Risk | Severity | Mitigation |
+|---|---|---|
+| **Clinical liability.** An AI assistant giving treatment guidance in alternative medicine is legally and ethically exposed | High | Retrieval with citations only, never prescriptive phrasing; permanent non-dismissible disclaimer; every answer logged with its sources; Stage 4's gate enforces this before launch, not after |
+| **Content rights.** Ingesting copyrighted medical texts | High | Rights review precedes ingestion; public-domain works only in Stage 3; per-book access capability fields in the schema from day one |
+| **Patient data protection.** Health records under Bangladeshi and any future export-market rules | High | RLS (D2), encryption at rest for credentials (already), audit trail, documented retention policy before the first paying clinic |
+| **Single VPS is a single point of failure** | Medium | Tested restores, off-box backups, a documented rebuild procedure; accepted deliberately at this scale |
+| **Bus factor of one** | Medium | Decisions recorded as ADRs; the deploy path is a script in the repo, not knowledge in a head |
+| **Documentation drift** — the root cause of this entire revision | Medium | §8; docs asserting capability must cite a file or a test |
+| **Scope regrowth** | Medium | §2.1 is a commitment; re-adding a cut item requires writing down what it displaces |
+
+---
+
+## 8. Revised success metrics
+
+The previous targets (200 paying clinics and an India expansion by Q3 2027, solo) are replaced with numbers a single developer can be held to:
+
+| Horizon | Target |
+|---|---|
+| 2026-10-07 | Test suite green; zero doc claims contradicted by code |
+| 2026-11-21 | Deployed, publicly reachable, **1 paying clinic** using it daily; restore drill passed |
+| 2026-12-19 | Global catalog writable; 300 reviewed medicines live; **5 paying clinics** |
+| Q1 2027 | 5 books readable and searchable; public pages indexed; **10 paying clinics** |
+| Q2 2027 | Assistant passes its citation gate or does not ship; **25 paying clinics** |
+
+Ongoing: 99% monthly uptime measured by an external checker (not asserted), p95 API latency under 500 ms, and zero cross-tenant incidents.
+
+---
+
+## 9. Documentation rules going forward
+
+The gap in §1 is not a documentation problem; it is a problem that documentation made invisible. Three rules:
+
+1. **A status claim cites evidence** — a file path, a test name, or a command whose output supports it. "16/16 passing" without a date and a command is a rumour.
+2. **Planned and built are never the same verb.** Roadmap items are written in the infinitive; only shipped items are ticked.
+3. **Numbers come from commands, not from memory.** Endpoint counts, table counts, and file counts are regenerated when touched, or removed from the doc.
+
+---
+
+## Related
+
+- `docs/architecture/architecture-inventory.md` — the code-verified inventory this revision builds on
+- `docs/ROADMAP.md` — superseded in sequencing and metrics by §5 and §8
+- `docs/status/current.md` — superseded in status by §1

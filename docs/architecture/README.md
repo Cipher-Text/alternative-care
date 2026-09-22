@@ -6,6 +6,13 @@ last_updated: "2026-09-21"
 ai_summary: "Multi-tenant SaaS architecture with FastAPI backend, Next.js frontend, and PostgreSQL with pgvector"
 ---
 
+> **Revision note — 2026-09-23.** Target architecture (two model bases, RLS as a second isolation
+> layer, service-layer normalisation, public/clinical path separation, storage adapter, deployment
+> topology) is defined in
+> [Plan, Architecture & Technology Revision §3–§4](../planning/revision-2026-09.md#3-architecture-decisions).
+> This overview describes the architecture as built; the revision describes where it is going and why.
+
+
 # AltCare Architecture Overview
 
 AltCare is evolving as the **Alternative Medicine Knowledge & Practice Platform**. The current deployment is a modular monolith: one Next.js frontend, one FastAPI backend, one PostgreSQL database, Redis, and the existing Celery worker code. Knowledge, library, directory, publishing, search, and RAG capabilities remain roadmap work unless explicitly described as implemented. See the [verified architecture inventory](architecture-inventory.md).

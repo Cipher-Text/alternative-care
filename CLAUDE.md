@@ -6,9 +6,21 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 ## 1. PROJECT STATUS
 
-**MVP v1.0 - PRODUCTION READY** 🚀
+**MVP v1.0 feature-complete — NOT production ready** ⚠️
 
-**Last Verified:** 2026-09-21
+**Last Verified:** 2026-09-23 (code-verified, see `docs/planning/revision-2026-09.md`)
+
+> The "Production Ready" claim previously here did not hold. Code-verified on 2026-09-23:
+> a clean `pytest` run is **322 passed / 76 failed**; there is **no Dockerfile, no IaC, no deploy
+> path**; password reset and email verification exist only as commented-out code
+> (`app/modules/auth/routes.py:285-322`); global medicine/symptom creation writes `tenant_id=None`
+> into a `NOT NULL` column and fails at the database (`medicine/routes.py:102`,
+> `symptom/routes.py:93`); `usage_tracking` has no writers so plans are unenforced; Sentry and
+> structlog are installed but never initialised.
+>
+> **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
+> stage plan (Stage 0 Truth & Green → Stage 4 Retrieval Assistant), the architecture decisions
+> (D1-D10), and the technology decisions (T1-T10) that supersede the phase list in `docs/ROADMAP.md`.
 
 **Core modules (backend + frontend complete):**
 - Authentication (Login, 2FA, JWT, Sessions, Password Security) ✅

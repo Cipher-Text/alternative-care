@@ -1,5 +1,13 @@
 # AltCare — Product Roadmap & Task Tracker
 
+> **⚠️ Superseded in part — 2026-09-23.** Sequencing, phase scope, and success metrics below are
+> superseded by [Plan, Architecture & Technology Revision](planning/revision-2026-09.md), which is
+> written against code verified on 2026-09-23. In particular: the "MVP v1.0 — Production Ready" and
+> "16/16 isolation tests passing" claims do not hold (a clean run is 322 passed / 76 failed, and
+> nothing is deployable — there is no Dockerfile). Phases F (mobile) and G (enterprise) and the
+> public directory are cut; global-catalog writes are broken at the schema level and are now the
+> keystone task. Read the revision first; treat the phase detail below as background.
+
 Product direction (2026-09-23): AltCare is the **Alternative Medicine Knowledge & Practice Platform**. Keep the modular monolith and existing practice domains. Follow the staged sequence in [architecture inventory](architecture/architecture-inventory.md): foundation, knowledge catalog, library ingestion/access policy, public web, directory/content, PostgreSQL search, then knowledge-only RAG. Roadmap capabilities must not be reported as implemented.
 
 **Last Updated:** 2026-09-21  

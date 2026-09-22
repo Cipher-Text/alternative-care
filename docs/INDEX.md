@@ -16,6 +16,7 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 2. `../GETTING_STARTED.md` - local setup and run commands
 3. `api/README.md` - API module map
 4. `status/current.md` - current implementation status
+5. `planning/revision-2026-09.md` - **code-verified reality check + current stage plan (start here for planning)**
 
 ## By Area
 
