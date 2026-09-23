@@ -15,8 +15,9 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 > 2 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
-> via SendGrid's SMTP relay, `app/core/system_email.py`, and no-op with a logged warning if
-> `SENDGRID_API_KEY` isn't set). Still true: **no Dockerfile, no IaC, no deploy path** (the rest of
+> via SMTP relay, `app/core/system_email.py`, picking one of SendGrid/Resend/Mailgun/SMTP2GO/generic
+> SMTP by `EMAIL_PROVIDER`, and no-op with a logged warning if it's unset). Still true: **no
+> Dockerfile, no IaC, no deploy path** (the rest of
 > Stage 1); global medicine/symptom creation writes `tenant_id=None` into a `NOT NULL` column and
 > fails at the database (`medicine/routes.py:102`, `symptom/routes.py:93`) — this is Stage 2's
 > keystone fix, not yet done; `usage_tracking` has no writers so plans are unenforced (2 tests

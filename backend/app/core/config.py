@@ -112,9 +112,36 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
-    # Email (SendGrid, via SMTP relay — see app/core/system_email.py)
+    # Platform system email (password reset, email verification) — sent via
+    # SMTP relay, not each provider's HTTP API, so no extra SDK dependency
+    # is needed (see app/core/system_email.py). Set EMAIL_PROVIDER to pick
+    # which one is active; only that provider's credentials need to be set.
+    # Empty EMAIL_PROVIDER means "no email provider configured" — emails
+    # are skipped with a logged warning instead of failing the request.
+    EMAIL_PROVIDER: str = ""  # "sendgrid" | "resend" | "mailgun" | "smtp2go" | "smtp"
+    EMAIL_FROM_ADDRESS: str = "noreply@altcare.health"
+
     SENDGRID_API_KEY: str = ""
-    SENDGRID_FROM_EMAIL: str = "noreply@altcare.health"
+
+    RESEND_API_KEY: str = ""
+
+    # Mailgun SMTP credentials are per-domain, generated in the Mailgun
+    # dashboard — not the general Mailgun API key. Host differs by region:
+    # smtp.mailgun.org (US, default) or smtp.eu.mailgun.org (EU domains).
+    MAILGUN_SMTP_USERNAME: str = ""
+    MAILGUN_SMTP_PASSWORD: str = ""
+    MAILGUN_SMTP_HOST: str = "smtp.mailgun.org"
+
+    # SMTP2GO credentials come from Sending > SMTP Users in their dashboard.
+    SMTP2GO_USERNAME: str = ""
+    SMTP2GO_PASSWORD: str = ""
+
+    # Generic fallback for any provider not named above (EMAIL_PROVIDER=smtp).
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
 
     # Frontend base URL — used to build links in platform emails (password
     # reset, email verification). Not the same as CORS_ORIGINS: that's a list.

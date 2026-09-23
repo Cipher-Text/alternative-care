@@ -187,8 +187,10 @@ Responses filtered by doctor's specializations. Every answer cites which source 
 
 **Done 2026-09-23:** password reset (`POST /auth/password/forgot`, `/password/reset`) and email
 verification (`POST /auth/email/verify`, `/email/resend`) — previously commented-out code, now
-live end to end including Celery-delivered system email (`app/core/system_email.py`, SendGrid SMTP
-relay). No-ops with a logged warning in environments without `SENDGRID_API_KEY` set.
+live end to end including Celery-delivered system email (`app/core/system_email.py`). Provider is
+picked by `EMAIL_PROVIDER` (`sendgrid` | `resend` | `mailgun` | `smtp2go` | `smtp`, all sent over
+SMTP relay, no per-provider SDK) — no-ops with a logged warning when unset or its credentials are
+incomplete.
 
 ### Expanded scope, not yet built — added 2026-09-23
 
