@@ -162,8 +162,8 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP
 │   ├── rate_limit.py    # Redis-backed rate limiting
 │   └── dependencies.py # Auth, CurrentUser, RBAC
-├── modules/             # 14 routed modules, 128 endpoints total
-│   ├── auth/            # Login, refresh, 2FA, admin provisioning (14 endpoints)
+├── modules/             # 14 routed modules, 129 endpoints total
+│   ├── auth/            # Login, refresh (incl. login-2fa), 2FA, admin provisioning (15 endpoints)
 │   ├── admin/            # Platform admin — tenants, users, KPI dashboard, doctor provisioning (10 endpoints)
 │   ├── doctor/           # Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # CRUD, search, tags, diagnoses (14 endpoints)
@@ -277,13 +277,13 @@ class PatientService:
 
 ## 📊 System Statistics
 
-**Current Status (MVP v1.0, production-ready — see root `CLAUDE.md`):**
+**Current Status (feature-complete, NOT production-ready — see root `CLAUDE.md` and `docs/planning/revision-2026-09.md`):**
 - **Backend modules:** 14 routed modules
-- **API Endpoints:** 128 (+ `/`, `/health`, `/metrics`)
+- **API Endpoints:** 129 (+ `/`, `/health`, `/metrics`)
 - **Database Tables:** 34
 - **Frontend:** 132 source files, 11 top-level route groups
-- **Multi-tenant isolation:** 16/16 tests passing
-- **Security:** A (95/100)
+- **Test suite:** `pytest -q`: 397 passed / 2 xfailed / 0 failed (2026-09-23)
+- **Security:** unscored (previous "A (95/100)" had no cited source)
 
 **Complete:**
 - ✅ Authentication (JWT, 2FA, rate limiting, password complexity)
@@ -335,7 +335,7 @@ class PatientService:
 → Row-level isolation: `tenant_id` from the JWT is passed into each service, and each service method explicitly filters by it (see [Multi-Tenancy](multi-tenancy.md) for why this isn't an automatic/global filter)
 
 **Q: How many API endpoints?**
-→ 128 endpoints across 14 backend modules
+→ 129 endpoints across 14 backend modules
 
 **Q: What database tables exist?**
 → 34 tables (see database-schema.md)

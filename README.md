@@ -2,11 +2,11 @@
 
 An integrated alternative medicine practice platform, expanding in stages into public knowledge, books, directories, publishing, search, and knowledge retrieval. Existing clinic workflows remain a core capability.
 
-## Current State (Code-Verified: 2026-09-21)
+## Current State (Code-Verified: 2026-09-23)
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
 - Active API modules: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- Module endpoints: 128 total (admin: 10, auth: 14, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
+- Module endpoints: 129 total (admin: 10, auth: 15, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend: Next.js 16 + React 19 (132 source files)
   - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`, `/admin/dashboard`, `/admin/users`
@@ -32,7 +32,7 @@ An integrated alternative medicine practice platform, expanding in stages into p
 
 ### AI / QAI Status
 - `/api/v1/ai/query` exists as stub endpoint (returns `501 Not Implemented`)
-- Pro plan-gated with rate limiting (100 req/hour)
+- Pro plan-gated with rate limiting (20 req/hour — `RATE_LIMIT_AI_PER_HOUR`)
 - Full AI/RAG assistant with vector search remains planned work
 
 ### Security Features

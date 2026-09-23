@@ -41,13 +41,13 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
 - Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
-- Multi-tenant isolation (16/16 tests passing) ✅
+- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 397-passed total, 2026-09-23) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 
 **Backend:** 14 routed modules, 129 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
-**Security:** A (95/100)
+**Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)
 
 **Partially built (backend done, frontend missing):**
 - Symptom → Medicine lookup UI — `GET /medicines/symptoms/{id}/medicines` exists, no dedicated page

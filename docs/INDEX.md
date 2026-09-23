@@ -57,10 +57,10 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `testing/TEST_STRATEGY.md`
 - `planning/roadmap-detailed.md`
 
-## Code-Verified Snapshot (2026-09-21)
+## Code-Verified Snapshot (2026-09-23)
 
 - Backend routers registered in `backend/app/main.py`: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- API endpoints: 128 module endpoints
+- API endpoints: 129 module endpoints
 - Database table models: 34 (plus 3 base classes)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19

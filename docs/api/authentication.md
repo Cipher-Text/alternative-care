@@ -77,7 +77,16 @@ Creates doctor + tenant. New tenant is pending approval by default.
 ### Login
 `POST /api/v1/auth/login`
 
-Uses `{ email, password, totp_code? }`.
+Uses `{ email, password, totp_code? }`. If the account has 2FA enabled and
+`totp_code` is omitted, returns `200` with `{ requires_2fa: true }` and
+`tokens`/`user` omitted (not just falsy) — resubmit to `/auth/login-2fa`
+with the code to complete login.
+
+### Complete 2FA Login
+`POST /api/v1/auth/login-2fa`
+
+Same request/response shape as `/login`; call this on the second step of a
+2FA login, once you have `totp_code`.
 
 ### Refresh Token
 `POST /api/v1/auth/refresh`
@@ -114,5 +123,4 @@ Revokes all active refresh sessions after password change.
 
 ## Notes
 
-- There is no separate `/login-2fa` endpoint; 2FA code is part of `/login`.
 - Source of truth: `backend/app/modules/auth/routes.py` and `backend/app/modules/auth/service.py`.

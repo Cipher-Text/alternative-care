@@ -4,13 +4,14 @@ The product direction preserves working practice-management domains and expands 
 
 Tenant separation currently uses application-level explicit row isolation, not PostgreSQL RLS. See [architecture inventory](../architecture/architecture-inventory.md) for code-verified models, risks, and staged migration plan.
 
-> **⚠️ Status claims superseded — 2026-09-23.** See
-> [Plan, Architecture & Technology Revision §1](../planning/revision-2026-09.md#1-verified-reality)
-> for a code-verified reality check. Summary of the corrections: the test suite is not green
-> (322 passed / 76 failed on a clean local run), there is no deployment path (no Dockerfile, no IaC),
-> password reset and email verification exist only as commented-out code, global medicine/symptom
-> creation fails at the database, `usage_tracking` has no writers, and Sentry/structlog are declared
-> but never initialised.
+> **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-23.** See
+> [Plan, Architecture & Technology Revision, Stage 0](../planning/revision-2026-09.md#stage-0--truth--green--by-2026-10-07)
+> for the current, live numbers — this file isn't kept in sync with them, don't quote figures from
+> here. Short version: the test suite is now green (`pytest -q`: 397 passed / 2 xfailed / 0 failed,
+> was 322 passed / 76 failed); Sentry/structlog are now initialised. Still true: there is no
+> deployment path (no Dockerfile, no IaC), password reset and email verification exist only as
+> commented-out code, and global medicine/symptom creation still fails at the database (`usage_tracking`
+> still has no writers — both are tracked, unfixed gaps, not newly discovered).
 
 # Current Project Status
 
@@ -20,7 +21,7 @@ Last Updated: 2026-09-21
 
 ## Summary
 
-AltCare has a working FastAPI backend (14 registered modules, 128 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+AltCare has a working FastAPI backend (14 registered modules, 129 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
 
 Recent work (2026-07-12):
 - **Admin — doctor provisioning under existing tenants:** `POST /admin/tenants/{id}/doctors` added so platform admins can add another doctor user to an already-provisioned clinic without re-running full tenant onboarding. Frontend: `/admin/clients/[tenantId]` detail page now includes an add-doctor form. Integration tests added (`tests/integration/test_admin_tenant_doctors.py`).
@@ -63,7 +64,7 @@ Registered routers in `backend/app/main.py`:
 
 | Module | Prefix | Endpoints | Notes |
 |---|---|---|---|
-| auth | `/api/v1/auth` | 14 | Login, 2FA, register, legacy admin compatibility |
+| auth | `/api/v1/auth` | 15 | Login (incl. `login-2fa` to complete a 2FA-gated login), register, legacy admin compatibility |
 | ai | `/api/v1/ai` | 1 | Stub, returns 501 |
 | appointments | `/api/v1/appointments` | 10 | Scheduling and visits (includes nested `visits_router`: 4 endpoints under `/visits`) |
 | dashboard | `/api/v1/dashboard` | 6 | Tenant-scoped analytics |
@@ -78,7 +79,7 @@ Registered routers in `backend/app/main.py`:
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
 | admin | `/api/v1/admin` | 10 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors` |
 
-**Total:** 128 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 129 module endpoints + `/`, `/health`, `/metrics`
 
 Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
 New canonical endpoints are at `/api/v1/admin`.
