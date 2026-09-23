@@ -11,7 +11,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 **Last Verified:** 2026-09-23 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
-> Stage 1 ("Shippable") is starting — code-verified on 2026-09-23: `pytest -q` runs **409 passed /
+> Stage 1 ("Shippable") is starting — code-verified on 2026-09-23: `pytest -q` runs **422 passed /
 > 2 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
@@ -40,7 +40,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
 - Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
-- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 397-passed total, 2026-09-23) ✅
+- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 422-passed total, 2026-09-23) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 

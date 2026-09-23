@@ -7,7 +7,7 @@ Tenant separation currently uses application-level explicit row isolation, not P
 > **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-23.** See
 > [Plan, Architecture & Technology Revision, Stage 0](../planning/revision-2026-09.md#stage-0--truth--green--by-2026-10-07)
 > for the current, live numbers — this file isn't kept in sync with them, don't quote figures from
-> here. Short version: the test suite is now green (`pytest -q`: 409 passed / 2 xfailed / 0 failed,
+> here. Short version: the test suite is now green (`pytest -q`: 422 passed / 2 xfailed / 0 failed,
 > was 322 passed / 76 failed); Sentry/structlog are now initialised. Still true: there is no
 > deployment path (no Dockerfile, no IaC), password reset and email verification exist only as
 > commented-out code, and global medicine/symptom creation still fails at the database (`usage_tracking`

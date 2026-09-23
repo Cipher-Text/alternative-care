@@ -28,7 +28,7 @@ Product direction (2026-09-23): AltCare is the **Alternative Medicine Knowledge 
 | Database tables | 34 models |
 | Frontend routes | 11 route groups (132 source files) |
 | Security score | Unscored — the previous "A (95/100)" had no cited source, date, or method (see revision §1) |
-| Test coverage | `pytest -q`: 409 passed / 2 xfailed / 0 failed (2026-09-23, see revision Stage 0) |
+| Test coverage | `pytest -q`: 422 passed / 2 xfailed / 0 failed (2026-09-23, see revision Stage 0) |
 | Status | Feature-complete, not deployed, not production ready |
 
 ---
@@ -63,7 +63,7 @@ Product direction (2026-09-23): AltCare is the **Alternative Medicine Knowledge 
 | Geographic API | ✅ | ✅ | Divisions, districts, upazilas (Bangladesh) |
 | Tenant/Clinic Profile | ✅ | ✅ | Clinic info, specializations, fees |
 | Security Hardening | ✅ | — | Rate limiting, HTTP headers, password rules |
-| Multi-tenant Isolation | ✅ | — | Row-level isolation; historical "16/16" claim was never sourced — current isolation-suite result is part of the 397-passed total in revision-2026-09.md Stage 0 |
+| Multi-tenant Isolation | ✅ | — | Row-level isolation; historical "16/16" claim was never sourced — current isolation-suite result is part of the 422-passed total in revision-2026-09.md Stage 0 |
 
 ### P1 Fixes ✅ — completed 2026-07-12
 
@@ -539,7 +539,7 @@ These are not features but quality concerns that should be addressed incremental
 - 34 database tables
 - 132 frontend source files
 - Security score: unscored (previous "A (95/100)" had no cited source)
-- `pytest -q`: 409 passed / 2 xfailed / 0 failed (2026-09-23)
+- `pytest -q`: 422 passed / 2 xfailed / 0 failed (2026-09-23)
 
 ### Q3 2026 Targets
 - [ ] Zero critical security gaps (P1 items closed)
