@@ -23,6 +23,7 @@
     "emailPlaceholder": "doctor@clinic.com",
     "passwordPlaceholder": "••••••••",
     "loggingIn": "লগইন হচ্ছে...",
+    "orContinueWith": "অথবা চালিয়ে যান",
     "invalidEmail": "অবৈধ ইমেইল ঠিকানা",
     "passwordMinLength": "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে",
     "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",

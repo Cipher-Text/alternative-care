@@ -2,8 +2,10 @@
 
 from types import SimpleNamespace
 
+import pyotp
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
 
 from app.shared.models import User
 
@@ -23,6 +25,27 @@ def _mock_email_capture(monkeypatch):
 def _token_from_link(body_text: str) -> str:
     """Extract the `?token=` value from a captured email body."""
     return body_text.split("token=")[1].split()[0].strip()
+
+
+def _mock_google_token(monkeypatch, **claims):
+    """
+    Patch verify_google_id_token (imported into the service module) so
+    tests never call Google. Callers pass whichever claims the scenario
+    needs; sensible defaults cover the rest.
+    """
+    payload = {
+        "sub": "google-sub-000",
+        "email": "google-user@test.com",
+        "email_verified": True,
+        "name": "Google Test User",
+        **claims,
+    }
+
+    def _fake_verify(_id_token):
+        return payload
+
+    monkeypatch.setattr("app.modules.auth.service.verify_google_id_token", _fake_verify)
+    return payload
 
 
 @pytest.mark.asyncio
@@ -206,6 +229,202 @@ class TestLoginEndpoint:
         )
 
         assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+class TestGoogleAuthEndpoints:
+    """Test /api/v1/auth/google and /api/v1/auth/google/register endpoints."""
+
+    async def test_unknown_identity_needs_registration(self, client: AsyncClient, monkeypatch):
+        """No account matches this Google identity: the client should be
+        routed to registration, not logged in or errored."""
+        _mock_google_token(
+            monkeypatch,
+            email="brandnew@test.com",
+            full_name="Dr. Brand New",
+            name="Dr. Brand New",
+        )
+
+        response = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["needs_registration"] is True
+        assert data["email"] == "brandnew@test.com"
+        assert data["full_name"] == "Dr. Brand New"
+        assert "tokens" not in data
+
+    async def test_invalid_token_rejected(self, client: AsyncClient, monkeypatch):
+        """A token that fails Google's own verification (bad signature,
+        wrong audience, expired) must not authenticate anyone."""
+
+        def _raise(_id_token):
+            raise ValueError("Token expired")
+
+        monkeypatch.setattr("app.modules.auth.service.verify_google_id_token", _raise)
+
+        response = await client.post("/api/v1/auth/google", json={"id_token": "garbage"})
+
+        assert response.status_code == 401
+
+    async def test_unverified_google_email_rejected(self, client: AsyncClient, monkeypatch):
+        """Google's email_verified=False must not be trusted for login or
+        auto-linking — that's the whole basis for skipping our own
+        verification email in the Google flow."""
+        _mock_google_token(monkeypatch, email_verified=False)
+
+        response = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+
+        assert response.status_code == 401
+
+    async def test_auto_links_matching_local_account(
+        self, client: AsyncClient, test_user, db_session, monkeypatch
+    ):
+        """First Google sign-in for an email that already has a
+        password-based account should link, not duplicate or reject."""
+        _mock_google_token(
+            monkeypatch,
+            sub="google-sub-link-1",
+            email=test_user.email,
+            name=test_user.full_name,
+        )
+
+        response = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["tokens"]["access_token"] is not None
+        assert data["user"]["email"] == test_user.email
+
+        result = await db_session.execute(select(User).where(User.id == test_user.id))
+        linked = result.scalar_one()
+        assert linked.google_id == "google-sub-link-1"
+
+    async def test_existing_google_identity_logs_in(
+        self, client: AsyncClient, test_user, monkeypatch
+    ):
+        """A repeat sign-in (google_id already linked from a prior call)
+        should log in directly without touching email matching."""
+        _mock_google_token(
+            monkeypatch,
+            sub="google-sub-repeat",
+            email=test_user.email,
+            name=test_user.full_name,
+        )
+
+        first = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+        assert first.status_code == 200
+
+        second = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+        assert second.status_code == 200
+        assert second.json()["user"]["email"] == test_user.email
+
+    async def test_unapproved_tenant_rejected(
+        self, client: AsyncClient, unapproved_user, monkeypatch
+    ):
+        """Google-authenticated users are still gated by tenant approval,
+        same as password login."""
+        _mock_google_token(
+            monkeypatch,
+            email=unapproved_user.email,
+            name=unapproved_user.full_name,
+        )
+
+        response = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+
+        assert response.status_code == 403
+        assert "pending" in response.json()["detail"].lower()
+
+    async def test_2fa_enabled_account_requires_code(
+        self, client: AsyncClient, user_with_2fa, monkeypatch
+    ):
+        """Google verifies identity, not a second factor — an account with
+        2FA enabled must still be challenged for a TOTP code."""
+        _mock_google_token(
+            monkeypatch,
+            email=user_with_2fa.email,
+            name=user_with_2fa.full_name,
+        )
+
+        response = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["requires_2fa"] is True
+        assert "tokens" not in data
+
+    async def test_2fa_enabled_account_logs_in_with_correct_code(
+        self, client: AsyncClient, user_with_2fa, monkeypatch
+    ):
+        _mock_google_token(
+            monkeypatch,
+            email=user_with_2fa.email,
+            name=user_with_2fa.full_name,
+        )
+        totp = pyotp.TOTP(user_with_2fa.totp_secret)
+
+        response = await client.post(
+            "/api/v1/auth/google",
+            json={"id_token": "fake", "totp_code": totp.now()},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["tokens"]["access_token"] is not None
+
+    async def test_register_creates_pending_tenant_without_password(
+        self, client: AsyncClient, monkeypatch, test_division, test_district
+    ):
+        _mock_google_token(
+            monkeypatch,
+            sub="google-sub-register-1",
+            email="newclinic@test.com",
+            name="Dr. New Clinic",
+        )
+
+        response = await client.post(
+            "/api/v1/auth/google/register",
+            json={
+                "id_token": "fake",
+                "clinic_name": "Google Clinic",
+                "clinic_address": "1 Google Way, Dhaka",
+                "division_id": test_division.id,
+                "district_id": test_district.id,
+                "specializations": ["homeopathy"],
+            },
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["email"] == "newclinic@test.com"
+        assert data["requires_approval"] is True
+
+        # A follow-up Google sign-in should now succeed immediately (no
+        # password was ever set, and email verification is already done).
+        login_response = await client.post("/api/v1/auth/google", json={"id_token": "fake"})
+        assert login_response.status_code == 403  # tenant still pending approval
+        assert "pending" in login_response.json()["detail"].lower()
+
+    async def test_register_rejects_duplicate_email(
+        self, client: AsyncClient, test_user, monkeypatch, test_division
+    ):
+        _mock_google_token(
+            monkeypatch,
+            sub="google-sub-dup",
+            email=test_user.email,
+            name=test_user.full_name,
+        )
+
+        response = await client.post(
+            "/api/v1/auth/google/register",
+            json={
+                "id_token": "fake",
+                "specializations": ["homeopathy"],
+            },
+        )
+
+        assert response.status_code == 400
+        assert "already registered" in response.json()["detail"].lower()
 
 
 @pytest.mark.asyncio

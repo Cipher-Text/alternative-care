@@ -20,6 +20,7 @@ from app.core.security import (
     get_totp_uri,
     hash_refresh_token,
     hash_token,
+    verify_google_id_token,
     verify_password,
     verify_refresh_token,
     verify_token,
@@ -32,6 +33,9 @@ from app.modules.auth.schemas import (
     AdminClientDoctorResponse,
     AdminClientListItem,
     ForgotPasswordResponse,
+    GoogleAuthResponse,
+    GoogleLoginRequest,
+    GoogleRegisterRequest,
     LoginRequest,
     LoginResponse,
     RegisterRequest,
@@ -231,7 +235,12 @@ class AuthService:
         result = await self.db.execute(select(User).where(User.email == data.email))
         user = result.scalar_one_or_none()
 
-        if not user or not verify_password(data.password, user.password_hash):
+        # user.password_hash is None for Google-only accounts (no password
+        # was ever set) — reject before calling verify_password, which
+        # requires a string hash.
+        if not user or not user.password_hash or not verify_password(
+            data.password, user.password_hash
+        ):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect email or password",
@@ -268,6 +277,19 @@ class AuthService:
                     detail="Invalid 2FA code",
                 )
 
+        return await self._issue_login_response(user, ip_address, user_agent)
+
+    async def _issue_login_response(
+        self,
+        user: User,
+        ip_address: str | None,
+        user_agent: str | None,
+    ) -> LoginResponse:
+        """
+        Create tokens + session for a user that has already passed all
+        login checks (active, tenant-approved, 2FA). Shared by password
+        login and Google Sign-In so both mint tokens identically.
+        """
         # Get tenant plan for JWT
         plan = None
         if user.tenant_id:
@@ -320,6 +342,175 @@ class AuthService:
             ),
             user=UserResponse.model_validate(user),
             requires_2fa=False,
+        )
+
+    # ========================================================================
+    # Google Sign-In
+    # ========================================================================
+
+    async def google_login(
+        self,
+        data: GoogleLoginRequest,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+    ) -> GoogleAuthResponse:
+        """
+        Authenticate (or offer registration for) a Google identity.
+
+        Matches an existing account by google_id, or by email with
+        auto-link — Google has already verified the email, so linking on
+        a matching email doesn't weaken account security the way trusting
+        a self-reported email would.
+        """
+        try:
+            payload = verify_google_id_token(data.id_token)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Google token",
+            ) from exc
+
+        if not payload.get("email_verified"):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Google account email is not verified",
+            )
+
+        google_sub = payload["sub"]
+        email = payload["email"]
+        full_name = payload.get("name") or email
+
+        result = await self.db.execute(select(User).where(User.google_id == google_sub))
+        user = result.scalar_one_or_none()
+
+        if not user:
+            result = await self.db.execute(select(User).where(User.email == email))
+            user = result.scalar_one_or_none()
+            if user:
+                user.google_id = google_sub
+                if not user.is_email_verified:
+                    user.is_email_verified = True
+                    user.email_verified_at = datetime.now(timezone.utc)
+
+        if not user:
+            return GoogleAuthResponse(
+                needs_registration=True,
+                email=email,
+                full_name=full_name,
+            )
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is deactivated",
+            )
+
+        if user.tenant_id:
+            result = await self.db.execute(
+                select(Tenant).where(Tenant.id == user.tenant_id)
+            )
+            tenant = result.scalar_one_or_none()
+            if not tenant or not tenant.is_approved:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Your account is pending admin approval",
+                )
+
+        if user.is_2fa_enabled:
+            if not data.totp_code:
+                return GoogleAuthResponse(requires_2fa=True)
+            if not user.totp_secret or not verify_totp(user.totp_secret, data.totp_code):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid 2FA code",
+                )
+
+        login_response = await self._issue_login_response(user, ip_address, user_agent)
+        return GoogleAuthResponse(
+            tokens=login_response.tokens,
+            user=login_response.user,
+        )
+
+    async def google_register(self, data: GoogleRegisterRequest) -> RegisterResponse:
+        """Create a tenant + doctor account for a Google-verified identity."""
+        try:
+            payload = verify_google_id_token(data.id_token)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Google token",
+            ) from exc
+
+        if not payload.get("email_verified"):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Google account email is not verified",
+            )
+
+        google_sub = payload["sub"]
+        email = payload["email"]
+        full_name = payload.get("name") or email
+
+        result = await self.db.execute(
+            select(User).where((User.email == email) | (User.google_id == google_sub))
+        )
+        if result.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered",
+            )
+
+        # Create tenant
+        tenant_id = str(uuid.uuid4())
+        tenant = Tenant(
+            id=tenant_id,
+            name=full_name,
+            email=email,
+            phone=data.phone,
+            clinic_name=data.clinic_name,
+            clinic_address=data.clinic_address,
+            division_id=data.division_id,
+            district_id=data.district_id,
+            upazila_id=data.upazila_id,
+            specializations=data.specializations,
+            license_number=data.license_number,
+            is_verified=False,
+            is_approved=False,  # Requires admin approval, same as password signup
+            is_active=True,
+            plan="free",
+        )
+        self.db.add(tenant)
+
+        # Create user — no password, email already verified by Google
+        user_id = str(uuid.uuid4())
+        user = User(
+            id=user_id,
+            tenant_id=tenant_id,
+            email=email,
+            password_hash=None,
+            google_id=google_sub,
+            auth_provider="google",
+            role="doctor",
+            full_name=full_name,
+            phone=data.phone,
+            language=data.language,
+            is_active=True,
+            is_email_verified=True,
+            email_verified_at=datetime.now(timezone.utc),
+        )
+        self.db.add(user)
+
+        await self.db.commit()
+        await self.db.refresh(user)
+
+        # TODO: Notify admins of new registration
+
+        return RegisterResponse(
+            message="Registration successful. Your account is pending admin approval.",
+            user_id=user.id,
+            tenant_id=tenant.id,
+            email=user.email,
+            requires_approval=True,
         )
 
     # ========================================================================

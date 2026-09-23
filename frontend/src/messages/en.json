@@ -23,6 +23,7 @@
     "emailPlaceholder": "doctor@clinic.com",
     "passwordPlaceholder": "••••••••",
     "loggingIn": "Logging in...",
+    "orContinueWith": "Or continue with",
     "invalidEmail": "Invalid email address",
     "passwordMinLength": "Password must be at least 6 characters",
     "forgotPassword": "Forgot password?",

@@ -75,7 +75,7 @@ npm run dev
 
 **Should see:**
 - Frontend login page
-- Swagger UI with 133 API endpoints
+- Swagger UI with 135 API endpoints
 - Health check: `{"status": "healthy"}`
 
 **Success!** You're ready to develop.
@@ -172,7 +172,7 @@ cd backend && black app && ruff check app
 ### Understand the Codebase
 
 1. **Read CLAUDE.md** - Architecture, patterns, conventions
-2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 133 API endpoints)
+2. **Browse API Docs** - http://localhost:8000/docs (Swagger with all 135 API endpoints)
 3. **Browse frontend/src/** - Component structure
 4. **Check docs/** - Detailed documentation by area (setup, architecture, API)
 

@@ -7,7 +7,7 @@ Tenant separation currently uses application-level explicit row isolation, not P
 > **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-23.** See
 > [Plan, Architecture & Technology Revision, Stage 0](../planning/revision-2026-09.md#stage-0--truth--green--by-2026-10-07)
 > for the current, live numbers — this file isn't kept in sync with them, don't quote figures from
-> here. Short version: the test suite is now green (`pytest -q`: 422 passed / 2 xfailed / 0 failed,
+> here. Short version: the test suite is now green (`pytest -q`: 432 passed / 2 xfailed / 0 failed,
 > was 322 passed / 76 failed); Sentry/structlog are now initialised. Still true: there is no
 > deployment path (no Dockerfile, no IaC), password reset and email verification exist only as
 > commented-out code, and global medicine/symptom creation still fails at the database (`usage_tracking`
@@ -21,7 +21,7 @@ Last Updated: 2026-09-21
 
 ## Summary
 
-AltCare has a working FastAPI backend (14 registered modules, 133 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+AltCare has a working FastAPI backend (14 registered modules, 135 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
 
 Recent work (2026-07-12):
 - **Admin — doctor provisioning under existing tenants:** `POST /admin/tenants/{id}/doctors` added so platform admins can add another doctor user to an already-provisioned clinic without re-running full tenant onboarding. Frontend: `/admin/clients/[tenantId]` detail page now includes an add-doctor form. Integration tests added (`tests/integration/test_admin_tenant_doctors.py`).
@@ -64,7 +64,7 @@ Registered routers in `backend/app/main.py`:
 
 | Module | Prefix | Endpoints | Notes |
 |---|---|---|---|
-| auth | `/api/v1/auth` | 19 | Login (incl. `login-2fa`), register, password reset, email verification, legacy admin compatibility |
+| auth | `/api/v1/auth` | 21 | Login (incl. `login-2fa`), Google Sign-In/registration, register, password reset, email verification, legacy admin compatibility |
 | ai | `/api/v1/ai` | 1 | Stub, returns 501 |
 | appointments | `/api/v1/appointments` | 10 | Scheduling and visits (includes nested `visits_router`: 4 endpoints under `/visits`) |
 | dashboard | `/api/v1/dashboard` | 6 | Tenant-scoped analytics |
@@ -79,7 +79,7 @@ Registered routers in `backend/app/main.py`:
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
 | admin | `/api/v1/admin` | 10 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors` |
 
-**Total:** 133 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 135 module endpoints + `/`, `/health`, `/metrics`
 
 Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
 New canonical endpoints are at `/api/v1/admin`.
@@ -92,7 +92,8 @@ Implemented routes:
 
 | Route | Status |
 |---|---|
-| `/login` | ✅ |
+| `/login` | ✅ (incl. Google Sign-In button) |
+| `/register/google` | ✅ Clinic-details completion step for a new Google identity |
 | `/dashboard` | ✅ |
 | `/profile` | ✅ |
 | `/patients`, `/patients/new`, `/patients/[id]`, `/patients/[id]/edit` | ✅ |

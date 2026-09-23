@@ -4,11 +4,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { authApi } from '@/lib/api/auth'
-import { getPostLoginPath } from '@/lib/auth/redirects'
-import { useAuthStore } from '@/store/authStore'
+import { getErrorMessage } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,14 +18,16 @@ const twoFactorSchema = z.object({
 type TwoFactorFormData = z.infer<typeof twoFactorSchema>
 
 interface TwoFactorFormProps {
-  email: string
-  password: string
+  /**
+   * Complete the login with this TOTP code — e.g. call authApi.loginWith2FA
+   * or authApi.googleLogin(..., totp_code), then set auth state and
+   * navigate on success. Throw to show an error and stay on this form.
+   */
+  onSubmit: (totpCode: string) => Promise<void>
   onBack: () => void
 }
 
-export function TwoFactorForm({ email, password, onBack }: TwoFactorFormProps) {
-  const router = useRouter()
-  const setAuth = useAuthStore((state) => state.setAuth)
+export function TwoFactorForm({ onSubmit, onBack }: TwoFactorFormProps) {
   const [loading, setLoading] = useState(false)
 
   const {
@@ -39,25 +38,12 @@ export function TwoFactorForm({ email, password, onBack }: TwoFactorFormProps) {
     resolver: zodResolver(twoFactorSchema),
   })
 
-  const onSubmit = async (data: TwoFactorFormData) => {
+  const handleFormSubmit = async (data: TwoFactorFormData) => {
     setLoading(true)
     try {
-      const response = await authApi.loginWith2FA({
-        email,
-        password,
-        totp_code: data.totp_code,
-      })
-
-      if (!response.user || !response.tokens) {
-        toast.error('Invalid code')
-        return
-      }
-
-      setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
-      toast.success('Login successful!')
-      router.push(getPostLoginPath(response.user))
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Invalid code')
+      await onSubmit(data.totp_code)
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Invalid code'))
     } finally {
       setLoading(false)
     }
@@ -72,7 +58,7 @@ export function TwoFactorForm({ email, password, onBack }: TwoFactorFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="totp_code">Authentication Code</Label>
             <Input

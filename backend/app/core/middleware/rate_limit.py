@@ -21,7 +21,7 @@ async def rate_limit_middleware(request: Request, call_next):
     Apply baseline rate limiting for auth login and API routes.
 
     Scopes:
-    - auth_login: 10 req/min per IP (POST /api/v1/auth/login)
+    - auth_login: 10 req/min per IP (POST /api/v1/auth/login, /api/v1/auth/google)
     - auth_sensitive: same limit as auth_login — password reset and email
       verification requests, which send an email and can otherwise be used
       to spam a victim's inbox or probe for registered addresses
@@ -52,7 +52,12 @@ async def rate_limit_middleware(request: Request, call_next):
         f"{settings.API_V1_PREFIX}/auth/email/resend",
     }
 
-    if request.method == "POST" and path == f"{settings.API_V1_PREFIX}/auth/login":
+    login_shaped_paths = {
+        f"{settings.API_V1_PREFIX}/auth/login",
+        f"{settings.API_V1_PREFIX}/auth/google",
+    }
+
+    if request.method == "POST" and path in login_shaped_paths:
         scope = "auth_login"
         limit = settings.RATE_LIMIT_LOGIN_PER_MINUTE
     elif request.method == "POST" and path in sensitive_auth_paths:

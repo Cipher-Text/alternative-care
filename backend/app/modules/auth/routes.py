@@ -15,6 +15,9 @@ from app.modules.auth.schemas import (
     Disable2FARequest,
     ForgotPasswordRequest,
     ForgotPasswordResponse,
+    GoogleAuthResponse,
+    GoogleLoginRequest,
+    GoogleRegisterRequest,
     LoginRequest,
     LoginResponse,
     LogoutRequest,
@@ -185,6 +188,50 @@ async def login_2fa(
     user_agent = request.headers.get("user-agent")
 
     return await service.login(data, ip_address=ip_address, user_agent=user_agent)
+
+
+@router.post(
+    "/google",
+    response_model=GoogleAuthResponse,
+    response_model_exclude_none=True,
+    summary="Sign in with Google",
+    description=(
+        "Authenticate with a Google Identity Services ID token. If no "
+        "account exists yet for this Google identity, returns "
+        "needs_registration=True — submit clinic details to POST "
+        "/auth/google/register to complete signup."
+    ),
+)
+async def google_login(
+    data: GoogleLoginRequest,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Login (or offer registration) via Google Sign-In."""
+    service = AuthService(db)
+    ip_address = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent")
+
+    return await service.google_login(data, ip_address=ip_address, user_agent=user_agent)
+
+
+@router.post(
+    "/google/register",
+    response_model=RegisterResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Complete registration via Google",
+    description=(
+        "Register a new doctor + tenant for a Google-verified identity. "
+        "Requires admin approval before activation, same as /register."
+    ),
+)
+async def google_register(
+    data: GoogleRegisterRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Register new doctor + tenant using a verified Google identity."""
+    service = AuthService(db)
+    return await service.google_register(data)
 
 
 @router.post(

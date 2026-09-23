@@ -135,7 +135,19 @@ class User(BaseAuditModel):
 
     # Authentication
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Nullable: users who registered via Google Sign-In have no password.
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    # Google Sign-In — the token subject ("sub" claim), stable per Google
+    # account. NULL for users who registered with email/password.
+    google_id: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, unique=True, index=True
+    )
+    # How this user authenticates: "local" (password) or "google". Informational
+    # only — login logic checks password_hash/google_id directly, not this field.
+    auth_provider: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="local", server_default="local"
+    )
 
     # Role: admin, operator (platform), doctor, receptionist (tenant-scoped)
     role: Mapped[str] = mapped_column(String(50), nullable=False, index=True)

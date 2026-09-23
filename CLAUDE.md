@@ -11,7 +11,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 **Last Verified:** 2026-09-23 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
-> Stage 1 ("Shippable") is starting — code-verified on 2026-09-23: `pytest -q` runs **422 passed /
+> Stage 1 ("Shippable") is starting — code-verified on 2026-09-23: `pytest -q` runs **432 passed /
 > 2 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
@@ -29,7 +29,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 > (D1-D10), and the technology decisions (T1-T10) that supersede the phase list in `docs/ROADMAP.md`.
 
 **Core modules (backend + frontend complete):**
-- Authentication (Login, 2FA, JWT, Sessions, Password Security) ✅
+- Authentication (Login, 2FA, JWT, Sessions, Password Security, Google Sign-In) ✅
 - Patient Management (CRUD, Tags, Diagnoses, Geographic dropdowns) ✅
 - Dashboard Analytics (Stats, Revenue, Demographics) ✅
 - Appointments (Scheduling, Calendar, Visits) ✅
@@ -40,11 +40,11 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
 - Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
-- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 422-passed total, 2026-09-23) ✅
+- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 432-passed total, 2026-09-23) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 
-**Backend:** 14 routed modules, 133 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Backend:** 14 routed modules, 135 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)
 
@@ -281,8 +281,8 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (133 total endpoints)
-│   ├── auth/             # ✅ Login (incl. login-2fa), refresh, 2FA, password reset, email verification, admin provisioning (19 endpoints)
+├── modules/               # Feature modules (135 total endpoints)
+│   ├── auth/             # ✅ Login (incl. login-2fa), Google Sign-In/registration, refresh, 2FA, password reset, email verification, admin provisioning (21 endpoints)
 │   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning (10 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
@@ -308,7 +308,8 @@ backend/app/
 ```
 frontend/src/
 ├── app/                   # Next.js App Router
-│   ├── (auth)/login/     # ✅ Login + 2FA
+│   ├── (auth)/login/     # ✅ Login + 2FA + Google Sign-In
+│   ├── (auth)/register/google/ # ✅ Clinic-details completion step for new Google identities
 │   ├── (dashboard)/      # ✅ Protected routes
 │   │   ├── dashboard/    # ✅ Analytics charts
 │   │   ├── patients/     # ✅ Patient CRUD
@@ -323,7 +324,7 @@ frontend/src/
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
 ├── components/
-│   ├── auth/             # ✅ LoginForm, TwoFactorForm
+│   ├── auth/             # ✅ LoginForm, TwoFactorForm, GoogleSignInButton, GoogleRegisterForm
 │   ├── dashboard/        # ✅ Charts, Stats
 │   ├── patients/         # ✅ PatientCard, PatientForm
 │   ├── prescriptions/    # ✅ PrescriptionBuilder, MedicineItemsBuilder (with autocomplete), PatientSelector

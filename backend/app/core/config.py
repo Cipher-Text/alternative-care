@@ -147,6 +147,12 @@ class Settings(BaseSettings):
     # reset, email verification). Not the same as CORS_ORIGINS: that's a list.
     FRONTEND_URL: str = "http://localhost:3000"
 
+    # Google Sign-In — verifies ID tokens minted by Google Identity Services
+    # on the frontend (see app/core/security.py:verify_google_id_token).
+    # This is the OAuth Client ID (Web application type), not a secret — it
+    # is also sent to the frontend to initialize the Google button.
+    GOOGLE_CLIENT_ID: str = ""
+
     # SMS (Twilio)
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""

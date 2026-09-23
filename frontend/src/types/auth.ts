@@ -107,6 +107,41 @@ export interface TwoFactorRequest {
   totp_code: string
 }
 
+export interface GoogleLoginRequest {
+  id_token: string
+  totp_code?: string
+}
+
+export interface GoogleAuthResponse {
+  // Exactly one outcome holds per response: tokens+user (success),
+  // requires_2fa (resubmit id_token+totp_code), or needs_registration
+  // (no account yet — collect clinic details and call googleRegister).
+  tokens?: {
+    access_token: string
+    refresh_token: string
+    token_type: string
+    expires_in: number
+  }
+  user?: User
+  requires_2fa: boolean
+  needs_registration: boolean
+  email?: string
+  full_name?: string
+}
+
+export interface GoogleRegisterRequest {
+  id_token: string
+  phone?: string | null
+  language: 'en' | 'bn'
+  clinic_name?: string | null
+  clinic_address?: string | null
+  division_id?: number | null
+  district_id?: number | null
+  upazila_id?: number | null
+  specializations: MedicalSystem[]
+  license_number?: string | null
+}
+
 export interface RefreshTokenRequest {
   refresh_token: string
 }

@@ -3,27 +3,27 @@ title: "Authentication API"
 type: "api-reference"
 module: "authentication"
 version: "0.9.0"
-last_updated: "2026-07-12"
-ai_summary: "14 endpoints for auth, self-registration, legacy admin compatibility, JWT session lifecycle, and 2FA"
-endpoints: 14
+last_updated: "2026-09-23"
+ai_summary: "21 endpoints for auth, self-registration (password + Google), legacy admin compatibility, JWT session lifecycle, and 2FA"
+endpoints: 21
 authentication: "public + protected"
 ---
 
 # Authentication API
 
 **Module:** Authentication
-**Endpoints:** 14
+**Endpoints:** 21
 **Base Path:** `/api/v1/auth`
 
 ## Overview
 
 Authentication and onboarding endpoints for:
-- Public doctor registration
+- Public doctor registration (password or Google Sign-In)
 - Admin client provisioning (tenant + primary doctor)
 - Admin tenant approval workflow
 - JWT login/refresh/logout
 - 2FA setup/verify/disable
-- Password change
+- Password change, reset, and email verification
 - Current user profile
 
 ## Legacy Admin Compatibility Endpoints
@@ -87,6 +87,36 @@ with the code to complete login.
 
 Same request/response shape as `/login`; call this on the second step of a
 2FA login, once you have `totp_code`.
+
+## Google Sign-In — added 2026-09-23
+
+Backend verifies the ID token itself (`app/core/security.py:verify_google_id_token`,
+via `google-auth`, checked against `GOOGLE_CLIENT_ID`) — the frontend never
+talks to Google's token endpoint directly, only renders the button and
+forwards the credential it returns.
+
+### Sign in with Google
+`POST /api/v1/auth/google`
+
+Body: `{ id_token, totp_code? }`. Exactly one outcome per response:
+- Existing account, no 2FA: `{ tokens, user, requires_2fa: false }`.
+- Existing account with 2FA enabled and no `totp_code`: `{ requires_2fa: true }` — resubmit with the same `id_token` plus `totp_code` (2FA is still enforced; Google verifies identity, not a second factor).
+- No account for this Google identity or email yet: `{ needs_registration: true, email, full_name }` — call `POST /auth/google/register` with the same `id_token` plus clinic details.
+
+If an account already exists for the token's email (registered the normal
+password way) but has no Google identity linked yet, it's linked
+automatically on first successful Google sign-in — safe because Google has
+already verified the email, unlike a self-reported one.
+
+### Complete Registration via Google
+`POST /api/v1/auth/google/register`
+
+Body: `{ id_token, specializations, phone?, language?, clinic_name?, clinic_address?, division_id?, district_id?, upazila_id?, license_number? }`.
+Re-verifies `id_token` server-side (the client can't submit an email it
+doesn't control) and creates tenant + doctor, same pending-approval posture
+as `POST /auth/register`. No password is set; `is_email_verified` is `true`
+immediately since Google already verified the address — no verification
+email is sent.
 
 ### Refresh Token
 `POST /api/v1/auth/refresh`
@@ -154,3 +184,4 @@ verified, or neither.
 ## Notes
 
 - Source of truth: `backend/app/modules/auth/routes.py` and `backend/app/modules/auth/service.py`.
+- Google Sign-In requires `GOOGLE_CLIENT_ID` set in `backend/.env` (server-side token verification) and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in `frontend/.env.local` (renders the button) — same OAuth Client ID value in both, not a secret. Unset on either side: backend rejects with a verification failure, frontend simply omits the button (password login still works).

@@ -3,6 +3,9 @@ import type {
   LoginRequest,
   LoginResponse,
   TwoFactorRequest,
+  GoogleLoginRequest,
+  GoogleAuthResponse,
+  GoogleRegisterRequest,
   RefreshTokenRequest,
   RefreshTokenResponse,
   UserProfileResponse,
@@ -30,6 +33,18 @@ export const authApi = {
   // Login with 2FA
   loginWith2FA: async (data: TwoFactorRequest): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login-2fa', data)
+    return response.data
+  },
+
+  // Sign in with Google (ID token from Google Identity Services)
+  googleLogin: async (data: GoogleLoginRequest): Promise<GoogleAuthResponse> => {
+    const response = await apiClient.post('/auth/google', data)
+    return response.data
+  },
+
+  // Complete registration for a Google-verified identity
+  googleRegister: async (data: GoogleRegisterRequest): Promise<RegisterResponse> => {
+    const response = await apiClient.post('/auth/google/register', data)
     return response.data
   },
 

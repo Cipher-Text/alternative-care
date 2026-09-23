@@ -16,7 +16,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TwoFactorForm } from './TwoFactorForm'
+import { GoogleSignInButton } from './GoogleSignInButton'
 import { getErrorMessage } from '@/types/api'
+import { stashGoogleIdToken } from '@/lib/auth/google-session'
 
 type LoginFormData = {
   email: string
@@ -53,13 +55,16 @@ const getDevQuickUsers = (): Array<{ label: string; email: string; password: str
 
 const DEV_QUICK_USERS = getDevQuickUsers()
 
+type Pending2FA =
+  | { kind: 'password'; email: string; password: string }
+  | { kind: 'google'; idToken: string }
+
 export function LoginForm() {
   const router = useRouter()
   const t = useTranslations('auth')
   const setAuth = useAuthStore((state) => state.setAuth)
   const [loading, setLoading] = useState(false)
-  const [needs2FA, setNeeds2FA] = useState(false)
-  const [credentials, setCredentials] = useState<LoginFormData | null>(null)
+  const [pending2FA, setPending2FA] = useState<Pending2FA | null>(null)
 
   const loginSchema = z.object({
     email: z.string().email({ message: t('invalidEmail') }),
@@ -81,9 +86,7 @@ export function LoginForm() {
       const response = await authApi.login(data)
 
       if (response.requires_2fa || !response.user || !response.tokens) {
-        // Show 2FA form
-        setCredentials(data)
-        setNeeds2FA(true)
+        setPending2FA({ kind: 'password', email: data.email, password: data.password })
         setLoading(false)
       } else {
         // Login successful
@@ -97,12 +100,58 @@ export function LoginForm() {
     }
   }
 
-  if (needs2FA && credentials) {
+  const handleGoogleCredential = async (idToken: string) => {
+    setLoading(true)
+    try {
+      const response = await authApi.googleLogin({ id_token: idToken })
+
+      if (response.needs_registration) {
+        stashGoogleIdToken(idToken)
+        const params = new URLSearchParams({
+          email: response.email ?? '',
+          name: response.full_name ?? '',
+        })
+        router.push(`/register/google?${params.toString()}`)
+        return
+      }
+
+      if (response.requires_2fa || !response.user || !response.tokens) {
+        setPending2FA({ kind: 'google', idToken })
+        setLoading(false)
+        return
+      }
+
+      setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
+      toast.success(t('loginSuccess'))
+      router.push(getPostLoginPath(response.user))
+    } catch (error) {
+      toast.error(getErrorMessage(error, t('loginFailed')))
+      setLoading(false)
+    }
+  }
+
+  if (pending2FA) {
     return (
       <TwoFactorForm
-        email={credentials.email}
-        password={credentials.password}
-        onBack={() => setNeeds2FA(false)}
+        onBack={() => setPending2FA(null)}
+        onSubmit={async (totpCode) => {
+          const response =
+            pending2FA.kind === 'password'
+              ? await authApi.loginWith2FA({
+                  email: pending2FA.email,
+                  password: pending2FA.password,
+                  totp_code: totpCode,
+                })
+              : await authApi.googleLogin({ id_token: pending2FA.idToken, totp_code: totpCode })
+
+          if (!response.user || !response.tokens) {
+            throw new Error(t('loginFailed'))
+          }
+
+          setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
+          toast.success(t('loginSuccess'))
+          router.push(getPostLoginPath(response.user))
+        }}
       />
     )
   }
@@ -154,6 +203,17 @@ export function LoginForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t('loggingIn') : t('login')}
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
+            </div>
+          </div>
+
+          <GoogleSignInButton onCredential={handleGoogleCredential} />
 
           {process.env.NODE_ENV !== 'production' && (
             <div className="space-y-2 border-t pt-4">

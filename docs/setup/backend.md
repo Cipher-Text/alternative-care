@@ -247,7 +247,7 @@ curl http://localhost:8000/health
 ### 2. API Documentation
 Visit: http://localhost:8000/docs
 
-**Should see:** Swagger UI with 133 API endpoints across 14 modules
+**Should see:** Swagger UI with 135 API endpoints across 14 modules
 
 ### 3. Root Endpoint
 Visit: http://localhost:8000/

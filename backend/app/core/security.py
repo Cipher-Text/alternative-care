@@ -10,6 +10,8 @@ from typing import Any
 
 import pyotp
 from cryptography.fernet import Fernet
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -27,6 +29,31 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     """Hash a password."""
     return pwd_context.hash(password)
+
+
+# Reused across calls so google-auth can cache Google's public signing
+# certs instead of re-fetching them on every login.
+_google_auth_request = google_requests.Request()
+
+
+def verify_google_id_token(token: str) -> dict[str, Any]:
+    """
+    Verify a Google Identity Services ID token and return its claims.
+
+    Checks the token's signature (against Google's published certs),
+    expiry, issuer, and that it was issued for this app's GOOGLE_CLIENT_ID.
+
+    Returns:
+        The verified claims, notably: sub (Google account ID, stable),
+        email, email_verified (bool), name.
+
+    Raises:
+        ValueError: If the token is invalid, expired, or issued for a
+            different client — same as the underlying google-auth call.
+    """
+    return google_id_token.verify_oauth2_token(
+        token, _google_auth_request, settings.GOOGLE_CLIENT_ID
+    )
 
 
 def hash_refresh_token(token: str) -> str:

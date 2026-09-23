@@ -86,6 +86,49 @@ class RegisterResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class GoogleRegisterRequest(BaseModel):
+    """
+    Complete registration for a Google-verified identity.
+
+    Same clinic/specialization fields as RegisterRequest, minus email/
+    password/full_name — those come from re-verifying `id_token`
+    server-side (see AuthService.google_register) rather than trusting
+    whatever the client submits.
+    """
+
+    id_token: str
+    phone: str | None = Field(None, max_length=20)
+    language: Literal["en", "bn"] = "en"
+
+    clinic_name: str | None = Field(None, max_length=255)
+    clinic_address: str | None = None
+
+    division_id: int | None = None
+    district_id: int | None = None
+    upazila_id: int | None = None
+
+    specializations: list[str] = Field(
+        ...,
+        min_length=1,
+        max_length=4,
+        description="Medical systems: homeopathy, ayurveda, unani, herbal",
+    )
+
+    license_number: str | None = Field(None, max_length=100)
+
+    @field_validator("specializations")
+    @classmethod
+    def validate_specializations(cls, v: list[str]) -> list[str]:
+        """Validate specializations are from allowed list."""
+        allowed = {"homeopathy", "ayurveda", "unani", "herbal"}
+        for spec in v:
+            if spec not in allowed:
+                raise ValueError(
+                    f"Invalid specialization '{spec}'. Allowed: {allowed}"
+                )
+        return list(set(v))
+
+
 class AdminCreateTenantDoctorRequest(RegisterRequest):
     """Admin request to create tenant (clinic) and primary doctor account."""
 
@@ -120,6 +163,15 @@ class LoginRequest(BaseModel):
     totp_code: str | None = Field(None, description="6-digit 2FA code if enabled")
 
 
+class GoogleLoginRequest(BaseModel):
+    """Google Sign-In request — the ID token from Google Identity Services."""
+
+    id_token: str
+    totp_code: str | None = Field(
+        None, description="6-digit 2FA code, if the matched account has it enabled"
+    )
+
+
 class TokenResponse(BaseModel):
     """JWT token response."""
 
@@ -141,6 +193,28 @@ class LoginResponse(BaseModel):
     tokens: TokenResponse | None = None
     user: "UserResponse | None" = None
     requires_2fa: bool = False
+
+
+class GoogleAuthResponse(BaseModel):
+    """
+    Response to POST /auth/google.
+
+    Exactly one outcome holds per response:
+    - matched an existing account, no 2FA: `tokens` + `user` set
+    - matched an existing account with 2FA enabled: `requires_2fa=True` —
+      the client resubmits the same `id_token` plus `totp_code`
+    - no account with this Google identity or email yet:
+      `needs_registration=True`, with the Google-verified `email`/
+      `full_name` to prefill POST /auth/google/register (the client still
+      collects clinic/specialization info, which Google doesn't have)
+    """
+
+    tokens: TokenResponse | None = None
+    user: "UserResponse | None" = None
+    requires_2fa: bool = False
+    needs_registration: bool = False
+    email: str | None = None
+    full_name: str | None = None
 
 
 # ============================================================================
