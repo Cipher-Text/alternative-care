@@ -140,7 +140,7 @@ All tenant-scoped service factories now return **403** for platform users.
 - [x] Backend: `POST /api/v1/auth/password/reset` — validate token, set new password with strength check
 - [x] Frontend: Forgot password page at `/(auth)/forgot-password`
 - [x] Frontend: Reset password page at `/(auth)/reset-password?token=...`
-- [x] Celery task: send password reset email (`app/core/system_email.py`, SendGrid via SMTP relay)
+- [x] Celery task: send password reset email (`app/core/system_email.py`, provider picked by `EMAIL_PROVIDER` — sendgrid/resend/mailgun/smtp2go/generic smtp, all via SMTP relay — added 2026-09-23)
 
 Reset invalidates every existing session (`token_version` bump + session revocation), same posture as the authenticated password-change endpoint. Token is single-use, SHA-256 hashed at rest (never the raw value). `forgot_password`/`resend_verification` return an identical response whether or not the email is registered, so the endpoint can't be used to enumerate accounts.
 
