@@ -182,10 +182,20 @@ Responses filtered by doctor's specializations. Every answer cites which source 
 
 ### Other unimplemented features
 - `receptionist` role enforcement (RBAC not applied)
-- Public doctor directory — mock at `mock/doctors.html` — Phase E
+- Public doctor directory — mock at `mock/doctors.html` — now Stage 5, see below
 - Public landing page
 - Password reset flow (no `/auth/forgot-password` endpoint)
 - Email verification flow
+
+### Expanded scope, not yet built — added 2026-09-23
+
+A feature-by-feature audit against a wider product scope (practitioner/college/clinic directories, editorial content, a knowledge taxonomy beyond Medicine/Symptom) found 38 of 95 named items with zero footprint anywhere in the repo before this date. All of it is now sequenced in `docs/planning/revision-2026-09.md` (§2.3, D11–D16, Stages 2/5/6) rather than left undocumented:
+
+- **Knowledge taxonomy** (bundled into Stage 2): `Discipline` (promotes today's free-text specializations to a real catalog), `Condition` (a diagnosis, distinct from `Symptom`), `Therapy` (a non-substance intervention, distinct from `Medicine`), and a shared `references`/`evidence_level` subsystem covering what was separately named "evidence classification," "reference management," and "traditional knowledge labelling."
+- **Directory** (Stage 5): College/Institution Directory (new, admin-curated, ungated) alongside the existing gated Practitioner/Clinic Directory (Phase E above), which reads live tenant data rather than a new profile table (ADR 008).
+- **Content/CMS** (Stage 6): Articles on conditions/herbs/medicines with a mandatory medical-review gate before publish — sequenced after the AI assistant (Stage 4), not before.
+
+"Herbal Medicine Library" as a *separate* catalog from Medicine was considered and rejected (D12) — it would duplicate the same way a parallel global-medicine table would have (D1).
 
 ---
 

@@ -2,6 +2,16 @@
 
 **Inspected:** 2026-09-23. This inventory describes the checked-in implementation, not planned capabilities.
 
+> **⚠️ Phase lettering superseded — 2026-09-23.** §3–5 below sketch the discipline/condition/herb/
+> reference/evidence/college/content domains in the old Phase A–G scheme. That sequencing is
+> replaced by `docs/planning/revision-2026-09.md`'s Stage 0–6 gates: the taxonomy tables land in
+> **Stage 2** (D11–D13), directory in **Stage 5** (D14–D15, plus ADR 008 on why practitioner/clinic
+> directories read from `Tenant` rather than a new table), and content/CMS in **Stage 6** (D16). The
+> conceptual sketch below is a useful first draft but **"herb" as a standalone table was rejected**
+> (D12) — herbal medicines are `Medicine` rows with `discipline = herbal`, not a parallel catalog —
+> and "therapy" (non-substance interventions) is missing from the sketch entirely; D12 adds it. Read
+> the revision doc's D11–D16 for the decisions that actually govern schema work now.
+
 ## 1. Current architecture inventory
 
 AltCare is one Next.js application (`frontend/src/app`), one FastAPI application (`backend/app/main.py`), and a shared PostgreSQL schema managed by Alembic. SQLAlchemy async sessions are provided centrally by `app.core.database`. Redis is configured for rate limiting and Celery; `app.core.celery` configures a Celery app and currently imports integration tasks. MinIO endpoint/bucket credentials are settings only: no storage client or upload integration was found. `pgvector` is a dependency and the existing library model declares a 1536-dimensional vector column; no search or retrieval implementation was found.

@@ -69,14 +69,32 @@ Cutting is the substance of a solo plan, so these are removals, not deferrals-in
 |---|---|---|
 | **Mobile apps (React Native, iOS + Android)** | Phase F, 120–160 h | Two more deployment targets and two app-store relationships for one developer. Responsive web already covers the use case; make it installable as a PWA instead. |
 | **GraphQL API, Keycloak SSO, white-label, multi-clinic chains, SOC 2** | Phase G | Every one is an enterprise-buyer feature, and there are no enterprise buyers in the pipeline. Revisit when a signed contract asks. |
-| **Public doctor directory** | Phase E, 25–35 h | It is a marketplace, and a marketplace with no supply is an empty page. Gate it on ≥20 listed practitioners, which Stage 3's public pages are what actually produce. |
+| **Public doctor directory** | Phase E, 25–35 h | It is a marketplace, and a marketplace with no supply is an empty page. Gate it on ≥20 listed practitioners, which Stage 3's public pages are what actually produce. Formalized as the practitioner/clinic half of Stage 5 (§2.3) — the gate is unchanged. |
 | **LangChain** | `requirements.txt` | Two major lines stale, and the retrieval this product needs is ~200 lines of pgvector query plus prompt assembly. It is the single largest dependency-risk surface in the repo for the smallest benefit. |
 | **"1,000+ medicines / 1,000+ mappings" targets** | Roadmap tasks 11–12 | Volume targets invite scraping. 300 practitioner-reviewed homeopathy entries beat 1,000 unreviewed ones, and the review capacity is the real constraint. |
-| **Notification template CMS, bulk operations** | Roadmap tasks 14, 18 | Real but small pain, competing against deployment and billing. Deferred behind Stage 3 with no date. |
+| **Notification template CMS, bulk operations** | Roadmap tasks 14, 18 | Real but small pain, competing against deployment and billing. Deferred, now behind Stage 6 (§5) with no date. |
 
 ### 2.2 What this revision adds that the old plan omitted
 
 Deployment and operations (§6), billing enforcement, backup/restore with a rehearsed drill, a storage adapter, RLS as a second isolation layer, an honest test harness, and a content-rights gate before any book is ingested.
+
+### 2.3 Track D (Directory) and Track C (Content) — added 2026-09-23
+
+The product owner's scope for AltCare is wider than Track P/Track K covered: information sharing beyond the clinic product — practitioner/clinic directories, medical college listings, and editorial content (articles on conditions, herbs, medicines) alongside the book library. A feature-by-feature audit against the checked-in code (95 named items, grouped by the product owner) found:
+
+| Status | Count | What it means |
+|---|---|---|
+| Built & working | 23 | Practice-management core |
+| Built, broken or incomplete | 10 | Existing documented gaps (global-catalog writes, RBAC, usage tracking, …) |
+| Planned, staged | 24 | Already in Stages 2–4 above, mostly with a data model in place |
+| **Not written down anywhere** | **38 (40%)** | Zero model, zero roadmap line, zero rejected-idea note — not a sync problem, scope that was never captured |
+
+Per §9's own rule ("re-adding a cut item requires writing down what it displaces"), the same discipline applies to *adding* scope: nothing below is free. Two new tracks:
+
+- **Track D (Directory)** — practitioner, clinic, and college/institution listings. Half of it (practitioner/clinic) is the doctor directory §2.1 already gated on ≥20 public profiles; that gate is unchanged, just formalized into a real stage (Stage 5) instead of a floating bullet. The college half has no such gate (D15) and could in principle move earlier, but is sequenced with it for one reason: shipping a directory module once, covering both halves, is cheaper than building the pattern twice.
+- **Track C (Content/CMS)** — editorial articles on conditions, herbs, and medicines, with a medical-review gate before publish. Sequenced *after* Stage 4 (Stage 6), not parallel with it: the AI assistant is Track K's payoff and the stated moat; content/SEO is a customer-acquisition bet with a real but unproven payoff for a solo developer's time. **This is a business call, not a technical one — revisit the ordering if content-driven acquisition becomes the near-term growth priority.**
+
+Both tracks reuse Track K's patterns rather than inventing new ones: `GlobalCatalogModel` (D1) for admin-curated data, the `/api/v1/public/*` boundary (D4) for public reads, `tsvector` search (D5) once there's a corpus. The taxonomy work underneath both (D11–D13) is bundled into Stage 2 — see below — because it's the same migration wave as the D1 keystone fix, and splitting it into a later stage means doing catalog-table surgery twice instead of once.
 
 ---
 
@@ -129,6 +147,30 @@ Even though nothing is deployed yet, the target is chosen now because it constra
 ### D10 — Three environments, secrets never in git
 
 `dev` (local) · `staging` (second compose project on the same box, separate DB) · `prod`. Remove root `.env` from tracking, add a root `.gitignore`, keep `.env.example` as the only committed template. Nightly `pg_dump` to object storage, and a restore drill that is *performed*, not documented.
+
+### D11 — Discipline becomes a first-class catalog entity, not a string — added 2026-09-23
+
+Promote the free-text `specializations` array (`Tenant`) and `system` string (`Medicine`, `Book`) to a `disciplines` `GlobalCatalogModel` table (`id`, `slug`, `name_en`, `name_bn`), referenced by FK from `Tenant` (many-to-many `tenant_disciplines`), `Medicine`, `Book`, and the new `Condition`/`Therapy` tables (D12). Migrate existing string values by exact-match backfill against four seeded rows (homeopathy, ayurveda, unani, herbal); anything that doesn't match is a data-quality bug the migration surfaces, not silently drops. *Reason:* four hardcoded strings scattered across three tables with no referential integrity is the same drift D1 already fixed for global-vs-tenant data, one level down — a fifth discipline today means grepping for string literals across the codebase; with a table it's one admin-curated row. *Rejected:* leaving it free text and validating format only in Pydantic schemas — cheaper today, but it's D1's mistake again at smaller scale, and it blocks D12 from having a clean reference. Bundled into Stage 2 (same migration wave as D1).
+
+### D12 — Condition and Therapy as new catalog entities, not folded into Symptom/Medicine — added 2026-09-23
+
+Add `conditions` (canonical disease/condition reference — e.g. "Migraine" — distinct from `symptoms`, which are patient-reported complaints like "headache") and `therapies` (non-substance interventions — e.g. Panchakarma, cupping — distinct from `medicines`, which are substances/remedies), both `GlobalCatalogModel`, both discipline-scoped via D11. New mapping tables mirror the existing `medicine_symptom_mappings` shape: `condition_symptom_mappings`, `medicine_condition_mappings`, `therapy_condition_mappings`. *Reason:* "Herbal Medicine Library" and "Condition/Disease Management" read as if they need new top-level catalogs, but the actual gap is narrower — `Medicine` already covers all four disciplines via `system`/`discipline_id`, so a herbal-only table would just be D1's rejected `global_medicines` duplication again. What's genuinely missing is one level of specificity above Symptom (a diagnosed condition, not just a complaint) and one category beside Medicine (a therapy, not a substance). *Rejected:* (a) one polymorphic "knowledge item" table for medicine/symptom/condition/therapy — loses per-type validation (Medicine needs dosage fields, Therapy doesn't) and forces a type filter onto every existing query; (b) folding Condition into Symptom behind an `is_diagnosis` flag — cheaper, but conflates two different clinical concepts. Bundled into Stage 2.
+
+### D13 — One shared evidence/reference subsystem, not five separate labelling features — added 2026-09-23
+
+Add `references` (`GlobalCatalogModel` — title, authors, publication, year, url/doi) and an `evidence_level` enum (`traditional`, `case_study`, `clinical_trial`, `systematic_review`, `expert_consensus`) on the mapping tables from D12 plus the existing `medicine_symptom_mappings`, joined to `references` via a `*_references` table. *Reason:* "Medical Reference Management," "Evidence Classification," "Evidence-Based Content Labelling," "Traditional Knowledge Labelling," and "Reference & Citation Tracking" were named as five features; they're one subsystem viewed from five angles — a bibliography table plus one enum column. Five separate CRUD surfaces here would all answer the same underlying question: where did this claim come from, and how strong is the evidence. *Rejected:* per-entity free-text "source" fields — cheapest, but ungoverned (no dedupe, no cross-entry citation reuse, can't ask "which medicines cite this 1972 paper"). Bundled into Stage 2.
+
+### D14 — Directory is a public view over Tenant data, not a parallel entity — added 2026-09-23
+
+The Practitioner and Clinic Directories are read-only public projections of existing `Tenant`/`User(role=doctor)` rows, filtered to `is_approved = true` plus a new opt-in `is_publicly_listed: bool` (default `false`) on `Tenant` — not new duplicated profile tables. *Reason:* a clinic's public listing *is* its tenant record; a parallel `directory_listings` table would drift from the source of truth the moment a clinic updates its address in Settings and the public listing doesn't move — the same duplicated-state bug D1 exists to prevent, one layer up. *Rejected:* a separate `PractitionerProfile`/`ClinicProfile` table a tenant explicitly fills out for public consumption — gives field-level public/private control the simple flag can't, which is a real advantage; revisit if tenants ask for it. This is the one call in this batch with a real reversal cost if wrong — the "public projection" pattern gets baked into how routes and services are written. See `docs/architecture/adr/008-directory-from-tenant-data.md`.
+
+### D15 — College/Institution Directory ships independent of practitioner supply — added 2026-09-23
+
+`colleges` (`GlobalCatalogModel`: name, type, disciplines via D11, location, affiliation, contact, website) and `college_courses` (name, duration, `college_id`) are admin-curated platform catalog data — same pattern as Medicine/Symptom, no dependency on tenant/practitioner counts. *Reason:* the existing "gate the doctor directory on ≥20 practitioners" decision (§2.1) exists because a directory with no supply is an empty page. That reasoning doesn't apply to colleges — an admin can seed 20 known medical colleges on day one; there's no marketplace cold-start problem here, so importing the practitioner-directory's gate would be an unearned constraint. Bundled into Stage 5 alongside the practitioner/clinic directory (shipping the directory *pattern* once, for both, is cheaper than building it twice), but ungated.
+
+### D16 — Content/CMS reuses the admin-review-queue and public-page patterns; no new workflow engine — added 2026-09-23
+
+`articles` (title, slug, body, `category_id`, `discipline_id` via D11, status, `author_id`, `reviewed_by`, `published_at`, SEO fields) with a `draft → pending_review → published` state machine — mirroring the existing tenant-approval queue (`Tenant.is_approved`) and Prescription's `draft → issued → voided` immutability, not a new generic workflow engine — plus `content_categories` and a `content_tags` join table. *Reason:* "Editorial Review Workflow," "Medical Reviewer Workflow," and "Medical Content Review" were named as three items; they're the same feature — an article needs medical sign-off before it's public, one review step, not three. *Rejected:* a generic, configurable multi-step approval engine — sounds reusable, has no second consumer today; YAGNI until a second workflow (e.g. book-rights review) actually needs to share it. New Stage 6.
 
 ---
 
@@ -203,8 +245,11 @@ Not done (moved to a follow-up, not silently dropped):
 - RLS on the eight clinical tables (D2)
 - `/api/v1/public/*` router boundary (D4) and unified `tsvector` search (D5)
 - Seed **300 practitioner-reviewed homeopathy medicines** and their symptom mappings — one system done properly, not four done thinly (§2.1)
+- `disciplines`, `conditions`, `therapies`, `references` tables and their mapping tables, bundled into the same migration wave (D11, D12, D13) — added 2026-09-23, scope note below
 
-**Gate:** an admin creates a global medicine successfully — the operation that returns a 500 today; a doctor's prescription autocomplete returns seeded global medicines; and a deliberately mis-written service query against a clinical table raises instead of returning another tenant's rows.
+**Gate:** an admin creates a global medicine successfully — the operation that returns a 500 today; a doctor's prescription autocomplete returns seeded global medicines; a deliberately mis-written service query against a clinical table raises instead of returning another tenant's rows; and an admin creates one `Condition` with a linked `Medicine` and a cited `reference` end to end.
+
+**Scope note (added 2026-09-23):** D11–D13 widen this stage's migration surface without changing its date. That's a real risk, not a free addition — if the taxonomy tables slip, the honest move is to split them into Stage 2b after 2026-12-19 rather than quietly slide the keystone gate above to protect a date that was set before this scope existed. Track it; don't paper over it.
 
 ### Stage 3 — Library & Public Web · Q1 2027
 
@@ -224,9 +269,26 @@ Not done (moved to a follow-up, not silently dropped):
 
 **Gate:** ≥80% of eval answers carry a correct, resolvable citation, and zero answers contain an uncited clinical claim. If that bar is not met, the feature does not ship — an alternative-medicine assistant that invents sources is a liability, not a feature.
 
-### After Stage 4, gated not dated
+### Stage 5 — Directory · gated, not dated · added 2026-09-23
 
-Public doctor directory (gate: ≥20 practitioners with complete public profiles) · audit log UI · notification templates · bulk operations.
+- College/Institution Directory: `colleges` + `college_courses` (D15), admin-curated, `/api/v1/public/colleges`. Ungated — can start as soon as Stage 2's `GlobalCatalogModel` pattern exists, seeded with a first batch of known institutions.
+- Practitioner + Clinic Directory: public projection of `Tenant`/doctor `User` rows (D14) — `is_publicly_listed` opt-in field, `/api/v1/public/practitioners`, `/api/v1/public/clinics`. **Still gated on ≥20 public profiles**, per the original §2.1 decision — that gate doesn't move, it's just formalized into a real stage instead of a floating bullet.
+
+**Gate:** an admin creates one college with one course, publicly readable with no auth — for the practitioner/clinic half, the original gate stands: ≥20 practitioners with complete, opted-in public profiles before it goes live at all.
+
+### Stage 6 — Content/CMS · gated, not dated · added 2026-09-23
+
+- `articles`, `content_categories`, `content_tags`, and the `draft → pending_review → published` review queue (D16)
+- Public article pages under `/api/v1/public/articles`, reusing Stage 3's SSG/ISR pattern
+- One medical reviewer role required before any article can move `pending_review → published` — same clinical-liability posture as the AI assistant (§7): editorial content making treatment claims carries the same risk class, reviewed the same way
+
+**Gate:** one article, written, medically reviewed by someone other than its author, and published — end to end, with the review step provably blocking an unreviewed article from going live.
+
+**Sequencing (§2.3):** deliberately placed after Stage 4, not parallel with it. This is a business call about where a solo developer's time goes next, not a technical dependency — nothing here requires Stage 4 to exist first. Revisit the ordering if content-driven customer acquisition becomes the near-term growth priority; if it does, Stage 6 can move ahead of Stage 4 without re-doing any of the work above.
+
+### After Stage 6, gated not dated
+
+Audit log UI · notification templates (built on D7's beat schedule + the existing SMS/Email integration framework, not a new domain) · bulk operations · import/export & CSV export · platform-wide system settings UI · global/hybrid search across all catalog types (the natural union of D5 lexical search and Stage 4's vector search once both exist — not a separate build) · knowledge-source enable/disable admin controls for the retrieval pipeline.
 
 ---
 
@@ -257,6 +319,8 @@ Because nothing is deployed, this is a plan, not a description.
 | **Bus factor of one** | Medium | Decisions recorded as ADRs; the deploy path is a script in the repo, not knowledge in a head |
 | **Documentation drift** — the root cause of this entire revision | Medium | §8; docs asserting capability must cite a file or a test |
 | **Scope regrowth** | Medium | §2.1 is a commitment; re-adding a cut item requires writing down what it displaces |
+| **Editorial content liability.** Articles making treatment claims about conditions/herbs carry the same legal exposure as the AI assistant, published by a human instead of a model | High | Same posture as clinical liability above: mandatory medical review before publish (D16), citations required (D13), permanent disclaimer; Stage 6's gate enforces the review step is provably blocking, not decorative |
+| **Directory data staleness.** A college listing, or a clinic's public address/hours, goes stale and nobody notices | Medium | Practitioner/clinic directory is a live projection of Tenant data (D14), so it can't drift from the source; college directory has no such backstop — needs a periodic admin review pass, not solved by the schema alone |
 
 ---
 
@@ -271,6 +335,8 @@ The previous targets (200 paying clinics and an India expansion by Q3 2027, solo
 | 2026-12-19 | Global catalog writable; 300 reviewed medicines live; **5 paying clinics** |
 | Q1 2027 | 5 books readable and searchable; public pages indexed; **10 paying clinics** |
 | Q2 2027 | Assistant passes its citation gate or does not ship; **25 paying clinics** |
+| Gated, not dated | Stage 5: directory pattern shipped (college directory live; practitioner/clinic directory live once ≥20 public profiles exist) |
+| Gated, not dated | Stage 6: first article published through a provably-enforced medical-review gate |
 
 Ongoing: 99% monthly uptime measured by an external checker (not asserted), p95 API latency under 500 ms, and zero cross-tenant incidents.
 
@@ -291,3 +357,5 @@ The gap in §1 is not a documentation problem; it is a problem that documentatio
 - `docs/architecture/architecture-inventory.md` — the code-verified inventory this revision builds on
 - `docs/ROADMAP.md` — superseded in sequencing and metrics by §5 and §8
 - `docs/status/current.md` — superseded in status by §1
+- `docs/architecture/adr/008-directory-from-tenant-data.md` — the D14 decision, in full
+- `docs/architecture/adr/002-platform-vs-tenant-data.md` — the D1-era decision D11–D13's catalog tables extend

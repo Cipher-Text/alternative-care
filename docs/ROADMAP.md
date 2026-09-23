@@ -417,6 +417,13 @@ Responses are **filtered by the doctor's specializations** (`tenant.specializati
 
 ### Phase E — Public Doctor Directory
 
+> **Formalized as Stage 5 — 2026-09-23.** This phase's detail below is still accurate and folds
+> into `docs/planning/revision-2026-09.md` Stage 5 / D14 / ADR 008 — `Tenant.is_publicly_listed` in
+> particular is exactly the flag D14 independently arrived at, which is worth noting as a
+> consistency check, not a coincidence to paper over. What Stage 5 adds: the directory reads
+> `Tenant`/`User` directly rather than new profile tables (ADR 008), and a College/Institution
+> Directory ships alongside it, ungated (D15) — see Stage 5/6 below.
+
 **Context:** Mock UI designed at `mock/doctors.html`. Backend does not yet support this.  
 **Estimated effort:** 25–35 hours
 
@@ -435,7 +442,47 @@ Responses are **filtered by the doctor's specializations** (`tenant.specializati
 
 ---
 
-### Phase F — Mobile Apps
+### Stage 5 — Directory (added 2026-09-23; supersedes the letter-phase scheme below)
+
+Full detail: `docs/planning/revision-2026-09.md` §2.3, D14, D15, Stage 5; `docs/architecture/adr/008-directory-from-tenant-data.md`.
+
+**Practitioner + Clinic Directory** — Phase E above, formalized. Still gated on ≥20 public profiles; reads `Tenant`/`User` directly (ADR 008), no new profile tables.
+
+**College / Institution Directory** — new, not previously scoped anywhere:
+- [ ] `colleges` table (name, type, disciplines, division/district, affiliation, contact, website) — `GlobalCatalogModel`, admin-curated
+- [ ] `college_courses` table (name, duration, `college_id`)
+- [ ] `GET /api/v1/public/colleges` — unauthenticated, filtered by discipline/district
+- [ ] Admin CRUD for both, same pattern as Medicine/Symptom
+- Ungated — no supply-cold-start problem the way a practitioner directory has (D15); seed with a first batch of known institutions rather than waiting on anyone else's listing.
+
+---
+
+### Stage 6 — Content/CMS (added 2026-09-23)
+
+Full detail: `docs/planning/revision-2026-09.md` §2.3, D16, Stage 6.
+
+- [ ] `articles`, `content_categories`, `content_tags` tables
+- [ ] `draft → pending_review → published` state machine — one required medical-review step before publish, same clinical-liability posture as the AI assistant (Phase D below), not a configurable multi-step workflow engine
+- [ ] `GET /api/v1/public/articles` — unauthenticated, reuses Stage 3's SSG/ISR pattern
+- [ ] Admin review queue — same UX pattern as the existing tenant-approval queue
+
+Sequenced after Phase D/Stage 4 (AI assistant), not parallel — a business call about where solo-developer time goes, not a technical dependency. Revisit if content-driven acquisition becomes the priority.
+
+---
+
+### Knowledge taxonomy — bundled into Stage 2, not a separate phase (added 2026-09-23)
+
+`disciplines`, `conditions`, `therapies`, `references` (+ their mapping tables) land in Stage 2 alongside the D1 keystone migration — see `docs/planning/revision-2026-09.md` D11–D13. Not scheduled as its own phase because splitting it out means doing catalog-table schema surgery twice instead of once; see that doc's Stage 2 scope note for the date-risk tradeoff this creates.
+
+- **Discipline** (D11): promotes `Tenant.specializations`/`Medicine.system` from free strings to a referenced catalog table.
+- **Condition** (D12): a diagnosed disease/condition, distinct from `Symptom` (a patient-reported complaint).
+- **Therapy** (D12): a non-substance intervention (e.g. Panchakarma, cupping), distinct from `Medicine` (a substance).
+- **Herbal Medicine Library** — explicitly *not* a separate table. Herbal medicines are `Medicine` rows with `discipline = herbal`; a parallel catalog would duplicate Medicine the way a rejected `global_medicines` table would have (D1).
+- **References/evidence** (D13): one bibliography table + an `evidence_level` enum column on the mapping tables — covers what was separately named "Medical Reference Management," "Evidence Classification," "Evidence-Based Content Labelling," and "Traditional Knowledge Labelling."
+
+---
+
+### Phase F — Mobile Apps · **Cut — see `docs/planning/revision-2026-09.md` §2.1**
 
 **Estimated effort:** 120–160 hours  
 **Platform:** React Native (iOS + Android)
@@ -445,9 +492,11 @@ Responses are **filtered by the doctor's specializations** (`tenant.specializati
 - [ ] Shared API client (Axios + React Query)
 - [ ] Push notifications (Expo Notifications or Firebase)
 
+Cut, not deferred: responsive web already covers the use case; make it installable as a PWA instead. Revisit only if a specific mobile-only capability (e.g. offline charting) becomes a real blocker.
+
 ---
 
-### Phase G — Enterprise Features
+### Phase G — Enterprise Features · **Cut — see `docs/planning/revision-2026-09.md` §2.1**
 
 - [ ] Multi-clinic management (clinic chains, cross-clinic reporting)
 - [ ] White-label solution (custom branding, custom domains, logo/colors)
@@ -456,6 +505,8 @@ Responses are **filtered by the doctor's specializations** (`tenant.specializati
 - [ ] SOC 2 compliance
 - [ ] GraphQL API (in addition to REST)
 - [ ] Keycloak SSO (enterprise authentication)
+
+Cut, not deferred: every item here is an enterprise-buyer feature, and there are no enterprise buyers in the pipeline. Revisit when a signed contract asks — "Audit log UI" specifically is tracked as a gated-not-dated item after Stage 6, since the underlying `created_by`/`updated_by` audit columns already exist; it's the UI surfacing them that's missing.
 
 ---
 

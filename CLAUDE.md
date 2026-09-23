@@ -53,14 +53,16 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Symptom → Medicine lookup UI — `GET /medicines/symptoms/{id}/medicines` exists, no dedicated page
 - Medicine search page uses client-side filter on 100 rows instead of calling `GET /medicines/search`
 
-**Planned (future phases):**
-- Book library reader — DB models exist (`books`, `chapters`, `sections`, `reading_progress`, `bookmarks`, `highlights`, `embeddings`), no routes or UI yet — see `docs/ROADMAP.md` Phase C
-- AI chat assistant (RAG) — stub 501 endpoint exists at `POST /api/v1/ai/query` — see `docs/ROADMAP.md` Phase D
+**Planned (future phases — see `docs/planning/revision-2026-09.md` for the authoritative Stage 0–6 sequencing; `docs/ROADMAP.md`'s Phase letters are background):**
+- Book library reader — DB models exist (`books`, `chapters`, `sections`, `reading_progress`, `bookmarks`, `highlights`, `embeddings`), no routes or UI yet — Stage 3
+- AI chat assistant (RAG) — stub 501 endpoint exists at `POST /api/v1/ai/query` — Stage 4
   - Knowledge sources: book library (vector search via pgvector) + medicine DB + symptom DB (structured lookup)
   - Responses filtered by doctor's specializations; every answer cites its source
   - Pro plan only; 200 queries/month quota tracked in `usage_tracking`
 - `operator` / `receptionist` role enforcement — Phase B
-- Public doctor directory — mock designed at `mock/doctors.html` — Phase E
+- **Knowledge taxonomy** — `disciplines`, `conditions`, `therapies`, `references` tables, bundled into Stage 2 alongside the global-catalog keystone fix (D11–D13). Promotes today's free-text `specializations`/`system` strings to a referenced catalog; adds a diagnosed-condition entity distinct from `Symptom` and a non-substance-therapy entity distinct from `Medicine`. Herbal medicine is *not* a separate catalog — it's `Medicine` rows with `discipline = herbal` (D12).
+- **Directory** — Stage 5. Practitioner/clinic directory (mock designed at `mock/doctors.html`) reads live `Tenant`/`User` data rather than a new profile table (D14, ADR 008), still gated on ≥20 public profiles. College/Institution Directory (`colleges`, `college_courses`) is new, admin-curated, ungated (D15).
+- **Content/CMS** — Stage 6. Articles on conditions/herbs/medicines with a mandatory medical-review gate before publish (D16) — same clinical-liability posture as the AI assistant, reviewed the same way.
 - Public landing page
 
 ---
@@ -253,6 +255,11 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
 **Library:** `books`, `chapters`, `sections`, `embeddings`, `reading_progress`, `bookmarks`, `highlights`
 **Integration:** `integration_providers`, `tenant_integrations`, `integration_logs`
 **System:** `translations`, `usage_tracking`
+
+**Planned, not yet migrated** (`docs/planning/revision-2026-09.md` D11–D16 — do not assume these exist without checking `alembic/versions/`):
+**Knowledge taxonomy** (Stage 2): `disciplines`, `conditions`, `therapies`, `references`, plus mapping tables (`condition_symptom_mappings`, `medicine_condition_mappings`, `therapy_condition_mappings`, `*_references`)
+**Directory** (Stage 5): `colleges`, `college_courses` — practitioner/clinic directory reads existing `tenants`/`users`, no new tables (ADR 008)
+**Content/CMS** (Stage 6): `articles`, `content_categories`, `content_tags`
 
 **Table Patterns:**
 - Tenant-scoped: `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`
