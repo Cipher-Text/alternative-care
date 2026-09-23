@@ -174,9 +174,10 @@ class IntegrationService:
 
         if provider_type:
             # Join with provider to filter by type
-            query = query.join(IntegrationProvider).where(
-                IntegrationProvider.provider_type == provider_type
-            )
+            query = query.join(
+                IntegrationProvider,
+                TenantIntegration.provider_id == IntegrationProvider.id,
+            ).where(IntegrationProvider.provider_type == provider_type)
 
         if is_active is not None:
             query = query.where(TenantIntegration.is_active == is_active)
@@ -263,7 +264,10 @@ class IntegrationService:
         # Unset any existing primary for this type
         result = await self.db.execute(
             select(TenantIntegration)
-            .join(IntegrationProvider)
+            .join(
+                IntegrationProvider,
+                TenantIntegration.provider_id == IntegrationProvider.id,
+            )
             .where(
                 and_(
                     TenantIntegration.tenant_id == self.tenant_id,
@@ -301,7 +305,10 @@ class IntegrationService:
         """
         result = await self.db.execute(
             select(TenantIntegration)
-            .join(IntegrationProvider)
+            .join(
+                IntegrationProvider,
+                TenantIntegration.provider_id == IntegrationProvider.id,
+            )
             .where(
                 and_(
                     TenantIntegration.tenant_id == self.tenant_id,

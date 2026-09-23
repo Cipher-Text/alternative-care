@@ -48,6 +48,11 @@ export function TwoFactorForm({ email, password, onBack }: TwoFactorFormProps) {
         totp_code: data.totp_code,
       })
 
+      if (!response.user || !response.tokens) {
+        toast.error('Invalid code')
+        return
+      }
+
       setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
       toast.success('Login successful!')
       router.push(getPostLoginPath(response.user))

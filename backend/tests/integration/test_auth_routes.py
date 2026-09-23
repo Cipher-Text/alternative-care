@@ -162,7 +162,7 @@ class TestLoginEndpoint:
         assert "pending" in response.json()["detail"].lower()
 
     async def test_login_with_2fa_no_code(self, client: AsyncClient, user_with_2fa):
-        """Test login with 2FA enabled but no code."""
+        """Login without a TOTP code should prompt for 2FA, not fail outright."""
         response = await client.post(
             "/api/v1/auth/login",
             json={
@@ -171,8 +171,10 @@ class TestLoginEndpoint:
             },
         )
 
-        assert response.status_code == 400
-        assert "required" in response.json()["detail"].lower()
+        assert response.status_code == 200
+        data = response.json()
+        assert data["requires_2fa"] is True
+        assert "tokens" not in data
 
     async def test_login_invalid_email_format(self, client: AsyncClient):
         """Test login with invalid email format."""

@@ -228,7 +228,7 @@ class TestTenantRegistrationIsolation:
             "/api/v1/auth/register",
             json={
                 "email": "clinic1@test.com",
-                "password": "Pass123",
+                "password": "Pass12345",
                 "full_name": "Dr. Clinic 1",
                 "clinic_name": "Clinic One",
                 "specializations": ["homeopathy"],
@@ -243,7 +243,7 @@ class TestTenantRegistrationIsolation:
             "/api/v1/auth/register",
             json={
                 "email": "clinic2@test.com",
-                "password": "Pass456",
+                "password": "Pass45678",
                 "full_name": "Dr. Clinic 2",
                 "clinic_name": "Clinic Two",
                 "specializations": ["ayurveda"],
@@ -276,6 +276,11 @@ class TestSessionIsolation:
         self, client: AsyncClient, test_user, db_session
     ):
         """Test that user can have multiple sessions, all isolated."""
+        # Captured up front: db_session.expire_all() below expires test_user,
+        # and touching an expired attribute triggers a sync lazy-load that
+        # the async session can't service outside a greenlet.
+        user_id = test_user.id
+
         # Create 3 sessions for same user
         login1 = await client.post(
             "/api/v1/auth/login",
@@ -303,7 +308,7 @@ class TestSessionIsolation:
         # Verify 3 active sessions
         sessions = await db_session.execute(
             select(UserSession).where(
-                UserSession.user_id == test_user.id, UserSession.is_revoked == False
+                UserSession.user_id == user_id, UserSession.is_revoked == False
             )
         )
         active_sessions = sessions.scalars().all()
@@ -320,10 +325,10 @@ class TestSessionIsolation:
         )
 
         # Verify only 2 active sessions remain
-        await db_session.expire_all()
+        db_session.expire_all()
         sessions = await db_session.execute(
             select(UserSession).where(
-                UserSession.user_id == test_user.id, UserSession.is_revoked == False
+                UserSession.user_id == user_id, UserSession.is_revoked == False
             )
         )
         active_sessions = sessions.scalars().all()
@@ -341,6 +346,12 @@ class TestSessionIsolation:
         self, client: AsyncClient, test_user, test_user_2, db_session
     ):
         """Test logout all sessions only affects current user's sessions."""
+        # Captured up front: db_session.expire_all() below expires these
+        # ORM objects, and touching an expired attribute triggers a sync
+        # lazy-load that the async session can't service outside a greenlet.
+        user_id = test_user.id
+        user2_id = test_user_2.id
+
         # Create multiple sessions for both users
         login1a = await client.post(
             "/api/v1/auth/login",
@@ -364,10 +375,10 @@ class TestSessionIsolation:
         )
 
         # User 1's sessions should all be revoked
-        await db_session.expire_all()
+        db_session.expire_all()
         sessions1 = await db_session.execute(
             select(UserSession).where(
-                UserSession.user_id == test_user.id, UserSession.is_revoked == False
+                UserSession.user_id == user_id, UserSession.is_revoked == False
             )
         )
         assert len(sessions1.scalars().all()) == 0
@@ -375,7 +386,7 @@ class TestSessionIsolation:
         # User 2's sessions should still be active
         sessions2 = await db_session.execute(
             select(UserSession).where(
-                UserSession.user_id == test_user_2.id, UserSession.is_revoked == False
+                UserSession.user_id == user2_id, UserSession.is_revoked == False
             )
         )
         assert len(sessions2.scalars().all()) == 1

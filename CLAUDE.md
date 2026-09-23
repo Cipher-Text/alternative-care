@@ -10,13 +10,20 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **Last Verified:** 2026-09-23 (code-verified, see `docs/planning/revision-2026-09.md`)
 
-> The "Production Ready" claim previously here did not hold. Code-verified on 2026-09-23:
-> a clean `pytest` run is **322 passed / 76 failed**; there is **no Dockerfile, no IaC, no deploy
+> The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is now
+> mostly done — code-verified on 2026-09-23: `pytest -q` runs **397 passed / 2 xfailed / 0 failed**
+> locally (was 322 passed / 76 failed earlier the same day; the gap was mostly test-harness bugs —
+> a shared-Redis rate limiter poisoning unrelated tests, and a fixture bug where
+> `authenticated_client`/`authenticated_client_2` were silently the same object — plus several real
+> bugs the harness noise had been masking, including a refresh-token rotation bug and two shadowed
+> routes; see Stage 0 in `docs/planning/revision-2026-09.md` for the full list). Sentry and structlog
+> are now initialised (`app/core/observability.py`). Still true: **no Dockerfile, no IaC, no deploy
 > path**; password reset and email verification exist only as commented-out code
 > (`app/modules/auth/routes.py:285-322`); global medicine/symptom creation writes `tenant_id=None`
 > into a `NOT NULL` column and fails at the database (`medicine/routes.py:102`,
-> `symptom/routes.py:93`); `usage_tracking` has no writers so plans are unenforced; Sentry and
-> structlog are installed but never initialised.
+> `symptom/routes.py:93`) — this is Stage 2's keystone fix, not yet done; `usage_tracking` has no
+> writers so plans are unenforced (2 tests pinned as `xfail` document this and the receptionist-RBAC
+> gap so they can't silently regress further).
 >
 > **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
 > stage plan (Stage 0 Truth & Green → Stage 4 Retrieval Assistant), the architecture decisions
@@ -38,7 +45,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 
-**Backend:** 14 routed modules, 128 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Backend:** 14 routed modules, 129 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** A (95/100)
 
@@ -177,7 +184,8 @@ async def test_tenant_isolation(db_session):
 **JWT Tokens:**
 - Access: 30min expiry, type="access"
 - Refresh: 7d expiry, type="refresh"
-- Claims: `sub` (user_id), `tenant_id`, `role`, `email`, `plan`, `token_version` (bumped on password/email/role change to invalidate old tokens; refresh tokens carry only `sub` + `token_version`)
+- Claims: `sub` (user_id), `tenant_id`, `role`, `email`, `plan`, `token_version` (bumped on password/email/role change to invalidate old tokens; refresh tokens carry only `sub` + `token_version` + a `jti`)
+- Refresh tokens are hashed with SHA-256 for storage/lookup (`hash_refresh_token`/`verify_refresh_token`), not bcrypt — bcrypt truncates at 72 bytes, which made two refresh tokens for the same user hash identically and silently broke rotation
 - Location: `app/core/security.py` (python-jose)
 
 **2FA (TOTP):**
@@ -225,7 +233,7 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
 **Rate Limiting** (`app/core/rate_limit.py`, Redis-backed):
 - Login: 5 req/min per IP — General API: 60 req/min per IP — AI: 20 req/hour per user
 - Returns `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After` on 429
-- Config keys: `RATE_LIMIT_PER_MINUTE`, `RATE_LIMIT_LOGIN_PER_MINUTE`, `RATE_LIMIT_AI_PER_HOUR`
+- Config keys: `RATE_LIMIT_ENABLED` (default `true` — a global kill switch; the test suite sets this `false` by default per test via an autouse `conftest.py` fixture, since a shared Redis rate limiter otherwise poisons unrelated tests), `RATE_LIMIT_PER_MINUTE`, `RATE_LIMIT_LOGIN_PER_MINUTE`, `RATE_LIMIT_AI_PER_HOUR`
 
 **Security Headers** (`app/main.py` middleware): `X-Content-Type-Options`, `X-Frame-Options: DENY`, CSP, HSTS (production). Config: `SECURITY_HEADERS_ENABLED`, `SECURITY_HSTS_ENABLED`.
 
@@ -271,8 +279,8 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (128 total endpoints)
-│   ├── auth/             # ✅ Login, refresh, 2FA, admin provisioning (14 endpoints)
+├── modules/               # Feature modules (129 total endpoints)
+│   ├── auth/             # ✅ Login, refresh (incl. login-2fa), 2FA, admin provisioning (15 endpoints)
 │   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning (10 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
@@ -403,18 +411,19 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 
 **Frontend Auth Flow:**
 ```typescript
-// 1. Login
+// 1. Login — POST /api/v1/auth/login
 const response = await authApi.login({ email, password });
 
-// 2. If 2FA enabled
+// 2. If 2FA enabled, backend returns { requires_2fa: true } with tokens/user
+//    omitted (not just falsy) — resubmit with the TOTP code to complete login
 if (response.requires_2fa) {
-  const tokens = await authApi.verify2FA({ user_id, code });
+  const result = await authApi.loginWith2FA({ email, password, totp_code });
+  authStore.setTokens(result.tokens.access_token, result.tokens.refresh_token);
+} else {
+  authStore.setTokens(response.tokens.access_token, response.tokens.refresh_token);
 }
 
-// 3. Store tokens
-authStore.setTokens(tokens.access_token, tokens.refresh_token);
-
-// 4. API interceptor: auto-refresh on 401
+// 3. API interceptor: auto-refresh on 401
 ```
 
 ---

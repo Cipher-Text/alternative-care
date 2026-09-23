@@ -79,7 +79,7 @@ export function LoginForm() {
     try {
       const response = await authApi.login(data)
 
-      if (response.requires_2fa || response.user.is_2fa_enabled) {
+      if (response.requires_2fa || !response.user || !response.tokens) {
         // Show 2FA form
         setCredentials(data)
         setNeeds2FA(true)

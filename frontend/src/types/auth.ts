@@ -89,13 +89,15 @@ export interface AdminClientDetail {
 }
 
 export interface LoginResponse {
-  tokens: {
+  // Omitted when requires_2fa is true — the client resubmits
+  // email/password/totp_code (e.g. via loginWith2FA) to get these.
+  tokens?: {
     access_token: string
     refresh_token: string
     token_type: string
     expires_in: number
   }
-  user: User
+  user?: User
   requires_2fa: boolean
 }
 

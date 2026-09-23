@@ -1,6 +1,9 @@
 """Security utilities - JWT, password hashing, 2FA."""
 
+import hashlib
+import hmac
 import json
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -23,6 +26,27 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     """Hash a password."""
     return pwd_context.hash(password)
+
+
+def hash_refresh_token(token: str) -> str:
+    """
+    Hash a refresh token for storage.
+
+    SECURITY: bcrypt truncates its input at 72 bytes. Two distinct refresh
+    JWTs for the same user (same header/sub/token_version) are identical
+    within that first-72-byte window and only diverge later in the payload
+    (exp, jti), so bcrypt would hash them to the same value and rotation
+    would silently fail to invalidate the previous token. SHA-256 hashes the
+    full token with no truncation; the token itself is a high-entropy random
+    value (not a low-entropy secret a human picked), so a fast cryptographic
+    hash is appropriate here and bcrypt's deliberate slowness buys nothing.
+    """
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def verify_refresh_token(token: str, hashed_token: str) -> bool:
+    """Constant-time comparison of a refresh token against its stored hash."""
+    return hmac.compare_digest(hash_refresh_token(token), hashed_token)
 
 
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
@@ -53,12 +77,13 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
     return encoded_jwt
 
 
-def create_refresh_token(data: dict[str, Any]) -> str:
+def create_refresh_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """
     Create JWT refresh token.
 
     Args:
         data: Payload data (minimal - should include sub, token_version)
+        expires_delta: Custom expiration time
 
     Returns:
         Encoded JWT refresh token
@@ -67,8 +92,15 @@ def create_refresh_token(data: dict[str, Any]) -> str:
         token_version is included to enable invalidation on security-critical changes
     """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire, "type": "refresh"})
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    # jti guarantees uniqueness even when two tokens are minted for the same
+    # user within the same second (e.g. rapid refresh calls), so rotation
+    # actually invalidates the previous refresh token instead of reissuing
+    # a byte-identical one.
+    to_encode.update({"exp": expire, "type": "refresh", "jti": str(uuid.uuid4())})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 

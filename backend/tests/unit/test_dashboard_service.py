@@ -1,6 +1,6 @@
 """Unit tests for dashboard service layer."""
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -58,9 +58,32 @@ def tenant_data(test_tenant_dashboard):
 
 
 @pytest.fixture
-def user_id():
-    """Test user ID."""
-    return "660e8400-e29b-41d4-a716-446655440000"
+async def user_id(db_session: AsyncSession, test_tenant_dashboard) -> str:
+    """Create a real doctor User row and return its id.
+
+    Visit.doctor_id, Appointment.doctor_id, and Prescription.doctor_id are
+    real FKs to users.id — a bare UUID string satisfies created_by/updated_by
+    (plain audit columns, not FK'd) but not those.
+    """
+    from app.core.security import get_password_hash
+    from app.shared.models import User
+
+    user = User(
+        id="660e8400-e29b-41d4-a716-446655440000",
+        tenant_id=test_tenant_dashboard.id,
+        email="dashboard-doctor@test.com",
+        password_hash=get_password_hash("TestPass123"),
+        role="doctor",
+        full_name="Dr. Dashboard Test",
+        phone="+8801700000001",
+        language="en",
+        is_active=True,
+        is_email_verified=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user.id
 
 
 @pytest.fixture
@@ -313,13 +336,17 @@ async def test_get_patient_analytics(
         updated_by=user_id,
     )
     db_session.add(patient2)
+    # Flush so patient1/patient2 exist before rows that FK-reference them —
+    # Visit/PatientDiagnosis have no ORM relationship() to Patient, so the
+    # flush's automatic dependency ordering doesn't cover them.
+    await db_session.flush()
 
     # Add diagnosis
     diagnosis = PatientDiagnosis(
-        id="diag1",
         tenant_id=tenant_data["id"],
         patient_id=patient1.id,
-        diagnosis="Headache",
+        description="Headache",
+        diagnosed_at=date.today(),
         created_by=user_id,
         updated_by=user_id,
     )
@@ -331,7 +358,7 @@ async def test_get_patient_analytics(
         tenant_id=tenant_data["id"],
         patient_id=patient1.id,
         doctor_id=user_id,
-        visit_date=datetime.utcnow() - timedelta(days=5),
+        visit_date=(datetime.utcnow() - timedelta(days=5)).date(),
         visit_type="consultation",
         chief_complaint="Headache",
         created_by=user_id,
@@ -415,6 +442,10 @@ async def test_get_appointment_analytics(
         updated_by=user_id,
     )
     db_session.add(patient)
+    # Flush so patient exists before Appointment rows that FK-reference it —
+    # Appointment has no ORM relationship() to Patient, so the flush's
+    # automatic dependency ordering doesn't cover it.
+    await db_session.flush()
 
     # Create appointments with different statuses
     appt1 = Appointment(
@@ -422,8 +453,8 @@ async def test_get_appointment_analytics(
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
         doctor_id=user_id,
-        appointment_date=datetime.utcnow() + timedelta(days=1),
-        appointment_type="consultation",
+        appointment_date=(datetime.utcnow() + timedelta(days=1)).date(),
+        appointment_time=time(10, 0),
         status="scheduled",
         created_by=user_id,
         updated_by=user_id,
@@ -435,8 +466,8 @@ async def test_get_appointment_analytics(
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
         doctor_id=user_id,
-        appointment_date=datetime.utcnow() - timedelta(days=1),
-        appointment_type="follow_up",
+        appointment_date=(datetime.utcnow() - timedelta(days=1)).date(),
+        appointment_time=time(10, 0),
         status="completed",
         created_by=user_id,
         updated_by=user_id,
@@ -448,8 +479,8 @@ async def test_get_appointment_analytics(
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
         doctor_id=user_id,
-        appointment_date=datetime.utcnow() + timedelta(days=2),
-        appointment_type="consultation",
+        appointment_date=(datetime.utcnow() + timedelta(days=2)).date(),
+        appointment_time=time(10, 0),
         status="cancelled",
         created_by=user_id,
         updated_by=user_id,
@@ -468,8 +499,11 @@ async def test_get_appointment_analytics(
     assert analytics.by_status.scheduled == 1
     assert analytics.by_status.completed == 1
     assert analytics.by_status.cancelled == 1
-    assert analytics.by_type.consultation == 2
-    assert analytics.by_type.follow_up == 1
+    # Appointment has no appointment_type column (only free-text 'reason') —
+    # by_type is a documented placeholder in DashboardService.get_appointment_analytics
+    # until that field is added.
+    assert analytics.by_type.consultation == 0
+    assert analytics.by_type.follow_up == 0
 
 
 # ===== Visit Analytics Tests =====
@@ -493,6 +527,10 @@ async def test_get_visit_analytics(
         updated_by=user_id,
     )
     db_session.add(patient)
+    # Flush so patient exists before Visit rows that FK-reference it — Visit
+    # has no ORM relationship() to Patient, so the flush's automatic
+    # dependency ordering doesn't cover it.
+    await db_session.flush()
 
     # Create visits with different types
     visit1 = Visit(
@@ -500,7 +538,7 @@ async def test_get_visit_analytics(
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
         doctor_id=user_id,
-        visit_date=datetime.utcnow(),
+        visit_date=datetime.utcnow().date(),
         visit_type="consultation",
         chief_complaint="Headache",
         created_by=user_id,
@@ -513,7 +551,7 @@ async def test_get_visit_analytics(
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
         doctor_id=user_id,
-        visit_date=datetime.utcnow(),
+        visit_date=datetime.utcnow().date(),
         visit_type="follow_up",
         chief_complaint="Fever",
         created_by=user_id,
@@ -554,37 +592,46 @@ async def test_get_prescription_analytics(
         updated_by=user_id,
     )
     db_session.add(patient)
+    # Flush so patient/presc1 exist before rows that FK-reference them —
+    # Prescription/PrescriptionItem have no ORM relationship() to their
+    # parents, so the flush's automatic dependency ordering doesn't cover them.
+    await db_session.flush()
 
     # Create prescriptions
     presc1 = Prescription(
         id="presc1",
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
-        doctor_id=user_id,
+        prescribed_by=user_id,
         status="issued",
         created_by=user_id,
         updated_by=user_id,
     )
     db_session.add(presc1)
+    await db_session.flush()
 
     # Add prescription items
     item1 = PrescriptionItem(
-        id="item1",
+        tenant_id=tenant_data["id"],
         prescription_id=presc1.id,
         medicine_name="Arnica Montana 30C",
         dosage="5 drops",
         frequency="3 times daily",
         duration="7 days",
+        created_by=user_id,
+        updated_by=user_id,
     )
     db_session.add(item1)
 
     item2 = PrescriptionItem(
-        id="item2",
+        tenant_id=tenant_data["id"],
         prescription_id=presc1.id,
         medicine_name="Belladonna 200C",
         dosage="3 drops",
         frequency="2 times daily",
         duration="3 days",
+        created_by=user_id,
+        updated_by=user_id,
     )
     db_session.add(item2)
 
@@ -592,7 +639,7 @@ async def test_get_prescription_analytics(
         id="presc2",
         tenant_id=tenant_data["id"],
         patient_id=patient.id,
-        doctor_id=user_id,
+        prescribed_by=user_id,
         status="draft",
         created_by=user_id,
         updated_by=user_id,

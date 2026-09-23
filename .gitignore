@@ -1,0 +1,11 @@
+# Environment variables — never commit real secrets/config, .env.example is the template
+.env
+.env.local
+.env.*.local
+
+# OS cruft
+.DS_Store
+
+# Editors
+.vscode/
+.idea/

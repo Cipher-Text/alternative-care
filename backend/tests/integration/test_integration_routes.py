@@ -86,7 +86,7 @@ async def test_create_and_list_integrations(authenticated_client, integration_pr
     assert created["display_name"] == "Clinic SMS"
     assert "encrypted_credentials" not in created
 
-    list_response = await authenticated_client.get("/api/v1/integrations")
+    list_response = await authenticated_client.get("/api/v1/integrations/")
     assert list_response.status_code == 200
     data = list_response.json()
     assert len(data) == 1

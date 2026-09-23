@@ -17,7 +17,6 @@ from app.shared.schemas import (
     BkashPaymentCreate,
     BkashPaymentExecute,
     BkashPaymentQuery,
-    BkashPaymentResponse,
     InvoiceCreate,
     InvoiceUpdate,
     InvoiceResponse,
@@ -109,78 +108,12 @@ async def get_payment_summary(
     return await service.get_payment_summary(date_from=date_from, date_to=date_to)
 
 
-@router.get("/{payment_id}", response_model=PaymentResponse)
-async def get_payment(
-    payment_id: str,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-):
-    """
-    Get payment by ID.
-
-    - Returns full payment details
-    - Tenant filtering applied automatically
-    """
-    return await service.get_payment(payment_id)
-
-
-# ===== bKash Payment Endpoints =====
-
-
-@router.post("/bkash/create", response_model=dict, status_code=status.HTTP_201_CREATED)
-async def create_bkash_payment(
-    data: BkashPaymentCreate,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
-):
-    """
-    Create a bKash payment and get payment URL.
-
-    - Creates payment record in 'pending' status
-    - Returns bKash payment URL for user to complete payment
-    - Maximum amount: 25,000 BDT
-    - Returns: payment_id, bkash_payment_id, bkash_url, merchant_invoice_number
-    """
-    return await service.create_bkash_payment(data, created_by=current_user.user_id)
-
-
-@router.post("/bkash/execute", response_model=PaymentResponse)
-async def execute_bkash_payment(
-    data: BkashPaymentExecute,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-):
-    """
-    Execute bKash payment after user completes payment.
-
-    - Call this after user returns from bKash payment page
-    - Updates payment status to 'paid' or 'failed'
-    - Stores transaction ID from bKash
-    - Returns updated payment record
-    """
-    # Note: In production, you'd extract payment_id from callback params
-    # For now, we'll need both payment_id and bkash_payment_id
-    # This is a simplified implementation
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Execute endpoint needs payment_id mapping - implement callback handler",
-    )
-
-
-@router.post("/bkash/query", response_model=BkashPaymentResponse)
-async def query_bkash_payment(
-    data: BkashPaymentQuery,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-):
-    """
-    Query bKash payment status.
-
-    - Check status of a bKash payment
-    - Useful for verifying payment completion
-    - Returns: payment status, transaction ID, amount, etc.
-    """
-    return await service.query_bkash_payment(data.payment_id)
-
-
 # ===== Invoice Endpoints =====
+# NOTE: registered before GET /{payment_id} — both /invoices and
+# /{payment_id} are single-segment path templates, and Starlette matches
+# routes in registration order, so /invoices would otherwise be shadowed
+# (every GET /invoices request would try to look up a payment literally
+# named "invoices" and 404).
 
 
 @router.post("/invoices", response_model=InvoiceResponse, status_code=status.HTTP_201_CREATED)
@@ -262,3 +195,74 @@ async def generate_invoice_pdf(
     """
     pdf_url = await service.generate_invoice_pdf(invoice_id)
     return {"pdf_url": pdf_url}
+
+
+@router.get("/{payment_id}", response_model=PaymentResponse)
+async def get_payment(
+    payment_id: str,
+    service: Annotated[PaymentService, Depends(get_payment_service)],
+):
+    """
+    Get payment by ID.
+
+    - Returns full payment details
+    - Tenant filtering applied automatically
+    """
+    return await service.get_payment(payment_id)
+
+
+# ===== bKash Payment Endpoints =====
+
+
+@router.post("/bkash/create", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def create_bkash_payment(
+    data: BkashPaymentCreate,
+    service: Annotated[PaymentService, Depends(get_payment_service)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+):
+    """
+    Create a bKash payment and get payment URL.
+
+    - Creates payment record in 'pending' status
+    - Returns bKash payment URL for user to complete payment
+    - Maximum amount: 25,000 BDT
+    - Returns: payment_id, bkash_payment_id, bkash_url, merchant_invoice_number
+    """
+    return await service.create_bkash_payment(data, created_by=current_user.user_id)
+
+
+@router.post("/bkash/execute", response_model=PaymentResponse)
+async def execute_bkash_payment(
+    data: BkashPaymentExecute,
+    service: Annotated[PaymentService, Depends(get_payment_service)],
+):
+    """
+    Execute bKash payment after user completes payment.
+
+    - Call this after user returns from bKash payment page
+    - Updates payment status to 'paid' or 'failed'
+    - Stores transaction ID from bKash
+    - Returns updated payment record
+    """
+    # Note: In production, you'd extract payment_id from callback params
+    # For now, we'll need both payment_id and bkash_payment_id
+    # This is a simplified implementation
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Execute endpoint needs payment_id mapping - implement callback handler",
+    )
+
+
+@router.post("/bkash/query", response_model=dict)
+async def query_bkash_payment(
+    data: BkashPaymentQuery,
+    service: Annotated[PaymentService, Depends(get_payment_service)],
+):
+    """
+    Query bKash payment status.
+
+    - Check status of a bKash payment
+    - Useful for verifying payment completion
+    - Returns: payment status, transaction ID, amount, etc.
+    """
+    return await service.query_bkash_payment(data.payment_id)

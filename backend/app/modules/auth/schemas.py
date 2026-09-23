@@ -130,10 +130,16 @@ class TokenResponse(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    """Login response with user data."""
+    """Login response with user data.
 
-    tokens: TokenResponse
-    user: "UserResponse"
+    When the account has 2FA enabled and no `totp_code` was submitted,
+    `requires_2fa` is True and `tokens`/`user` are omitted — the client
+    re-submits email/password/totp_code (e.g. to POST /auth/login-2fa) to
+    complete login.
+    """
+
+    tokens: TokenResponse | None = None
+    user: "UserResponse | None" = None
     requires_2fa: bool = False
 
 
@@ -327,6 +333,12 @@ class UserProfileResponse(BaseModel):
 # ============================================================================
 # Logout Schema
 # ============================================================================
+
+
+class LogoutRequest(BaseModel):
+    """Logout request. Omit refresh_token (or the whole body) to revoke all sessions."""
+
+    refresh_token: str | None = None
 
 
 class LogoutResponse(BaseModel):

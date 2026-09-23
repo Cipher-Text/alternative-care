@@ -145,6 +145,7 @@ class Settings(BaseSettings):
     SENTRY_DSN: str = ""
 
     # Rate Limiting
+    RATE_LIMIT_ENABLED: bool = True
     RATE_LIMIT_PER_MINUTE: int = 60
     RATE_LIMIT_LOGIN_PER_MINUTE: int = 5
     RATE_LIMIT_WINDOW_SECONDS: int = 60

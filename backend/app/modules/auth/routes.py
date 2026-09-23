@@ -15,6 +15,7 @@ from app.modules.auth.schemas import (
     Disable2FARequest,
     LoginRequest,
     LoginResponse,
+    LogoutRequest,
     LogoutResponse,
     RefreshTokenRequest,
     RefreshTokenResponse,
@@ -139,6 +140,7 @@ async def approve_tenant(
 @router.post(
     "/login",
     response_model=LoginResponse,
+    response_model_exclude_none=True,
     summary="Login",
     description="Authenticate user and receive JWT tokens. Requires 2FA code if enabled.",
 )
@@ -156,18 +158,42 @@ async def login(
 
 
 @router.post(
+    "/login-2fa",
+    response_model=LoginResponse,
+    response_model_exclude_none=True,
+    summary="Complete login with 2FA code",
+    description=(
+        "Second step of login for accounts with 2FA enabled: resubmit "
+        "email/password with totp_code to receive JWT tokens."
+    ),
+)
+async def login_2fa(
+    data: LoginRequest,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Complete a 2FA-gated login and create session."""
+    service = AuthService(db)
+    ip_address = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent")
+
+    return await service.login(data, ip_address=ip_address, user_agent=user_agent)
+
+
+@router.post(
     "/logout",
     response_model=LogoutResponse,
     summary="Logout",
     description="Logout user by revoking refresh token session.",
 )
 async def logout(
-    refresh_token: str | None = None,
+    data: LogoutRequest | None = None,
     current_user: CurrentUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Logout user and revoke session."""
     service = AuthService(db)
+    refresh_token = data.refresh_token if data else None
     await service.logout(current_user.user_id, refresh_token)
     return LogoutResponse(message="Logged out successfully")
 

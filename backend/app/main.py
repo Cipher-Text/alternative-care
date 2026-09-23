@@ -9,11 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
 from app.core.config import settings
-from app.core.rate_limit import close_redis_client
+from app.core.observability import configure_logging, init_sentry, request_id_middleware
+from app.core.rate_limit import close_redis_client, enforce_rate_limit
 from app.core.middleware import rate_limit_middleware, add_security_headers
+from app.core.middleware.rate_limit import rate_limit_block_total
 
 # Import all models for Alembic autogenerate
 from app.shared.models import *  # noqa: F401, F403
+
+configure_logging()
+init_sentry()
 
 logger = structlog.get_logger(__name__)
 
@@ -22,16 +27,17 @@ logger = structlog.get_logger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
     # Startup
-    print("🚀 AltCare Backend starting...")
-    print(f"📍 Environment: {settings.ENVIRONMENT}")
-    print(f"🔗 Database: Connected to PostgreSQL")
-    print(f"🌐 CORS Origins: {settings.CORS_ORIGINS}")
+    logger.info(
+        "altcare_backend_starting",
+        environment=settings.ENVIRONMENT,
+        cors_origins=settings.CORS_ORIGINS,
+    )
 
     yield
 
     # Shutdown
     await close_redis_client()
-    print("👋 AltCare Backend shutting down...")
+    logger.info("altcare_backend_shutting_down")
 
 
 # Create FastAPI app
@@ -56,6 +62,7 @@ app.add_middleware(
 
 
 # Apply middleware (order matters: first added = outermost layer)
+app.middleware("http")(request_id_middleware)
 app.middleware("http")(rate_limit_middleware)
 app.middleware("http")(add_security_headers)
 

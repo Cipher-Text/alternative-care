@@ -123,6 +123,43 @@ async def list_integrations(
     )
 
 
+# ===== Integration Logs =====
+# NOTE: must be registered before GET /{integration_id} — both are
+# single-segment path templates, and Starlette matches routes in
+# registration order, so this would otherwise be shadowed and every
+# request to /logs would try (and fail) to parse "logs" as integration_id.
+
+
+@router.get("/logs", response_model=list[IntegrationLogListItem])
+async def list_integration_logs(
+    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
+    integration_id: int | None = Query(None, description="Filter by integration ID"),
+    transaction_type: str | None = Query(
+        None, description="Filter by type (sms_sent, email_sent, etc.)"
+    ),
+    status: str | None = Query(
+        None, description="Filter by status (success, failed, pending)"
+    ),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+):
+    """
+    List integration transaction logs.
+
+    - Complete audit trail of all API calls
+    - Filter by integration, type, or status
+    - Includes request/response payloads
+    - Useful for debugging and monitoring
+    """
+    return await service.list_logs(
+        tenant_integration_id=integration_id,
+        transaction_type=transaction_type,
+        status=status,
+        limit=limit,
+        offset=offset,
+    )
+
+
 @router.get("/{integration_id}", response_model=TenantIntegrationResponse)
 async def get_integration(
     integration_id: int,
@@ -303,39 +340,6 @@ async def test_integration(
             provider_name=provider.display_name,
             error=str(e),
         )
-
-
-# ===== Integration Logs =====
-
-
-@router.get("/logs", response_model=list[IntegrationLogListItem])
-async def list_integration_logs(
-    service: Annotated[IntegrationService, Depends(get_tenant_integration_service)],
-    integration_id: int | None = Query(None, description="Filter by integration ID"),
-    transaction_type: str | None = Query(
-        None, description="Filter by type (sms_sent, email_sent, etc.)"
-    ),
-    status: str | None = Query(
-        None, description="Filter by status (success, failed, pending)"
-    ),
-    limit: int = Query(100, ge=1, le=500),
-    offset: int = Query(0, ge=0),
-):
-    """
-    List integration transaction logs.
-
-    - Complete audit trail of all API calls
-    - Filter by integration, type, or status
-    - Includes request/response payloads
-    - Useful for debugging and monitoring
-    """
-    return await service.list_logs(
-        tenant_integration_id=integration_id,
-        transaction_type=transaction_type,
-        status=status,
-        limit=limit,
-        offset=offset,
-    )
 
 
 # ===== Send Operations =====

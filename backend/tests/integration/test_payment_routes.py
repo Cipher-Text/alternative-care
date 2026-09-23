@@ -311,7 +311,7 @@ class TestBkashPaymentRoutes:
         )
 
         assert response.status_code == 501
-        assert "not implemented" in response.json()["detail"].lower()
+        assert "implement" in response.json()["detail"].lower()
 
     async def test_create_bkash_payment_amount_validation(
         self, client: AsyncClient, doctor_token: str, test_patient: Patient
@@ -354,7 +354,7 @@ class TestInvoiceRoutes:
         assert data["payment_id"] == test_payment.id
         assert data["status"] == "draft"
         assert "invoice_number" in data
-        assert data["invoice_number"].startswith("INV-202604-")
+        assert data["invoice_number"].startswith(f"INV-{date.today():%Y%m}-")
 
     async def test_invoice_number_sequential(
         self, client: AsyncClient, doctor_token: str, test_payment: Payment

@@ -201,7 +201,7 @@ class TestLogin:
         assert "2fa" in exc.value.detail.lower()
 
     async def test_login_with_2fa_missing_code(self, db_session, user_with_2fa):
-        """Test login with 2FA enabled but no code provided."""
+        """Login without a TOTP code should prompt for 2FA, not raise."""
         service = AuthService(db_session)
 
         data = LoginRequest(
@@ -210,11 +210,10 @@ class TestLogin:
             # No totp_code provided
         )
 
-        with pytest.raises(HTTPException) as exc:
-            await service.login(data)
+        result = await service.login(data)
 
-        assert exc.value.status_code == 400
-        assert "required" in exc.value.detail.lower()
+        assert result.requires_2fa is True
+        assert result.tokens is None
 
 
 @pytest.mark.asyncio
@@ -326,7 +325,10 @@ class Test2FA:
         assert result.secret is not None
         assert result.qr_code_uri is not None
         assert "otpauth://totp/" in result.qr_code_uri
-        assert test_user.email in result.qr_code_uri
+        # otpauth URIs are URL-encoded (e.g. "@" -> "%40" per RFC 3986)
+        from urllib.parse import unquote
+
+        assert test_user.email in unquote(result.qr_code_uri)
 
         # Verify secret saved but not enabled yet
         await db_session.refresh(test_user)

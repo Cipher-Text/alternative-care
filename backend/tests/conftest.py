@@ -37,6 +37,29 @@ else:
     TEST_DATABASE_URL = re.sub(r"/([\w-]+)(\?|$)", r"/\1_test\2", TEST_DATABASE_URL)
 
 
+@pytest.fixture(autouse=True)
+def _disable_rate_limiting_by_default(monkeypatch):
+    """Rate limiting defaults to off in tests so unrelated suites don't get
+    poisoned by shared Redis counters. Tests that specifically exercise rate
+    limiting re-enable it (settings.RATE_LIMIT_ENABLED = True) for their own
+    scope.
+    """
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", False)
+
+
+@pytest.fixture(autouse=True)
+async def _flush_rate_limit_redis():
+    """Clear any rate-limit counters left over from a previous test run."""
+    from app.core.rate_limit import get_redis_client
+
+    try:
+        redis = await get_redis_client()
+        await redis.flushdb()
+    except Exception:
+        pass
+    yield
+
+
 @pytest.fixture(scope="function")
 async def test_engine():
     """Create test database engine for each test."""
@@ -101,6 +124,26 @@ async def db_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
 @pytest.fixture
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Create test client with database session."""
+    from httpx import ASGITransport
+
+    async def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        yield ac
+
+
+@pytest.fixture
+async def client_2(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+    """Second, independent test client sharing the same test database session.
+
+    Kept as a distinct AsyncClient (not just `client` reused) so that
+    `authenticated_client` and `authenticated_client_2` can carry different
+    Authorization headers without one overwriting the other's header on the
+    same shared object.
+    """
     from httpx import ASGITransport
 
     async def override_get_db():
@@ -401,10 +444,14 @@ async def authenticated_client(client: AsyncClient, test_access_token: str) -> A
 
 
 @pytest.fixture
-async def authenticated_client_2(client: AsyncClient, test_access_token_2: str) -> AsyncClient:
-    """Create authenticated test client for second user."""
-    client.headers["Authorization"] = f"Bearer {test_access_token_2}"
-    return client
+async def authenticated_client_2(client_2: AsyncClient, test_access_token_2: str) -> AsyncClient:
+    """Create authenticated test client for second user.
+
+    Uses `client_2`, a separate AsyncClient from `authenticated_client`'s
+    `client` — see `client_2`'s docstring for why.
+    """
+    client_2.headers["Authorization"] = f"Bearer {test_access_token_2}"
+    return client_2
 
 
 @pytest.fixture
@@ -495,11 +542,11 @@ async def test_visit(
         tenant_id=test_tenant.id,
         patient_id=test_patient.id,
         doctor_id=test_user.id,
-        visit_date=datetime.utcnow(),
+        visit_date=datetime.utcnow().date(),
         visit_type="consultation",
         chief_complaint="Headache and fever",
-        diagnosis="Common cold",
-        notes="Rest and hydration recommended",
+        provisional_diagnosis="Common cold",
+        treatment_plan="Rest and hydration recommended",
         created_by=test_user.id,
         updated_by=test_user.id,
     )

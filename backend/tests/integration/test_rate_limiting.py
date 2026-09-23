@@ -14,6 +14,7 @@ from app.main import app
 @pytest.mark.asyncio
 async def test_login_route_uses_auth_login_scope(monkeypatch) -> None:
     """Login route should evaluate the dedicated auth_login scope."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     from app import main as main_module
 
     async def always_limited(
@@ -46,8 +47,9 @@ async def test_login_route_uses_auth_login_scope(monkeypatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_general_api_rate_limit_enforced() -> None:
+async def test_general_api_rate_limit_enforced(monkeypatch) -> None:
     """General API requests should be Redis rate limited independently."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     prefix = f"test-api-{uuid.uuid4()}"
     original_prefix = settings.RATE_LIMIT_KEY_PREFIX
     original_limit = settings.RATE_LIMIT_PER_MINUTE
@@ -77,8 +79,9 @@ async def test_general_api_rate_limit_enforced() -> None:
 
 
 @pytest.mark.asyncio
-async def test_general_api_rate_limit_isolated_per_user_jwt_sub() -> None:
+async def test_general_api_rate_limit_isolated_per_user_jwt_sub(monkeypatch) -> None:
     """Authenticated users should be rate-limited independently by JWT sub."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     prefix = f"test-user-scope-{uuid.uuid4()}"
     original_prefix = settings.RATE_LIMIT_KEY_PREFIX
     original_limit = settings.RATE_LIMIT_PER_MINUTE
@@ -142,8 +145,9 @@ async def test_general_api_rate_limit_isolated_per_user_jwt_sub() -> None:
 
 
 @pytest.mark.asyncio
-async def test_ai_query_rate_limit_enforced_with_dedicated_scope() -> None:
+async def test_ai_query_rate_limit_enforced_with_dedicated_scope(monkeypatch) -> None:
     """AI query endpoint should enforce its own hourly quota scope."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     prefix = f"test-ai-scope-{uuid.uuid4()}"
     original_prefix = settings.RATE_LIMIT_KEY_PREFIX
     original_ai_limit = settings.RATE_LIMIT_AI_PER_HOUR
@@ -188,8 +192,11 @@ async def test_ai_query_rate_limit_enforced_with_dedicated_scope() -> None:
 
 
 @pytest.mark.asyncio
-async def test_ai_query_scope_independent_from_general_api_scope() -> None:
+async def test_ai_query_scope_independent_from_general_api_scope(
+    monkeypatch, client: AsyncClient
+) -> None:
     """AI quota and general API quota should not consume each other."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     prefix = f"test-ai-independence-{uuid.uuid4()}"
     original_prefix = settings.RATE_LIMIT_KEY_PREFIX
     original_api_limit = settings.RATE_LIMIT_PER_MINUTE
@@ -214,37 +221,34 @@ async def test_ai_query_scope_independent_from_general_api_scope() -> None:
     )
 
     try:
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
-            ai_first = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "q1"},
-                headers={"Authorization": f"Bearer {token_user}"},
-            )
-            assert ai_first.status_code == 501
+        ai_first = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "q1"},
+            headers={"Authorization": f"Bearer {token_user}"},
+        )
+        assert ai_first.status_code == 501
 
-            # Different scope should still have its own allowance.
-            api_first = await client.get(
-                "/api/v1/auth/me",
-                headers={"Authorization": f"Bearer {token_user}"},
-            )
-            assert api_first.status_code in [200, 401, 403, 404]
+        # Different scope should still have its own allowance.
+        api_first = await client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {token_user}"},
+        )
+        assert api_first.status_code in [200, 401, 403, 404]
 
-            ai_second = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "q2"},
-                headers={"Authorization": f"Bearer {token_user}"},
-            )
-            assert ai_second.status_code == 429
-            assert ai_second.json().get("scope") == "ai_query"
+        ai_second = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "q2"},
+            headers={"Authorization": f"Bearer {token_user}"},
+        )
+        assert ai_second.status_code == 429
+        assert ai_second.json().get("scope") == "ai_query"
 
-            api_second = await client.get(
-                "/api/v1/auth/me",
-                headers={"Authorization": f"Bearer {token_user}"},
-            )
-            assert api_second.status_code == 429
-            assert api_second.json().get("scope") == "api"
+        api_second = await client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {token_user}"},
+        )
+        assert api_second.status_code == 429
+        assert api_second.json().get("scope") == "api"
     finally:
         settings.RATE_LIMIT_KEY_PREFIX = original_prefix
         settings.RATE_LIMIT_PER_MINUTE = original_api_limit
@@ -256,6 +260,7 @@ async def test_ai_query_scope_independent_from_general_api_scope() -> None:
 @pytest.mark.asyncio
 async def test_rate_limit_429_increments_prometheus_counter(monkeypatch) -> None:
     """Rate-limit blocks should increment per-scope Prometheus counters."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     from app import main as main_module
 
     async def always_limited(
@@ -285,6 +290,7 @@ async def test_rate_limit_429_increments_prometheus_counter(monkeypatch) -> None
 @pytest.mark.asyncio
 async def test_metrics_endpoint_exposes_rate_limit_counter(monkeypatch) -> None:
     """Metrics endpoint should expose throttling counter after a blocked request."""
+    monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     from app import main as main_module
 
     async def always_limited(

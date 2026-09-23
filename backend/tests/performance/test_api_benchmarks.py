@@ -332,10 +332,12 @@ class TestMemoryUsage:
         # Track memory
         tracemalloc.start()
 
-        response = await authenticated_client.get("/api/v1/patients")
+        # GET /api/v1/patients caps page size at 500 (le=500) by design, so
+        # 1000 seeded patients can't come back in one call — request the max.
+        response = await authenticated_client.get("/api/v1/patients?limit=500")
         assert response.status_code == 200
         data = response.json()
-        assert len(data) >= 1000
+        assert len(data) >= 500
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()

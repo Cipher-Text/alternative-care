@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
+from jose import ExpiredSignatureError, JWTError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,7 +17,9 @@ from app.core.security import (
     generate_totp_secret,
     get_password_hash,
     get_totp_uri,
+    hash_refresh_token,
     verify_password,
+    verify_refresh_token,
     verify_totp,
 )
 from app.modules.auth.schemas import (
@@ -245,10 +248,9 @@ class AuthService:
         # Check 2FA
         if user.is_2fa_enabled:
             if not data.totp_code:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="2FA code required",
-                )
+                # Prompt for the TOTP code instead of failing outright; the
+                # client re-submits email/password/totp_code to complete login.
+                return LoginResponse(requires_2fa=True)
             if not user.totp_secret or not verify_totp(user.totp_secret, data.totp_code):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -283,7 +285,7 @@ class AuthService:
         session = UserSession(
             id=session_id,
             user_id=user.id,
-            refresh_token_hash=get_password_hash(refresh_token),
+            refresh_token_hash=hash_refresh_token(refresh_token),
             ip_address=ip_address,
             user_agent=user_agent,
             expires_at=datetime.now(timezone.utc)
@@ -328,28 +330,32 @@ class AuthService:
         """
         try:
             payload = decode_token(refresh_token)
-
-            if payload.get("type") != "refresh":
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token type",
-                )
-
-            user_id = payload.get("sub")
-            if not user_id:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token",
-                )
-
-            # SECURITY: Validate token version
-            token_version = payload.get("token_version")
-
-        except Exception:
+        except ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Refresh token has expired",
+            )
+        except JWTError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid refresh token",
             )
+
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type",
+            )
+
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+            )
+
+        # SECURITY: Validate token version
+        token_version = payload.get("token_version")
 
         # Get user
         result = await self.db.execute(select(User).where(User.id == user_id))
@@ -380,7 +386,7 @@ class AuthService:
         # Find matching session
         valid_session = None
         for session in sessions:
-            if verify_password(refresh_token, session.refresh_token_hash):
+            if verify_refresh_token(refresh_token, session.refresh_token_hash):
                 valid_session = session
                 break
 
@@ -421,7 +427,7 @@ class AuthService:
         })
 
         # Update session with new refresh token (token rotation)
-        valid_session.refresh_token_hash = get_password_hash(new_refresh_token)
+        valid_session.refresh_token_hash = hash_refresh_token(new_refresh_token)
         valid_session.last_activity_at = datetime.now(timezone.utc)
 
         await self.db.commit()
@@ -456,7 +462,7 @@ class AuthService:
             sessions = result.scalars().all()
 
             for session in sessions:
-                if verify_password(refresh_token, session.refresh_token_hash):
+                if verify_refresh_token(refresh_token, session.refresh_token_hash):
                     session.is_revoked = True
                     session.revoked_at = datetime.now(timezone.utc)
                     break

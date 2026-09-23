@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse
 from prometheus_client import Counter
 
 from app.core.config import settings
-from app.core.rate_limit import enforce_rate_limit
 
 logger = structlog.get_logger(__name__)
 
@@ -30,6 +29,13 @@ async def rate_limit_middleware(request: Request, call_next):
     - 429 with Retry-After header if rate limit exceeded
     - Original response with X-RateLimit-* headers otherwise
     """
+    if not settings.RATE_LIMIT_ENABLED:
+        return await call_next(request)
+
+    # Imported here (rather than at module load) so tests can monkeypatch
+    # `app.main.enforce_rate_limit` and have that override take effect.
+    from app.main import enforce_rate_limit
+
     path = request.url.path
     scope = None
     limit = None
