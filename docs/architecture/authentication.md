@@ -64,7 +64,8 @@ JWT-based authentication with 2FA support and comprehensive security measures.
   "sub": "user-uuid",
   "token_version": 1,
   "exp": 1235194290,
-  "type": "refresh"
+  "type": "refresh",
+  "jti": "a1b2c3d4-..."
 }
 ```
 
@@ -77,8 +78,9 @@ JWT-based authentication with 2FA support and comprehensive security measures.
 - `token_version`: Incremented on password/email/role change to invalidate old tokens (present on both access and refresh tokens — see `app/modules/auth/service.py`)
 - `exp`: Expiration timestamp
 - `type`: Token type (access or refresh)
+- `jti` (refresh tokens only): a random UUID, added 2026-09-23 so two refresh tokens minted for the same user in the same second are guaranteed distinct — without it, rotation could silently fail to invalidate the previous token (see below)
 
-The refresh token does **not** carry a `jti` claim in the current implementation — sessions are tracked via `user_sessions.refresh_token_hash` (a hash of the token) instead.
+Sessions are tracked via `user_sessions.refresh_token_hash`. That hash is **SHA-256**, not bcrypt — bcrypt truncates its input at 72 bytes, and two refresh JWTs for the same user are identical within that first-72-byte window (same header, same `sub`, same `token_version`), so bcrypt hashed them identically regardless of the differing `exp`/`jti` further into the payload. This was a real bug (rotation didn't actually invalidate the previous refresh token) fixed 2026-09-23 — see `hash_refresh_token`/`verify_refresh_token` in `app/core/security.py`. Passwords still correctly use bcrypt (see Password Security below); this was specifically about refresh-token storage.
 
 ---
 

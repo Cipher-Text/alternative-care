@@ -2,8 +2,8 @@
 
 > Comprehensive guide to AltCare's technology choices, rationale, and implementation best practices
 
-**Last updated:** 2026-09-21  
-**Status:** MVP v1.0 production-ready (see root `CLAUDE.md`) — several code samples below are illustrative/aspirational rather than a literal copy of the current implementation; see inline corrections where they diverge
+**Last updated:** 2026-09-23
+**Status:** MVP v1.0 feature-complete, NOT production ready (see root `CLAUDE.md` and `docs/planning/revision-2026-09.md`) — several code samples below are illustrative/aspirational rather than a literal copy of the current implementation; see inline corrections where they diverge
 
 ---
 
@@ -97,8 +97,12 @@ There is **no `langchain`, `openai`, or `psycopg`** dependency in the backend to
 # app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.observability import configure_logging, init_sentry, request_id_middleware
 from app.core.rate_limit import close_redis_client
 from app.core.middleware import rate_limit_middleware, add_security_headers
+
+configure_logging()
+init_sentry()
 
 app = FastAPI(
     title="AltCare API",
@@ -118,12 +122,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Rate limiting is a custom Redis-backed function middleware — NOT slowapi
+# Order matters: first added = outermost layer
+app.middleware("http")(request_id_middleware)
 app.middleware("http")(rate_limit_middleware)
 app.middleware("http")(add_security_headers)
 ```
 
-There is no `sentry_sdk.init()` call, `RequestIDMiddleware`, `StructlogMiddleware`, or `TenantContextMiddleware` wired up in `app/main.py` today — tenant context is set inside the `get_current_user()` dependency (`app/core/dependencies.py`), not by a request middleware. `sentry-sdk`, `structlog`, and `slowapi` are all listed as dependencies but `slowapi` specifically is unused — rate limiting is hand-rolled in `app/core/rate_limit.py` / `app/core/middleware.py`.
+As of 2026-09-23, `configure_logging()`/`init_sentry()`/`request_id_middleware` (`app/core/observability.py`) are wired up for real — before that date this section correctly said none of them were. There is still no `TenantContextMiddleware` — tenant context is set inside the `get_current_user()` dependency (`app/core/dependencies.py`), not by a request middleware. `slowapi` remains listed as a dependency but unused — rate limiting is hand-rolled in `app/core/rate_limit.py` / `app/core/middleware.py`.
 
 ### SQLAlchemy 2.0 Patterns
 
@@ -520,115 +525,78 @@ The middleware inspects the request path/method to pick a scope (login vs. gener
 
 ## Monitoring & Observability
 
+**Real as of 2026-09-23**, all in `app/core/observability.py` (a single module — not the separate `monitoring.py`/`logging.py`/`metrics.py` files earlier drafts of this doc described):
+
 ### Sentry Integration
 
 ```python
-# app/core/monitoring.py
-import sentry_sdk
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
+# app/core/observability.py
+def init_sentry() -> None:
+    if not settings.SENTRY_DSN:
+        return
+    import sentry_sdk
+    from sentry_sdk.integrations.fastapi import FastApiIntegration
 
-sentry_sdk.init(
-    dsn=settings.SENTRY_DSN,
-    environment=settings.ENVIRONMENT,
-    traces_sample_rate=0.1,  # 10% of transactions
-    profiles_sample_rate=0.1,  # 10% of profiles
-    integrations=[
-        FastApiIntegration(),
-        SqlalchemyIntegration(),
-        CeleryIntegration(),
-    ],
-    before_send=before_send_handler,  # Custom filtering
-)
-
-def before_send_handler(event, hint):
-    """Filter sensitive data before sending to Sentry"""
-    # Remove sensitive fields
-    if 'request' in event:
-        if 'headers' in event['request']:
-            event['request']['headers'].pop('Authorization', None)
-            event['request']['headers'].pop('Cookie', None)
-    return event
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        environment=settings.ENVIRONMENT,
+        integrations=[FastApiIntegration()],
+        traces_sample_rate=0.1 if settings.ENVIRONMENT == "production" else 1.0,
+    )
 ```
+
+No-ops when `SENTRY_DSN` is unset (the default). **Not implemented:** `SqlalchemyIntegration`/`CeleryIntegration`, `profiles_sample_rate`, and a `before_send` PII-scrubbing filter — real gaps, not documentation drift; add them if/when Sentry is actually turned on for an environment.
 
 ### Structured Logging
 
 ```python
-# app/core/logging.py
-import structlog
+# app/core/observability.py
+def configure_logging() -> None:
+    logging.basicConfig(format="%(message)s", stream=sys.stdout, level=...)
+    structlog.configure(
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            _add_request_id,  # merges request_id_ctx (see below) into every line
+            structlog.processors.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            # JSON in production, human-readable console renderer otherwise
+            structlog.processors.JSONRenderer() if settings.ENVIRONMENT == "production"
+                else structlog.dev.ConsoleRenderer(),
+        ],
+        wrapper_class=structlog.make_filtering_bound_logger(...),
+        logger_factory=structlog.PrintLoggerFactory(),
+        cache_logger_on_first_use=True,
+    )
 
-structlog.configure(
-    processors=[
-        structlog.contextvars.merge_contextvars,
-        structlog.processors.add_log_level,
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer()
-    ],
-    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
-    context_class=dict,
-    logger_factory=structlog.PrintLoggerFactory(),
-    cache_logger_on_first_use=True,
-)
-
-# Usage
+# Usage — unchanged from before
 logger = structlog.get_logger()
-logger.info(
-    "patient_created",
-    patient_id=patient.id,
-    tenant_id=patient.tenant_id,
-    created_by=current_user.id,
-)
+logger.info("patient_created", patient_id=patient.id, tenant_id=patient.tenant_id)
 ```
+
+### Request ID Middleware
+
+```python
+# app/core/observability.py
+request_id_ctx: ContextVar[str | None] = ContextVar("request_id", default=None)
+
+async def request_id_middleware(request: Request, call_next):
+    request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+    token = request_id_ctx.set(request_id)
+    try:
+        response = await call_next(request)
+    finally:
+        request_id_ctx.reset(token)
+    response.headers["X-Request-ID"] = request_id
+    return response
+```
+
+Every response carries `X-Request-ID` (echoed if the caller sent one), and every structlog line emitted while handling that request carries the same `request_id` field — the two are tied together via `request_id_ctx`, not by passing an argument through every call site.
 
 ### Prometheus Metrics
 
-```python
-# app/core/metrics.py
-from prometheus_client import Counter, Histogram, Gauge
-
-# Counters
-prescription_created_counter = Counter(
-    'prescriptions_created_total',
-    'Total prescriptions created',
-    ['tenant_id', 'status']
-)
-
-# Histograms
-api_latency_histogram = Histogram(
-    'api_request_duration_seconds',
-    'API request latency',
-    ['method', 'endpoint', 'status_code']
-)
-
-# Gauges
-active_patients_gauge = Gauge(
-    'active_patients',
-    'Number of active patients',
-    ['tenant_id']
-)
-
-# Usage in routes
-@router.post("/prescriptions")
-async def create_prescription(...):
-    start_time = time.time()
-    try:
-        # ... create prescription
-        prescription_created_counter.labels(
-            tenant_id=tenant_id,
-            status='success'
-        ).inc()
-        return prescription
-    finally:
-        duration = time.time() - start_time
-        api_latency_histogram.labels(
-            method='POST',
-            endpoint='/prescriptions',
-            status_code=200
-        ).observe(duration)
-```
+**Real:** one counter, `rate_limit_block_total` (`app/core/middleware/rate_limit.py`), incremented on every 429 and exposed at `GET /metrics`. **Not implemented:** business metrics like a `prescriptions_created_total` counter, an `api_request_duration_seconds` histogram, or an `active_patients` gauge — none of that code exists in `app/`. Earlier drafts of this doc showed such a `app/core/metrics.py`; it was aspirational, not real, and has been removed here rather than left to mislead. Add real metrics behind a documented need, not speculatively.
 
 ---
 
@@ -678,6 +646,8 @@ def tenant_factory(faker):
         )
     return _create
 ```
+
+Illustrative, not literal: the real `tests/conftest.py` uses `AsyncClient(transport=ASGITransport(app=app), base_url="http://test")` (the `AsyncClient(app=...)` shorthand above was removed in modern httpx), a real Postgres test database per settings (`alternative_care_test`/`altcare_test`, not a hardcoded `test:test@localhost`), and no `tenant_factory`/`faker`-based fixtures — tenants/users/patients are built directly as explicit fixtures. `pytest -q` currently: 397 passed / 2 xfailed / 0 failed (2026-09-23, see `docs/planning/revision-2026-09.md` Stage 0).
 
 **Multi-tenant isolation test:**
 ```python
@@ -874,18 +844,9 @@ async def get_current_user_keycloak(
 - ✅ Lower costs at scale
 - ✅ Team knows PostgreSQL
 
-### Why LangChain for RAG?
+### Why not LangChain for RAG?
 
-**LangChain despite its issues because:**
-- ✅ Fastest way to get RAG working
-- ✅ Good documentation and examples
-- ✅ Handles chunking, embedding, retrieval
-- ✅ Can replace with llamaindex later if needed
-
-**Mitigations:**
-- Pin exact versions in requirements.txt
-- Test thoroughly before updating
-- Monitor for breaking changes
+**Superseded 2026-09-23 — see `docs/planning/revision-2026-09.md` T3.** This section previously argued *for* LangChain; the actual decision, made against code that was never built, is the opposite: no LangChain. `backend/requirements.txt` (a second, divergent dependency manifest that pinned `langchain==0.1.16`) was deleted rather than reconciled — nothing in `app/` imports LangChain today. Reasoning: two major LangChain versions are already stale, and the retrieval this product needs is ~200 lines of pgvector query plus prompt assembly against a provider SDK directly — LangChain would be the single largest dependency-risk surface in the repo for the smallest benefit. Revisit only if retrieval requirements grow materially beyond that.
 
 ### Why not use Next.js API routes?
 

@@ -96,7 +96,7 @@ Uses refresh token and rotates session token.
 ### Logout
 `POST /api/v1/auth/logout`
 
-Revokes one or all refresh sessions for current user.
+Body: `{ refresh_token? }` (JSON, optional — matches every other endpoint's convention). Omit the body (or `refresh_token`) to revoke **all** sessions for the current user; pass a specific `refresh_token` to revoke only that one session. Until 2026-09-23 this parameter was bound as a query string parameter instead of the request body, so every caller sending it as JSON (the only convention used elsewhere in this API) silently revoked all sessions instead of one — fixed, see `docs/planning/revision-2026-09.md` Stage 0.
 
 ### Current User Profile
 `GET /api/v1/auth/me`
