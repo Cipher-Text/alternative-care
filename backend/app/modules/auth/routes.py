@@ -13,6 +13,8 @@ from app.modules.auth.schemas import (
     AdminClientListItem,
     ChangePasswordRequest,
     Disable2FARequest,
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
     LoginRequest,
     LoginResponse,
     LogoutRequest,
@@ -21,11 +23,16 @@ from app.modules.auth.schemas import (
     RefreshTokenResponse,
     RegisterRequest,
     RegisterResponse,
+    ResendVerificationRequest,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
     Setup2FAResponse,
     UserProfileResponse,
     TenantResponse,
     Verify2FARequest,
     Verify2FAResponse,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
 )
 from app.modules.auth.service import AuthService
 
@@ -307,16 +314,30 @@ async def change_password(
     )
 
 
-# TODO: Implement password reset flow (requires email service)
-# @router.post("/password/forgot", response_model=ForgotPasswordResponse)
-# async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
-#     """Request password reset email."""
-#     pass
+@router.post(
+    "/password/forgot",
+    response_model=ForgotPasswordResponse,
+    summary="Request a password reset",
+    description="Send a password reset link by email. Always returns the same "
+    "message, whether or not the email is registered.",
+)
+async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Request password reset email."""
+    service = AuthService(db)
+    return await service.forgot_password(data.email)
 
-# @router.post("/password/reset", response_model=ResetPasswordResponse)
-# async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
-#     """Reset password using token from email."""
-#     pass
+
+@router.post(
+    "/password/reset",
+    response_model=ResetPasswordResponse,
+    summary="Reset password with a token",
+    description="Reset password using the token from the forgot-password email. "
+    "Invalidates all existing sessions.",
+)
+async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    """Reset password using token from email."""
+    service = AuthService(db)
+    return await service.reset_password(data.token, data.new_password)
 
 
 # ============================================================================
@@ -339,13 +360,26 @@ async def get_profile(
     return await service.get_user_profile(current_user.user_id)
 
 
-# TODO: Email verification endpoints
-# @router.post("/email/verify", response_model=VerifyEmailResponse)
-# async def verify_email(data: VerifyEmailRequest, db: AsyncSession = Depends(get_db)):
-#     """Verify email address."""
-#     pass
+@router.post(
+    "/email/verify",
+    response_model=VerifyEmailResponse,
+    summary="Verify email address",
+    description="Verify email address using the token from the verification email.",
+)
+async def verify_email(data: VerifyEmailRequest, db: AsyncSession = Depends(get_db)):
+    """Verify email address."""
+    service = AuthService(db)
+    return await service.verify_email(data.token)
 
-# @router.post("/email/resend", response_model=ForgotPasswordResponse)
-# async def resend_verification(data: ResendVerificationRequest, db: AsyncSession = Depends(get_db)):
-#     """Resend verification email."""
-#     pass
+
+@router.post(
+    "/email/resend",
+    response_model=ForgotPasswordResponse,
+    summary="Resend verification email",
+    description="Resend the email verification link. Always returns the same "
+    "message, whether or not the email is registered or already verified.",
+)
+async def resend_verification(data: ResendVerificationRequest, db: AsyncSession = Depends(get_db)):
+    """Resend verification email."""
+    service = AuthService(db)
+    return await service.resend_verification(data.email)

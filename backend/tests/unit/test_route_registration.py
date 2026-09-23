@@ -41,4 +41,4 @@ def test_current_api_route_count_matches_docs():
         if getattr(route, "path", "").startswith("/api/v1")
     )
 
-    assert api_method_count == 129
+    assert api_method_count == 133

@@ -168,6 +168,21 @@ class User(BaseAuditModel):
         nullable=True,
     )
 
+    # Password reset (token is SHA-256 hashed before storage, never the raw value — see
+    # hash_token/verify_token in app/core/security.py)
+    password_reset_token_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    password_reset_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    # Email verification (same hashing approach as password reset)
+    email_verification_token_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    email_verification_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
     # Token version for JWT invalidation
     # Incremented on password change, email change, or role change to invalidate old tokens
     token_version: Mapped[int] = mapped_column(

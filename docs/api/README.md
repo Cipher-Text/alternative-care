@@ -3,14 +3,14 @@ title: "AltCare API Overview"
 type: "api-reference"
 version: "1.0.0"
 last_updated: "2026-09-23"
-ai_summary: "129 REST endpoints across 14 modules (including AI stub) with JWT authentication"
+ai_summary: "133 REST endpoints across 14 modules (including AI stub) with JWT authentication"
 base_url: "http://localhost:8000/api/v1"
 ---
 
 # AltCare API Documentation
 
 **Base URL:** `http://localhost:8000/api/v1`
-**Total Endpoints:** 129 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)
+**Total Endpoints:** 133 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)
 **Authentication:** JWT Bearer Token
 **Format:** JSON
 
@@ -21,7 +21,7 @@ base_url: "http://localhost:8000/api/v1"
 | Module | Endpoints | Purpose | Docs |
 |--------|-----------|---------|------|
 | **Admin** | 10 | Platform dashboard, tenants, users | N/A |
-| **Authentication** | 15 | Login (incl. login-2fa), registration, session lifecycle, legacy admin compatibility | [authentication.md](authentication.md) |
+| **Authentication** | 19 | Login (incl. login-2fa), registration, password reset, email verification, session lifecycle, legacy admin compatibility | [authentication.md](authentication.md) |
 | **AI** | 1 | Query stub (`501`) | N/A (stub) |
 | **Patients** | 14 | Patient CRUD, search | [patients.md](patients.md) |
 | **Appointments** | 10 | Scheduling and visits | [appointments.md](appointments.md) |
@@ -35,7 +35,7 @@ base_url: "http://localhost:8000/api/v1"
 | **Symptom** | 9 | Global and tenant symptoms, aliases | N/A |
 | **Tenant** | 2 | Clinic profile | N/A |
 
-**Total:** 129 module endpoints
+**Total:** 133 module endpoints
 
 ## Authentication
 

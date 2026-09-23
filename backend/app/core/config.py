@@ -112,9 +112,13 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
-    # Email (SendGrid)
+    # Email (SendGrid, via SMTP relay — see app/core/system_email.py)
     SENDGRID_API_KEY: str = ""
     SENDGRID_FROM_EMAIL: str = "noreply@altcare.health"
+
+    # Frontend base URL — used to build links in platform emails (password
+    # reset, email verification). Not the same as CORS_ORIGINS: that's a list.
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # SMS (Twilio)
     TWILIO_ACCOUNT_SID: str = ""

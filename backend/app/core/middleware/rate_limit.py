@@ -22,6 +22,9 @@ async def rate_limit_middleware(request: Request, call_next):
 
     Scopes:
     - auth_login: 10 req/min per IP (POST /api/v1/auth/login)
+    - auth_sensitive: same limit as auth_login — password reset and email
+      verification requests, which send an email and can otherwise be used
+      to spam a victim's inbox or probe for registered addresses
     - ai_query: 100 req/hour per user (POST /api/v1/ai/query)
     - api: 100 req/min per IP (all /api/v1/*)
 
@@ -42,8 +45,18 @@ async def rate_limit_middleware(request: Request, call_next):
     window_seconds = settings.RATE_LIMIT_WINDOW_SECONDS
 
     # Determine rate limit scope
+    sensitive_auth_paths = {
+        f"{settings.API_V1_PREFIX}/auth/password/forgot",
+        f"{settings.API_V1_PREFIX}/auth/password/reset",
+        f"{settings.API_V1_PREFIX}/auth/email/verify",
+        f"{settings.API_V1_PREFIX}/auth/email/resend",
+    }
+
     if request.method == "POST" and path == f"{settings.API_V1_PREFIX}/auth/login":
         scope = "auth_login"
+        limit = settings.RATE_LIMIT_LOGIN_PER_MINUTE
+    elif request.method == "POST" and path in sensitive_auth_paths:
+        scope = "auth_sensitive"
         limit = settings.RATE_LIMIT_LOGIN_PER_MINUTE
     elif request.method == "POST" and path == f"{settings.API_V1_PREFIX}/ai/query":
         scope = "ai_query"

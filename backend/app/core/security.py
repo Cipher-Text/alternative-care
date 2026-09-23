@@ -3,6 +3,7 @@
 import hashlib
 import hmac
 import json
+import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -41,12 +42,36 @@ def hash_refresh_token(token: str) -> str:
     value (not a low-entropy secret a human picked), so a fast cryptographic
     hash is appropriate here and bcrypt's deliberate slowness buys nothing.
     """
-    return hashlib.sha256(token.encode()).hexdigest()
+    return hash_token(token)
 
 
 def verify_refresh_token(token: str, hashed_token: str) -> bool:
     """Constant-time comparison of a refresh token against its stored hash."""
-    return hmac.compare_digest(hash_refresh_token(token), hashed_token)
+    return verify_token(token, hashed_token)
+
+
+def generate_secure_token() -> str:
+    """Generate a random, high-entropy, URL-safe single-use token.
+
+    Used for password reset and email verification links — the raw value
+    goes in the emailed link, only its hash (hash_token) is stored.
+    """
+    return secrets.token_urlsafe(32)
+
+
+def hash_token(token: str) -> str:
+    """SHA-256 hash for storing a single-use token (password reset, email
+    verification, refresh tokens). See hash_refresh_token's docstring for
+    why SHA-256 rather than bcrypt: these are high-entropy random values,
+    not low-entropy secrets, so bcrypt's truncation is a liability here and
+    its slowness buys nothing.
+    """
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def verify_token(raw_token: str, hashed_token: str) -> bool:
+    """Constant-time comparison of a raw token against its stored hash."""
+    return hmac.compare_digest(hash_token(raw_token), hashed_token)
 
 
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:

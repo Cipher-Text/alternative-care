@@ -114,12 +114,42 @@ Returns authenticated user and tenant profile summary.
 ### Disable 2FA
 `POST /api/v1/auth/2fa/disable`
 
-## Password Endpoint
+## Password Endpoints
 
 ### Change Password
 `POST /api/v1/auth/password/change`
 
 Revokes all active refresh sessions after password change.
+
+### Forgot Password
+`POST /api/v1/auth/password/forgot`
+
+Body: `{ email }`. Always returns the same generic `{ message }` whether or
+not the email is registered — this is the enumeration protection, don't
+branch UI on the response. If the account exists, queues a reset email
+(`app/core/system_email.py`) with a link valid for 1 hour.
+
+### Reset Password
+`POST /api/v1/auth/password/reset`
+
+Body: `{ token, new_password }`. `token` is the raw value from the emailed
+link (stored server-side only as a SHA-256 hash, and single-use — consumed
+on success). Revokes every existing session, same as Change Password.
+
+## Email Verification Endpoints
+
+### Verify Email
+`POST /api/v1/auth/email/verify`
+
+Body: `{ token }`. Token from the verification email sent at registration,
+valid for 24 hours, single-use.
+
+### Resend Verification Email
+`POST /api/v1/auth/email/resend`
+
+Body: `{ email }`. Same enumeration-resistant posture as Forgot Password —
+identical generic response whether the account exists, is already
+verified, or neither.
 
 ## Notes
 

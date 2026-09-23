@@ -5,8 +5,9 @@
 > Revision](planning/revision-2026-09.md), which is written against code verified on 2026-09-23 and
 > carries the current test/status numbers under its Stage 0 section — check there rather than here,
 > this table is not kept live. "MVP v1.0 — Production Ready" still does not hold: nothing is
-> deployable (no Dockerfile), password reset/email verification are still commented-out code, and
-> global-catalog writes are still broken at the schema level (now the Stage 2 keystone task). Phases
+> deployable (no Dockerfile — Stage 1 work, in progress); password reset/email verification shipped
+> 2026-09-23 (item 4/5 below); global-catalog writes are still broken at the schema level (now the
+> Stage 2 keystone task). Phases
 > F (mobile) and G (enterprise) and the public directory are cut. Read the revision first; treat the
 > phase detail below as background.
 
@@ -23,11 +24,11 @@ Product direction (2026-09-23): AltCare is the **Alternative Medicine Knowledge 
 | Metric | Value |
 |---|---|
 | Backend modules | 14 registered routers |
-| API endpoints | 129 (+ `/`, `/health`, `/metrics`) |
+| API endpoints | 133 (+ `/`, `/health`, `/metrics`) |
 | Database tables | 34 models |
 | Frontend routes | 11 route groups (132 source files) |
 | Security score | Unscored — the previous "A (95/100)" had no cited source, date, or method (see revision §1) |
-| Test coverage | `pytest -q`: 397 passed / 2 xfailed / 0 failed (2026-09-23, see revision Stage 0) |
+| Test coverage | `pytest -q`: 409 passed / 2 xfailed / 0 failed (2026-09-23, see revision Stage 0) |
 | Status | Feature-complete, not deployed, not production ready |
 
 ---
@@ -131,27 +132,29 @@ All tenant-scoped service factories now return **403** for platform users.
 
 ---
 
-### 4. Password Reset Flow
+### 4. Password Reset Flow — ✅ Done 2026-09-23
 
-**Problem:** No way for a user to recover access if they forget their password. Blocks production onboarding.
+**Problem:** No way for a user to recover access if they forget their password. Blocked production onboarding.
 
-- [ ] Backend: `POST /auth/forgot-password` — send reset email with expiring token
-- [ ] Backend: `POST /auth/reset-password` — validate token, set new password with strength check
-- [ ] Frontend: Forgot password page at `/(auth)/forgot-password`
-- [ ] Frontend: Reset password page at `/(auth)/reset-password?token=...`
-- [ ] Celery task: send password reset email via configured SMTP/SendGrid provider
+- [x] Backend: `POST /api/v1/auth/password/forgot` — send reset email with expiring token (1h TTL; endpoint path differs from the original sketch above)
+- [x] Backend: `POST /api/v1/auth/password/reset` — validate token, set new password with strength check
+- [x] Frontend: Forgot password page at `/(auth)/forgot-password`
+- [x] Frontend: Reset password page at `/(auth)/reset-password?token=...`
+- [x] Celery task: send password reset email (`app/core/system_email.py`, SendGrid via SMTP relay)
+
+Reset invalidates every existing session (`token_version` bump + session revocation), same posture as the authenticated password-change endpoint. Token is single-use, SHA-256 hashed at rest (never the raw value). `forgot_password`/`resend_verification` return an identical response whether or not the email is registered, so the endpoint can't be used to enumerate accounts.
 
 ---
 
-### 5. Email Verification Flow
+### 5. Email Verification Flow — ✅ Done 2026-09-23
 
 **Problem:** Users can use unverified email addresses. No confirmation step on registration.
 
-- [ ] Backend: send verification email on registration (`is_email_verified = false`)
-- [ ] Backend: `POST /auth/verify-email?token=...` — mark email verified
-- [ ] Frontend: post-registration "check your email" screen
-- [ ] Frontend: email verified confirmation screen
-- [ ] Restrict certain actions until email is verified (optional, can be soft-block)
+- [x] Backend: send verification email on registration (`is_email_verified = false`)
+- [x] Backend: `POST /api/v1/auth/email/verify` — mark email verified (24h TTL)
+- [x] Backend: `POST /api/v1/auth/email/resend` — resend the verification link
+- [x] Frontend: `/(auth)/verify-email?token=...` — auto-verifies on load
+- [ ] Restrict certain actions until email is verified (soft-block) — not done, out of scope for this pass
 
 ---
 
@@ -490,10 +493,9 @@ These are not features but quality concerns that should be addressed incremental
 2026-09-21  ← TODAY (last major shipped work: 2026-07-12, doctor provisioning under existing tenants)
 │
 ├── NOW     🔴 P1 Remaining
-│           ├─ Legacy /auth/admin/* endpoint removal
-│           ├─ Password reset flow
-│           └─ Email verification flow
-│           (Tenant isolation guards and TypeScript cleanup shipped 2026-07-12 — see "What's Done" above)
+│           └─ Legacy /auth/admin/* endpoint removal
+│           (Password reset + email verification shipped 2026-09-23; tenant isolation guards and
+│            TypeScript cleanup shipped 2026-07-12 — see "What's Done" above)
 │
 ├── Q3 2026 🟠 P2 + 🟡 P3 — Platform completeness
 │           ├─ Operator & receptionist role enforcement
@@ -533,11 +535,11 @@ These are not features but quality concerns that should be addressed incremental
 ## Success Metrics
 
 ### Current (MVP v1.0) — superseded, see revision-2026-09.md §8 for the live numbers
-- 129 API endpoints across 14 modules
+- 133 API endpoints across 14 modules
 - 34 database tables
 - 132 frontend source files
 - Security score: unscored (previous "A (95/100)" had no cited source)
-- `pytest -q`: 397 passed / 2 xfailed / 0 failed (2026-09-23)
+- `pytest -q`: 409 passed / 2 xfailed / 0 failed (2026-09-23)
 
 ### Q3 2026 Targets
 - [ ] Zero critical security gaps (P1 items closed)

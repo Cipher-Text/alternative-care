@@ -31,6 +31,7 @@ celery_app.conf.update(
     # Autodiscover tasks
     imports=[
         "app.modules.integration.tasks",
+        "app.core.system_email",
     ],
 )
 
@@ -38,4 +39,5 @@ celery_app.conf.update(
 celery_app.conf.task_routes = {
     "app.modules.integration.tasks.send_sms_task": {"queue": "sms"},
     "app.modules.integration.tasks.send_email_task": {"queue": "email"},
+    "app.core.system_email.send_system_email_task": {"queue": "email"},
 }

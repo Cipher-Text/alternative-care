@@ -10,20 +10,18 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **Last Verified:** 2026-09-23 (code-verified, see `docs/planning/revision-2026-09.md`)
 
-> The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is now
-> mostly done — code-verified on 2026-09-23: `pytest -q` runs **397 passed / 2 xfailed / 0 failed**
-> locally (was 322 passed / 76 failed earlier the same day; the gap was mostly test-harness bugs —
-> a shared-Redis rate limiter poisoning unrelated tests, and a fixture bug where
-> `authenticated_client`/`authenticated_client_2` were silently the same object — plus several real
-> bugs the harness noise had been masking, including a refresh-token rotation bug and two shadowed
-> routes; see Stage 0 in `docs/planning/revision-2026-09.md` for the full list). Sentry and structlog
-> are now initialised (`app/core/observability.py`). Still true: **no Dockerfile, no IaC, no deploy
-> path**; password reset and email verification exist only as commented-out code
-> (`app/modules/auth/routes.py:285-322`); global medicine/symptom creation writes `tenant_id=None`
-> into a `NOT NULL` column and fails at the database (`medicine/routes.py:102`,
-> `symptom/routes.py:93`) — this is Stage 2's keystone fix, not yet done; `usage_tracking` has no
-> writers so plans are unenforced (2 tests pinned as `xfail` document this and the receptionist-RBAC
-> gap so they can't silently regress further).
+> The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
+> Stage 1 ("Shippable") is starting — code-verified on 2026-09-23: `pytest -q` runs **409 passed /
+> 2 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
+> Password reset and email verification now work end to end (`POST /auth/password/forgot`,
+> `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
+> via SendGrid's SMTP relay, `app/core/system_email.py`, and no-op with a logged warning if
+> `SENDGRID_API_KEY` isn't set). Still true: **no Dockerfile, no IaC, no deploy path** (the rest of
+> Stage 1); global medicine/symptom creation writes `tenant_id=None` into a `NOT NULL` column and
+> fails at the database (`medicine/routes.py:102`, `symptom/routes.py:93`) — this is Stage 2's
+> keystone fix, not yet done; `usage_tracking` has no writers so plans are unenforced (2 tests
+> pinned as `xfail` document this and the receptionist-RBAC gap so they can't silently regress
+> further).
 >
 > **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
 > stage plan (Stage 0 Truth & Green → Stage 4 Retrieval Assistant), the architecture decisions
@@ -45,7 +43,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
 
-**Backend:** 14 routed modules, 129 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Backend:** 14 routed modules, 133 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)
 
@@ -282,8 +280,8 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (129 total endpoints)
-│   ├── auth/             # ✅ Login, refresh (incl. login-2fa), 2FA, admin provisioning (15 endpoints)
+├── modules/               # Feature modules (133 total endpoints)
+│   ├── auth/             # ✅ Login (incl. login-2fa), refresh, 2FA, password reset, email verification, admin provisioning (19 endpoints)
 │   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning (10 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)

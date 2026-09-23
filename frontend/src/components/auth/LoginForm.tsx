@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'react-hot-toast'
@@ -142,6 +143,12 @@ export function LoginForm() {
             {errors.password && (
               <p className="text-sm text-red-500">{errors.password.message}</p>
             )}
+            <Link
+              href="/forgot-password"
+              className="block text-right text-sm font-medium text-primary hover:underline"
+            >
+              {t('forgotPassword')}
+            </Link>
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

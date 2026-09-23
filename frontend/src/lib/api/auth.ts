@@ -11,6 +11,13 @@ import type {
   TenantResponse,
   AdminClientListItem,
   AdminClientDetail,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  VerifyEmailRequest,
+  VerifyEmailResponse,
+  ResendVerificationRequest,
 } from '@/types/auth'
 
 export const authApi = {
@@ -70,6 +77,30 @@ export const authApi = {
   // Admin: approve tenant
   approveTenant: async (tenantId: string): Promise<TenantResponse> => {
     const response = await apiClient.post(`/auth/admin/tenants/${tenantId}/approve`)
+    return response.data
+  },
+
+  // Request a password reset email
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
+    const response = await apiClient.post('/auth/password/forgot', data)
+    return response.data
+  },
+
+  // Reset password using the token from the forgot-password email
+  resetPassword: async (data: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+    const response = await apiClient.post('/auth/password/reset', data)
+    return response.data
+  },
+
+  // Verify email using the token from the verification email
+  verifyEmail: async (data: VerifyEmailRequest): Promise<VerifyEmailResponse> => {
+    const response = await apiClient.post('/auth/email/verify', data)
+    return response.data
+  },
+
+  // Resend the email verification link
+  resendVerification: async (data: ResendVerificationRequest): Promise<ForgotPasswordResponse> => {
+    const response = await apiClient.post('/auth/email/resend', data)
     return response.data
   },
 }

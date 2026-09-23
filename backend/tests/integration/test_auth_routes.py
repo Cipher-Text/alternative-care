@@ -1,9 +1,28 @@
 """Integration tests for authentication API endpoints."""
 
+from types import SimpleNamespace
+
 import pytest
 from httpx import AsyncClient
 
 from app.shared.models import User
+
+
+def _mock_email_capture(monkeypatch):
+    """Patch send_system_email_task.delay and return the dict its kwargs land in."""
+    captured = {}
+
+    def _fake_delay(**kwargs):
+        captured.update(kwargs)
+        return SimpleNamespace(id="task-1")
+
+    monkeypatch.setattr("app.modules.auth.service.send_system_email_task.delay", _fake_delay)
+    return captured
+
+
+def _token_from_link(body_text: str) -> str:
+    """Extract the `?token=` value from a captured email body."""
+    return body_text.split("token=")[1].split()[0].strip()
 
 
 @pytest.mark.asyncio
@@ -413,6 +432,226 @@ class TestPasswordChangeEndpoint:
             },
         )
         assert response.status_code in [401, 403]
+
+
+@pytest.mark.asyncio
+class TestPasswordResetEndpoints:
+    """Test /api/v1/auth/password/forgot and /password/reset endpoints."""
+
+    async def test_forgot_password_existing_email_queues_email(
+        self, client: AsyncClient, test_user, monkeypatch
+    ):
+        """Forgot-password for a real account queues a reset email."""
+        captured = _mock_email_capture(monkeypatch)
+
+        response = await client.post(
+            "/api/v1/auth/password/forgot", json={"email": test_user.email}
+        )
+
+        assert response.status_code == 200
+        assert "reset link" in response.json()["message"].lower()
+        assert captured["recipient"] == test_user.email
+        assert "token=" in captured["body_text"]
+
+    async def test_forgot_password_unknown_email_same_response(
+        self, client: AsyncClient, monkeypatch
+    ):
+        """Forgot-password for a nonexistent account gives the same response,
+        and doesn't queue an email — this is what prevents using the endpoint
+        to enumerate registered addresses."""
+        captured = _mock_email_capture(monkeypatch)
+
+        response = await client.post(
+            "/api/v1/auth/password/forgot", json={"email": "nobody@test.com"}
+        )
+
+        assert response.status_code == 200
+        assert "reset link" in response.json()["message"].lower()
+        assert captured == {}
+
+    async def test_reset_password_with_valid_token_succeeds(
+        self, client: AsyncClient, test_user, monkeypatch
+    ):
+        """A valid reset token sets the new password and can be used to log in."""
+        captured = _mock_email_capture(monkeypatch)
+        await client.post("/api/v1/auth/password/forgot", json={"email": test_user.email})
+        token = _token_from_link(captured["body_text"])
+
+        response = await client.post(
+            "/api/v1/auth/password/reset",
+            json={"token": token, "new_password": "BrandNewPass456"},
+        )
+        assert response.status_code == 200
+
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            json={"email": test_user.email, "password": "BrandNewPass456"},
+        )
+        assert login_response.status_code == 200
+
+    async def test_reset_password_token_is_single_use(
+        self, client: AsyncClient, test_user, monkeypatch
+    ):
+        """Reusing an already-consumed reset token is rejected."""
+        captured = _mock_email_capture(monkeypatch)
+        await client.post("/api/v1/auth/password/forgot", json={"email": test_user.email})
+        token = _token_from_link(captured["body_text"])
+
+        first = await client.post(
+            "/api/v1/auth/password/reset",
+            json={"token": token, "new_password": "FirstNewPass456"},
+        )
+        assert first.status_code == 200
+
+        second = await client.post(
+            "/api/v1/auth/password/reset",
+            json={"token": token, "new_password": "SecondNewPass456"},
+        )
+        assert second.status_code == 400
+
+    async def test_reset_password_invalidates_existing_sessions(
+        self, client: AsyncClient, test_user, monkeypatch
+    ):
+        """Resetting a password logs out every existing session — the old
+        password may be why a reset was needed in the first place."""
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            json={"email": test_user.email, "password": "TestPass123"},
+        )
+        old_access_token = login_response.json()["tokens"]["access_token"]
+
+        captured = _mock_email_capture(monkeypatch)
+        await client.post("/api/v1/auth/password/forgot", json={"email": test_user.email})
+        token = _token_from_link(captured["body_text"])
+        await client.post(
+            "/api/v1/auth/password/reset",
+            json={"token": token, "new_password": "AnotherNewPass456"},
+        )
+
+        me_response = await client.get(
+            "/api/v1/auth/me", headers={"Authorization": f"Bearer {old_access_token}"}
+        )
+        assert me_response.status_code == 401
+
+    async def test_reset_password_invalid_token_rejected(self, client: AsyncClient):
+        """A made-up token is rejected."""
+        response = await client.post(
+            "/api/v1/auth/password/reset",
+            json={"token": "not-a-real-token", "new_password": "SomeNewPass456"},
+        )
+        assert response.status_code == 400
+
+    async def test_reset_password_expired_token_rejected(
+        self, client: AsyncClient, test_user, db_session, monkeypatch
+    ):
+        """An expired reset token is rejected, even if otherwise valid."""
+        from datetime import datetime, timedelta, timezone
+
+        captured = _mock_email_capture(monkeypatch)
+        await client.post("/api/v1/auth/password/forgot", json={"email": test_user.email})
+        token = _token_from_link(captured["body_text"])
+
+        await db_session.refresh(test_user)
+        test_user.password_reset_expires_at = datetime.now(timezone.utc) - timedelta(minutes=1)
+        await db_session.commit()
+
+        response = await client.post(
+            "/api/v1/auth/password/reset",
+            json={"token": token, "new_password": "SomeNewPass456"},
+        )
+        assert response.status_code == 400
+
+
+@pytest.mark.asyncio
+class TestEmailVerificationEndpoints:
+    """Test /api/v1/auth/email/verify and /email/resend endpoints."""
+
+    async def test_registration_queues_verification_email(
+        self, client: AsyncClient, test_division, test_district, monkeypatch
+    ):
+        """Registering a new doctor queues a verification email."""
+        captured = _mock_email_capture(monkeypatch)
+
+        response = await client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "verifyme@test.com",
+                "password": "SecurePass123",
+                "full_name": "Dr. Verify Me",
+                "specializations": ["homeopathy"],
+                "division_id": test_division.id,
+                "district_id": test_district.id,
+            },
+        )
+
+        assert response.status_code == 201
+        assert captured["recipient"] == "verifyme@test.com"
+        assert "token=" in captured["body_text"]
+
+    async def test_verify_email_with_valid_token_succeeds(
+        self, client: AsyncClient, test_division, test_district, monkeypatch
+    ):
+        captured = _mock_email_capture(monkeypatch)
+        await client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "verifyme2@test.com",
+                "password": "SecurePass123",
+                "full_name": "Dr. Verify Two",
+                "specializations": ["homeopathy"],
+                "division_id": test_division.id,
+                "district_id": test_district.id,
+            },
+        )
+        token = _token_from_link(captured["body_text"])
+
+        response = await client.post("/api/v1/auth/email/verify", json={"token": token})
+        assert response.status_code == 200
+
+    async def test_verify_email_invalid_token_rejected(self, client: AsyncClient):
+        response = await client.post(
+            "/api/v1/auth/email/verify", json={"token": "not-a-real-token"}
+        )
+        assert response.status_code == 400
+
+    async def test_resend_verification_for_unverified_user_queues_email(
+        self, client: AsyncClient, test_division, test_district, monkeypatch
+    ):
+        captured = _mock_email_capture(monkeypatch)
+        await client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "resend@test.com",
+                "password": "SecurePass123",
+                "full_name": "Dr. Resend",
+                "specializations": ["homeopathy"],
+                "division_id": test_division.id,
+                "district_id": test_district.id,
+            },
+        )
+
+        captured.clear()
+        response = await client.post(
+            "/api/v1/auth/email/resend", json={"email": "resend@test.com"}
+        )
+        assert response.status_code == 200
+        assert captured["recipient"] == "resend@test.com"
+
+    async def test_resend_verification_for_already_verified_user_is_a_noop(
+        self, client: AsyncClient, test_user, db_session, monkeypatch
+    ):
+        """No email is queued for an already-verified account — its message
+        is identical to the unknown-email case, so this can't be used to
+        confirm whether an address is verified."""
+        await db_session.refresh(test_user)
+        assert test_user.is_email_verified is True
+
+        captured = _mock_email_capture(monkeypatch)
+        response = await client.post(
+            "/api/v1/auth/email/resend", json={"email": test_user.email}
+        )
+        assert response.status_code == 200
+        assert captured == {}
 
 
 @pytest.mark.asyncio

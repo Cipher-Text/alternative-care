@@ -14,30 +14,41 @@ from app.core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
+    generate_secure_token,
     generate_totp_secret,
     get_password_hash,
     get_totp_uri,
     hash_refresh_token,
+    hash_token,
     verify_password,
     verify_refresh_token,
+    verify_token,
     verify_totp,
 )
+from app.core.system_email import send_system_email_task
 from app.modules.auth.schemas import (
     AdminCreateTenantDoctorRequest,
     AdminClientDetailResponse,
     AdminClientDoctorResponse,
     AdminClientListItem,
+    ForgotPasswordResponse,
     LoginRequest,
     LoginResponse,
     RegisterRequest,
     RegisterResponse,
+    ResetPasswordResponse,
     Setup2FAResponse,
     TokenResponse,
     UserProfileResponse,
     UserResponse,
     TenantResponse,
+    VerifyEmailResponse,
 )
 from app.shared.models.tenant import Tenant, User, UserSession
+
+# Password reset / email verification links are valid for this long.
+PASSWORD_RESET_TOKEN_TTL = timedelta(hours=1)
+EMAIL_VERIFICATION_TOKEN_TTL = timedelta(hours=24)
 
 
 class AuthService:
@@ -111,7 +122,7 @@ class AuthService:
         await self.db.commit()
         await self.db.refresh(user)
 
-        # TODO: Send verification email
+        await self._send_verification_email(user)
         # TODO: Notify admins of new registration
 
         return RegisterResponse(
@@ -664,6 +675,192 @@ class AuthService:
         await self.db.commit()
 
         return True
+
+    # ========================================================================
+    # Password Reset
+    # ========================================================================
+
+    async def forgot_password(self, email: str) -> ForgotPasswordResponse:
+        """
+        Request a password reset email.
+
+        SECURITY: always returns the same message whether or not the email
+        exists, so this endpoint can't be used to enumerate registered
+        accounts. Only queues an email when the account is real.
+        """
+        result = await self.db.execute(select(User).where(User.email == email))
+        user = result.scalar_one_or_none()
+
+        generic_message = (
+            "If an account with that email exists, a password reset link has been sent."
+        )
+
+        if not user or not user.is_active:
+            return ForgotPasswordResponse(message=generic_message)
+
+        raw_token = generate_secure_token()
+        user.password_reset_token_hash = hash_token(raw_token)
+        user.password_reset_expires_at = datetime.now(timezone.utc) + PASSWORD_RESET_TOKEN_TTL
+        await self.db.commit()
+
+        reset_url = f"{settings.FRONTEND_URL}/reset-password?token={raw_token}"
+        send_system_email_task.delay(
+            recipient=user.email,
+            subject="Reset your AltCare password",
+            body_html=(
+                f"<p>Hi {user.full_name},</p>"
+                f"<p>Click the link below to reset your AltCare password. "
+                f"This link expires in 1 hour.</p>"
+                f'<p><a href="{reset_url}">{reset_url}</a></p>'
+                f"<p>If you didn't request this, you can ignore this email.</p>"
+            ),
+            body_text=(
+                f"Hi {user.full_name},\n\n"
+                f"Reset your AltCare password using the link below. "
+                f"This link expires in 1 hour.\n\n{reset_url}\n\n"
+                f"If you didn't request this, you can ignore this email."
+            ),
+        )
+
+        return ForgotPasswordResponse(message=generic_message)
+
+    async def reset_password(self, token: str, new_password: str) -> ResetPasswordResponse:
+        """
+        Reset a password using the token from the forgot-password email.
+
+        Raises:
+            HTTPException: If the token is invalid, expired, or already used
+        """
+        user = await self._get_user_by_reset_token(token)
+
+        user.password_hash = get_password_hash(new_password)
+        user.password_reset_token_hash = None
+        user.password_reset_expires_at = None
+
+        # SECURITY: same posture as change_password — invalidate every
+        # existing access token and session, since the old password may
+        # have been compromised (that's why a reset was requested).
+        user.token_version += 1
+
+        result = await self.db.execute(
+            select(UserSession).where(
+                UserSession.user_id == user.id,
+                UserSession.is_revoked == False,  # noqa: E712
+            )
+        )
+        for session in result.scalars().all():
+            session.is_revoked = True
+            session.revoked_at = datetime.now(timezone.utc)
+
+        await self.db.commit()
+
+        return ResetPasswordResponse(message="Password reset successfully. Please log in.")
+
+    async def _get_user_by_reset_token(self, token: str) -> User:
+        """Look up the user for a raw password-reset token, or raise 400."""
+        token_hash = hash_token(token)
+        result = await self.db.execute(
+            select(User).where(User.password_reset_token_hash == token_hash)
+        )
+        user = result.scalar_one_or_none()
+
+        invalid = HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+        if not user or not verify_token(token, user.password_reset_token_hash):
+            raise invalid
+
+        expires_at = user.password_reset_expires_at
+        if not expires_at or expires_at < datetime.now(timezone.utc):
+            raise invalid
+
+        return user
+
+    # ========================================================================
+    # Email Verification
+    # ========================================================================
+
+    async def _send_verification_email(self, user: User) -> None:
+        """Generate a verification token for `user` and queue the email."""
+        raw_token = generate_secure_token()
+        user.email_verification_token_hash = hash_token(raw_token)
+        user.email_verification_expires_at = (
+            datetime.now(timezone.utc) + EMAIL_VERIFICATION_TOKEN_TTL
+        )
+        await self.db.commit()
+
+        verify_url = f"{settings.FRONTEND_URL}/verify-email?token={raw_token}"
+        send_system_email_task.delay(
+            recipient=user.email,
+            subject="Verify your AltCare email address",
+            body_html=(
+                f"<p>Hi {user.full_name},</p>"
+                f"<p>Welcome to AltCare. Please verify your email address — "
+                f"this link expires in 24 hours.</p>"
+                f'<p><a href="{verify_url}">{verify_url}</a></p>'
+            ),
+            body_text=(
+                f"Hi {user.full_name},\n\nWelcome to AltCare. Please verify your "
+                f"email address using the link below — it expires in 24 hours.\n\n{verify_url}"
+            ),
+        )
+
+    async def verify_email(self, token: str) -> VerifyEmailResponse:
+        """
+        Verify a user's email address using the token from the verification email.
+
+        Raises:
+            HTTPException: If the token is invalid or expired
+        """
+        token_hash = hash_token(token)
+        result = await self.db.execute(
+            select(User).where(User.email_verification_token_hash == token_hash)
+        )
+        user = result.scalar_one_or_none()
+
+        invalid = HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token",
+        )
+
+        if not user or not verify_token(token, user.email_verification_token_hash):
+            raise invalid
+
+        expires_at = user.email_verification_expires_at
+        if not expires_at or expires_at < datetime.now(timezone.utc):
+            raise invalid
+
+        user.is_email_verified = True
+        user.email_verified_at = datetime.now(timezone.utc)
+        user.email_verification_token_hash = None
+        user.email_verification_expires_at = None
+        await self.db.commit()
+
+        return VerifyEmailResponse(message="Email verified successfully.")
+
+    async def resend_verification(self, email: str) -> ForgotPasswordResponse:
+        """
+        Resend the email verification link.
+
+        SECURITY: same enumeration-resistant posture as forgot_password —
+        always returns the same message.
+        """
+        result = await self.db.execute(select(User).where(User.email == email))
+        user = result.scalar_one_or_none()
+
+        generic_message = (
+            "If an account with that email exists and isn't verified yet, "
+            "a new verification link has been sent."
+        )
+
+        if not user or not user.is_active or user.is_email_verified:
+            return ForgotPasswordResponse(message=generic_message)
+
+        await self._send_verification_email(user)
+
+        return ForgotPasswordResponse(message=generic_message)
 
     # ========================================================================
     # User Profile

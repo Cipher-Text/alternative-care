@@ -132,3 +132,32 @@ export interface UserProfileResponse {
     is_active: boolean
   } | null
 }
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface ForgotPasswordResponse {
+  message: string
+}
+
+export interface ResetPasswordRequest {
+  token: string
+  new_password: string
+}
+
+export interface ResetPasswordResponse {
+  message: string
+}
+
+export interface VerifyEmailRequest {
+  token: string
+}
+
+export interface VerifyEmailResponse {
+  message: string
+}
+
+export interface ResendVerificationRequest {
+  email: string
+}
