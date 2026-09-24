@@ -4,11 +4,16 @@ All notable changes to AltCare are documented here.
 
 ---
 
-## [Unreleased] - 2026-09-21
+## [Unreleased] - 2026-09-24
+
+### Backend
+- Google Sign-In and registration (`POST /auth/google`, `POST /auth/google/register`), password reset (`POST /auth/password/forgot`, `/password/reset`), and email verification (`POST /auth/email/verify`, `/email/resend`) shipped 2026-09-23 — see `docs/api/authentication.md`. Auth module grew from 19 to 21 endpoints; total module endpoints 133 → 135.
+- Test suite grew from 422 to 432 passed (2 xfailed, 0 failed) covering the above.
 
 ### Frontend
 - next-intl actually wired up (cookie-based locale, no URL routing): `NextIntlClientProvider` in the root layout, `src/i18n/request.ts` request config, `LanguageSwitcher` component in the header, locale synced to the user's stored `language` preference on login. Coverage so far: login card and header user dropdown only — the rest of the app is still hardcoded English.
   - Note: the `[1.0.0]` entry below lists "Bilingual UI (English/Bengali) via next-intl" as shipped — `next-intl` was installed and message files existed, but no provider/middleware/`useTranslations` call existed anywhere in the code until this change. Left the 1.0.0 entry as-is (historical record); noting the correction here instead.
+  - Also unsourced in that entry: "MVP Production Ready" and "16/16 tests passing" — no deploy path existed at the time (still none today, see `docs/planning/revision-2026-09.md`), and no cited run backs the 16/16 figure. Left as-is for the same historical-record reason; see the revision doc §1 for the actual, dated numbers.
 
 ---
 

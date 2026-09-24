@@ -1,15 +1,15 @@
 # AltCare API Endpoints
 
-**Total:** 128 endpoints across 14 modules
+**Total:** 135 endpoints across 14 modules (+ `/`, `/health`, `/metrics`)
 **Base URL:** `http://localhost:8000/api/v1`
-**Auth:** Bearer JWT (except `/auth/register` and `/auth/login`)
+**Auth:** Bearer JWT (except `/auth/register`, `/auth/login`, `/auth/login-2fa`, `/auth/google`, `/auth/google/register`, `/auth/password/forgot`, `/auth/password/reset`, `/auth/email/verify`, `/auth/email/resend`)
 **Interactive Docs:** http://localhost:8000/docs
 
 > This file is a human-maintained overview. For the authoritative route table, use the live Swagger UI or `docs/api/README.md`.
 
 ---
 
-## 1. Authentication (14)
+## 1. Authentication (21)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
@@ -19,14 +19,21 @@
 | GET | `/auth/admin/clients/{tenant_id}` | Admin: get client detail | Admin |
 | GET | `/auth/admin/tenants/pending` | Admin: list pending tenants | Admin |
 | POST | `/auth/admin/tenants/{tenant_id}/approve` | Admin: approve tenant | Admin |
-| POST | `/auth/login` | Login and get JWT tokens | No |
-| POST | `/auth/refresh` | Refresh access token | Refresh token |
+| POST | `/auth/login` | Login and get JWT tokens (or a 2FA challenge) | No |
+| POST | `/auth/login-2fa` | Complete login by resubmitting email/password + TOTP code | No |
+| POST | `/auth/google` | Sign in with a Google ID token; offers registration if no account exists | No |
+| POST | `/auth/google/register` | Complete doctor + tenant registration for a verified Google identity | No |
 | POST | `/auth/logout` | Logout and invalidate session | Yes |
-| GET | `/auth/me` | Get current user info | Yes |
-| POST | `/auth/password/change` | Change password | Yes |
-| POST | `/auth/2fa/setup` | Setup 2FA (get QR code) | Yes |
-| POST | `/auth/2fa/verify` | Verify 2FA code | Yes |
-| POST | `/auth/2fa/disable` | Disable 2FA | Yes |
+| POST | `/auth/refresh` | Refresh access token (rotates refresh token) | Refresh token |
+| POST | `/auth/2fa/setup` | Setup 2FA (get TOTP secret + QR code) | Yes |
+| POST | `/auth/2fa/verify` | Verify TOTP code and enable 2FA | Yes |
+| POST | `/auth/2fa/disable` | Disable 2FA (requires password + TOTP) | Yes |
+| POST | `/auth/password/change` | Change password for authenticated user | Yes |
+| POST | `/auth/password/forgot` | Request a password reset email (always returns same message) | No |
+| POST | `/auth/password/reset` | Reset password using emailed token; invalidates all sessions | No |
+| GET | `/auth/me` | Get current user profile with tenant info | Yes |
+| POST | `/auth/email/verify` | Verify email address using emailed token | No |
+| POST | `/auth/email/resend` | Resend verification email (always returns same message) | No |
 
 **Tokens:**
 - Access: 30min expiry
@@ -66,11 +73,11 @@
 | POST | `/patients/{patient_id}/tags` | Add patient tag | Yes |
 | GET | `/patients/{patient_id}/tags` | List patient tags | Yes |
 | PATCH | `/patients/tags/{tag_id}` | Update tag | Yes |
-| DELETE | `/patients/tags/{tag_id}` | Delete tag | Yes |
+| DELETE | `/patients/tags/{tag_id}` | Delete tag (hard delete) | Yes |
 | POST | `/patients/{patient_id}/diagnoses` | Add diagnosis | Yes |
 | GET | `/patients/{patient_id}/diagnoses` | List diagnoses | Yes |
 | PATCH | `/patients/diagnoses/{diagnosis_id}` | Update diagnosis | Yes |
-| DELETE | `/patients/diagnoses/{diagnosis_id}` | Delete diagnosis | Yes |
+| DELETE | `/patients/diagnoses/{diagnosis_id}` | Soft delete diagnosis | Yes |
 
 **Query Params:** `search`, `limit`, `offset`, `sort_by`, `sort_order`
 
@@ -87,7 +94,7 @@
 | GET | `/appointments/{id}` | Get appointment details | Yes |
 | PATCH | `/appointments/{id}` | Update appointment | Yes |
 | POST | `/appointments/{id}/cancel` | Cancel appointment | Yes |
-| DELETE | `/appointments/{id}` | Delete appointment | Yes |
+| DELETE | `/appointments/{id}` | Delete appointment (hard delete) | Yes |
 
 ### Visits (4)
 
@@ -106,14 +113,14 @@
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/prescriptions` | Create prescription (draft) | Yes |
+| POST | `/prescriptions` | Create prescription (draft or issued) with items | Yes |
 | GET | `/prescriptions` | List prescriptions | Yes |
 | GET | `/prescriptions/{prescription_id}` | Get prescription details | Yes |
 | PATCH | `/prescriptions/{prescription_id}` | Update (draft only) | Yes |
 | POST | `/prescriptions/{prescription_id}/void` | Void prescription | Yes |
-| POST | `/prescriptions/{prescription_id}/items` | Add prescription item | Yes |
-| DELETE | `/prescriptions/{prescription_id}/items/{item_id}` | Delete item | Yes |
-| POST | `/prescriptions/{prescription_id}/generate-pdf` | Generate PDF | Yes |
+| POST | `/prescriptions/{prescription_id}/items` | Add prescription item (draft only) | Yes |
+| DELETE | `/prescriptions/{prescription_id}/items/{item_id}` | Delete item (draft only) | Yes |
+| POST | `/prescriptions/{prescription_id}/generate-pdf` | Generate PDF (issued only) | Yes |
 
 **Workflow:** draft → issued → voided (immutable after issued)
 
@@ -134,8 +141,8 @@
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/payments/bkash/create` | Create bKash payment | Yes |
-| POST | `/payments/bkash/execute` | Execute bKash payment | Yes |
+| POST | `/payments/bkash/create` | Create bKash payment, get payment URL | Yes |
+| POST | `/payments/bkash/execute` | Execute bKash payment (stub — returns 501, not implemented) | Yes |
 | POST | `/payments/bkash/query` | Query payment status | Yes |
 
 ### Invoices (5)
@@ -175,8 +182,8 @@
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/integrations/send/sms` | Send SMS via configured provider | Yes |
-| POST | `/integrations/send/email` | Send email via configured provider | Yes |
+| POST | `/integrations/send/sms` | Send SMS via configured provider (queued via Celery) | Yes |
+| POST | `/integrations/send/email` | Send email via configured provider (queued via Celery) | Yes |
 
 ### Logs (1)
 
@@ -200,6 +207,140 @@
 | GET | `/dashboard/prescriptions` | Prescription analytics | Yes |
 
 **Query Params:** All endpoints support `date_from` and `date_to` (YYYY-MM-DD)
+
+---
+
+## 9. Medicines (15)
+
+### Medicine CRUD (5)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/medicines` | List medicines (global + tenant-specific) | Yes |
+| POST | `/medicines` | Create medicine (global requires admin role) | Yes |
+| GET | `/medicines/{medicine_id}` | Get medicine details | Yes |
+| PATCH | `/medicines/{medicine_id}` | Update medicine (tenant-owned only, not global) | Yes |
+| DELETE | `/medicines/{medicine_id}` | Deactivate medicine (tenant-owned only, not global) | Yes |
+
+### Search (1)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/medicines/search` | Autocomplete search by name/alias (English/Bengali) | Yes |
+
+### Aliases (3)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/medicines/{medicine_id}/aliases` | Create medicine alias | Yes |
+| GET | `/medicines/{medicine_id}/aliases` | List aliases for a medicine | Yes |
+| DELETE | `/medicines/aliases/{alias_id}` | Delete medicine alias | Yes |
+
+### Symptom Mappings (4)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/medicines/mappings` | Link medicine to symptom | Yes |
+| GET | `/medicines/mappings/{mapping_id}` | Get mapping details | Yes |
+| PATCH | `/medicines/mappings/{mapping_id}` | Update mapping (strength, modality) | Yes |
+| DELETE | `/medicines/mappings/{mapping_id}` | Delete mapping | Yes |
+
+### Lookups (2)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/medicines/{medicine_id}/symptoms` | Get symptoms linked to a medicine | Yes |
+| GET | `/medicines/symptoms/{symptom_id}/medicines` | Get medicines linked to a symptom | Yes |
+
+**Note:** Only admins can create global medicines (`is_global=true`); doctors can create tenant-specific ones.
+
+---
+
+## 10. Symptoms (9)
+
+### Symptom CRUD (5)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/symptoms` | List symptoms (global + tenant-specific) | Yes |
+| POST | `/symptoms` | Create symptom (global requires admin role) | Yes |
+| GET | `/symptoms/{symptom_id}` | Get symptom details | Yes |
+| PATCH | `/symptoms/{symptom_id}` | Update symptom (tenant-owned only, not global) | Yes |
+| DELETE | `/symptoms/{symptom_id}` | Deactivate symptom (tenant-owned only, not global) | Yes |
+
+### Search (1)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/symptoms/search` | Autocomplete search by name/alias (English/Bengali) | Yes |
+
+### Aliases (3)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/symptoms/{symptom_id}/aliases` | Create symptom alias | Yes |
+| GET | `/symptoms/{symptom_id}/aliases` | List aliases for a symptom | Yes |
+| DELETE | `/symptoms/aliases/{alias_id}` | Delete symptom alias | Yes |
+
+**Note:** Only admins can create global symptoms (`is_global=true`); doctors can create tenant-specific ones.
+
+---
+
+## 11. Geographic (3)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/geographic/divisions` | List all Bangladesh divisions (8 total) | Yes |
+| GET | `/geographic/divisions/{division_id}/districts` | List districts for a division | Yes |
+| GET | `/geographic/districts/{district_id}/upazilas` | List upazilas for a district | Yes |
+
+---
+
+## 12. Tenant/Clinic (2)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/tenant/profile` | Get clinic/tenant profile | Yes |
+| PATCH | `/tenant/profile` | Update clinic profile (doctor role only, 403 otherwise) | Yes |
+
+---
+
+## 13. Platform Admin (10)
+
+### Dashboard (1)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/admin/dashboard` | Platform KPI dashboard (tenant/user counts, plan breakdown) | Admin |
+
+### Tenant Management (7)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/admin/tenants` | List all tenants with primary doctor summaries | Admin |
+| POST | `/admin/tenants` | Provision tenant + primary doctor in one operation | Admin |
+| GET | `/admin/tenants/pending` | List tenants pending approval | Admin |
+| GET | `/admin/tenants/{tenant_id}` | Get tenant detail and all users | Admin |
+| POST | `/admin/tenants/{tenant_id}/approve` | Approve a pending tenant | Admin |
+| PATCH | `/admin/tenants/{tenant_id}` | Change plan, suspend, or reactivate a tenant | Admin |
+| POST | `/admin/tenants/{tenant_id}/doctors` | Add another doctor user to an existing tenant | Admin |
+
+### Users (2)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/admin/users` | List all users with role summary (filter by role/tenant/status) | Admin |
+| PATCH | `/admin/users/{user_id}` | Update user role or active status (invalidates JWT tokens) | Admin |
+
+---
+
+## 14. AI (1)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/ai/query` | AI query (stub — always returns 501 Not Implemented) | Yes (Pro plan) |
+
+**Status:** Registered but unimplemented. Gated by `RequireProPlan`; the RAG-based assistant over the book library, medicine DB, and symptom DB is planned for a future phase (see `docs/planning/revision-2026-09.md`).
 
 ---
 
@@ -286,7 +427,7 @@ GET /patients?sort_by=created_at&sort_order=desc
 
 ## Authentication
 
-**Required:** All endpoints except `/auth/register` and `/auth/login`
+**Required:** All endpoints except `/auth/register`, `/auth/login`, `/auth/login-2fa`, `/auth/google`, `/auth/google/register`, `/auth/password/forgot`, `/auth/password/reset`, `/auth/email/verify`, and `/auth/email/resend`
 
 **Header:**
 ```

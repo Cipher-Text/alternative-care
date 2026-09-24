@@ -282,7 +282,7 @@ class PatientService:
 - **API Endpoints:** 135 (+ `/`, `/health`, `/metrics`)
 - **Database Tables:** 34
 - **Frontend:** 132 source files, 11 top-level route groups
-- **Test suite:** `pytest -q`: 409 passed / 2 xfailed / 0 failed (2026-09-23)
+- **Test suite:** `pytest -q`: 432 passed / 2 xfailed / 0 failed (2026-09-24)
 - **Security:** unscored (previous "A (95/100)" had no cited source)
 
 **Complete:**

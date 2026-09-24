@@ -21,7 +21,7 @@ base_url: "http://localhost:8000/api/v1"
 | Module | Endpoints | Purpose | Docs |
 |--------|-----------|---------|------|
 | **Admin** | 10 | Platform dashboard, tenants, users | N/A |
-| **Authentication** | 19 | Login (incl. login-2fa), registration, password reset, email verification, session lifecycle, legacy admin compatibility | [authentication.md](authentication.md) |
+| **Authentication** | 21 | Login (incl. login-2fa), registration (password or Google), password reset, email verification, session lifecycle, legacy admin compatibility | [authentication.md](authentication.md) |
 | **AI** | 1 | Query stub (`501`) | N/A (stub) |
 | **Patients** | 14 | Patient CRUD, search | [patients.md](patients.md) |
 | **Appointments** | 10 | Scheduling and visits | [appointments.md](appointments.md) |

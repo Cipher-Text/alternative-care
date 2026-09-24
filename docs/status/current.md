@@ -4,24 +4,30 @@ The product direction preserves working practice-management domains and expands 
 
 Tenant separation currently uses application-level explicit row isolation, not PostgreSQL RLS. See [architecture inventory](../architecture/architecture-inventory.md) for code-verified models, risks, and staged migration plan.
 
-> **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-23.** See
+> **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-24.** See
 > [Plan, Architecture & Technology Revision, Stage 0](../planning/revision-2026-09.md#stage-0--truth--green--by-2026-10-07)
 > for the current, live numbers — this file isn't kept in sync with them, don't quote figures from
-> here. Short version: the test suite is now green (`pytest -q`: 432 passed / 2 xfailed / 0 failed,
-> was 322 passed / 76 failed); Sentry/structlog are now initialised. Still true: there is no
-> deployment path (no Dockerfile, no IaC), password reset and email verification exist only as
-> commented-out code, and global medicine/symptom creation still fails at the database (`usage_tracking`
-> still has no writers — both are tracked, unfixed gaps, not newly discovered).
+> here. Short version: the test suite is green (`pytest -q`: 432 passed / 2 xfailed / 0 failed,
+> was 322 passed / 76 failed); Sentry/structlog are initialised. Password reset and email
+> verification now work end to end (no longer commented out — see "Done 2026-09-23" below), and
+> Google Sign-In/registration shipped the same day. Still true: there is no deployment path (no
+> Dockerfile, no IaC), and global medicine/symptom creation still fails at the database
+> (`usage_tracking` still has no writers — both are tracked, unfixed gaps, not newly discovered).
 
 # Current Project Status
 
-Last Updated: 2026-09-21
+Last Updated: 2026-09-24
 
 ---
 
 ## Summary
 
 AltCare has a working FastAPI backend (14 registered modules, 135 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+
+Recent work (2026-09-23):
+- **Google Sign-In and registration:** `POST /auth/google` (sign in, or `{needs_registration: true}` for a first-time Google identity) and `POST /auth/google/register` (completes clinic registration for that identity). Backend verifies the ID token itself (`app/core/security.py:verify_google_id_token`); an existing password-based account with a matching email gets its Google identity linked automatically on first sign-in. 2FA is still enforced on top of Google sign-in. Frontend: `GoogleSignInButton`, `GoogleRegisterForm`, `/register/google`. See `docs/api/authentication.md`.
+- **Password reset + email verification shipped end to end** (previously commented-out stubs) — see "Done 2026-09-23" below.
+- Test suite grew from 422 to 432 passed (2 xfailed, 0 failed) covering the above.
 
 Recent work (2026-07-12):
 - **Admin — doctor provisioning under existing tenants:** `POST /admin/tenants/{id}/doctors` added so platform admins can add another doctor user to an already-provisioned clinic without re-running full tenant onboarding. Frontend: `/admin/clients/[tenantId]` detail page now includes an add-doctor form. Integration tests added (`tests/integration/test_admin_tenant_doctors.py`).

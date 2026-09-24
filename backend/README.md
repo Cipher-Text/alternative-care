@@ -35,9 +35,9 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP, Fernet
 │   ├── celery.py       # Background tasks
 │   └── dependencies.py # Auth, RBAC, plan checks
-├── modules/             # Feature modules (128 endpoints)
+├── modules/             # Feature modules (135 endpoints)
 │   ├── admin/          # Platform tenants, users, dashboard (10)
-│   ├── auth/           # Login, refresh, 2FA, legacy admin compatibility (14)
+│   ├── auth/           # Login, refresh, 2FA, Google Sign-In, password reset, email verification, legacy admin compatibility (21)
 │   ├── ai/             # Query stub (1)
 │   ├── doctor/         # Profile, degrees (12)
 │   ├── patient/        # CRUD, search, tags (14)
@@ -57,7 +57,7 @@ backend/app/
 **Note:** Module API docs are in `../docs/api/` directory
 ```
 
-**Implemented:** 14 modules, 128 endpoints, 34 table models
+**Implemented:** 14 modules, 135 endpoints, 34 table models
 **Placeholder:** library and notification modules have package stubs but no active routes.
 
 ---
