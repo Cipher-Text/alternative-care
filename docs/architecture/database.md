@@ -760,9 +760,14 @@ CREATE INDEX ix_medicines_system ON medicines(system);
 -- Trigram GIN indexes power fuzzy/partial-match search (no tsvector/search_vector column)
 CREATE INDEX ix_medicines_name_en_trgm ON medicines USING gin(name_en gin_trgm_ops);
 CREATE INDEX ix_medicines_name_bn_trgm ON medicines USING gin(name_bn gin_trgm_ops);
+
+ALTER TABLE medicines ADD CONSTRAINT ck_medicines_tenant_global
+  CHECK ( (is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL) );
 ```
 
 There is no `botanical_name`, `symptom_tags`, or `search_vector` column, and no search-vector trigger — search is done via `pg_trgm` GIN indexes on `name_en`/`name_bn` plus the `medicine_aliases` table below.
+
+`tenant_id` was `NOT NULL` until migration `ba209a25bf7d` (2026-09-24) — before that, `POST /medicines` with `is_global=true` failed with an `IntegrityError` since the route correctly tried to insert `tenant_id=None` into a column that couldn't hold it. The CHECK constraint above is what now makes the invalid combination (global row with a tenant, or tenant row with no tenant) unrepresentable, rather than merely unused by current code.
 
 ---
 
@@ -818,7 +823,12 @@ CREATE TABLE symptoms (
 );
 
 CREATE INDEX ix_symptoms_name_en_trgm ON symptoms USING gin(name_en gin_trgm_ops);
+
+ALTER TABLE symptoms ADD CONSTRAINT ck_symptoms_tenant_global
+  CHECK ( (is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL) );
 ```
+
+Same history as `medicines` above: `tenant_id` was `NOT NULL` until migration `ba209a25bf7d` (2026-09-24).
 
 ---
 
@@ -869,6 +879,8 @@ CREATE TABLE medicine_symptom_mappings (
 
 CREATE UNIQUE INDEX ix_medicine_symptom_unique ON medicine_symptom_mappings(medicine_id, symptom_id);
 ```
+
+`medicine_aliases`, `symptom_aliases`, and `medicine_symptom_mappings` also have nullable `tenant_id` (same `ba209a25bf7d` migration) but no CHECK constraint of their own — they have no `is_global` column to check against, and just mirror whatever creator or parent row they're attached to (null when a platform admin, who has no `tenant_id`, creates one).
 
 ---
 

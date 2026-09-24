@@ -1,13 +1,13 @@
 # AltCare — Product Roadmap & Task Tracker
 
-> **⚠️ Superseded in part — 2026-09-23, updated 2026-09-23.** Sequencing, phase scope, and success
+> **⚠️ Superseded in part — 2026-09-23, updated 2026-09-24.** Sequencing, phase scope, and success
 > metrics below are superseded by [Plan, Architecture & Technology
 > Revision](planning/revision-2026-09.md), which is written against code verified on 2026-09-23 and
 > carries the current test/status numbers under its Stage 0 section — check there rather than here,
 > this table is not kept live. "MVP v1.0 — Production Ready" still does not hold: nothing is
 > deployable (no Dockerfile — Stage 1 work, in progress); password reset/email verification shipped
-> 2026-09-23 (item 4/5 below); global-catalog writes are still broken at the schema level (now the
-> Stage 2 keystone task). Phases
+> 2026-09-23 (item 4/5 below); global-catalog writes were fixed 2026-09-24 (Stage 2's keystone task,
+> landed ahead of the rest of Stage 2 — see revision §5 Stage 2). Phases
 > F (mobile) and G (enterprise) and the public directory are cut. Read the revision first; treat the
 > phase detail below as background.
 

@@ -82,6 +82,10 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id);
 - `divisions`, `districts`, `upazilas`
 - `translations`
 
+**Tables with nullable tenant_id (hybrid global-or-tenant catalog, added 2026-09-24):**
+- `medicines`, `symptoms`, `medicine_aliases`, `symptom_aliases`, `medicine_symptom_mappings`
+- These extend `GlobalCatalogModel` (`app/shared/models/base.py`), not `TenantScopedModel` — a row is either admin-curated (`tenant_id IS NULL`, `is_global = true`) or tenant-owned (`tenant_id` set, `is_global = false`), never both/neither. On `medicines`/`symptoms` (the tables with their own `is_global` column) this is enforced by a CHECK constraint, not just convention — see `database.md`'s `medicines`/`symptoms` sections.
+
 ---
 
 ### 2. JWT Token Structure

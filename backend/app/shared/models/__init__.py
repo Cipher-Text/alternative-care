@@ -1,6 +1,6 @@
 """Database models."""
 
-from app.shared.models.base import Base, BaseAuditModel, TenantScopedModel
+from app.shared.models.base import Base, BaseAuditModel, TenantScopedModel, GlobalCatalogModel
 from app.shared.models.tenant import Tenant, User, UserSession
 from app.shared.models.doctor import DoctorDegree, DoctorTraining
 from app.shared.models.geographic import Division, District, Upazila
@@ -35,6 +35,7 @@ __all__ = [
     "Base",
     "BaseAuditModel",
     "TenantScopedModel",
+    "GlobalCatalogModel",
     "Tenant",
     "User",
     "UserSession",

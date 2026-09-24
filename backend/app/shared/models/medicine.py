@@ -1,12 +1,12 @@
 """Medicine database models."""
 
-from sqlalchemy import Boolean, Integer, String, Text, ForeignKey, Index
+from sqlalchemy import Boolean, CheckConstraint, Integer, String, Text, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.shared.models.base import TenantScopedModel
+from app.shared.models.base import GlobalCatalogModel
 
 
-class Medicine(TenantScopedModel):
+class Medicine(GlobalCatalogModel):
     """
     Medicine database - curated global medicines + tenant-specific additions.
     Filtered by doctor's specializations.
@@ -15,6 +15,14 @@ class Medicine(TenantScopedModel):
     __tablename__ = "medicines"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Null for global (admin-curated) medicines, set for tenant-owned ones —
+    # see the CHECK constraint below, which is the only thing enforcing that.
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
 
     # Medicine name (bilingual)
     name_en: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -82,10 +90,14 @@ class Medicine(TenantScopedModel):
             postgresql_ops={"name_bn": "gin_trgm_ops"},
         ),
         Index("ix_medicines_system", "system"),
+        CheckConstraint(
+            "(is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL)",
+            name="ck_medicines_tenant_global",
+        ),
     )
 
 
-class MedicineAlias(TenantScopedModel):
+class MedicineAlias(GlobalCatalogModel):
     """
     Medicine aliases for search (handles transliteration, brand names, common names).
     CRITICAL for Bangladesh context: Different spellings, local names, brand variations.
@@ -94,6 +106,15 @@ class MedicineAlias(TenantScopedModel):
     __tablename__ = "medicine_aliases"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Null when the alias was added to a global medicine by a platform admin
+    # (admins have tenant_id = NULL); no CHECK here since this table has no
+    # is_global of its own — it just mirrors whatever creator/medicine it's on.
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     medicine_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("medicines.id", ondelete="CASCADE"),

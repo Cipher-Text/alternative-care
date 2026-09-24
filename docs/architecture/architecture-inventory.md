@@ -11,6 +11,16 @@
 > medicines are `Medicine` rows with `discipline = herbal`, not a parallel catalog — and adds
 > "therapy" (non-substance interventions), missing from the sketch entirely.
 
+> **⚠️ One finding below fixed 2026-09-24.** §1's "tenantless global creation ... may fail at the
+> database" and §2 finding 3's "code/schema mismatch" (medicine/symptom `tenant_id` non-null vs.
+> global routes setting it `None`) are resolved: `medicines`, `symptoms`, `medicine_aliases`,
+> `symptom_aliases`, `medicine_symptom_mappings` now extend a new `GlobalCatalogModel` with nullable
+> `tenant_id`, and `medicines`/`symptoms` carry a CHECK constraint enforcing the global-XOR-tenant
+> invariant (migration `ba209a25bf7d`) — this is exactly the "global-capable audited model base"
+> §4/§5 describe as Phase B future work, landed early as Stage 2's keystone (D1) in
+> `docs/planning/revision-2026-09.md`. Left the findings below as-written (this was a point-in-time
+> inspection); this note is the correction.
+
 ## 1. Current architecture inventory
 
 AltCare is one Next.js application (`frontend/src/app`), one FastAPI application (`backend/app/main.py`), and a shared PostgreSQL schema managed by Alembic. SQLAlchemy async sessions are provided centrally by `app.core.database`. Redis is configured for rate limiting and Celery; `app.core.celery` configures a Celery app and currently imports integration tasks. MinIO endpoint/bucket credentials are settings only: no storage client or upload integration was found. `pgvector` is a dependency and the existing library model declares a 1536-dimensional vector column; no search or retrieval implementation was found.

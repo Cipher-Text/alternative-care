@@ -22,7 +22,7 @@ This document replaces phase-sequencing-by-feature with **stage-sequencing-by-ga
 | 1 | "MVP v1.0 — Production Ready 🚀" | No Dockerfile anywhere, no IaC, no deploy script, compose covers Redis + MinIO only (the `api` service is commented out). Nothing can be deployed reproducibly. | `find . -iname 'Dockerfile*'` → empty; `docker-compose.yml` |
 | 2 | "Multi-tenant isolation 16/16 tests passing" | Clean local run: **322 passed, 76 failed, 1 error** (5m15s), including the tenant-isolation suites. | `pytest -q` |
 | 3 | "Security: A (95/100)" | Score has no source, date, or method attached in any checked-in doc. Meanwhile Sentry and structlog are declared dependencies that are never initialised. | `grep -rn "sentry_sdk\|structlog.configure" app/` → no wiring |
-| 4 | Medicines/symptoms support admin-curated **global** rows | Global creation writes `tenant_id=None` into a `NOT NULL` column. Global catalog writes fail at the database. | `app/modules/medicine/routes.py:102`, `app/modules/symptom/routes.py:93` vs `alembic/versions/000_initial_schema.py:110` and `TenantScopedModel` (`nullable=False`) |
+| 4 | Medicines/symptoms support admin-curated **global** rows | **Fixed 2026-09-24** (D1, out of Stage 2 order — see Stage 2 note below). As of 2026-09-23: global creation wrote `tenant_id=None` into a `NOT NULL` column, so global catalog writes failed at the database. | Was `app/modules/medicine/routes.py:102`, `app/modules/symptom/routes.py:93` vs `alembic/versions/000_initial_schema.py:110` and `TenantScopedModel` (`nullable=False`); now migration `ba209a25bf7d` |
 | 5 | Password reset / email verification are "P1 to do" | The endpoints exist as **commented-out code**. There is no self-serve account recovery at all. | `app/modules/auth/routes.py:285–322` |
 | 6 | Plan-based access + quotas (`usage_tracking`, 200 queries/month) | `usage_tracking` has a model and a table and **zero writers**. `plan_expires_at` is stored and never checked. `RequireProPlan` gates exactly one 501 stub. | `grep -rn UsageTracking app/` → model + export only; `app/modules/ai/routes.py` |
 | 7 | MinIO ready for file storage | No storage client, no SDK dependency, no upload path. All file fields are URL strings. | `grep -rn "boto3\|minio" app/` → no matches |
@@ -205,13 +205,13 @@ Not done (moved to a follow-up, not silently dropped):
 
 ### Stage 2 — Catalog Foundation · by 2026-12-19 · *the keystone*
 
-- `GlobalCatalogModel` + nullable `tenant_id` + CHECK constraint migration, with backfill (D1)
-- `medicine` / `symptom` service layer; routes thinned to handlers; one `_visible_query()` (D3)
-- RLS on the eight clinical tables (D2)
-- `/api/v1/public/*` router boundary (D4) and unified `tsvector` search (D5)
-- Seed **300 practitioner-reviewed homeopathy medicines** and their symptom mappings — one system done properly, not four done thinly (§2.1)
+- [x] **`GlobalCatalogModel` + nullable `tenant_id` + CHECK constraint migration — done 2026-09-24, no backfill needed (D1).** Landed ahead of the rest of Stage 2 since it was blocking basic admin catalog curation. `medicines`, `symptoms`, `medicine_aliases`, `symptom_aliases`, `medicine_symptom_mappings` now inherit `GlobalCatalogModel` (`app/shared/models/base.py`) with a nullable `tenant_id`; `medicines`/`symptoms` additionally carry a CHECK constraint (`ck_medicines_tenant_global`/`ck_symptoms_tenant_global`) enforcing `(is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL)`. Migration `ba209a25bf7d`, `down_revision` = `283e895eb3eb`. No backfill was needed — every existing row already had a non-null `tenant_id`, which already satisfied the constraint's tenant-owned branch. Verified: `pytest -q` unchanged at 432 passed / 2 xfailed / 0 failed; manually confirmed a global insert (`is_global=True, tenant_id=None`) now succeeds and that both invalid combinations (`is_global=True` with a tenant_id, `is_global=False` with a null tenant_id) are rejected by the CHECK constraint.
+- `medicine` / `symptom` service layer; routes thinned to handlers; one `_visible_query()` (D3) — not started
+- RLS on the eight clinical tables (D2) — not started
+- `/api/v1/public/*` router boundary (D4) and unified `tsvector` search (D5) — not started
+- Seed **300 practitioner-reviewed homeopathy medicines** and their symptom mappings — one system done properly, not four done thinly (§2.1) — not started; the schema can now hold global rows, nothing has been seeded into it yet
 
-**Gate:** an admin creates a global medicine successfully — the operation that returns a 500 today; a doctor's prescription autocomplete returns seeded global medicines; and a deliberately mis-written service query against a clinical table raises instead of returning another tenant's rows.
+**Gate:** ~~an admin creates a global medicine successfully — the operation that returns a 500 today~~ **met 2026-09-24** (see D1 above); a doctor's prescription autocomplete returns seeded global medicines — not yet, no seed data exists; and a deliberately mis-written service query against a clinical table raises instead of returning another tenant's rows — not yet, D2/D3 not started. Stage 2 is not gated-complete: one of three conditions holds.
 
 **Note (added 2026-09-23):** the taxonomy expansion in `docs/planning/future-scope-2026-09.md` (discipline/condition/therapy/references) is meant to land in this same migration wave when it's actually scheduled — bundled with D1 rather than done twice. It isn't scheduled yet, so it isn't in this stage's scope or gate above; adding it later will widen this stage's surface without moving its date, which is a cost to name explicitly when that happens, not now.
 

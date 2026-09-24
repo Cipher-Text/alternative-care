@@ -11,6 +11,8 @@ Platform catalogs (future disciplines, conditions, herbs, references/evidence, c
 
 Medicine and symptom already use an `is_global` flag alongside `tenant_id`; preserve these tables and do not create duplicate catalogs. Important: ORM and initial migrations currently make `tenant_id` non-null, while global creation routes pass `None`. This is a code/schema mismatch; tenantless global records are not safely supported by the current schema. Most library records also inherit a non-null tenant FK, so they are not platform-global yet. Phase B must resolve medicine/symptom nullability and data ownership in additive migrations before asserting these are tenantless global catalogs. No schema conversion is part of this ADR's first phase.
 
+**Update, 2026-09-24:** the medicine/symptom half of the mismatch above is resolved. `medicines`, `symptoms`, `medicine_aliases`, `symptom_aliases`, `medicine_symptom_mappings` now extend `GlobalCatalogModel` with a nullable `tenant_id`, and `medicines`/`symptoms` carry a CHECK constraint enforcing global-XOR-tenant (migration `ba209a25bf7d` — see `docs/planning/revision-2026-09.md` Stage 2, D1). Tenantless global records for these five tables are now safely supported. The library-records half of this paragraph is unaffected and still open.
+
 ## Isolation terminology
 
 Current tenant isolation is **application-level row isolation** via explicit query predicates. PostgreSQL RLS is not enabled. Tenant-only endpoints must reject platform users without tenant context. Global data is exposed only on intentionally global catalog paths.

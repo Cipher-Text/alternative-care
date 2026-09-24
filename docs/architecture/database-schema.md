@@ -409,23 +409,28 @@ CREATE TABLE medicines (
     created_by VARCHAR(36),
     updated_by VARCHAR(36)
 );
+
+ALTER TABLE medicines ADD CONSTRAINT ck_medicines_tenant_global
+    CHECK ( (is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL) );
 ```
 
 Search uses `pg_trgm` GIN indexes on `name_en`/`name_bn` (no `search_vector`/tsvector column).
 
+`tenant_id` was `NOT NULL` until migration `ba209a25bf7d` (2026-09-24) — the CHECK constraint above is what now makes a global-row-with-a-tenant or tenant-row-with-no-tenant unrepresentable. Same history and same constraint shape on `symptoms` below.
+
 ---
 
 ### `medicine_aliases`
-**Purpose:** Alternate spellings, transliterations, and brand names for search (`medicine_id`, `alias_en`/`alias_bn`, `alias_type`, `priority`)
+**Purpose:** Alternate spellings, transliterations, and brand names for search (`medicine_id`, `alias_en`/`alias_bn`, `alias_type`, `priority`). `tenant_id` nullable, no CHECK of its own — mirrors whatever creator/medicine it's attached to.
 
 ### `symptoms`
-**Purpose:** Normalized master list of symptoms shared across all medical systems (`name_en`/`name_bn`, `description_en`/`bn`, `category`, `is_global`)
+**Purpose:** Normalized master list of symptoms shared across all medical systems (`name_en`/`name_bn`, `description_en`/`bn`, `category`, `is_global`). Same `ck_symptoms_tenant_global` CHECK constraint as `medicines`.
 
 ### `symptom_aliases`
-**Purpose:** Alternate spellings/transliterations for a symptom (`symptom_id`, `alias_en`/`alias_bn`, `alias_type`, `priority`)
+**Purpose:** Alternate spellings/transliterations for a symptom (`symptom_id`, `alias_en`/`alias_bn`, `alias_type`, `priority`). `tenant_id` nullable, no CHECK of its own, same reasoning as `medicine_aliases`.
 
 ### `medicine_symptom_mappings`
-**Purpose:** Many-to-many mapping between `medicines` and the normalized `symptoms` table (`medicine_id`, `symptom_id`, `modality_en`/`bn`, `strength`). Not named `medicine_symptoms` — see `app/shared/models/symptom.py:MedicineSymptomMapping`.
+**Purpose:** Many-to-many mapping between `medicines` and the normalized `symptoms` table (`medicine_id`, `symptom_id`, `modality_en`/`bn`, `strength`). Not named `medicine_symptoms` — see `app/shared/models/symptom.py:MedicineSymptomMapping`. `tenant_id` nullable, no CHECK of its own.
 
 ---
 

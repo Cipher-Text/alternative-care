@@ -52,3 +52,20 @@ class TenantScopedModel(BaseAuditModel):
         nullable=False,
         index=True,
     )
+
+
+class GlobalCatalogModel(BaseAuditModel):
+    """
+    Abstract base for catalog entities that may be admin-curated (global,
+    shared across all tenants) or tenant-owned, never both states at once.
+
+    Unlike TenantScopedModel, this base does not declare tenant_id itself —
+    subclasses that are hybrid global-or-tenant tables (e.g. Medicine,
+    Symptom) add their own nullable tenant_id column plus a CHECK constraint
+    making "(is_global AND tenant_id IS NULL) OR (NOT is_global AND
+    tenant_id IS NOT NULL)" the only representable state. A purely global
+    catalog table (no tenant ownership at all) would add no tenant_id
+    column here.
+    """
+
+    __abstract__ = True

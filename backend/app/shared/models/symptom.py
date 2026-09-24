@@ -1,12 +1,12 @@
 """Symptom models with normalization and alias support."""
 
-from sqlalchemy import Boolean, Integer, String, Text, ForeignKey, Index
+from sqlalchemy import Boolean, CheckConstraint, Integer, String, Text, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.shared.models.base import TenantScopedModel
+from app.shared.models.base import GlobalCatalogModel
 
 
-class Symptom(TenantScopedModel):
+class Symptom(GlobalCatalogModel):
     """
     Normalized symptom table.
     Master list of symptoms used across all medical systems.
@@ -15,6 +15,14 @@ class Symptom(TenantScopedModel):
     __tablename__ = "symptoms"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Null for global (admin-curated) symptoms, set for tenant-owned ones —
+    # see the CHECK constraint below, which is the only thing enforcing that.
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
 
     # Symptom name (bilingual)
     name_en: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
@@ -59,10 +67,14 @@ class Symptom(TenantScopedModel):
             postgresql_using="gin",
             postgresql_ops={"name_bn": "gin_trgm_ops"},
         ),
+        CheckConstraint(
+            "(is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL)",
+            name="ck_symptoms_tenant_global",
+        ),
     )
 
 
-class SymptomAlias(TenantScopedModel):
+class SymptomAlias(GlobalCatalogModel):
     """
     Symptom aliases for search (handles transliteration, common names, variations).
     CRITICAL for Bangladesh context: "মাথা ব্যথা" → "matha byatha" → "headache"
@@ -71,6 +83,15 @@ class SymptomAlias(TenantScopedModel):
     __tablename__ = "symptom_aliases"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Null when the alias was added to a global symptom by a platform admin
+    # (admins have tenant_id = NULL); no CHECK here since this table has no
+    # is_global of its own — it just mirrors whatever creator/symptom it's on.
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     symptom_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("symptoms.id", ondelete="CASCADE"),
@@ -118,7 +139,7 @@ class SymptomAlias(TenantScopedModel):
     )
 
 
-class MedicineSymptomMapping(TenantScopedModel):
+class MedicineSymptomMapping(GlobalCatalogModel):
     """
     Updated medicine-to-symptom mapping using normalized symptom references.
     Replaces the old MedicineSymptom table's text-based approach.
@@ -127,6 +148,14 @@ class MedicineSymptomMapping(TenantScopedModel):
     __tablename__ = "medicine_symptom_mappings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Null when the mapping was created by a platform admin (tenant_id = NULL)
+    # linking two global rows; no CHECK here, same reasoning as the aliases.
+    tenant_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
 
     medicine_id: Mapped[int] = mapped_column(
         Integer,

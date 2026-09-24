@@ -8,21 +8,24 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **MVP v1.0 feature-complete — NOT production ready** ⚠️
 
-**Last Verified:** 2026-09-23 (code-verified, see `docs/planning/revision-2026-09.md`)
+**Last Verified:** 2026-09-24 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
-> Stage 1 ("Shippable") is starting — code-verified on 2026-09-23: `pytest -q` runs **432 passed /
+> Stage 1 ("Shippable") is starting — code-verified on 2026-09-24: `pytest -q` runs **432 passed /
 > 2 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
 > via SMTP relay, `app/core/system_email.py`, picking one of SendGrid/Resend/Mailgun/SMTP2GO/generic
-> SMTP by `EMAIL_PROVIDER`, and no-op with a logged warning if it's unset). Still true: **no
-> Dockerfile, no IaC, no deploy path** (the rest of
-> Stage 1); global medicine/symptom creation writes `tenant_id=None` into a `NOT NULL` column and
-> fails at the database (`medicine/routes.py:102`, `symptom/routes.py:93`) — this is Stage 2's
-> keystone fix, not yet done; `usage_tracking` has no writers so plans are unenforced (2 tests
-> pinned as `xfail` document this and the receptionist-RBAC gap so they can't silently regress
-> further).
+> SMTP by `EMAIL_PROVIDER`, and no-op with a logged warning if it's unset). **Global medicine/symptom
+> creation fixed 2026-09-24** (Stage 2's keystone, D1, landed ahead of the rest of Stage 2):
+> `medicines`, `symptoms`, `medicine_aliases`, `symptom_aliases`, `medicine_symptom_mappings` now use
+> `GlobalCatalogModel` (`app/shared/models/base.py`) with a nullable `tenant_id` and, on the two
+> tables with their own `is_global` column, a CHECK constraint making `(is_global AND tenant_id IS
+> NULL) OR (NOT is_global AND tenant_id IS NOT NULL)` the only representable state — migration
+> `ba209a25bf7d`. `POST /medicines`/`POST /symptoms` with `is_global=true` now succeeds instead of
+> 500ing. Still true: **no Dockerfile, no IaC, no deploy path** (the rest of Stage 1); `usage_tracking`
+> has no writers so plans are unenforced (2 tests pinned as `xfail` document this and the
+> receptionist-RBAC gap so they can't silently regress further).
 >
 > **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
 > stage plan (Stage 0 Truth & Green → Stage 4 Retrieval Assistant), the architecture decisions
@@ -266,7 +269,10 @@ A knowledge-taxonomy expansion (discipline/condition/therapy/references), a coll
 ```python
 # app/shared/models/base.py
 BaseAuditModel → created_at, updated_at, created_by, updated_by
-TenantScopedModel(BaseAuditModel) → + tenant_id
+TenantScopedModel(BaseAuditModel) → + tenant_id (NOT NULL — clinical tables)
+GlobalCatalogModel(BaseAuditModel) → no tenant_id of its own; hybrid global-or-tenant tables
+    (medicines, symptoms, medicine_aliases, symptom_aliases, medicine_symptom_mappings) declare
+    their own nullable tenant_id on top of it, since only they can legitimately be tenant_id=NULL
 ```
 
 ### 4.4 Backend Module Structure

@@ -10,9 +10,10 @@ Tenant separation currently uses application-level explicit row isolation, not P
 > here. Short version: the test suite is green (`pytest -q`: 432 passed / 2 xfailed / 0 failed,
 > was 322 passed / 76 failed); Sentry/structlog are initialised. Password reset and email
 > verification now work end to end (no longer commented out — see "Done 2026-09-23" below), and
-> Google Sign-In/registration shipped the same day. Still true: there is no deployment path (no
-> Dockerfile, no IaC), and global medicine/symptom creation still fails at the database
-> (`usage_tracking` still has no writers — both are tracked, unfixed gaps, not newly discovered).
+> Google Sign-In/registration shipped the same day. Global medicine/symptom creation is now also
+> fixed (2026-09-24, migration `ba209a25bf7d` — see "Done 2026-09-24" below). Still true: there is
+> no deployment path (no Dockerfile, no IaC), and `usage_tracking` still has no writers — both are
+> tracked, unfixed gaps, not newly discovered.
 
 # Current Project Status
 
@@ -23,6 +24,9 @@ Last Updated: 2026-09-24
 ## Summary
 
 AltCare has a working FastAPI backend (14 registered modules, 135 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+
+Recent work (2026-09-24):
+- **Global medicine/symptom creation fixed** — the Stage 2 keystone (D1). See "Global medicine/symptom creation — fixed 2026-09-24" below.
 
 Recent work (2026-09-23):
 - **Google Sign-In and registration:** `POST /auth/google` (sign in, or `{needs_registration: true}` for a first-time Google identity) and `POST /auth/google/register` (completes clinic registration for that identity). Backend verifies the ID token itself (`app/core/security.py:verify_google_id_token`); an existing password-based account with a matching email gets its Google identity linked automatically on first sign-in. 2FA is still enforced on top of Google sign-in. Frontend: `GoogleSignInButton`, `GoogleRegisterForm`, `/register/google`. See `docs/api/authentication.md`.
@@ -134,6 +138,29 @@ Implemented routes:
 
 ### TypeScript
 - ✅ 0 errors — frontend compiles clean (`npx tsc --noEmit` exits 0 as of 2026-07-12)
+
+### Global medicine/symptom creation — fixed 2026-09-24
+
+Previously: `medicines`/`symptoms`/`medicine_aliases`/`symptom_aliases`/`medicine_symptom_mappings`
+inherited `TenantScopedModel`, whose `tenant_id` column is `NOT NULL` — but `POST /medicines` (and
+the sibling symptom/alias/mapping routes) set `tenant_id=None` for a global row, so the insert
+500'd at the database with an `IntegrityError` every time an admin tried to curate a global entry
+(or add an alias/mapping while acting as admin, since admins have `tenant_id = NULL` on their own
+account too).
+
+Fixed by migration `ba209a25bf7d`: those five tables now inherit a new `GlobalCatalogModel` base
+(`app/shared/models/base.py`) with a nullable `tenant_id`, and `medicines`/`symptoms` (the two with
+their own `is_global` column) gained a CHECK constraint —
+`(is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL)` — so the invalid
+combination can't be written by any code path, present or future. No backfill was needed (every
+existing row already satisfied the constraint); `pytest -q` stayed at 432 passed / 2 xfailed / 0
+failed after the change, and both the valid-global-insert and the two invalid combinations were
+verified manually against the dev database.
+
+This was Stage 2's keystone item (D1 in `docs/planning/revision-2026-09.md`) — the prescription
+autocomplete now has something to autocomplete against once the catalog is actually seeded, though
+seeding (300 reviewed medicines) and the rest of Stage 2 (service-layer cleanup, RLS, public API
+boundary, search) are still open.
 
 ### Medicine & Symptom search — backend done, frontend gap
 
