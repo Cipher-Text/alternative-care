@@ -1141,6 +1141,14 @@ CREATE INDEX idx_highlights_section_id ON highlights(section_id);
 
 **Correction:** earlier drafts of this doc described tables named `ai_queries` and `notifications`. Neither exists in the codebase — there is no `ai_queries` table (the `POST /api/v1/ai/query` endpoint is a 501 stub with no persistence yet) and no `notifications` table (the `notification/` backend module is an unbuilt placeholder). What actually exists for usage/quota tracking is `usage_tracking`:
 
+Written by `UsageService` (`app/core/usage_tracking.py`) on prescription issue, SMS send, and AI
+query (Stage 1 "Billing enforcement", `docs/planning/revision-2026-09.md`) — get-or-create today's
+row per tenant and increment the relevant daily counter. `sms_sent` and the `(tenant_id,
+usage_date)` unique constraint were added by migration `ed07cf4aebc7`. The `total_*` columns remain
+unmaintained display fields; reads (e.g. `GET /admin/tenants/{id}/usage`) sum the daily counters
+directly instead of trusting them. No quota *enforcement* yet — that's Stage 4, once there's usage
+history to size a limit against.
+
 ```sql
 -- Reflects app/shared/models/usage.py:UsageTracking
 CREATE TABLE usage_tracking (
@@ -1154,14 +1162,17 @@ CREATE TABLE usage_tracking (
   prescriptions_created INTEGER NOT NULL DEFAULT 0,
   ai_queries_made INTEGER NOT NULL DEFAULT 0,
   pdfs_generated INTEGER NOT NULL DEFAULT 0,
+  sms_sent INTEGER NOT NULL DEFAULT 0,
 
-  -- Running totals (for display)
+  -- Running totals (for display; unmaintained — see note above)
   total_patients INTEGER NOT NULL DEFAULT 0,
   total_prescriptions INTEGER NOT NULL DEFAULT 0,
   total_ai_queries_this_month INTEGER NOT NULL DEFAULT 0,
 
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE
+  updated_at TIMESTAMP WITH TIME ZONE,
+
+  UNIQUE (tenant_id, usage_date)
 );
 
 CREATE INDEX ix_usage_tracking_usage_date ON usage_tracking(usage_date);

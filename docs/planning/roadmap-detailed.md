@@ -1476,7 +1476,7 @@ This roadmap represents a **44-week journey** (~11 months) from planning to a co
 - Security: A (95/100), rate limiting, HTTP headers, password complexity
 - 📋 Next (as planned in May): Payments frontend, Integrations frontend, Medicine database — **all since shipped**
 
-**Current snapshot (2026-09-23):** 14 backend modules, 135 module endpoints, 34 tables, 132 frontend source files across 11 route groups (10 dashboard route groups + login). See `docs/status/current.md` for the authoritative breakdown.
+**Current snapshot (2026-09-24):** 14 backend modules, 136 module endpoints, 34 tables, 132 frontend source files across 11 route groups (10 dashboard route groups + login). See `docs/status/current.md` for the authoritative breakdown.
 
 **Questions or feedback?** Contact the product team or open an issue in the repository.
 

@@ -548,7 +548,11 @@ CREATE TABLE translations (
 ---
 
 ### `usage_tracking`
-**Purpose:** Track tenant usage against plan limits
+**Purpose:** Track tenant usage against plan limits. Written by `UsageService`
+(`app/core/usage_tracking.py`) on prescription issue, SMS send, and AI query (Stage 1 "Billing
+enforcement"); `total_patients`/`total_prescriptions`/`total_ai_queries_this_month` remain
+unmaintained display columns — reads go through `UsageService.get_month_to_date()`, which sums the
+daily counters directly rather than trusting them.
 
 ```sql
 -- Reflects app/shared/models/usage.py:UsageTracking — one row per tenant per day,
@@ -563,13 +567,16 @@ CREATE TABLE usage_tracking (
     prescriptions_created INTEGER NOT NULL DEFAULT 0,
     ai_queries_made INTEGER NOT NULL DEFAULT 0,
     pdfs_generated INTEGER NOT NULL DEFAULT 0,
+    sms_sent INTEGER NOT NULL DEFAULT 0,
 
     total_patients INTEGER NOT NULL DEFAULT 0,
     total_prescriptions INTEGER NOT NULL DEFAULT 0,
     total_ai_queries_this_month INTEGER NOT NULL DEFAULT 0,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+
+    UNIQUE (tenant_id, usage_date)
 );
 ```
 

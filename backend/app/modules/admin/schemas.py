@@ -89,6 +89,19 @@ class AdminUpdateTenantRequest(BaseModel):
     is_approved: bool | None = None
 
 
+class AdminTenantUsageResponse(BaseModel):
+    """Month-to-date usage for one tenant, for platform admin billing views."""
+
+    tenant_id: str
+    plan: str
+    plan_expires_at: datetime | None
+    month: str  # "2026-09"
+    prescriptions_created: int
+    ai_queries_made: int
+    sms_sent: int
+    pdfs_generated: int
+
+
 # ============================================================================
 # Tenant provisioning (moved from auth)
 # ============================================================================

@@ -9,6 +9,30 @@ from app.core.config import settings
 from app.core.rate_limit import RateLimitResult
 from app.core.security import create_access_token
 from app.main import app
+from app.shared.models import Tenant
+
+
+@pytest.fixture
+async def pro_tenant_1(db_session):
+    """A tenant with id 'tenant-1', matching the synthetic tokens below.
+
+    require_plan() checks the tenant's plan in the DB, not just the JWT
+    claim (Stage 1 "Billing enforcement"), so /ai/query tests that hand-craft
+    a token for a non-existent tenant need a real backing row.
+    """
+    tenant = Tenant(
+        id="tenant-1",
+        name="Rate Limit Test Tenant",
+        email="rate-limit-test@test.com",
+        clinic_name="Rate Limit Test Clinic",
+        specializations=["homeopathy"],
+        plan="pro",
+        is_active=True,
+        is_approved=True,
+    )
+    db_session.add(tenant)
+    await db_session.commit()
+    return tenant
 
 
 @pytest.mark.asyncio
@@ -79,7 +103,9 @@ async def test_general_api_rate_limit_enforced(monkeypatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_general_api_rate_limit_isolated_per_user_jwt_sub(monkeypatch) -> None:
+async def test_general_api_rate_limit_isolated_per_user_jwt_sub(
+    monkeypatch, client: AsyncClient, pro_tenant_1
+) -> None:
     """Authenticated users should be rate-limited independently by JWT sub."""
     monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     prefix = f"test-user-scope-{uuid.uuid4()}"
@@ -96,7 +122,7 @@ async def test_general_api_rate_limit_isolated_per_user_jwt_sub(monkeypatch) -> 
     token_user_1 = create_access_token(
         {
             "sub": "user-1",
-            "tenant_id": "tenant-1",
+            "tenant_id": pro_tenant_1.id,
             "role": "doctor",
             "email": "user1@test.com",
             "plan": "pro",
@@ -105,7 +131,7 @@ async def test_general_api_rate_limit_isolated_per_user_jwt_sub(monkeypatch) -> 
     token_user_2 = create_access_token(
         {
             "sub": "user-2",
-            "tenant_id": "tenant-1",
+            "tenant_id": pro_tenant_1.id,
             "role": "doctor",
             "email": "user2@test.com",
             "plan": "pro",
@@ -113,30 +139,27 @@ async def test_general_api_rate_limit_isolated_per_user_jwt_sub(monkeypatch) -> 
     )
 
     try:
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
-            first_user_1 = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "hi"},
-                headers={"Authorization": f"Bearer {token_user_1}"},
-            )
-            assert first_user_1.status_code == 501
+        first_user_1 = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "hi"},
+            headers={"Authorization": f"Bearer {token_user_1}"},
+        )
+        assert first_user_1.status_code == 501
 
-            first_user_2 = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "hi"},
-                headers={"Authorization": f"Bearer {token_user_2}"},
-            )
-            assert first_user_2.status_code == 501
+        first_user_2 = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "hi"},
+            headers={"Authorization": f"Bearer {token_user_2}"},
+        )
+        assert first_user_2.status_code == 501
 
-            second_user_1 = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "hi"},
-                headers={"Authorization": f"Bearer {token_user_1}"},
-            )
-            assert second_user_1.status_code == 429
-            assert second_user_1.json().get("scope") == "ai_query"
+        second_user_1 = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "hi"},
+            headers={"Authorization": f"Bearer {token_user_1}"},
+        )
+        assert second_user_1.status_code == 429
+        assert second_user_1.json().get("scope") == "ai_query"
     finally:
         settings.RATE_LIMIT_KEY_PREFIX = original_prefix
         settings.RATE_LIMIT_PER_MINUTE = original_limit
@@ -145,7 +168,9 @@ async def test_general_api_rate_limit_isolated_per_user_jwt_sub(monkeypatch) -> 
 
 
 @pytest.mark.asyncio
-async def test_ai_query_rate_limit_enforced_with_dedicated_scope(monkeypatch) -> None:
+async def test_ai_query_rate_limit_enforced_with_dedicated_scope(
+    monkeypatch, client: AsyncClient, pro_tenant_1
+) -> None:
     """AI query endpoint should enforce its own hourly quota scope."""
     monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
     prefix = f"test-ai-scope-{uuid.uuid4()}"
@@ -160,7 +185,7 @@ async def test_ai_query_rate_limit_enforced_with_dedicated_scope(monkeypatch) ->
     token_user = create_access_token(
         {
             "sub": "ai-user-1",
-            "tenant_id": "tenant-1",
+            "tenant_id": pro_tenant_1.id,
             "role": "doctor",
             "email": "ai1@test.com",
             "plan": "pro",
@@ -168,23 +193,20 @@ async def test_ai_query_rate_limit_enforced_with_dedicated_scope(monkeypatch) ->
     )
 
     try:
-        async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
-        ) as client:
-            first = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "hello"},
-                headers={"Authorization": f"Bearer {token_user}"},
-            )
-            assert first.status_code == 501
+        first = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "hello"},
+            headers={"Authorization": f"Bearer {token_user}"},
+        )
+        assert first.status_code == 501
 
-            second = await client.post(
-                "/api/v1/ai/query",
-                json={"query": "hello again"},
-                headers={"Authorization": f"Bearer {token_user}"},
-            )
-            assert second.status_code == 429
-            assert second.json().get("scope") == "ai_query"
+        second = await client.post(
+            "/api/v1/ai/query",
+            json={"query": "hello again"},
+            headers={"Authorization": f"Bearer {token_user}"},
+        )
+        assert second.status_code == 429
+        assert second.json().get("scope") == "ai_query"
     finally:
         settings.RATE_LIMIT_KEY_PREFIX = original_prefix
         settings.RATE_LIMIT_AI_PER_HOUR = original_ai_limit
@@ -193,7 +215,7 @@ async def test_ai_query_rate_limit_enforced_with_dedicated_scope(monkeypatch) ->
 
 @pytest.mark.asyncio
 async def test_ai_query_scope_independent_from_general_api_scope(
-    monkeypatch, client: AsyncClient
+    monkeypatch, client: AsyncClient, pro_tenant_1
 ) -> None:
     """AI quota and general API quota should not consume each other."""
     monkeypatch.setattr(settings, "RATE_LIMIT_ENABLED", True)
@@ -213,7 +235,7 @@ async def test_ai_query_scope_independent_from_general_api_scope(
     token_user = create_access_token(
         {
             "sub": "ai-user-2",
-            "tenant_id": "tenant-1",
+            "tenant_id": pro_tenant_1.id,
             "role": "doctor",
             "email": "ai2@test.com",
             "plan": "pro",

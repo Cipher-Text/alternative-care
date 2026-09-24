@@ -5,15 +5,17 @@ The product direction preserves working practice-management domains and expands 
 Tenant separation currently uses application-level explicit row isolation, not PostgreSQL RLS. See [architecture inventory](../architecture/architecture-inventory.md) for code-verified models, risks, and staged migration plan.
 
 > **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-24.** See
-> [Plan, Architecture & Technology Revision, Stage 0](../planning/revision-2026-09.md#stage-0--truth--green--by-2026-10-07)
+> [Plan, Architecture & Technology Revision, Stage 1](../planning/revision-2026-09.md#stage-1--shippable--by-2026-11-21)
 > for the current, live numbers — this file isn't kept in sync with them, don't quote figures from
-> here. Short version: the test suite is green (`pytest -q`: 432 passed / 2 xfailed / 0 failed,
+> here. Short version: the test suite is green (`pytest -q`: 442 passed / 1 xfailed / 0 failed,
 > was 322 passed / 76 failed); Sentry/structlog are initialised. Password reset and email
 > verification now work end to end (no longer commented out — see "Done 2026-09-23" below), and
 > Google Sign-In/registration shipped the same day. Global medicine/symptom creation is now also
-> fixed (2026-09-24, migration `ba209a25bf7d` — see "Done 2026-09-24" below). Still true: there is
-> no deployment path (no Dockerfile, no IaC), and `usage_tracking` still has no writers — both are
-> tracked, unfixed gaps, not newly discovered.
+> fixed (2026-09-24, migration `ba209a25bf7d` — see "Done 2026-09-24" below), and so is billing
+> enforcement (2026-09-24, migration `ed07cf4aebc7` — see "Billing enforcement — done 2026-09-24"
+> below): `usage_tracking` now has real writers and plan checks hit the DB instead of the JWT claim.
+> Still true: there is no deployment path (no Dockerfile, no IaC) — a tracked, unfixed gap, not
+> newly discovered.
 
 # Current Project Status
 
@@ -23,9 +25,10 @@ Last Updated: 2026-09-24
 
 ## Summary
 
-AltCare has a working FastAPI backend (14 registered modules, 135 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+AltCare has a working FastAPI backend (14 registered modules, 136 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
 
 Recent work (2026-09-24):
+- **Billing enforcement shipped** — plan checks are DB-backed, `usage_tracking` has writers. See "Billing enforcement — done 2026-09-24" below.
 - **Global medicine/symptom creation fixed** — the Stage 2 keystone (D1). See "Global medicine/symptom creation — fixed 2026-09-24" below.
 
 Recent work (2026-09-23):
@@ -87,9 +90,9 @@ Registered routers in `backend/app/main.py`:
 | symptom | `/api/v1/symptoms` | 9 | CRUD, search, aliases |
 | tenant | `/api/v1/tenant` | 2 | Clinic profile |
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
-| admin | `/api/v1/admin` | 10 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors` |
+| admin | `/api/v1/admin` | 11 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors`, `GET /admin/tenants/{id}/usage` |
 
-**Total:** 135 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 136 module endpoints + `/`, `/health`, `/metrics`
 
 Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
 New canonical endpoints are at `/api/v1/admin`.
@@ -161,6 +164,29 @@ This was Stage 2's keystone item (D1 in `docs/planning/revision-2026-09.md`) —
 autocomplete now has something to autocomplete against once the catalog is actually seeded, though
 seeding (300 reviewed medicines) and the rest of Stage 2 (service-layer cleanup, RLS, public API
 boundary, search) are still open.
+
+### Billing enforcement — done 2026-09-24
+
+Previously: `RequireProPlan`/`require_plan()` only checked the `plan` claim baked into the JWT at
+login, so a tenant downgraded from `pro` to `free` kept pro access until their access token expired
+(30 min). `usage_tracking` had a model and a table but zero writers anywhere in `app/modules/`, so
+plan-limit and admin billing views had no real data.
+
+Fixed: `require_plan()` (`app/core/dependencies.py`) now looks up the tenant's `plan` and
+`plan_expires_at` from the database on every call, not the JWT — a downgrade or expiry revokes pro
+access immediately. New `UsageService` (`app/core/usage_tracking.py`) writes a per-tenant daily
+`usage_tracking` row on the three actions Stage 1 named: prescription issue (both create-as-issued
+and a later draft→issued `PATCH`), SMS send, and AI query (tracked even though `/ai/query` itself is
+still a 501 stub). Migration `ed07cf4aebc7` adds `usage_tracking.sms_sent` (no column existed for it)
+and a `(tenant_id, usage_date)` unique constraint so concurrent writes for the same tenant/day can't
+race. Surfaced read-only via `GET /admin/tenants/{id}/usage`.
+
+Scoped narrowly on purpose: no quota *blocking* (Stage 4, once there's enough usage history to size
+a limit against) and no `plan_expires_at` check on general tenant-scoped endpoints — only on
+`require_plan`-gated ones (today just `/ai/query`), since broader enforcement is untested, undefined
+product behavior. `pytest -q` went from 432 passed / 2 xfailed to **442 passed / 1 xfailed, 0
+failed** — `test_plan_downgrade_revokes_pro_access` is no longer `xfail`; only the documented
+receptionist-RBAC gap remains pinned.
 
 ### Medicine & Symptom search — backend done, frontend gap
 

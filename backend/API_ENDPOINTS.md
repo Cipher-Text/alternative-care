@@ -1,6 +1,6 @@
 # AltCare API Endpoints
 
-**Total:** 135 endpoints across 14 modules (+ `/`, `/health`, `/metrics`)
+**Total:** 136 endpoints across 14 modules (+ `/`, `/health`, `/metrics`)
 **Base URL:** `http://localhost:8000/api/v1`
 **Auth:** Bearer JWT (except `/auth/register`, `/auth/login`, `/auth/login-2fa`, `/auth/google`, `/auth/google/register`, `/auth/password/forgot`, `/auth/password/reset`, `/auth/email/verify`, `/auth/email/resend`)
 **Interactive Docs:** http://localhost:8000/docs
@@ -305,7 +305,7 @@
 
 ---
 
-## 13. Platform Admin (10)
+## 13. Platform Admin (11)
 
 ### Dashboard (1)
 
@@ -313,7 +313,7 @@
 |--------|----------|-------------|------|
 | GET | `/admin/dashboard` | Platform KPI dashboard (tenant/user counts, plan breakdown) | Admin |
 
-### Tenant Management (7)
+### Tenant Management (8)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
@@ -321,6 +321,7 @@
 | POST | `/admin/tenants` | Provision tenant + primary doctor in one operation | Admin |
 | GET | `/admin/tenants/pending` | List tenants pending approval | Admin |
 | GET | `/admin/tenants/{tenant_id}` | Get tenant detail and all users | Admin |
+| GET | `/admin/tenants/{tenant_id}/usage` | Get tenant's month-to-date usage (prescriptions, SMS, AI queries, PDFs) | Admin |
 | POST | `/admin/tenants/{tenant_id}/approve` | Approve a pending tenant | Admin |
 | PATCH | `/admin/tenants/{tenant_id}` | Change plan, suspend, or reactivate a tenant | Admin |
 | POST | `/admin/tenants/{tenant_id}/doctors` | Add another doctor user to an existing tenant | Admin |

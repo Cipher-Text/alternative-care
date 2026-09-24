@@ -16,6 +16,7 @@ from app.modules.admin.schemas import (
     AdminTenantDetailResponse,
     AdminTenantItem,
     AdminTenantListItem,
+    AdminTenantUsageResponse,
     AdminUpdateTenantRequest,
     AdminUpdateUserRequest,
     AdminUpdateUserResponse,
@@ -107,6 +108,21 @@ async def get_tenant_detail(
 ):
     service = AdminService(db)
     return await service.get_tenant_detail(tenant_id)
+
+
+@router.get(
+    "/tenants/{tenant_id}/usage",
+    response_model=AdminTenantUsageResponse,
+    summary="Get tenant usage",
+    description="Get a tenant's month-to-date usage counters (prescriptions, SMS, AI queries, PDFs).",
+)
+async def get_tenant_usage(
+    tenant_id: str,
+    current_user: RequireAdmin,  # noqa: ARG001
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    service = AdminService(db)
+    return await service.get_tenant_usage(tenant_id)
 
 
 @router.post(

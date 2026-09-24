@@ -11,8 +11,8 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 **Last Verified:** 2026-09-24 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
-> Stage 1 ("Shippable") is starting — code-verified on 2026-09-24: `pytest -q` runs **432 passed /
-> 2 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
+> Stage 1 ("Shippable") is underway — code-verified on 2026-09-24: `pytest -q` runs **442 passed /
+> 1 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
 > via SMTP relay, `app/core/system_email.py`, picking one of SendGrid/Resend/Mailgun/SMTP2GO/generic
@@ -23,9 +23,17 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 > tables with their own `is_global` column, a CHECK constraint making `(is_global AND tenant_id IS
 > NULL) OR (NOT is_global AND tenant_id IS NOT NULL)` the only representable state — migration
 > `ba209a25bf7d`. `POST /medicines`/`POST /symptoms` with `is_global=true` now succeeds instead of
-> 500ing. Still true: **no Dockerfile, no IaC, no deploy path** (the rest of Stage 1); `usage_tracking`
-> has no writers so plans are unenforced (2 tests pinned as `xfail` document this and the
-> receptionist-RBAC gap so they can't silently regress further).
+> 500ing. **Billing enforcement landed 2026-09-24** (Stage 1): `require_plan()`
+> (`app/core/dependencies.py`) now checks the tenant's `plan`/`plan_expires_at` in the database
+> instead of trusting the JWT's `plan` claim, so a downgraded or expired tenant loses pro access
+> immediately rather than at token expiry — closes the `test_plan_downgrade_revokes_pro_access` xfail.
+> `usage_tracking` (`app/core/usage_tracking.py`) now has writers: prescription issue, SMS send, and
+> AI query each write a per-tenant daily counter (migration `ed07cf4aebc7` adds a `sms_sent` column
+> and a `(tenant_id, usage_date)` unique constraint), surfaced read-only via
+> `GET /admin/tenants/{id}/usage`. Quota *enforcement* (blocking at a monthly limit) is still Stage 4 —
+> this stage only makes the data trustworthy. Still true: **no Dockerfile, no IaC, no deploy path**
+> (the rest of Stage 1); the receptionist-RBAC gap is pinned as the one remaining `xfail` so it can't
+> silently regress further.
 >
 > **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
 > stage plan (Stage 0 Truth & Green → Stage 4 Retrieval Assistant), the architecture decisions
@@ -43,11 +51,11 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
 - Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
-- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 432-passed total, 2026-09-23) ✅
+- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 442-passed total, 2026-09-24) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
-- Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management ✅
+- Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management, tenant usage ✅
 
-**Backend:** 14 routed modules, 135 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Backend:** 14 routed modules, 136 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)
 
@@ -287,9 +295,9 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (135 total endpoints)
+├── modules/               # Feature modules (136 total endpoints)
 │   ├── auth/             # ✅ Login (incl. login-2fa), Google Sign-In/registration, refresh, 2FA, password reset, email verification, admin provisioning (21 endpoints)
-│   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning (10 endpoints)
+│   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning, tenant usage (11 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)
 │   ├── appointments/     # ✅ Scheduling, visits (10 endpoints)

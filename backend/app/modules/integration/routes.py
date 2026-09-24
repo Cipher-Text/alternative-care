@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.dependencies import CurrentUser, get_current_user, require_tenant_user
 from app.core.security import decrypt_credentials
+from app.core.usage_tracking import UsageService
 from app.modules.integration.factory import IntegrationProviderFactory
 from app.modules.integration.service import IntegrationService
 from app.modules.integration.tasks import send_email_task, send_sms_task
@@ -385,6 +386,8 @@ async def send_sms(
         recipient=data.recipient,
         message=data.message,
     )
+
+    await UsageService(service.db, current_user.tenant_id).increment("sms_sent")
 
     return SendOperationResponse(
         success=True,

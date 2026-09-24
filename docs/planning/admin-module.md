@@ -2,7 +2,7 @@
 
 **Status:** Phase A shipped (2026-07-11) — Phase A2 extended 2026-07-12 with tenant-doctor
 provisioning. Phase B (operator RBAC, receptionist enforcement) is still Planning.
-**Last updated:** 2026-09-21
+**Last updated:** 2026-09-24
 
 ---
 
@@ -10,10 +10,11 @@ provisioning. Phase B (operator RBAC, receptionist enforcement) is still Plannin
 
 Give the platform admin a dedicated module (`app/modules/admin/`) with proper navigation,
 a dashboard, and full tenant lifecycle controls. This has been delivered — `app/modules/admin/`
-now holds 10 endpoints (`routes.py`, `service.py`, `schemas.py`) registered at `/api/v1/admin`,
-replacing the old prototype (5 endpoints buried in `auth/routes.py`, one nav link). The legacy
-`/auth/admin/*` endpoints still exist for backwards compatibility (see Roadmap P1 item 3 —
-removal pending).
+now holds 11 endpoints (`routes.py`, `service.py`, `schemas.py`) registered at `/api/v1/admin`
+(the 11th, `GET /admin/tenants/{id}/usage`, shipped 2026-09-24 as part of Stage 1 "Billing
+enforcement"), replacing the old prototype (5 endpoints buried in `auth/routes.py`, one nav link).
+The legacy `/auth/admin/*` endpoints still exist for backwards compatibility (see Roadmap P1 item 3
+— removal pending).
 
 ---
 

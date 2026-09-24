@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_password_hash
+from app.core.usage_tracking import UsageService
 from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
     AdminAddTenantDoctorResponse,
@@ -18,6 +19,7 @@ from app.modules.admin.schemas import (
     AdminTenantDoctorItem,
     AdminTenantItem,
     AdminTenantListItem,
+    AdminTenantUsageResponse,
     AdminUpdateTenantRequest,
     AdminUpdateUserRequest,
     AdminUpdateUserResponse,
@@ -157,6 +159,28 @@ class AdminService:
             updated_at=tenant.updated_at,
             approved_at=tenant.approved_at,
             approved_by=tenant.approved_by,
+        )
+
+    async def get_tenant_usage(self, tenant_id: str) -> AdminTenantUsageResponse:
+        """Get a tenant's month-to-date usage counters."""
+        tenant_result = await self.db.execute(
+            select(Tenant).where(Tenant.id == tenant_id)
+        )
+        tenant = tenant_result.scalar_one_or_none()
+        if not tenant:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tenant not found",
+            )
+
+        usage = await UsageService(self.db, tenant_id).get_month_to_date()
+
+        return AdminTenantUsageResponse(
+            tenant_id=tenant_id,
+            plan=tenant.plan,
+            plan_expires_at=tenant.plan_expires_at,
+            month=datetime.now(timezone.utc).strftime("%Y-%m"),
+            **usage,
         )
 
     async def list_pending_tenants(self) -> list[AdminTenantItem]:

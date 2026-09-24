@@ -9,6 +9,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.usage_tracking import UsageService
 from app.shared.models import Prescription, PrescriptionItem
 from app.shared.schemas import (
     PrescriptionCreate,
@@ -80,6 +81,9 @@ class PrescriptionService:
 
         # Load items relationship
         await self.db.refresh(prescription, ["items"])
+
+        if prescription.status == "issued":
+            await UsageService(self.db, self.tenant_id).increment("prescriptions_created")
 
         return prescription
 
@@ -195,6 +199,9 @@ class PrescriptionService:
         await self.db.commit()
         await self.db.refresh(prescription)
         await self.db.refresh(prescription, ["items"])
+
+        if prescription.status == "issued":
+            await UsageService(self.db, self.tenant_id).increment("prescriptions_created")
 
         return prescription
 

@@ -647,7 +647,7 @@ def tenant_factory(faker):
     return _create
 ```
 
-Illustrative, not literal: the real `tests/conftest.py` uses `AsyncClient(transport=ASGITransport(app=app), base_url="http://test")` (the `AsyncClient(app=...)` shorthand above was removed in modern httpx), a real Postgres test database per settings (`alternative_care_test`/`altcare_test`, not a hardcoded `test:test@localhost`), and no `tenant_factory`/`faker`-based fixtures — tenants/users/patients are built directly as explicit fixtures. `pytest -q` currently: 432 passed / 2 xfailed / 0 failed (2026-09-24, see `docs/planning/revision-2026-09.md` Stage 0).
+Illustrative, not literal: the real `tests/conftest.py` uses `AsyncClient(transport=ASGITransport(app=app), base_url="http://test")` (the `AsyncClient(app=...)` shorthand above was removed in modern httpx), a real Postgres test database per settings (`alternative_care_test`/`altcare_test`, not a hardcoded `test:test@localhost`), and no `tenant_factory`/`faker`-based fixtures — tenants/users/patients are built directly as explicit fixtures. `pytest -q` currently: 442 passed / 1 xfailed / 0 failed (2026-09-24, see `docs/planning/revision-2026-09.md` Stage 1).
 
 **Multi-tenant isolation test:**
 ```python

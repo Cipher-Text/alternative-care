@@ -9,6 +9,9 @@ All notable changes to AltCare are documented here.
 ### Backend
 - Google Sign-In and registration (`POST /auth/google`, `POST /auth/google/register`), password reset (`POST /auth/password/forgot`, `/password/reset`), and email verification (`POST /auth/email/verify`, `/email/resend`) shipped 2026-09-23 — see `docs/api/authentication.md`. Auth module grew from 19 to 21 endpoints; total module endpoints 133 → 135.
 - Test suite grew from 422 to 432 passed (2 xfailed, 0 failed) covering the above.
+- Global medicine/symptom creation fixed 2026-09-24 — `medicines`/`symptoms`/`medicine_aliases`/`symptom_aliases`/`medicine_symptom_mappings` moved to a nullable `tenant_id` with a CHECK constraint (migration `ba209a25bf7d`), so `POST /medicines`/`POST /symptoms` with `is_global=true` no longer 500s. See `docs/planning/revision-2026-09.md` Stage 2 (D1).
+- Billing enforcement shipped 2026-09-24 — `require_plan()` now checks the tenant's `plan`/`plan_expires_at` in the database instead of the JWT claim, so a downgrade or expiry revokes pro access immediately. `usage_tracking` gets its first writers (`app/core/usage_tracking.py`): prescription issue, SMS send, and AI query. New `GET /admin/tenants/{id}/usage` endpoint; total module endpoints 135 → 136. Migration `ed07cf4aebc7` adds `usage_tracking.sms_sent` and a `(tenant_id, usage_date)` unique constraint. See `docs/planning/revision-2026-09.md` Stage 1.
+- Test suite grew from 432 to 442 passed (1 xfailed, 0 failed) — `test_plan_downgrade_revokes_pro_access` is no longer `xfail`.
 
 ### Frontend
 - next-intl actually wired up (cookie-based locale, no URL routing): `NextIntlClientProvider` in the root layout, `src/i18n/request.ts` request config, `LanguageSwitcher` component in the header, locale synced to the user's stored `language` preference on login. Coverage so far: login card and header user dropdown only — the rest of the app is still hardcoded English.

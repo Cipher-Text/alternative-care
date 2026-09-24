@@ -6,7 +6,7 @@ An integrated alternative medicine practice platform, expanding in stages into p
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
 - Active API modules: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- Module endpoints: 135 total (admin: 10, auth: 21, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
+- Module endpoints: 136 total (admin: 11, auth: 21, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend: Next.js 16 + React 19 (132 source files)
   - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`, `/admin/dashboard`, `/admin/users`

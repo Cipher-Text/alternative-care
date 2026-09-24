@@ -463,16 +463,6 @@ class TestPlanBasedFeatureGating:
         payload = decode_token(token)
         assert payload["plan"] == "pro"
 
-    @pytest.mark.xfail(
-        reason=(
-            "Plan enforcement is JWT-claim-only today (RequireProPlan checks "
-            "payload['plan'], never the DB) and the AI endpoint is an "
-            "unconditional 501 stub regardless of plan. DB-checked plan "
-            "enforcement is Stage 1 (\"Billing enforcement\") in "
-            "docs/planning/revision-2026-09.md, not yet built."
-        ),
-        strict=True,
-    )
     async def test_plan_downgrade_revokes_pro_access(
         self, client: AsyncClient, db_session, test_tenant, test_user
     ):
@@ -492,19 +482,15 @@ class TestPlanBasedFeatureGating:
         test_tenant.plan = "free"
         await db_session.commit()
 
-        # Old token still has plan='pro' claim (until refresh)
-        # But database checks should block access
-        # Try to access pro feature
+        # Old token still has plan='pro' claim (until refresh), but require_plan()
+        # checks the DB, so the downgrade takes effect immediately
         response = await client.post(
             "/api/v1/ai/query",
             json={"query": "test"},
             headers={"Authorization": f"Bearer {token}"},
         )
 
-        # Should be blocked (if endpoint enforces DB plan check)
-        # Or might succeed if only checking JWT claim
-        # Document which approach is used
-        assert response.status_code in [403, 404]
+        assert response.status_code == 403
 
 
 @pytest.mark.asyncio

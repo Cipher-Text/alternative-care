@@ -69,7 +69,7 @@ Before deploying to production, ensure ALL items are completed:
 - Explicit per-query filtering: the JWT's `tenant_id` is passed into each service, and `BaseTenantService`'s shared query helpers add the `tenant_id` filter — **not** an automatic session-level filter. A `tenant_id_ctx` ContextVar is set from the JWT but nothing reads it; a hand-written query that skips `BaseTenantService` is a tenant-isolation bug the type system won't catch. See `CLAUDE.md` §4.1.
 - Platform users (admin, operator): `tenant_id = NULL`
 - Tenant users (doctor, receptionist): scoped to their tenant
-- Isolation-suite results are part of the whole-suite count in `docs/planning/revision-2026-09.md` Stage 0 (`pytest -q`: 432 passed / 2 xfailed / 0 failed) — the historical "16/16 passing" figure was never sourced to a specific run and shouldn't be quoted
+- Isolation-suite results are part of the whole-suite count in `docs/planning/revision-2026-09.md` Stage 1 (`pytest -q`: 442 passed / 1 xfailed / 0 failed) — the historical "16/16 passing" figure was never sourced to a specific run and shouldn't be quoted
 
 **Testing:**
 ```bash

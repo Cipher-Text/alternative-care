@@ -1,6 +1,7 @@
 """FastAPI dependencies for authentication and authorization."""
 
 from contextvars import ContextVar
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -11,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.security import decode_token
-from app.shared.models.tenant import User
+from app.shared.models.tenant import Tenant, User
 
 # Security scheme
 security = HTTPBearer()
@@ -186,14 +187,44 @@ def require_plan(*allowed_plans: str):
     """
     Dependency factory to require specific subscription plans.
 
+    Checks the tenant's plan and plan_expires_at in the database, not the
+    JWT's `plan` claim — a downgraded or expired tenant must lose access
+    immediately, without waiting for its holders' access tokens to expire.
+
     Usage:
         @router.post("/ai/query")
         async def ai_query(user: CurrentUser = Depends(require_plan("pro"))):
             ...
     """
 
-    async def _check_plan(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-        if not user.plan or user.plan not in allowed_plans:
+    async def _check_plan(
+        user: CurrentUser = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
+    ) -> CurrentUser:
+        if not user.tenant_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"This feature requires one of these plans: {allowed_plans}",
+            )
+
+        result = await db.execute(
+            select(Tenant.plan, Tenant.plan_expires_at).where(Tenant.id == user.tenant_id)
+        )
+        row = result.first()
+        if not row:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"This feature requires one of these plans: {allowed_plans}",
+            )
+
+        plan, plan_expires_at = row
+        if plan_expires_at is not None and plan_expires_at < datetime.now(timezone.utc):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Your plan has expired.",
+            )
+
+        if plan not in allowed_plans:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"This feature requires one of these plans: {allowed_plans}",

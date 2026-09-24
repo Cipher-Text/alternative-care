@@ -347,24 +347,37 @@ async def ai_query(
 
 @router.post("/integrations")
 async def add_integration(
-    user: CurrentUser = Depends(require_plan("pro", "enterprise"))
+    user: CurrentUser = Depends(require_plan("plus", "pro"))
 ):
     ...
 ```
 
-**Implementation:**
+**Implementation (`app/core/dependencies.py`):** checks the tenant's `plan` and `plan_expires_at`
+in the database on every call — not the JWT's `plan` claim. A downgrade or expiry revokes access
+immediately, without waiting for the holder's access token to expire (Stage 1 "Billing enforcement",
+`docs/planning/revision-2026-09.md`):
 ```python
 def require_plan(*allowed_plans: str):
-    async def plan_checker(
-        current_user: CurrentUser = Depends(get_current_user)
-    ):
-        if current_user.plan not in allowed_plans:
-            raise HTTPException(
-                status_code=403,
-                detail=f"Requires {' or '.join(allowed_plans)} plan"
-            )
-        return current_user
-    return plan_checker
+    async def _check_plan(
+        user: CurrentUser = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
+    ) -> CurrentUser:
+        if not user.tenant_id:
+            raise HTTPException(status_code=403, detail=f"Requires one of: {allowed_plans}")
+
+        row = (await db.execute(
+            select(Tenant.plan, Tenant.plan_expires_at).where(Tenant.id == user.tenant_id)
+        )).first()
+        if not row:
+            raise HTTPException(status_code=403, detail=f"Requires one of: {allowed_plans}")
+
+        plan, plan_expires_at = row
+        if plan_expires_at is not None and plan_expires_at < datetime.now(timezone.utc):
+            raise HTTPException(status_code=403, detail="Your plan has expired.")
+        if plan not in allowed_plans:
+            raise HTTPException(status_code=403, detail=f"Requires one of: {allowed_plans}")
+        return user
+    return _check_plan
 ```
 
 ---
