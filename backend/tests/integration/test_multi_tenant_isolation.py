@@ -68,76 +68,64 @@ class TestTenantIsolation:
         assert data1["tenant"]["clinic_name"] != data2["tenant"]["clinic_name"]
 
     async def test_refresh_token_scoped_to_user(
-        self, client: AsyncClient, test_user, test_user_2
+        self, client: AsyncClient, client_2: AsyncClient, test_user, test_user_2
     ):
         """Test that refresh tokens are scoped to correct user."""
-        # Login as both users
+        # Login as both users — separate clients, since each holds its own
+        # cookie jar (like two separate browser sessions); a shared client
+        # would just overwrite one refresh_token cookie with the other's.
         login1 = await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
-        refresh1 = login1.json()["tokens"]["refresh_token"]
+        assert login1.status_code == 200
 
-        login2 = await client.post(
+        login2 = await client_2.post(
             "/api/v1/auth/login",
             json={"email": test_user_2.email, "password": "TestPass456"},
         )
-        refresh2 = login2.json()["tokens"]["refresh_token"]
+        assert login2.status_code == 200
 
         # Refresh token 1
-        new_tokens1 = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh1},
-        )
+        new_tokens1 = await client.post("/api/v1/auth/refresh")
         assert new_tokens1.status_code == 200
 
         # Refresh token 2
-        new_tokens2 = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh2},
-        )
+        new_tokens2 = await client_2.post("/api/v1/auth/refresh")
         assert new_tokens2.status_code == 200
 
         # Tokens should be different
         assert new_tokens1.json()["access_token"] != new_tokens2.json()["access_token"]
 
     async def test_logout_only_affects_own_sessions(
-        self, client: AsyncClient, test_user, test_user_2, db_session
+        self, client: AsyncClient, client_2: AsyncClient, test_user, test_user_2, db_session
     ):
         """Test that logout only revokes own sessions, not other tenants'."""
-        # Both users login
+        # Both users login — separate clients/cookie jars, see comment above
         login1 = await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
         access1 = login1.json()["tokens"]["access_token"]
-        refresh1 = login1.json()["tokens"]["refresh_token"]
 
-        login2 = await client.post(
+        login2 = await client_2.post(
             "/api/v1/auth/login",
             json={"email": test_user_2.email, "password": "TestPass456"},
         )
-        refresh2 = login2.json()["tokens"]["refresh_token"]
+        assert login2.status_code == 200
 
         # User 1 logs out
         await client.post(
             "/api/v1/auth/logout",
-            json={"refresh_token": refresh1},
             headers={"Authorization": f"Bearer {access1}"},
         )
 
         # User 1's token should be revoked
-        refresh_attempt1 = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh1},
-        )
+        refresh_attempt1 = await client.post("/api/v1/auth/refresh")
         assert refresh_attempt1.status_code == 401
 
         # User 2's token should still work
-        refresh_attempt2 = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh2},
-        )
+        refresh_attempt2 = await client_2.post("/api/v1/auth/refresh")
         assert refresh_attempt2.status_code == 200
 
     async def test_jwt_token_contains_correct_tenant_id(
@@ -281,18 +269,22 @@ class TestSessionIsolation:
         # the async session can't service outside a greenlet.
         user_id = test_user.id
 
-        # Create 3 sessions for same user
+        # Create 3 sessions for same user. Every login overwrites the
+        # shared client's refresh_token cookie, so capture each one's raw
+        # value right away — before the next login clobbers it.
         login1 = await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
             headers={"User-Agent": "Browser 1"},
         )
+        refresh1 = client.cookies.get("refresh_token")
 
         login2 = await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
             headers={"User-Agent": "Browser 2"},
         )
+        refresh2 = client.cookies.get("refresh_token")
 
         login3 = await client.post(
             "/api/v1/auth/login",
@@ -315,7 +307,6 @@ class TestSessionIsolation:
         assert len(active_sessions) == 3
 
         # Logout from one session
-        refresh1 = login1.json()["tokens"]["refresh_token"]
         access1 = login1.json()["tokens"]["access_token"]
 
         await client.post(
@@ -335,7 +326,6 @@ class TestSessionIsolation:
         assert len(active_sessions) == 2
 
         # Other sessions should still work
-        refresh2 = login2.json()["tokens"]["refresh_token"]
         refresh_attempt = await client.post(
             "/api/v1/auth/refresh",
             json={"refresh_token": refresh2},
@@ -366,11 +356,15 @@ class TestSessionIsolation:
             "/api/v1/auth/login",
             json={"email": test_user_2.email, "password": "TestPass456"},
         )
+        # Capture now — user 1's logout below clears the shared client's
+        # refresh_token cookie regardless of whose session it belongs to.
+        refresh2 = client.cookies.get("refresh_token")
 
-        # User 1 logs out all sessions (no specific refresh token)
+        # User 1 logs out all sessions
         access1 = login1a.json()["tokens"]["access_token"]
         await client.post(
             "/api/v1/auth/logout",
+            json={"all_sessions": True},
             headers={"Authorization": f"Bearer {access1}"},
         )
 
@@ -392,7 +386,6 @@ class TestSessionIsolation:
         assert len(sessions2.scalars().all()) == 1
 
         # User 2 can still refresh
-        refresh2 = login2a.json()["tokens"]["refresh_token"]
         refresh_attempt = await client.post(
             "/api/v1/auth/refresh",
             json={"refresh_token": refresh2},

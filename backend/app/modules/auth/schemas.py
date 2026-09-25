@@ -129,19 +129,6 @@ class GoogleRegisterRequest(BaseModel):
         return list(set(v))
 
 
-class AdminCreateTenantDoctorRequest(RegisterRequest):
-    """Admin request to create tenant (clinic) and primary doctor account."""
-
-    tenant_name: str | None = Field(
-        None,
-        min_length=2,
-        max_length=255,
-        description="Tenant display name; defaults to doctor's full name if omitted.",
-    )
-    plan: Literal["free", "plus", "pro"] = "free"
-    auto_approve: bool = True
-
-
 class TenantApprovalResponse(BaseModel):
     """Tenant approval response."""
 
@@ -173,10 +160,16 @@ class GoogleLoginRequest(BaseModel):
 
 
 class TokenResponse(BaseModel):
-    """JWT token response."""
+    """JWT token response.
+
+    `refresh_token` is only populated when there's no httpOnly cookie to
+    carry it (e.g. a non-browser client) — the routes null it out and rely
+    on `response_model_exclude_none=True` to omit it whenever the cookie
+    was set instead, so a browser's JS never sees the raw refresh token.
+    """
 
     access_token: str
-    refresh_token: str
+    refresh_token: str | None = None
     token_type: str = "bearer"
     expires_in: int  # seconds
 
@@ -223,16 +216,21 @@ class GoogleAuthResponse(BaseModel):
 
 
 class RefreshTokenRequest(BaseModel):
-    """Refresh token request."""
+    """Refresh token request.
 
-    refresh_token: str
+    Optional — browsers rely on the httpOnly `refresh_token` cookie instead;
+    this body is only a fallback for non-browser clients that can't hold
+    cookies across requests.
+    """
+
+    refresh_token: str | None = None
 
 
 class RefreshTokenResponse(BaseModel):
-    """Refresh token response."""
+    """Refresh token response. See `TokenResponse` re: `refresh_token`."""
 
     access_token: str
-    refresh_token: str
+    refresh_token: str | None = None
     token_type: str = "bearer"
     expires_in: int
 
@@ -358,43 +356,6 @@ class TenantResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class AdminClientDoctorResponse(BaseModel):
-    """Doctor summary for platform admin client views."""
-
-    id: str
-    email: str
-    full_name: str
-    phone: str | None
-    role: str
-    language: str
-    is_active: bool
-    is_email_verified: bool
-    last_login_at: datetime | None
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
-
-
-class AdminClientListItem(BaseModel):
-    """Tenant + primary doctor summary for platform admin client directory."""
-
-    tenant: TenantResponse
-    primary_doctor: AdminClientDoctorResponse | None
-    doctor_count: int
-    created_at: datetime
-
-
-class AdminClientDetailResponse(BaseModel):
-    """Tenant and doctor details for platform admin client detail view."""
-
-    tenant: TenantResponse
-    doctors: list[AdminClientDoctorResponse]
-    created_at: datetime
-    updated_at: datetime | None
-    approved_at: datetime | None
-    approved_by: str | None
-
-
 class UserProfileResponse(BaseModel):
     """Detailed user profile with tenant info."""
 
@@ -410,9 +371,19 @@ class UserProfileResponse(BaseModel):
 
 
 class LogoutRequest(BaseModel):
-    """Logout request. Omit refresh_token (or the whole body) to revoke all sessions."""
+    """Logout request.
+
+    By default (omit the body entirely), only the current session — the
+    one identified by the httpOnly refresh_token cookie, or by an
+    explicitly supplied `refresh_token` — is revoked. Set `all_sessions`
+    to revoke every session for the user regardless of which one is
+    current; a browser can never read the raw cookie to target a specific
+    *other* session, so this is the only way to express "log out
+    everywhere."
+    """
 
     refresh_token: str | None = None
+    all_sessions: bool = False
 
 
 class LogoutResponse(BaseModel):

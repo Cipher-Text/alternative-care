@@ -6,14 +6,9 @@ import type {
   GoogleLoginRequest,
   GoogleAuthResponse,
   GoogleRegisterRequest,
-  RefreshTokenRequest,
   RefreshTokenResponse,
   UserProfileResponse,
-  AdminCreateTenantDoctorRequest,
   RegisterResponse,
-  TenantResponse,
-  AdminClientListItem,
-  AdminClientDetail,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
   ResetPasswordRequest,
@@ -48,9 +43,10 @@ export const authApi = {
     return response.data
   },
 
-  // Refresh token
-  refresh: async (data: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
-    const response = await apiClient.post('/auth/refresh', data)
+  // Refresh token — no body needed, the httpOnly refresh_token cookie is
+  // sent automatically (D8)
+  refresh: async (): Promise<RefreshTokenResponse> => {
+    const response = await apiClient.post('/auth/refresh', {})
     return response.data
   },
 
@@ -62,36 +58,6 @@ export const authApi = {
   // Get current user
   getCurrentUser: async (): Promise<UserProfileResponse> => {
     const response = await apiClient.get('/auth/me')
-    return response.data
-  },
-
-  // Admin: provision tenant + primary doctor
-  provisionClient: async (data: AdminCreateTenantDoctorRequest): Promise<RegisterResponse> => {
-    const response = await apiClient.post('/auth/admin/provision-client', data)
-    return response.data
-  },
-
-  // Admin: list all tenant clients
-  listAdminClients: async (): Promise<AdminClientListItem[]> => {
-    const response = await apiClient.get('/auth/admin/clients')
-    return response.data
-  },
-
-  // Admin: get tenant client detail
-  getAdminClient: async (tenantId: string): Promise<AdminClientDetail> => {
-    const response = await apiClient.get(`/auth/admin/clients/${tenantId}`)
-    return response.data
-  },
-
-  // Admin: list tenants pending approval
-  listPendingTenants: async (): Promise<TenantResponse[]> => {
-    const response = await apiClient.get('/auth/admin/tenants/pending')
-    return response.data
-  },
-
-  // Admin: approve tenant
-  approveTenant: async (tenantId: string): Promise<TenantResponse> => {
-    const response = await apiClient.post(`/auth/admin/tenants/${tenantId}/approve`)
     return response.data
   },
 

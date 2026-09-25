@@ -113,10 +113,9 @@ A `tenant_id_ctx` ContextVar exists in `app/core/dependencies.py` but is never r
 - Doctor onboarding is self-registration via `POST /api/v1/auth/register`
 - Registration creates both `users` (role=`doctor`) and `tenants` (clinic context)
 - New tenants are blocked from login until `tenant.is_approved = true`
-- Admin provisioning endpoint exists: `POST /api/v1/auth/admin/provision-client`
-- Admin tenant approval endpoints exist:
-  - `GET /api/v1/auth/admin/tenants/pending`
-  - `POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
+- Admin provisioning and tenant-approval endpoints live under `/api/v1/admin` (`POST /admin/tenants`,
+  `GET /admin/tenants/pending`, `POST /admin/tenants/{tenant_id}/approve`) — the older
+  `/api/v1/auth/admin/*` duplicates were removed 2026-09-25
 
 **Authorization:** Role-based access control
 - Platform users: `tenant_id = NULL`
@@ -162,8 +161,8 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP
 │   ├── rate_limit.py    # Redis-backed rate limiting
 │   └── dependencies.py # Auth, CurrentUser, RBAC
-├── modules/             # 14 routed modules, 136 endpoints total
-│   ├── auth/            # Login (incl. login-2fa), refresh, 2FA, password reset, email verification, admin provisioning (21 endpoints)
+├── modules/             # 14 routed modules, 131 endpoints total
+│   ├── auth/            # Login (incl. login-2fa), refresh, 2FA, password reset, email verification (16 endpoints)
 │   ├── admin/            # Platform admin — tenants, users, KPI dashboard, doctor provisioning, tenant usage (11 endpoints)
 │   ├── doctor/           # Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # CRUD, search, tags, diagnoses (14 endpoints)
@@ -279,7 +278,7 @@ class PatientService:
 
 **Current Status (feature-complete, NOT production-ready — see root `CLAUDE.md` and `docs/planning/revision-2026-09.md`):**
 - **Backend modules:** 14 routed modules
-- **API Endpoints:** 136 (+ `/`, `/health`, `/metrics`)
+- **API Endpoints:** 131 (+ `/`, `/health`, `/metrics`)
 - **Database Tables:** 34
 - **Frontend:** 132 source files, 11 top-level route groups
 - **Test suite:** `pytest -q`: 442 passed / 1 xfailed / 0 failed (2026-09-24)
@@ -335,7 +334,7 @@ class PatientService:
 → Row-level isolation: `tenant_id` from the JWT is passed into each service, and each service method explicitly filters by it (see [Multi-Tenancy](multi-tenancy.md) for why this isn't an automatic/global filter)
 
 **Q: How many API endpoints?**
-→ 136 endpoints across 14 backend modules
+→ 131 endpoints across 14 backend modules
 
 **Q: What database tables exist?**
 → 34 tables (see database-schema.md)

@@ -5,12 +5,15 @@ import type { User } from '@/types/auth'
 
 interface AuthStore {
   user: User | null
+  // In-memory only — never persisted or written to a JS-readable cookie.
+  // The refresh token lives solely in the backend's httpOnly cookie; a
+  // fresh page load re-derives accessToken via a silent /auth/refresh
+  // call rather than reading it back from storage.
   accessToken: string | null
-  refreshToken: string | null
   isAuthenticated: boolean
   hasHydrated: boolean
 
-  setAuth: (user: User, accessToken: string, refreshToken: string) => void
+  setAuth: (user: User, accessToken: string) => void
   logout: () => void
   updateUser: (user: Partial<User>) => void
   setAccessToken: (token: string) => void
@@ -22,33 +25,24 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       user: null,
       accessToken: null,
-      refreshToken: null,
       isAuthenticated: false,
       hasHydrated: false,
 
-      setAuth: (user, accessToken, refreshToken) => {
-        // Store tokens in httpOnly-like cookies (more secure than localStorage)
-        Cookies.set('accessToken', accessToken, { expires: 1/48 }) // 30 minutes
-        Cookies.set('refreshToken', refreshToken, { expires: 7 }) // 7 days
+      setAuth: (user, accessToken) => {
         // Sync UI locale to the account's stored language preference
         Cookies.set('NEXT_LOCALE', user.language ?? 'en', { expires: 365 })
 
         set({
           user,
           accessToken,
-          refreshToken,
           isAuthenticated: true,
         })
       },
 
       logout: () => {
-        Cookies.remove('accessToken')
-        Cookies.remove('refreshToken')
-
         set({
           user: null,
           accessToken: null,
-          refreshToken: null,
           isAuthenticated: false,
         })
       },
@@ -60,8 +54,7 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       setAccessToken: (token) => {
-        Cookies.set('accessToken', token, { expires: 1/48 })
-        set({ accessToken: token })
+        set({ accessToken: token, isAuthenticated: true })
       },
 
       setHydrated: (value) => set({ hasHydrated: value }),
@@ -70,14 +63,7 @@ export const useAuthStore = create<AuthStore>()(
       name: 'auth-storage',
       partialize: (state) => ({ user: state.user }), // Only persist user, not tokens
       onRehydrateStorage: () => (state) => {
-        const hasAccessToken = Boolean(Cookies.get('accessToken'))
-        const hasRefreshToken = Boolean(Cookies.get('refreshToken'))
-        const hasUser = Boolean(state?.user)
-
         if (state) {
-          state.isAuthenticated = hasUser && (hasAccessToken || hasRefreshToken)
-          state.accessToken = Cookies.get('accessToken') ?? null
-          state.refreshToken = Cookies.get('refreshToken') ?? null
           state.hasHydrated = true
         }
       },

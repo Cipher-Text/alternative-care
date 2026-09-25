@@ -13,8 +13,8 @@ a dashboard, and full tenant lifecycle controls. This has been delivered — `ap
 now holds 11 endpoints (`routes.py`, `service.py`, `schemas.py`) registered at `/api/v1/admin`
 (the 11th, `GET /admin/tenants/{id}/usage`, shipped 2026-09-24 as part of Stage 1 "Billing
 enforcement"), replacing the old prototype (5 endpoints buried in `auth/routes.py`, one nav link).
-The legacy `/auth/admin/*` endpoints still exist for backwards compatibility (see Roadmap P1 item 3
-— removal pending).
+The legacy `/auth/admin/*` endpoints (5, buried in `auth/routes.py`, one nav link) have since been
+removed (2026-09-25, see Roadmap item 3) — the frontend had already fully migrated.
 
 ---
 
@@ -174,7 +174,7 @@ No migration required for Phase A.
 - [x] `backend/app/modules/admin/service.py`
 - [x] `backend/app/modules/admin/schemas.py`
 - [x] `backend/app/main.py` — register admin router at `/api/v1/admin`
-- [ ] `backend/app/modules/auth/routes.py` — deprecate/remove old `/auth/admin/*` endpoints (still pending, see `docs/ROADMAP.md` P1 item 3)
+- [x] `backend/app/modules/auth/routes.py` — old `/auth/admin/*` endpoints removed (2026-09-25, see `docs/ROADMAP.md` item 3)
 - [x] `backend/tests/integration/test_admin_tenant_doctors.py` — NEW, covers `POST /admin/tenants/{id}/doctors` (shipped 2026-07-12)
 
 ### Frontend

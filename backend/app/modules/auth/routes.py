@@ -2,15 +2,13 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, RequireAdmin, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user
 from app.modules.auth.schemas import (
-    AdminCreateTenantDoctorRequest,
-    AdminClientDetailResponse,
-    AdminClientListItem,
     ChangePasswordRequest,
     Disable2FARequest,
     ForgotPasswordRequest,
@@ -31,7 +29,6 @@ from app.modules.auth.schemas import (
     ResetPasswordResponse,
     Setup2FAResponse,
     UserProfileResponse,
-    TenantResponse,
     Verify2FARequest,
     Verify2FAResponse,
     VerifyEmailRequest,
@@ -40,6 +37,33 @@ from app.modules.auth.schemas import (
 from app.modules.auth.service import AuthService
 
 router = APIRouter()
+
+# D8: refresh token lives only in an httpOnly cookie, never in a JS-readable
+# place — an XSS that hooks fetch/XHR at page load can read any JSON
+# response body, but not a Set-Cookie header processed before JS sees the
+# response. Path is "/", not just the auth routes: frontend/src/proxy.ts
+# reads this cookie's mere presence to gate dashboard page requests, and a
+# cookie is only ever sent to requests whose path matches (or is under) the
+# one it was set with — scoping it to /api/v1/auth would make it invisible
+# to a plain page navigation to e.g. /dashboard.
+REFRESH_COOKIE_NAME = "refresh_token"
+REFRESH_COOKIE_PATH = "/"
+
+
+def _set_refresh_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=token,
+        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
+        path=REFRESH_COOKIE_PATH,
+        httponly=True,
+        secure=settings.ENVIRONMENT == "production",
+        samesite="lax",
+    )
+
+
+def _clear_refresh_cookie(response: Response) -> None:
+    response.delete_cookie(key=REFRESH_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
 
 
 # ============================================================================
@@ -63,85 +87,6 @@ async def register(
     return await service.register_doctor(data)
 
 
-@router.post(
-    "/admin/provision-client",
-    response_model=RegisterResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Admin: create client account",
-    description="Create tenant (clinic) and primary doctor account in one operation.",
-)
-async def admin_provision_client(
-    data: AdminCreateTenantDoctorRequest,
-    current_user: RequireAdmin,
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Admin-only client provisioning."""
-    service = AuthService(db)
-    return await service.admin_create_tenant_doctor(data, current_user.user_id)
-
-
-@router.get(
-    "/admin/clients",
-    response_model=list[AdminClientListItem],
-    summary="Admin: list clients",
-    description="List all tenant clients with primary doctor summaries.",
-)
-async def list_admin_clients(
-    current_user: RequireAdmin,  # noqa: ARG001
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Admin-only client directory."""
-    service = AuthService(db)
-    return await service.list_admin_clients()
-
-
-@router.get(
-    "/admin/clients/{tenant_id}",
-    response_model=AdminClientDetailResponse,
-    summary="Admin: get client detail",
-    description="Get tenant/clinic details and doctor users for a client.",
-)
-async def get_admin_client_detail(
-    tenant_id: str,
-    current_user: RequireAdmin,  # noqa: ARG001
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Admin-only client detail."""
-    service = AuthService(db)
-    return await service.get_admin_client_detail(tenant_id)
-
-
-@router.get(
-    "/admin/tenants/pending",
-    response_model=list[TenantResponse],
-    summary="Admin: list pending tenants",
-    description="List tenants waiting for approval.",
-)
-async def list_pending_tenants(
-    current_user: RequireAdmin,  # noqa: ARG001
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Admin-only pending tenant list."""
-    service = AuthService(db)
-    return await service.list_pending_tenants()
-
-
-@router.post(
-    "/admin/tenants/{tenant_id}/approve",
-    response_model=TenantResponse,
-    summary="Admin: approve tenant",
-    description="Approve a tenant so tenant-scoped users can log in.",
-)
-async def approve_tenant(
-    tenant_id: str,
-    current_user: RequireAdmin,
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Admin-only tenant approval."""
-    service = AuthService(db)
-    return await service.approve_tenant(tenant_id, current_user.user_id)
-
-
 # ============================================================================
 # Login & Logout
 # ============================================================================
@@ -157,6 +102,7 @@ async def approve_tenant(
 async def login(
     data: LoginRequest,
     request: Request,
+    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Login and create session."""
@@ -164,7 +110,11 @@ async def login(
     ip_address = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent")
 
-    return await service.login(data, ip_address=ip_address, user_agent=user_agent)
+    result = await service.login(data, ip_address=ip_address, user_agent=user_agent)
+    if result.tokens and result.tokens.refresh_token:
+        _set_refresh_cookie(response, result.tokens.refresh_token)
+        result.tokens.refresh_token = None
+    return result
 
 
 @router.post(
@@ -180,6 +130,7 @@ async def login(
 async def login_2fa(
     data: LoginRequest,
     request: Request,
+    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Complete a 2FA-gated login and create session."""
@@ -187,7 +138,11 @@ async def login_2fa(
     ip_address = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent")
 
-    return await service.login(data, ip_address=ip_address, user_agent=user_agent)
+    result = await service.login(data, ip_address=ip_address, user_agent=user_agent)
+    if result.tokens and result.tokens.refresh_token:
+        _set_refresh_cookie(response, result.tokens.refresh_token)
+        result.tokens.refresh_token = None
+    return result
 
 
 @router.post(
@@ -205,6 +160,7 @@ async def login_2fa(
 async def google_login(
     data: GoogleLoginRequest,
     request: Request,
+    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Login (or offer registration) via Google Sign-In."""
@@ -212,7 +168,11 @@ async def google_login(
     ip_address = request.client.host if request.client else None
     user_agent = request.headers.get("user-agent")
 
-    return await service.google_login(data, ip_address=ip_address, user_agent=user_agent)
+    result = await service.google_login(data, ip_address=ip_address, user_agent=user_agent)
+    if result.tokens and result.tokens.refresh_token:
+        _set_refresh_cookie(response, result.tokens.refresh_token)
+        result.tokens.refresh_token = None
+    return result
 
 
 @router.post(
@@ -241,14 +201,21 @@ async def google_register(
     description="Logout user by revoking refresh token session.",
 )
 async def logout(
+    request: Request,
+    response: Response,
     data: LogoutRequest | None = None,
     current_user: CurrentUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Logout user and revoke session."""
     service = AuthService(db)
-    refresh_token = data.refresh_token if data else None
+    refresh_token = (
+        None
+        if data and data.all_sessions
+        else (data.refresh_token if data else None) or request.cookies.get(REFRESH_COOKIE_NAME)
+    )
     await service.logout(current_user.user_id, refresh_token)
+    _clear_refresh_cookie(response)
     return LogoutResponse(message="Logged out successfully")
 
 
@@ -260,16 +227,31 @@ async def logout(
 @router.post(
     "/refresh",
     response_model=RefreshTokenResponse,
+    response_model_exclude_none=True,
     summary="Refresh access token",
     description="Get new access token using refresh token. Implements token rotation.",
 )
 async def refresh_token(
-    data: RefreshTokenRequest,
+    request: Request,
+    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
+    data: RefreshTokenRequest | None = None,
 ):
-    """Refresh access token."""
+    """Refresh access token. Browsers rely on the httpOnly cookie; the body
+    is only a fallback for non-browser clients — an explicit body value
+    takes priority the same way it does on /logout."""
+    token = (data.refresh_token if data else None) or request.cookies.get(
+        REFRESH_COOKIE_NAME
+    )
+    if not token:
+        raise HTTPException(status_code=401, detail="Refresh token missing")
+
     service = AuthService(db)
-    return await service.refresh_tokens(data.refresh_token)
+    result = await service.refresh_tokens(token)
+    if result.refresh_token:
+        _set_refresh_cookie(response, result.refresh_token)
+        result.refresh_token = None
+    return result
 
 
 # ============================================================================

@@ -90,7 +90,7 @@ export function LoginForm() {
         setLoading(false)
       } else {
         // Login successful
-        setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
+        setAuth(response.user, response.tokens.access_token)
         toast.success(t('loginSuccess'))
         router.push(getPostLoginPath(response.user))
       }
@@ -121,7 +121,7 @@ export function LoginForm() {
         return
       }
 
-      setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
+      setAuth(response.user, response.tokens.access_token)
       toast.success(t('loginSuccess'))
       router.push(getPostLoginPath(response.user))
     } catch (error) {
@@ -148,7 +148,7 @@ export function LoginForm() {
             throw new Error(t('loginFailed'))
           }
 
-          setAuth(response.user, response.tokens.access_token, response.tokens.refresh_token)
+          setAuth(response.user, response.tokens.access_token)
           toast.success(t('loginSuccess'))
           router.push(getPostLoginPath(response.user))
         }}

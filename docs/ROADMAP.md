@@ -118,17 +118,14 @@ All tenant-scoped service factories now return **403** for platform users.
 
 ---
 
-### 3. Old Admin Endpoints — Cleanup
+### 3. Old Admin Endpoints — Cleanup — ✅ Done 2026-09-25
 
-**Problem:** Legacy endpoints remain in `auth/routes.py` under `/auth/admin/*` alongside the new `/api/v1/admin/*` canonical ones. Creates maintenance confusion and a dual API surface.
-
-- [ ] Confirm frontend has migrated to `/api/v1/admin/*` (already done per `current.md`)
-- [ ] Remove the 5 legacy endpoints from `auth/routes.py`:
-  - `POST /auth/admin/provision-client`
-  - `GET /auth/admin/clients`
-  - `GET /auth/admin/clients/{id}`
-  - `GET /auth/admin/tenants/pending`
-  - `POST /auth/admin/tenants/{id}/approve`
+Legacy endpoints in `auth/routes.py` under `/auth/admin/*` shadowed the canonical `/api/v1/admin/*`
+ones. The frontend had already migrated (confirmed via grep — nothing called the old paths), so the
+5 legacy endpoints (`POST /auth/admin/provision-client`, `GET /auth/admin/clients`,
+`GET /auth/admin/clients/{id}`, `GET /auth/admin/tenants/pending`,
+`POST /auth/admin/tenants/{id}/approve`) were deleted outright, along with their now-dead service
+methods and schemas.
 
 ---
 

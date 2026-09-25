@@ -59,41 +59,13 @@ export interface TenantResponse {
   is_active: boolean
 }
 
-export interface AdminClientDoctor {
-  id: string
-  email: string
-  full_name: string
-  phone: string | null
-  role: string
-  language: string
-  is_active: boolean
-  is_email_verified: boolean
-  last_login_at: string | null
-  created_at: string
-}
-
-export interface AdminClientListItem {
-  tenant: TenantResponse
-  primary_doctor: AdminClientDoctor | null
-  doctor_count: number
-  created_at: string
-}
-
-export interface AdminClientDetail {
-  tenant: TenantResponse
-  doctors: AdminClientDoctor[]
-  created_at: string
-  updated_at: string | null
-  approved_at: string | null
-  approved_by: string | null
-}
-
 export interface LoginResponse {
   // Omitted when requires_2fa is true — the client resubmits
   // email/password/totp_code (e.g. via loginWith2FA) to get these.
+  // refresh_token is never present — it's delivered only via an httpOnly
+  // cookie (D8), never in a JS-readable response body.
   tokens?: {
     access_token: string
-    refresh_token: string
     token_type: string
     expires_in: number
   }
@@ -118,7 +90,6 @@ export interface GoogleAuthResponse {
   // (no account yet — collect clinic details and call googleRegister).
   tokens?: {
     access_token: string
-    refresh_token: string
     token_type: string
     expires_in: number
   }
@@ -142,13 +113,8 @@ export interface GoogleRegisterRequest {
   license_number?: string | null
 }
 
-export interface RefreshTokenRequest {
-  refresh_token: string
-}
-
 export interface RefreshTokenResponse {
   access_token: string
-  refresh_token: string
   token_type: string
   expires_in: number
 }

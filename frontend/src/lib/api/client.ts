@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import Cookies from 'js-cookie'
+import { useAuthStore } from '@/store/authStore'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
 
@@ -7,6 +7,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1
 export const apiClient = axios.create({
   baseURL: API_URL,
   timeout: 30000,
+  // Required so the browser sends/receives the backend's httpOnly
+  // refresh_token cookie (D8 — refresh token never touches JS).
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -15,7 +18,7 @@ export const apiClient = axios.create({
 // Request interceptor: Add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('accessToken')
+    const token = useAuthStore.getState().accessToken
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -35,21 +38,16 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true
 
       try {
-        const refreshToken = Cookies.get('refreshToken')
-        if (!refreshToken) {
-          throw new Error('No refresh token')
-        }
+        // No body needed — the httpOnly refresh_token cookie is sent
+        // automatically via withCredentials.
+        const response = await axios.post(
+          `${API_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        )
 
-        // Call refresh endpoint
-        const response = await axios.post(`${API_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
-        })
-
-        const { access_token, refresh_token } = response.data
-
-        // Update token in cookies
-        Cookies.set('accessToken', access_token, { expires: 1/48 }) // 30 minutes
-        Cookies.set('refreshToken', refresh_token, { expires: 7 })
+        const { access_token } = response.data
+        useAuthStore.getState().setAccessToken(access_token)
 
         // Retry original request with new token
         if (originalRequest.headers) {
@@ -58,8 +56,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest)
       } catch (refreshError) {
         // Refresh failed, logout user
-        Cookies.remove('accessToken')
-        Cookies.remove('refreshToken')
+        useAuthStore.getState().logout()
 
         // Redirect to login
         if (typeof window !== 'undefined') {

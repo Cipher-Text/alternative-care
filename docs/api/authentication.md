@@ -4,66 +4,27 @@ type: "api-reference"
 module: "authentication"
 version: "0.9.0"
 last_updated: "2026-09-23"
-ai_summary: "21 endpoints for auth, self-registration (password + Google), legacy admin compatibility, JWT session lifecycle, and 2FA"
-endpoints: 21
+ai_summary: "16 endpoints for auth, self-registration (password + Google), JWT session lifecycle, and 2FA"
+endpoints: 16
 authentication: "public + protected"
 ---
 
 # Authentication API
 
 **Module:** Authentication
-**Endpoints:** 21
+**Endpoints:** 16
 **Base Path:** `/api/v1/auth`
 
 ## Overview
 
 Authentication and onboarding endpoints for:
 - Public doctor registration (password or Google Sign-In)
-- Admin client provisioning (tenant + primary doctor)
-- Admin tenant approval workflow
 - JWT login/refresh/logout
 - 2FA setup/verify/disable
 - Password change, reset, and email verification
 - Current user profile
 
-## Legacy Admin Compatibility Endpoints
-
-Canonical platform-admin endpoints live under `/api/v1/admin`. The `/api/v1/auth/admin/*` endpoints remain for backwards compatibility.
-
-### List Clients
-`GET /api/v1/auth/admin/clients`
-
-Auth: Admin only
-
-Returns all tenant clients with primary doctor summary, doctor count, approval status, and plan.
-
-### Get Client Detail
-`GET /api/v1/auth/admin/clients/{tenant_id}`
-
-Auth: Admin only
-
-Returns one tenant/clinic with all attached doctor users and lifecycle metadata.
-
-### Provision Client Account
-`POST /api/v1/auth/admin/provision-client`
-
-Auth: Admin only
-
-Creates tenant (clinic) and primary doctor in one request.
-
-### List Pending Tenants
-`GET /api/v1/auth/admin/tenants/pending`
-
-Auth: Admin only
-
-Returns tenants with `is_approved = false`.
-
-### Approve Tenant
-`POST /api/v1/auth/admin/tenants/{tenant_id}/approve`
-
-Auth: Admin only
-
-Sets tenant approval fields and enables tenant users to log in.
+Platform-admin tenant provisioning/approval lives under `/api/v1/admin` (`app/modules/admin/routes.py`) — the `/api/v1/auth/admin/*` compatibility endpoints that used to shadow it were removed 2026-09-25; the frontend had already migrated to `/api/v1/admin/*` and nothing else referenced them.
 
 ## Public Registration
 

@@ -501,13 +501,13 @@ class TestSessionSecurity:
         self, client: AsyncClient, test_user, db_session
     ):
         """Test that logout properly invalidates refresh tokens."""
-        # Login
+        # Login — sets the httpOnly refresh_token cookie
         login_response = await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
         tokens = login_response.json()["tokens"]
-        refresh_token = tokens["refresh_token"]
+        refresh_token = client.cookies.get("refresh_token")
         access_token = tokens["access_token"]
 
         # Logout
@@ -531,7 +531,9 @@ class TestSessionSecurity:
         self, client: AsyncClient, test_user
     ):
         """Test logout all sessions invalidates all refresh tokens."""
-        # Create multiple sessions
+        # Create multiple sessions. Each login overwrites the shared
+        # client's refresh_token cookie, so capture the raw value right
+        # after each login — before the next one clobbers it.
         sessions = []
         for i in range(3):
             login_response = await client.post(
@@ -539,12 +541,13 @@ class TestSessionSecurity:
                 json={"email": test_user.email, "password": "TestPass123"},
                 headers={"User-Agent": f"Device-{i}"},
             )
-            sessions.append(login_response.json()["tokens"])
+            tokens = login_response.json()["tokens"]
+            sessions.append({**tokens, "refresh_token": client.cookies.get("refresh_token")})
 
         # Logout all sessions using first session's token
         logout_response = await client.post(
             "/api/v1/auth/logout",
-            # No refresh_token = logout ALL sessions
+            json={"all_sessions": True},
             headers={"Authorization": f"Bearer {sessions[0]['access_token']}"},
         )
         assert logout_response.status_code == 200
@@ -566,7 +569,7 @@ class TestSessionSecurity:
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
-        tokens = login_response.json()["tokens"]
+        tokens = {**login_response.json()["tokens"], "refresh_token": client.cookies.get("refresh_token")}
 
         # Change password
         change_response = await client.post(
@@ -705,7 +708,7 @@ class TestPasswordSecurity:
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
-        old_token = login_response.json()["tokens"]["refresh_token"]
+        old_token = client.cookies.get("refresh_token")
 
         # Trigger password reset (if endpoint exists)
         # Request reset

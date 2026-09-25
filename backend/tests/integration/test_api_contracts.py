@@ -16,9 +16,11 @@ async def test_auth_login_response_contract(client, test_user):
     body = response.json()
     assert {"user", "tokens"}.issubset(body.keys())
     assert {"id", "email", "role"}.issubset(body["user"].keys())
-    assert {"access_token", "refresh_token", "token_type"}.issubset(
-        body["tokens"].keys()
-    )
+    assert {"access_token", "token_type"}.issubset(body["tokens"].keys())
+    # refresh_token is never in the body (D8) — delivered only via an
+    # httpOnly cookie, invisible to JS.
+    assert "refresh_token" not in body["tokens"]
+    assert response.cookies.get("refresh_token") is not None
 
 
 @pytest.mark.asyncio

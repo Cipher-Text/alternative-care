@@ -214,7 +214,10 @@ class SeedData:
                 )
             )
             if not existing.scalar_one_or_none():
-                medicine = Medicine(**medicine_data, tenant_id=tenant_id)
+                # is_global rows must have tenant_id=NULL (ck_medicines_tenant_global) —
+                # only tenant-owned rows get the default tenant's id.
+                row_tenant_id = None if medicine_data.get("is_global") else tenant_id
+                medicine = Medicine(**medicine_data, tenant_id=row_tenant_id)
                 self.session.add(medicine)
                 count += 1
 
@@ -234,7 +237,10 @@ class SeedData:
                 )
             )
             if not existing.scalar_one_or_none():
-                symptom = Symptom(**symptom_data, tenant_id=tenant_id)
+                # is_global rows must have tenant_id=NULL (ck_symptoms_tenant_global) —
+                # only tenant-owned rows get the default tenant's id.
+                row_tenant_id = None if symptom_data.get("is_global") else tenant_id
+                symptom = Symptom(**symptom_data, tenant_id=row_tenant_id)
                 self.session.add(symptom)
                 count += 1
 

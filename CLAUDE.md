@@ -8,11 +8,20 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **MVP v1.0 feature-complete — NOT production ready** ⚠️
 
-**Last Verified:** 2026-09-24 (code-verified, see `docs/planning/revision-2026-09.md`)
+**Last Verified:** 2026-09-25 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
-> Stage 1 ("Shippable") is underway — code-verified on 2026-09-24: `pytest -q` runs **442 passed /
+> Stage 1 ("Shippable") is underway — code-verified on 2026-09-25: `pytest -q` runs **442 passed /
 > 1 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
+> **Auth cookie hardening, legacy endpoint cleanup, and frontend CI landed 2026-09-25** (Stage 1):
+> the refresh token now lives only in an httpOnly cookie (`app/modules/auth/routes.py`), never in a
+> JS-readable place, with the access token moved to in-memory frontend state and a
+> `frontend/src/proxy.ts` (Next.js 16 renamed `middleware.ts`) route guard added; the 5 legacy
+> `/auth/admin/*` endpoints that shadowed `/api/v1/admin/*` are gone (131 endpoints total, was 136);
+> and `frontend/e2e/smoke.spec.ts` + `.github/workflows/frontend-tests.yml` give the frontend its
+> first CI coverage (typecheck, lint, one login→patient→prescription→issue→PDF path), which is also
+> what surfaced and got a fix for a `scripts/seed.py` bug that's been silently breaking fresh seeds
+> since D1 landed.
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
 > via SMTP relay, `app/core/system_email.py`, picking one of SendGrid/Resend/Mailgun/SMTP2GO/generic
@@ -55,7 +64,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management, tenant usage ✅
 
-**Backend:** 14 routed modules, 136 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
+**Backend:** 14 routed modules, 131 endpoints (+ `/`, `/health`, `/metrics`), 34 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)
 
@@ -295,8 +304,8 @@ backend/app/
 │   ├── rate_limit.py      # Redis-backed rate limiting
 │   ├── celery.py          # Background tasks
 │   └── dependencies.py    # Auth, RBAC, plan checks
-├── modules/               # Feature modules (136 total endpoints)
-│   ├── auth/             # ✅ Login (incl. login-2fa), Google Sign-In/registration, refresh, 2FA, password reset, email verification, admin provisioning (21 endpoints)
+├── modules/               # Feature modules (131 total endpoints)
+│   ├── auth/             # ✅ Login (incl. login-2fa), Google Sign-In/registration, refresh, 2FA, password reset, email verification (16 endpoints)
 │   ├── admin/            # ✅ Platform admin — tenants, users, KPI dashboard, doctor provisioning, tenant usage (11 endpoints)
 │   ├── doctor/           # ✅ Profile, degrees, trainings (12 endpoints)
 │   ├── patient/          # ✅ CRUD, search, tags, diagnoses (14 endpoints)

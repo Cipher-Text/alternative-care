@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
+import { authApi } from '@/lib/api/auth'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import type { ReactNode } from 'react'
@@ -11,16 +12,44 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const hasHydrated = useAuthStore((state) => state.hasHydrated)
+  const setAuth = useAuthStore((state) => state.setAuth)
+  const setAccessToken = useAuthStore((state) => state.setAccessToken)
+  const logout = useAuthStore((state) => state.logout)
 
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (hasHydrated && !isAuthenticated) {
-      router.push('/login')
+    if (!hasHydrated || isAuthenticated) {
+      return
     }
-  }, [hasHydrated, isAuthenticated, router])
+
+    // The access token lives only in memory, so it doesn't survive a page
+    // reload — only the backend's httpOnly refresh_token cookie does. Try
+    // a silent refresh before redirecting to login.
+    let cancelled = false
+    void (async () => {
+      try {
+        const { access_token } = await authApi.refresh()
+        // Store the token before the next call — apiClient's request
+        // interceptor reads it from the store, not from this closure.
+        setAccessToken(access_token)
+        const profile = await authApi.getCurrentUser()
+        if (!cancelled) {
+          setAuth(profile.user, access_token)
+        }
+      } catch {
+        if (!cancelled) {
+          logout()
+          router.push('/login')
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [hasHydrated, isAuthenticated, setAuth, setAccessToken, logout, router])
 
   if (!hasHydrated || !isAuthenticated) {
-    return null // Don't render anything while redirecting
+    return null // Don't render anything while checking/redirecting
   }
 
   return (

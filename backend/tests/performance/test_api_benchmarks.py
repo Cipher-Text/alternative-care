@@ -47,7 +47,8 @@ class TestAuthPerformance:
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
-        refresh_token = login_response.json()["tokens"]["refresh_token"]
+        assert login_response.status_code == 200
+        refresh_token = client.cookies.get("refresh_token")
 
         async def do_refresh():
             response = await client.post(

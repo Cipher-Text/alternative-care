@@ -25,7 +25,7 @@ Last Updated: 2026-09-24
 
 ## Summary
 
-AltCare has a working FastAPI backend (14 registered modules, 136 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+AltCare has a working FastAPI backend (14 registered modules, 131 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
 
 Recent work (2026-09-24):
 - **Billing enforcement shipped** — plan checks are DB-backed, `usage_tracking` has writers. See "Billing enforcement — done 2026-09-24" below.
@@ -77,7 +77,7 @@ Registered routers in `backend/app/main.py`:
 
 | Module | Prefix | Endpoints | Notes |
 |---|---|---|---|
-| auth | `/api/v1/auth` | 21 | Login (incl. `login-2fa`), Google Sign-In/registration, register, password reset, email verification, legacy admin compatibility |
+| auth | `/api/v1/auth` | 16 | Login (incl. `login-2fa`), Google Sign-In/registration, register, password reset, email verification |
 | ai | `/api/v1/ai` | 1 | Stub, returns 501 |
 | appointments | `/api/v1/appointments` | 10 | Scheduling and visits (includes nested `visits_router`: 4 endpoints under `/visits`) |
 | dashboard | `/api/v1/dashboard` | 6 | Tenant-scoped analytics |
@@ -92,10 +92,10 @@ Registered routers in `backend/app/main.py`:
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
 | admin | `/api/v1/admin` | 11 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors`, `GET /admin/tenants/{id}/usage` |
 
-**Total:** 136 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 131 module endpoints + `/`, `/health`, `/metrics`
 
-Legacy platform admin endpoints remain in `auth/routes.py` (5 endpoints under `/auth/admin/*`) for backwards compatibility.
-New canonical endpoints are at `/api/v1/admin`.
+The legacy `/auth/admin/*` endpoints (5, removed 2026-09-25) shadowed the canonical `/api/v1/admin/*`
+ones — the frontend had already migrated, so removal was pure cleanup.
 
 ---
 

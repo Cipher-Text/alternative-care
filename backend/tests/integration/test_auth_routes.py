@@ -152,11 +152,13 @@ class TestLoginEndpoint:
         assert response.status_code == 200
         data = response.json()
 
-        # Verify tokens
+        # Verify tokens — refresh_token is never in the body (D8), it's
+        # delivered only via the httpOnly cookie
         assert "tokens" in data
         assert data["tokens"]["access_token"] is not None
-        assert data["tokens"]["refresh_token"] is not None
+        assert "refresh_token" not in data["tokens"]
         assert data["tokens"]["token_type"] == "bearer"
+        assert client.cookies.get("refresh_token") is not None
 
         # Verify user data
         assert "user" in data
@@ -433,24 +435,24 @@ class TestTokenRefreshEndpoint:
 
     async def test_refresh_token_success(self, client: AsyncClient, test_user):
         """Test successful token refresh."""
-        # Login first
-        login_response = await client.post(
+        # Login first — sets the httpOnly refresh_token cookie
+        await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
-        refresh_token = login_response.json()["tokens"]["refresh_token"]
+        old_refresh_cookie = client.cookies.get("refresh_token")
+        assert old_refresh_cookie is not None
 
-        # Refresh tokens
-        response = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh_token},
-        )
+        # Refresh tokens — no body needed, the cookie carries the token
+        response = await client.post("/api/v1/auth/refresh")
 
         assert response.status_code == 200
         data = response.json()
         assert data["access_token"] is not None
-        assert data["refresh_token"] is not None
-        assert data["refresh_token"] != refresh_token  # Token rotation
+        assert "refresh_token" not in data  # never delivered in the body (D8)
+        new_refresh_cookie = client.cookies.get("refresh_token")
+        assert new_refresh_cookie is not None
+        assert new_refresh_cookie != old_refresh_cookie  # Token rotation
 
     async def test_refresh_with_invalid_token(self, client: AsyncClient):
         """Test refresh with invalid token."""
@@ -461,20 +463,26 @@ class TestTokenRefreshEndpoint:
 
         assert response.status_code == 401
 
-    async def test_refresh_token_rotation(self, client: AsyncClient, test_user):
+    async def test_refresh_token_rotation(
+        self, client: AsyncClient, client_2: AsyncClient, test_user
+    ):
         """Test that old refresh token can't be reused (rotation)."""
-        # Login
-        login_response = await client.post(
+        # Login — sets the httpOnly refresh_token cookie
+        await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
-        old_refresh = login_response.json()["tokens"]["refresh_token"]
+        old_refresh = client.cookies.get("refresh_token")
+        assert old_refresh is not None
 
-        # Refresh once
-        await client.post("/api/v1/auth/refresh", json={"refresh_token": old_refresh})
+        # Refresh once via the cookie — rotates it in `client`'s jar
+        await client.post("/api/v1/auth/refresh")
 
-        # Try to reuse old token
-        response = await client.post(
+        # Try to reuse the pre-rotation token from a client with no cookie
+        # of its own, via the body fallback (a real cookie would take
+        # priority, so this has to go through a separate client to test the
+        # stale token specifically).
+        response = await client_2.post(
             "/api/v1/auth/refresh",
             json={"refresh_token": old_refresh},
         )
@@ -488,29 +496,26 @@ class TestLogoutEndpoint:
 
     async def test_logout_success(self, client: AsyncClient, test_user):
         """Test successful logout."""
-        # Login first
+        # Login first — sets the httpOnly refresh_token cookie
         login_response = await client.post(
             "/api/v1/auth/login",
             json={"email": test_user.email, "password": "TestPass123"},
         )
         access_token = login_response.json()["tokens"]["access_token"]
-        refresh_token = login_response.json()["tokens"]["refresh_token"]
+        assert client.cookies.get("refresh_token") is not None
 
         # Logout
         response = await client.post(
             "/api/v1/auth/logout",
-            json={"refresh_token": refresh_token},
             headers={"Authorization": f"Bearer {access_token}"},
         )
 
         assert response.status_code == 200
         assert "logged out" in response.json()["message"].lower()
 
-        # Verify token can't be refreshed after logout
-        refresh_response = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh_token},
-        )
+        # Verify token can't be refreshed after logout (cookie was cleared
+        # and the session revoked)
+        refresh_response = await client.post("/api/v1/auth/refresh")
         assert refresh_response.status_code == 401
 
     async def test_logout_without_auth(self, client: AsyncClient):
@@ -925,7 +930,7 @@ class TestAuthFlow:
         )
         assert login_response.status_code == 200
         access_token = login_response.json()["tokens"]["access_token"]
-        refresh_token = login_response.json()["tokens"]["refresh_token"]
+        assert client.cookies.get("refresh_token") is not None
 
         # 2. Get profile with access token
         profile_response = await client.get(
@@ -934,25 +939,17 @@ class TestAuthFlow:
         )
         assert profile_response.status_code == 200
 
-        # 3. Refresh token
-        refresh_response = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": refresh_token},
-        )
+        # 3. Refresh token — cookie carries it, and rotates in the jar
+        refresh_response = await client.post("/api/v1/auth/refresh")
         assert refresh_response.status_code == 200
-        new_refresh_token = refresh_response.json()["refresh_token"]
 
         # 4. Logout
         logout_response = await client.post(
             "/api/v1/auth/logout",
-            json={"refresh_token": new_refresh_token},
             headers={"Authorization": f"Bearer {access_token}"},
         )
         assert logout_response.status_code == 200
 
         # 5. Verify can't refresh after logout
-        final_refresh = await client.post(
-            "/api/v1/auth/refresh",
-            json={"refresh_token": new_refresh_token},
-        )
+        final_refresh = await client.post("/api/v1/auth/refresh")
         assert final_refresh.status_code == 401

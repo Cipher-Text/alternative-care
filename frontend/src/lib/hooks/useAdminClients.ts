@@ -1,7 +1,6 @@
 /**
- * Admin client hooks — now backed by the /admin/* endpoints.
- * The old /auth/admin/* endpoints remain active as a fallback
- * but all new code should use the admin module API.
+ * Admin client hooks, backed by the /admin/* endpoints.
+ * The legacy /auth/admin/* endpoints have been removed.
  */
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-hot-toast'
