@@ -44,7 +44,7 @@ class SymptomResponse(SymptomBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    tenant_id: str
+    tenant_id: str | None
     is_global: bool
     is_active: bool
     created_at: datetime
@@ -107,7 +107,7 @@ class SymptomAliasResponse(SymptomAliasBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    tenant_id: str
+    tenant_id: str | None
     symptom_id: int
     is_active: bool
     created_at: datetime
@@ -150,7 +150,7 @@ class MedicineSymptomMappingResponse(MedicineSymptomMappingBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    tenant_id: str
+    tenant_id: str | None
     is_active: bool
     created_at: datetime
     updated_at: datetime | None

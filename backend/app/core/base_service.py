@@ -290,3 +290,88 @@ class BaseTenantService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         entity = await self.get_by_id(id)
         await self.db.delete(entity)
         await self.db.commit()
+
+
+class GlobalCatalogService(Generic[ModelType]):
+    """
+    Base service class for hybrid global-or-tenant catalog tables
+    (GlobalCatalogModel subclasses with their own nullable tenant_id +
+    is_global column, e.g. Medicine, Symptom).
+
+    Unlike BaseTenantService, tenant_id may be None here — a platform
+    admin managing the global catalog has no tenant of their own.
+
+    Usage:
+        class MedicineService(GlobalCatalogService[Medicine]):
+            model = Medicine
+    """
+
+    # Subclasses must set this
+    model: Type[ModelType] = None
+
+    def __init__(self, db: AsyncSession, tenant_id: str | None):
+        """
+        Args:
+            db: SQLAlchemy async session
+            tenant_id: Caller's tenant, or None for a platform admin
+        """
+        self.db = db
+        self.tenant_id = tenant_id
+
+    def _visible_query(self):
+        """
+        Base query for rows visible to the caller: global rows, or rows
+        owned by their tenant.
+
+        For a platform admin (tenant_id=None), this narrows to global-only
+        rows without any special-casing — SQLAlchemy compiles
+        `Model.tenant_id == None` to `IS NULL`, and every model this base
+        supports has a CHECK constraint guaranteeing only global rows have
+        a null tenant_id.
+        """
+        return select(self.model).where(
+            or_(self.model.is_global == True, self.model.tenant_id == self.tenant_id)  # noqa: E712
+        )
+
+    async def get_visible_or_404(
+        self, id: str | int, *, detail: str | None = None
+    ) -> ModelType:
+        """Get a visible (global or own-tenant) row by ID, or raise 404."""
+        result = await self.db.execute(self._visible_query().where(self.model.id == id))
+        entity = result.scalar_one_or_none()
+
+        if not entity:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=detail or f"{self.model.__name__} not found",
+            )
+
+        return entity
+
+    async def get_own_or_404(
+        self, id: str | int, *, detail: str | None = None
+    ) -> ModelType:
+        """
+        Get a tenant-owned, non-global row by ID, or raise 404.
+
+        For update/delete — a caller (including an admin) can only modify
+        rows their own tenant owns, never a global row, through this path.
+        """
+        result = await self.db.execute(
+            select(self.model).where(
+                and_(
+                    self.model.id == id,
+                    self.model.tenant_id == self.tenant_id,
+                    self.model.is_global == False,  # noqa: E712
+                )
+            )
+        )
+        entity = result.scalar_one_or_none()
+
+        if not entity:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=detail or f"{self.model.__name__} not found or cannot be modified",
+            )
+
+        return entity

@@ -11,8 +11,9 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 **Last Verified:** 2026-09-25 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
-> Stage 1 ("Shippable") is underway — code-verified on 2026-09-25: `pytest -q` runs **442 passed /
-> 1 xfailed / 0 failed** locally. Sentry and structlog are initialised (`app/core/observability.py`).
+> Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
+> 2026-09-25: `pytest -q` runs **473 passed / 1 xfailed / 0 failed** locally. Sentry and structlog
+> are initialised (`app/core/observability.py`).
 > **Auth cookie hardening, legacy endpoint cleanup, and frontend CI landed 2026-09-25** (Stage 1):
 > the refresh token now lives only in an httpOnly cookie (`app/modules/auth/routes.py`), never in a
 > JS-readable place, with the access token moved to in-memory frontend state and a
@@ -22,6 +23,16 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 > first CI coverage (typecheck, lint, one login→patient→prescription→issue→PDF path), which is also
 > what surfaced and got a fix for a `scripts/seed.py` bug that's been silently breaking fresh seeds
 > since D1 landed.
+> **`medicine`/`symptom` service layer landed 2026-09-25** (Stage 2, D3): both modules were
+> route-only (raw `select()`s and hand-written tenant predicates); now `MedicineService`/
+> `SymptomService` hold the logic behind a shared `GlobalCatalogService` base
+> (`app/core/base_service.py`) with one `_visible_query()` encoding the global-vs-tenant read rule,
+> and `routes.py` in both is thin wiring. Added the first tests either module has ever had
+> (`tests/integration/test_medicine_routes.py`, `test_symptom_routes.py`, 31 tests), which caught two
+> real pre-existing bugs in the process: `SymptomResponse`/`SymptomAliasResponse`/
+> `MedicineSymptomMappingResponse.tenant_id` 500'd on any global row (should've been nullable since
+> D1), and alias creation on both modules 500'd with a duplicate-keyword `TypeError`. No route paths,
+> response shapes, or authorization rules changed.
 > Password reset and email verification now work end to end (`POST /auth/password/forgot`,
 > `/password/reset`, `/email/verify`, `/email/resend` — no longer commented out; system emails send
 > via SMTP relay, `app/core/system_email.py`, picking one of SendGrid/Resend/Mailgun/SMTP2GO/generic
@@ -415,7 +426,7 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 # tenant.specializations = ['homeopathy', 'ayurveda'] exists on the Tenant model,
 # and medicines/library models are documented as "filtered by specialization" —
 # but no route or service currently filters by it. Medicine list/search only
-# filter by is_global / tenant_id (see app/modules/medicine/routes.py).
+# filter by is_global / tenant_id (see app/modules/medicine/service.py).
 # Intended behavior once built: WHERE system IN tenant.specializations OR is_global = true
 ```
 
