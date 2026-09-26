@@ -1,13 +1,12 @@
 """FastAPI dependencies for authentication and authorization."""
 
-from contextvars import ContextVar
 from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import ExpiredSignatureError, JWTError
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -16,9 +15,6 @@ from app.shared.models.tenant import Tenant, User
 
 # Security scheme
 security = HTTPBearer()
-
-# Context variable for tenant_id (used in multi-tenant queries)
-tenant_id_ctx: ContextVar[str | None] = ContextVar("tenant_id", default=None)
 
 
 class CurrentUser:
@@ -123,9 +119,19 @@ async def get_current_user(
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-        # Set tenant context for multi-tenant queries
+        # Row-level security keys off this per-request GUC (see the RLS
+        # migration, 273747e56a3f). set_config(..., true) is transaction-
+        # scoped like SET LOCAL — it can't leak across pooled-connection
+        # reuse between requests, since get_db() wraps exactly one
+        # transaction per request and commits/rolls back at the end. A
+        # platform user (tenant_id=None) simply never sets it, which RLS
+        # treats as "no tenant" — zero rows from the clinical tables, a
+        # safe default since no current admin code path reads them.
         if tenant_id:
-            tenant_id_ctx.set(tenant_id)
+            await db.execute(
+                text("SELECT set_config('app.tenant_id', :tenant_id, true)"),
+                {"tenant_id": tenant_id},
+            )
 
         return CurrentUser(
             user_id=user_id,

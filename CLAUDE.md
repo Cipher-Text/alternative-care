@@ -8,12 +8,21 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **MVP v1.0 feature-complete — NOT production ready** ⚠️
 
-**Last Verified:** 2026-09-25 (code-verified, see `docs/planning/revision-2026-09.md`)
+**Last Verified:** 2026-09-26 (code-verified, see `docs/planning/revision-2026-09.md`)
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
 > Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
-> 2026-09-25: `pytest -q` runs **473 passed / 1 xfailed / 0 failed** locally. Sentry and structlog
+> 2026-09-26: `pytest -q` runs **476 passed / 1 xfailed / 0 failed** locally. Sentry and structlog
 > are initialised (`app/core/observability.py`).
+> **PostgreSQL RLS on the 8 clinical tables landed 2026-09-26** (Stage 2, D2): migration
+> `273747e56a3f` adds `ENABLE`/`FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy to
+> `patients`/`appointments`/`visits`/`prescriptions`/`prescription_items`/`payments`/`invoices`/
+> `patient_diagnoses`, keyed on a per-request GUC `get_current_user()` now sets via `set_config(...)`
+> (replacing a dead `tenant_id_ctx` `ContextVar` that used to get set-and-never-read). Verified real
+> via a throwaway non-superuser role in `tests/integration/test_rls_policies.py` — **but currently
+> inert in both local dev and CI**, since both connect as a PostgreSQL superuser, which unconditionally
+> bypasses RLS; making this protective in practice needs a dedicated least-privileged app role, which
+> is deployment work, named as a follow-up rather than done here or silently assumed.
 > **Auth cookie hardening, legacy endpoint cleanup, and frontend CI landed 2026-09-25** (Stage 1):
 > the refresh token now lives only in an httpOnly cookie (`app/modules/auth/routes.py`), never in a
 > JS-readable place, with the access token moved to in-memory frontend state and a
@@ -194,7 +203,7 @@ cd frontend && npx playwright test --ui
 # Tenant users: tenant_id = <uuid> (doctor, receptionist)
 ```
 
-> **Not automatic at the query layer:** `app/core/dependencies.py` also defines a `tenant_id_ctx` ContextVar that gets `.set()` once during auth, but nothing in the codebase ever calls `.get()` on it — it's unused/dead code, not a session-level auto-filter. Real isolation only holds for code that goes through `BaseTenantService`'s helpers or that manually adds the `tenant_id` filter itself; a hand-written query that skips both is a tenant-isolation bug the type system won't catch.
+> **Second layer, not automatic — PostgreSQL RLS (D2, migration `273747e56a3f`):** `get_current_user()` (`app/core/dependencies.py`) sets a per-request Postgres GUC — `set_config('app.tenant_id', tenant_id, true)`, transaction-scoped so it can't leak across pooled-connection reuse between requests — and the 8 clinical tables (`patients`, `appointments`, `visits`, `prescriptions`, `prescription_items`, `payments`, `invoices`, `patient_diagnoses`) carry a `tenant_isolation` RLS policy keyed on it. This converts a hand-written query that forgets its `tenant_id` filter from a silent cross-tenant leak into an empty result (SELECT) or a hard error (INSERT/UPDATE for another tenant) — it does not replace `BaseTenantService`, which is still what every route actually relies on today. **This is currently inert in both local dev and CI**: PostgreSQL superusers unconditionally bypass RLS, and both environments connect as a superuser (single `DATABASE_URL`, no dedicated least-privileged app role exists anywhere yet) — `FORCE ROW LEVEL SECURITY` only closes the table-*owner* loophole, not the superuser one. The policies are verified in `tests/integration/test_rls_policies.py` by `SET ROLE`-ing into a throwaway non-superuser role (Postgres bypass checks key off the *current* effective role, so this proves the policy logic genuinely works) — but the app itself won't get this protection in practice until a non-superuser application role is introduced and `DATABASE_URL` points at it, which is deployment/provisioning work, not done yet.
 
 **Testing Pattern:**
 ```python
