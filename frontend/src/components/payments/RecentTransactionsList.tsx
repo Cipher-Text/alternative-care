@@ -88,7 +88,7 @@ export function RecentTransactionsList({
           {recentPayments.map((payment) => (
             <div
               key={payment.id}
-              className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200"
+              className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-200"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function RecentTransactionsList({
                 </div>
               </div>
               <div className="text-right ml-4">
-                <p className="text-sm font-semibold text-indigo-400">
+                <p className="text-sm font-semibold text-emerald-400">
                   {payment.currency} {payment.amount.toLocaleString()}
                 </p>
               </div>

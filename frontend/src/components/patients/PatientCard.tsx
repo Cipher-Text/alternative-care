@@ -17,12 +17,12 @@ export function PatientCard({ patient }: PatientCardProps) {
   const fullName = formatPatientName(patient.full_name)
 
   return (
-    <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
+    <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900/50 border-2 border-indigo-200 dark:border-indigo-800 flex items-center justify-center">
-              <User className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+            <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-900/50 border-2 border-emerald-200 dark:border-emerald-800 flex items-center justify-center">
+              <User className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
               <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{fullName}</h3>
@@ -55,7 +55,7 @@ export function PatientCard({ patient }: PatientCardProps) {
           <Link href={`/patients/${patient.id}`}>
             <Button
               variant="outline"
-              className="w-full bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-700 dark:hover:text-indigo-300 hover:border-indigo-300 dark:hover:border-indigo-700"
+              className="w-full bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-300 hover:border-emerald-300 dark:hover:border-emerald-700"
               size="sm"
             >
               View Details

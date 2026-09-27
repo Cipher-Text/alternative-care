@@ -28,7 +28,7 @@ export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
   }
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200">
+    <Card className="hover:shadow-md transition-shadow duration-200">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
           Revenue by Payment Method

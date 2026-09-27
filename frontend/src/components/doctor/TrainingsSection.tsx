@@ -105,7 +105,7 @@ export function TrainingsSection() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -138,8 +138,8 @@ export function TrainingsSection() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded-lg">
-                      <Award className="h-5 w-5 text-indigo-600 dark:text-indigo-300" />
+                    <div className="bg-emerald-100 dark:bg-emerald-900 p-2 rounded-lg">
+                      <Award className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">

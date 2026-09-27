@@ -118,7 +118,7 @@ export default function AppointmentsPage() {
   if (isLoading || isLoadingPatients) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -249,7 +249,7 @@ export default function AppointmentsPage() {
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">{appointment.doctor_id}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-block rounded-md bg-indigo-50 text-indigo-700 px-2 py-1 text-xs">
+                      <span className="inline-block rounded-md bg-emerald-50 text-emerald-700 px-2 py-1 text-xs">
                         {appointment.status}
                       </span>
                     </td>
@@ -257,7 +257,7 @@ export default function AppointmentsPage() {
                       <div>{appointment.reason || '-'}</div>
                       <Link
                         href={`/appointments/${appointment.id}`}
-                        className="text-xs text-indigo-600 hover:underline"
+                        className="text-xs text-emerald-600 hover:underline"
                       >
                         View details
                       </Link>

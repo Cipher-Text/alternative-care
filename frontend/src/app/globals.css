@@ -1,87 +1,51 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Light Theme (Default) */
 :root {
-  /* Background colors */
-  --background: 255 255 255; /* white */
-  --foreground: 15 23 42; /* slate-900 */
-
-  /* Card colors */
-  --card: 255 255 255; /* white */
-  --card-foreground: 15 23 42; /* slate-900 */
-
-  /* Primary colors */
-  --primary: 79 70 229; /* indigo-600 */
-  --primary-foreground: 255 255 255; /* white */
-
-  /* Secondary colors */
-  --secondary: 241 245 249; /* slate-100 */
-  --secondary-foreground: 15 23 42; /* slate-900 */
-
-  /* Muted colors */
-  --muted: 241 245 249; /* slate-100 */
-  --muted-foreground: 100 116 139; /* slate-500 */
-
-  /* Accent colors */
-  --accent: 241 245 249; /* slate-100 */
-  --accent-foreground: 15 23 42; /* slate-900 */
-
-  /* Border & input */
-  --border: 226 232 240; /* slate-200 */
-  --input: 226 232 240; /* slate-200 */
-  --ring: 79 70 229; /* indigo-600 */
-
-  /* Destructive */
-  --destructive: 239 68 68; /* red-500 */
-  --destructive-foreground: 255 255 255; /* white */
-
-  /* Popover */
-  --popover: 255 255 255; /* white */
-  --popover-foreground: 15 23 42; /* slate-900 */
-
-  /* Radius */
+  color-scheme: light;
+  --background: 248 250 252;
+  --foreground: 15 23 42;
+  --card: 255 255 255;
+  --card-foreground: 15 23 42;
+  --primary: 15 23 42;
+  --primary-foreground: 255 255 255;
+  --secondary: 241 245 249;
+  --secondary-foreground: 15 23 42;
+  --muted: 241 245 249;
+  --muted-foreground: 100 116 139;
+  --accent: 241 245 249;
+  --accent-foreground: 15 23 42;
+  --border: 226 232 240;
+  --input: 226 232 240;
+  --ring: 15 23 42;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --popover: 255 255 255;
+  --popover-foreground: 15 23 42;
   --radius: 0.5rem;
 }
 
-/* Dark Theme */
 .dark {
-  /* Background colors */
-  --background: 15 23 42; /* slate-900 */
-  --foreground: 248 250 252; /* slate-50 */
-
-  /* Card colors */
-  --card: 30 41 59; /* slate-800 */
-  --card-foreground: 248 250 252; /* slate-50 */
-
-  /* Primary colors */
-  --primary: 99 102 241; /* indigo-500 */
-  --primary-foreground: 255 255 255; /* white */
-
-  /* Secondary colors */
-  --secondary: 51 65 85; /* slate-700 */
-  --secondary-foreground: 248 250 252; /* slate-50 */
-
-  /* Muted colors */
-  --muted: 51 65 85; /* slate-700 */
-  --muted-foreground: 148 163 184; /* slate-400 */
-
-  /* Accent colors */
-  --accent: 51 65 85; /* slate-700 */
-  --accent-foreground: 248 250 252; /* slate-50 */
-
-  /* Border & input */
-  --border: 51 65 85; /* slate-700 */
-  --input: 51 65 85; /* slate-700 */
-  --ring: 99 102 241; /* indigo-500 */
-
-  /* Destructive */
-  --destructive: 239 68 68; /* red-500 */
-  --destructive-foreground: 255 255 255; /* white */
-
-  /* Popover */
-  --popover: 30 41 59; /* slate-800 */
-  --popover-foreground: 248 250 252; /* slate-50 */
+  color-scheme: dark;
+  --background: 15 23 42;
+  --foreground: 248 250 252;
+  --card: 30 41 59;
+  --card-foreground: 248 250 252;
+  --primary: 15 23 42;
+  --primary-foreground: 255 255 255;
+  --secondary: 51 65 85;
+  --secondary-foreground: 248 250 252;
+  --muted: 51 65 85;
+  --muted-foreground: 148 163 184;
+  --accent: 51 65 85;
+  --accent-foreground: 248 250 252;
+  --border: 51 65 85;
+  --input: 51 65 85;
+  --ring: 148 163 184;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --popover: 30 41 59;
+  --popover-foreground: 248 250 252;
 }
 
 @theme inline {
@@ -104,36 +68,27 @@
   --color-ring: rgb(var(--ring));
   --color-popover: rgb(var(--popover));
   --color-popover-foreground: rgb(var(--popover-foreground));
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-heading: var(--font-plus-jakarta);
+  --font-mono: var(--font-fira-code);
 }
 
-* {
-  border-color: rgb(var(--border));
-}
+* { border-color: rgb(var(--border)); }
 
 body {
   background: rgb(var(--background));
   color: rgb(var(--foreground));
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* Smooth transitions for theme changes */
-* {
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-plus-jakarta), var(--font-dm-sans), sans-serif;
+}
+
+*:where(:not(input):not(textarea):not(select):not(button)) {
   transition-property: background-color, border-color, color;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Exclude transitions for certain elements */
-*:where(
-  [type="range"],
-  [type="checkbox"],
-  [type="radio"],
-  input,
-  textarea,
-  select,
-  button
-) {
-  transition-property: none;
 }

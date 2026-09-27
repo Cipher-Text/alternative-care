@@ -39,7 +39,7 @@ export function ProviderCard({
   };
 
   return (
-    <Card className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
+    <Card className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           {logoUrl ? (
@@ -82,7 +82,7 @@ export function ProviderCard({
           </Button>
         ) : (
           <Button
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="w-full bg-primary hover:bg-slate-950 text-white"
             onClick={() => onSetup(provider.id)}
           >
             Setup Integration

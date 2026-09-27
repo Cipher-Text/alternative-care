@@ -33,7 +33,7 @@ export default function PatientsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
       </div>
     )
   }
@@ -58,7 +58,7 @@ export default function PatientsPage() {
           </p>
         </div>
         <Link href="/patients/new">
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/50">
+          <Button className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Patient
           </Button>
@@ -91,17 +91,17 @@ export default function PatientsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
+        <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
           <p className="text-sm text-gray-600 dark:text-gray-400">Total Patients</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">{patients?.length || 0}</p>
         </div>
-        <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
+        <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
           <p className="text-sm text-gray-600 dark:text-gray-400">Male</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {patients?.filter((p) => p.gender === 'male').length || 0}
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-indigo-500/10 transition-all duration-200">
+        <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
           <p className="text-sm text-gray-600 dark:text-gray-400">Female</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {patients?.filter((p) => p.gender === 'female').length || 0}
@@ -125,7 +125,7 @@ export default function PatientsPage() {
           </p>
           {!search && !gender && (
             <Link href="/patients/new">
-              <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button className="mt-4 bg-primary hover:bg-slate-950 text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add First Patient
               </Button>

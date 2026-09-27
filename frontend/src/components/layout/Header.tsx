@@ -65,7 +65,7 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700">
               <Avatar>
-                <AvatarFallback className="bg-indigo-600 text-white">
+                <AvatarFallback className="bg-primary text-white">
                   {user?.full_name ? getInitials(user.full_name) : 'U'}
                 </AvatarFallback>
               </Avatar>

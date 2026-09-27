@@ -71,7 +71,7 @@ export function PaymentSummaryCards({ summary, isLoading }: PaymentSummaryCardsP
         return (
           <Card
             key={card.title}
-            className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-indigo-500/10 transition-all duration-200"
+            className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">

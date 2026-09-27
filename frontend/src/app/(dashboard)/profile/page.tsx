@@ -29,7 +29,7 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -82,8 +82,8 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-start gap-6">
-            <div className="bg-indigo-100 dark:bg-indigo-900 p-4 rounded-full">
-              <User className="h-12 w-12 text-indigo-600 dark:text-indigo-300" />
+            <div className="bg-emerald-100 dark:bg-emerald-900 p-4 rounded-full">
+              <User className="h-12 w-12 text-emerald-600 dark:text-emerald-300" />
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold">{profile.full_name}</h2>
@@ -121,7 +121,7 @@ export default function ProfilePage() {
                 }}
                 className={`flex items-center gap-2 pb-4 border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-indigo-600 text-indigo-600 font-medium'
+                    ? 'border-emerald-600 text-emerald-600 font-medium'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >

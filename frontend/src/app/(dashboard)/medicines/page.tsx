@@ -68,7 +68,7 @@ export default function MedicinesPage() {
         </div>
         <Button
           onClick={() => router.push('/medicines/new')}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/50"
+          className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Medicine
@@ -161,13 +161,13 @@ export default function MedicinesPage() {
       {/* Medicine List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
         </div>
       ) : !filteredMedicines || filteredMedicines.length === 0 ? (
         <Card className="p-12 text-center bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
           <p className="text-gray-600 dark:text-gray-400">No medicines found</p>
           <Button
-            className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="mt-4 bg-primary hover:bg-slate-950 text-white"
             onClick={() => router.push('/medicines/new')}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -179,7 +179,7 @@ export default function MedicinesPage() {
           {filteredMedicines.map((medicine) => (
             <Card
               key={medicine.id}
-              className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-indigo-500/10 hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-200"
+              className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-md dark:hover:shadow-emerald-500/10 hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -193,7 +193,7 @@ export default function MedicinesPage() {
                 {medicine.is_global && (
                   <Badge
                     variant="outline"
-                    className="text-xs bg-indigo-500/20 text-indigo-300 border-indigo-500/30"
+                    className="text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                   >
                     Global
                   </Badge>
@@ -225,7 +225,7 @@ export default function MedicinesPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-600 hover:text-indigo-700 dark:hover:text-white hover:border-indigo-300 dark:hover:border-indigo-600"
+                  className="flex-1 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-primary hover:text-emerald-700 dark:hover:text-white hover:border-emerald-300 dark:hover:border-emerald-600"
                   onClick={() => router.push(`/medicines/${medicine.id}`)}
                 >
                   <Eye className="w-4 h-4 mr-1" />

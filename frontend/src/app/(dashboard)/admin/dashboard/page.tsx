@@ -34,7 +34,7 @@ function StatCard({
       ? 'text-amber-500'
       : variant === 'success'
         ? 'text-green-500'
-        : 'text-indigo-500'
+        : 'text-emerald-500'
 
   return (
     <Card>
@@ -86,7 +86,7 @@ export default function AdminDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[420px]">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -169,10 +169,10 @@ export default function AdminDashboardPage() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Card className="cursor-pointer hover:border-indigo-300 transition-colors" onClick={() => router.push('/admin/clients')}>
+        <Card className="cursor-pointer hover:border-emerald-300 transition-colors" onClick={() => router.push('/admin/clients')}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <Building2 className="h-8 w-8 text-indigo-500" />
+              <Building2 className="h-8 w-8 text-emerald-500" />
               <div>
                 <p className="font-semibold">Manage Clients</p>
                 <p className="text-sm text-muted-foreground">
@@ -183,10 +183,10 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:border-indigo-300 transition-colors" onClick={() => router.push('/admin/users')}>
+        <Card className="cursor-pointer hover:border-emerald-300 transition-colors" onClick={() => router.push('/admin/users')}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <Users className="h-8 w-8 text-indigo-500" />
+              <Users className="h-8 w-8 text-emerald-500" />
               <div>
                 <p className="font-semibold">Role Distribution</p>
                 <p className="text-sm text-muted-foreground">

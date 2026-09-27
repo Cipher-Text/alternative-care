@@ -44,7 +44,7 @@ export function LanguageSwitcher() {
         >
           <span>{t('english')}</span>
           {locale === 'en' && (
-            <span className="ml-auto text-indigo-600 dark:text-indigo-400">✓</span>
+            <span className="ml-auto text-emerald-600 dark:text-emerald-400">✓</span>
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -53,7 +53,7 @@ export function LanguageSwitcher() {
         >
           <span>{t('bengali')}</span>
           {locale === 'bn' && (
-            <span className="ml-auto text-indigo-600 dark:text-indigo-400">✓</span>
+            <span className="ml-auto text-emerald-600 dark:text-emerald-400">✓</span>
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>

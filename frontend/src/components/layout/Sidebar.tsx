@@ -44,7 +44,7 @@ export function Sidebar() {
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">
-      <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-r border-gray-200 dark:border-slate-700 transition-colors">
+      <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 transition-colors">
         {/* Logo */}
         <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-200 dark:border-slate-700">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">AltCare</h1>
@@ -64,16 +64,16 @@ export function Sidebar() {
                   className={cn(
                     'group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/50'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                   )}
                 >
                   <Icon
                     className={cn(
                       'mr-3 h-5 w-5 flex-shrink-0',
                       isActive
-                        ? 'text-white'
-                        : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        ? 'text-primary-foreground'
+                        : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
                     )}
                   />
                   {item.name}

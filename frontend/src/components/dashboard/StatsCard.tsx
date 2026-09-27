@@ -23,13 +23,13 @@ export function StatsCard({
   className,
 }: StatsCardProps) {
   return (
-    <Card className={cn('hover:shadow-lg transition-shadow duration-200', className)}>
+    <Card className={cn('hover:shadow-md transition-shadow duration-200', className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {title}
         </CardTitle>
-        <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
-          <Icon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+        <div className="p-2 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
+          <Icon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
         </div>
       </CardHeader>
       <CardContent>

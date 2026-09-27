@@ -66,8 +66,8 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
         <Card className="p-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 flex-1">
-              <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded-full">
-                <User className="h-5 w-5 text-indigo-600 dark:text-indigo-300" />
+              <div className="bg-emerald-100 dark:bg-emerald-900 p-2 rounded-full">
+                <User className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold mb-1">{selectedPatient.full_name}</h4>

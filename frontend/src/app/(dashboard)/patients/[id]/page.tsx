@@ -55,7 +55,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -212,7 +212,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               {diagnoses.map((diagnosis) => (
                 <div
                   key={diagnosis.id}
-                  className="border-l-4 border-indigo-500 pl-4 py-2"
+                  className="border-l-4 border-emerald-500 pl-4 py-2"
                 >
                   <p className="font-medium">{diagnosis.description}</p>
                   <p className="text-sm text-muted-foreground">

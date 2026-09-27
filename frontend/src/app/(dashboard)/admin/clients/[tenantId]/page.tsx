@@ -128,7 +128,7 @@ export default function AdminClientDetailPage({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -175,7 +175,7 @@ export default function AdminClientDetailPage({
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-indigo-600" />
+              <Building2 className="h-5 w-5 text-emerald-600" />
               Clinic / Tenant
             </CardTitle>
             <CardDescription>
@@ -227,7 +227,7 @@ export default function AdminClientDetailPage({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CalendarClock className="h-5 w-5 text-indigo-600" />
+              <CalendarClock className="h-5 w-5 text-emerald-600" />
               Lifecycle
             </CardTitle>
           </CardHeader>
@@ -257,7 +257,7 @@ export default function AdminClientDetailPage({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Stethoscope className="h-5 w-5 text-indigo-600" />
+                <Stethoscope className="h-5 w-5 text-emerald-600" />
                 Doctors
               </CardTitle>
               <CardDescription>
@@ -287,8 +287,8 @@ export default function AdminClientDetailPage({
                   <TableRow key={doctor.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                          <User className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
+                        <div className="h-9 w-9 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+                          <User className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
                         </div>
                         <div>
                           <p className="font-medium">{doctor.full_name}</p>

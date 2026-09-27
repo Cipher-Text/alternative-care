@@ -49,7 +49,7 @@ export default function PrescriptionsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -174,7 +174,7 @@ export default function PrescriptionsPage() {
                         href={prescription.pdf_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-indigo-600 hover:text-indigo-800"
+                        className="text-emerald-600 hover:text-emerald-800"
                       >
                         <FileText className="h-4 w-4" />
                       </a>

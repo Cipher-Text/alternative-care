@@ -233,7 +233,7 @@ export default function AdminUsersPage() {
       {/* Role group cards */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
         </div>
       ) : (
         <>
@@ -247,8 +247,8 @@ export default function AdminUsersPage() {
                   onClick={() => setRoleFilter(isSelected ? 'all' : r)}
                   className={`rounded-xl border p-4 text-left transition-all ${
                     isSelected
-                      ? 'border-indigo-500 ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-950'
-                      : 'hover:border-indigo-300 hover:bg-gray-50 dark:hover:bg-slate-800'
+                      ? 'border-emerald-500 ring-2 ring-emerald-500 bg-emerald-50 dark:bg-emerald-950'
+                      : 'hover:border-emerald-300 hover:bg-gray-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   <p className="text-3xl font-bold">{count}</p>
@@ -265,7 +265,7 @@ export default function AdminUsersPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <UserCog className="h-5 w-5 text-indigo-500" />
+                <UserCog className="h-5 w-5 text-emerald-500" />
                 All Users
                 {summary && (
                   <Badge variant="outline" className="ml-2">

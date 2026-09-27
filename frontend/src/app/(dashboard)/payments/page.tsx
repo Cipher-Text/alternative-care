@@ -38,7 +38,7 @@ export default function PaymentsPage() {
             </Button>
           </Link>
           <Link href="/payments/transactions">
-            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/50">
+            <Button className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10">
               <Plus className="mr-2 h-4 w-4" />
               Record Payment
             </Button>
@@ -54,8 +54,8 @@ export default function PaymentsPage() {
       {/* Quick Navigation */}
       <div className="grid gap-4 md:grid-cols-3">
         <Link href="/payments/transactions">
-          <div className="border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 rounded-lg p-4 hover:bg-indigo-50 dark:hover:bg-indigo-600/20 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200 cursor-pointer group">
-            <h3 className="font-semibold mb-1 text-gray-900 dark:text-white group-hover:text-indigo-700 dark:group-hover:text-indigo-300">
+          <div className="border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 rounded-lg p-4 hover:bg-emerald-50 dark:hover:bg-primary/20 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-200 cursor-pointer group">
+            <h3 className="font-semibold mb-1 text-gray-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
               Transaction History
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
@@ -106,7 +106,7 @@ export default function PaymentsPage() {
               </div>
               <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-slate-700">
                 <span className="text-sm font-semibold text-gray-900 dark:text-white">Total</span>
-                <span className="text-sm font-semibold text-indigo-400">
+                <span className="text-sm font-semibold text-emerald-400">
                   ৳{summary.total_amount.toLocaleString()}
                 </span>
               </div>

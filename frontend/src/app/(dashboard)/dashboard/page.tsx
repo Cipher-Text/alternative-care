@@ -37,7 +37,7 @@ export default function DashboardPage() {
   if (user?.tenant_id === null && (user.role === 'admin' || user.role === 'operator')) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -66,7 +66,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
   if (overviewLoading || financialLoading || patientsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     )
   }
@@ -92,7 +92,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       </div>
 
       {/* Quick Actions */}
-      <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950 dark:to-slate-900">
+      <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950 dark:to-slate-900">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg text-gray-900 dark:text-white">Quick Actions</CardTitle>
         </CardHeader>
@@ -100,10 +100,10 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Button
               variant="outline"
-              className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-indigo-50 dark:hover:bg-indigo-950 hover:border-indigo-300 text-gray-700 dark:text-gray-200"
+              className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:border-emerald-300 text-gray-700 dark:text-gray-200"
               onClick={() => router.push('/patients/new')}
             >
-              <UserPlus className="h-5 w-5 mb-2 text-indigo-600 dark:text-indigo-400" />
+              <UserPlus className="h-5 w-5 mb-2 text-emerald-600 dark:text-emerald-400" />
               <span className="font-medium text-sm">New Patient</span>
             </Button>
             <Button

@@ -87,7 +87,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
       musculoskeletal: 'bg-orange-100 text-orange-800',
       skin: 'bg-yellow-100 text-yellow-800',
       immune: 'bg-red-100 text-red-800',
-      cardiovascular: 'bg-indigo-100 text-indigo-800',
+      cardiovascular: 'bg-emerald-100 text-emerald-800',
       metabolic: 'bg-teal-100 text-teal-800',
       reproductive: 'bg-rose-100 text-rose-800',
       ear_nose_throat: 'bg-cyan-100 text-cyan-800',

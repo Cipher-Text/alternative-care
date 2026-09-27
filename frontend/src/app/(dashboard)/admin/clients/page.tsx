@@ -224,7 +224,7 @@ export default function AdminClientsPage() {
 
               {clients.isLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
                 </div>
               ) : filteredClients.length > 0 ? (
                 <Table>
@@ -309,7 +309,7 @@ export default function AdminClientsPage() {
                 <CardContent className="space-y-8">
                   <section className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <UserPlus className="h-5 w-5 text-indigo-600" />
+                      <UserPlus className="h-5 w-5 text-emerald-600" />
                       <h2 className="text-lg font-semibold">Doctor Account</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -388,7 +388,7 @@ export default function AdminClientsPage() {
 
                   <section className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <Building2 className="h-5 w-5 text-indigo-600" />
+                      <Building2 className="h-5 w-5 text-emerald-600" />
                       <h2 className="text-lg font-semibold">Clinic Tenant</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -545,7 +545,7 @@ export default function AdminClientsPage() {
             <CardContent>
               {pendingTenants.isLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
                 </div>
               ) : pendingTenants.data && pendingTenants.data.length > 0 ? (
                 <Table>

@@ -53,14 +53,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900 transition-colors">
+    <div className="min-h-screen flex bg-background transition-colors">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 p-6 bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors">
+        <main className="flex-1 p-6 bg-background transition-colors">
           {children}
         </main>
       </div>

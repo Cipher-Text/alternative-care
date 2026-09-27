@@ -47,7 +47,7 @@ export default function SymptomsPage() {
       musculoskeletal: 'bg-orange-100 text-orange-800',
       skin: 'bg-yellow-100 text-yellow-800',
       immune: 'bg-red-100 text-red-800',
-      cardiovascular: 'bg-indigo-100 text-indigo-800',
+      cardiovascular: 'bg-emerald-100 text-emerald-800',
       metabolic: 'bg-teal-100 text-teal-800',
       reproductive: 'bg-rose-100 text-rose-800',
       ear_nose_throat: 'bg-cyan-100 text-cyan-800',
@@ -185,7 +185,7 @@ export default function SymptomsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredSymptoms.map((symptom) => (
-            <Card key={symptom.id} className="p-6 hover:shadow-lg transition-shadow">
+            <Card key={symptom.id} className="p-6 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg">{symptom.name_en}</h3>
