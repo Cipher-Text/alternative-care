@@ -47,6 +47,26 @@ Three gaps in the existing Medicine/Symptom catalog, meant to land in the *same*
 
 ---
 
+## Addendum (2026-09-28) — Public site content scope
+
+The product owner sketched a fuller public-site content plan than the sections above cover. Most of it is the same direction already decided here, described in more product/UX detail — folded in below as the concrete section list for whichever Stage 3-and-later work picks up Track D/C. Two pieces were proposed and are rejected as scoped, with reasons, so they don't get re-proposed the same way later.
+
+**Sections confirmed, same direction as above:**
+- Home — search + discipline cards + featured practitioners/knowledge content
+- Find a Practitioner, Clinics/Chambers — per the Track D directory decision (ADR-008) above
+- Disciplines (`/homeopathy`, `/ayurveda`, `/unani`, `/herbal`) — depends on discipline becoming a real catalog entity (§ knowledge taxonomy above); can't be built as reliable filtered hubs on today's free-text field
+- Conditions & Symptoms — depends on `Condition` existing as its own entity, distinct from `Symptom` (§ knowledge taxonomy above); today's `Symptom` table alone can't back both
+- Medicines/Remedies, Knowledge Library, About, For Practitioners — direct match to Track C content and Stage 3 public knowledge pages, no new decision needed
+- Pricing (under For Practitioners) — blocked on a product decision, not a build decision: `require_plan()` (`app/core/dependencies.py`) gates exactly one thing in the whole product today, the AI 501-stub endpoint, on `"pro"`. Nothing distinguishes `free`/`plus`/`pro` beyond that name. Price figures exist only in `docs/archive/` (e.g. "Plus — ৳799/mo"), which is superseded and not a current source of truth. Ships as a "Contact us for pricing" placeholder until real tier differentiation (patient limits? AI quota once Stage 4 ships? the SMS/email quotas already tracked in `usage_tracking`?) and prices are actually decided — publishing numbers now means changing them later.
+
+**Rejected as proposed:**
+- **A separate "Medicinal Plants" section/table.** Same mistake as the already-rejected separate herbal library (§ knowledge taxonomy above) — Medicine already covers all four disciplines. Plant content is Medicine catalog content (a plant-type tag/flag on `Medicine`, not a parallel table).
+- **Public appointment booking (search practitioner → chamber → schedule → request/book).** Not a missing feature — a missing foundational decision. Nothing in this codebase gives a patient an identity to book with; `Patient` today is a record a doctor manages, not an account a person logs into. This needs its own ADR (can a patient have an account? is a booking request unauthenticated + confirmed by the clinic, or does it require patient login?) before any schema or route work, and doesn't ride along with the directory or content work above.
+
+**Practitioner public profile field list** (extends the Track D directory decision above with the actual fields, since ADR-008 named the mechanism but not the content): photo, bio, discipline, qualifications, experience, languages spoken, clinic/chamber location(s), consultation hours, fee (optional, tenant's choice to show), online/in-person availability, verified-credential badge. No public star rating — deliberate, per this addendum's discussion: credential verification and transparent information serve a healthcare directory better than a popularity score.
+
+---
+
 ## What this document is not
 
 Not a commitment to build any of this by a date. Not a full architecture spec — that gets written when a stage here actually starts, informed by whatever's true at that point. It exists so that "directory," "content," and "taxonomy" have one answer instead of being re-decided from scratch (or left undocumented) every time they come up.
