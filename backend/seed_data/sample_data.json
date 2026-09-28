@@ -116,7 +116,7 @@
       "language": "en",
       "is_active": true,
       "is_email_verified": true,
-      "is_2fa_enabled": true
+      "is_2fa_enabled": false
     },
     {
       "id": "660e8400-e29b-41d4-a716-446655440006",
