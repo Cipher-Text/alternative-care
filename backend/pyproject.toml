@@ -6,10 +6,11 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
-    "sqlalchemy>=2.0.25",
+    "sqlalchemy[asyncio]>=2.0.25",
+    "pgvector>=0.2.4",
     "alembic>=1.13.1",
     "asyncpg>=0.29.0",
-    "pydantic>=2.5.3",
+    "pydantic[email]>=2.5.3",
     "pydantic-settings>=2.1.0",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
@@ -30,6 +31,7 @@ dependencies = [
     "prometheus-client>=0.19.0",
     "python-dotenv>=1.0.0",
     "google-auth>=2.28.0",
+    "requests>=2.31.0",
 ]
 
 [project.optional-dependencies]
