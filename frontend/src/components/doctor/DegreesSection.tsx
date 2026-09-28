@@ -7,10 +7,18 @@ import {
   useUpdateDoctorDegree,
   useDeleteDoctorDegree,
 } from '@/lib/hooks/useDoctor'
+import { useInstitutions } from '@/lib/hooks/useInstitutions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -31,20 +39,47 @@ import {
   AlertCircle,
 } from 'lucide-react'
 
+const OTHER = '__other__'
+
+const DEGREE_TYPES = ['Certificate', 'Diploma', 'Bachelor', 'Master', 'Doctorate', 'Fellowship']
+
+const DEGREE_NAMES = [
+  'DHMS',
+  'BHMS',
+  'MD (Homeopathy)',
+  'DAMS',
+  'BAMS',
+  'MD (Ayurveda)',
+  'DUMS',
+  'BUMS',
+  'MD (Unani)',
+  'MBBS',
+]
+
+const emptyForm: DoctorDegreeCreate = {
+  degree_type: '',
+  degree_name: '',
+  institution_name: '',
+  completion_year: new Date().getFullYear(),
+}
+
 export function DegreesSection() {
   const { data: degrees, isLoading } = useDoctorDegrees()
   const createDegree = useCreateDoctorDegree()
   const updateDegree = useUpdateDoctorDegree()
   const deleteDegree = useDeleteDoctorDegree()
+  const { data: institutions } = useInstitutions({ limit: 500 })
 
   const [showDialog, setShowDialog] = useState(false)
   const [editingDegree, setEditingDegree] = useState<DoctorDegree | null>(null)
-  const [formData, setFormData] = useState<DoctorDegreeCreate>({
-    degree_type: '',
-    degree_name: '',
-    institution_name: '',
-    completion_year: new Date().getFullYear(),
-  })
+  const [formData, setFormData] = useState<DoctorDegreeCreate>(emptyForm)
+
+  // Each dropdown falls back to a free-text "Other" mode — a pre-existing
+  // degree may carry a degree_type/degree_name typed in before these became
+  // dropdowns, or an institution not (or no longer) in the catalog.
+  const [customType, setCustomType] = useState(false)
+  const [customName, setCustomName] = useState(false)
+  const [customInstitution, setCustomInstitution] = useState(false)
 
   const handleOpenDialog = (degree?: DoctorDegree) => {
     if (degree) {
@@ -55,19 +90,21 @@ export function DegreesSection() {
         specialization: degree.specialization,
         institution_name: degree.institution_name,
         institution_location: degree.institution_location,
+        institution_id: degree.institution_id,
         start_year: degree.start_year || undefined,
         completion_year: degree.completion_year,
         certificate_url: degree.certificate_url,
         display_order: degree.display_order,
       })
+      setCustomType(!DEGREE_TYPES.includes(degree.degree_type))
+      setCustomName(!DEGREE_NAMES.includes(degree.degree_name))
+      setCustomInstitution(!degree.institution_id)
     } else {
       setEditingDegree(null)
-      setFormData({
-        degree_type: '',
-        degree_name: '',
-        institution_name: '',
-        completion_year: new Date().getFullYear(),
-      })
+      setFormData(emptyForm)
+      setCustomType(false)
+      setCustomName(false)
+      setCustomInstitution(false)
     }
     setShowDialog(true)
   }
@@ -213,24 +250,64 @@ export function DegreesSection() {
                 <Label htmlFor="degree_type">
                   Degree Type <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="degree_type"
-                  placeholder="e.g., Bachelor, Master, Doctorate"
-                  value={formData.degree_type}
-                  onChange={(e) => setFormData({ ...formData, degree_type: e.target.value })}
-                />
+                <Select
+                  value={customType ? OTHER : formData.degree_type || undefined}
+                  onValueChange={(value) => {
+                    setCustomType(value === OTHER)
+                    setFormData({ ...formData, degree_type: value === OTHER ? '' : value })
+                  }}
+                >
+                  <SelectTrigger id="degree_type">
+                    <SelectValue placeholder="Select degree type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEGREE_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value={OTHER}>Other (specify)</SelectItem>
+                  </SelectContent>
+                </Select>
+                {customType && (
+                  <Input
+                    placeholder="e.g., Postgraduate Certificate"
+                    value={formData.degree_type}
+                    onChange={(e) => setFormData({ ...formData, degree_type: e.target.value })}
+                  />
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="degree_name">
                   Degree Name <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="degree_name"
-                  placeholder="e.g., BHMS, BAMS, MD"
-                  value={formData.degree_name}
-                  onChange={(e) => setFormData({ ...formData, degree_name: e.target.value })}
-                />
+                <Select
+                  value={customName ? OTHER : formData.degree_name || undefined}
+                  onValueChange={(value) => {
+                    setCustomName(value === OTHER)
+                    setFormData({ ...formData, degree_name: value === OTHER ? '' : value })
+                  }}
+                >
+                  <SelectTrigger id="degree_name">
+                    <SelectValue placeholder="Select degree name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEGREE_NAMES.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value={OTHER}>Other (specify)</SelectItem>
+                  </SelectContent>
+                </Select>
+                {customName && (
+                  <Input
+                    placeholder="e.g., MD (Pediatrics)"
+                    value={formData.degree_name}
+                    onChange={(e) => setFormData({ ...formData, degree_name: e.target.value })}
+                  />
+                )}
               </div>
             </div>
 
@@ -248,16 +325,46 @@ export function DegreesSection() {
 
             <div className="space-y-2">
               <Label htmlFor="institution_name">
-                Institution Name <span className="text-red-500">*</span>
+                Institution <span className="text-red-500">*</span>
               </Label>
-              <Input
-                id="institution_name"
-                placeholder="University or College name"
-                value={formData.institution_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, institution_name: e.target.value })
-                }
-              />
+              <Select
+                value={customInstitution ? OTHER : formData.institution_id?.toString() ?? undefined}
+                onValueChange={(value) => {
+                  if (value === OTHER) {
+                    setCustomInstitution(true)
+                    setFormData({ ...formData, institution_id: null, institution_name: '' })
+                    return
+                  }
+                  setCustomInstitution(false)
+                  const institution = institutions?.find((i) => i.id === Number(value))
+                  setFormData({
+                    ...formData,
+                    institution_id: institution?.id ?? null,
+                    institution_name: institution?.name_en ?? '',
+                  })
+                }}
+              >
+                <SelectTrigger id="institution_name">
+                  <SelectValue placeholder="Select institution" />
+                </SelectTrigger>
+                <SelectContent>
+                  {institutions?.map((institution) => (
+                    <SelectItem key={institution.id} value={institution.id.toString()}>
+                      {institution.name_en}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={OTHER}>Other (not listed)</SelectItem>
+                </SelectContent>
+              </Select>
+              {customInstitution && (
+                <Input
+                  placeholder="Institution name"
+                  value={formData.institution_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, institution_name: e.target.value })
+                  }
+                />
+              )}
             </div>
 
             <div className="space-y-2">
