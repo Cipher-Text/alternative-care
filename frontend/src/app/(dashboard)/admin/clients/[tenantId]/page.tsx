@@ -79,8 +79,11 @@ export default function AdminClientDetailPage({
   const { tenantId } = use(params)
   const router = useRouter()
   const user = useAuthStore((state) => state.user)
-  const isAdmin = user?.role === 'admin'
-  const { data, isLoading, error } = useAdminClient(tenantId, isAdmin)
+  // Tenant detail is read-only on the backend (RequireAdminOrOperator) — operators can view
+  // it. Adding a doctor is an admin-only write (canEdit below).
+  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
+  const canEdit = user?.role === 'admin'
+  const { data, isLoading, error } = useAdminClient(tenantId, isPlatformRole)
   const createDoctor = useCreateTenantDoctor(tenantId)
   const [isDoctorDialogOpen, setIsDoctorDialogOpen] = useState(false)
   const [doctorForm, setDoctorForm] = useState(emptyDoctorForm)
@@ -102,7 +105,7 @@ export default function AdminClientDetailPage({
     setIsDoctorDialogOpen(false)
   }
 
-  if (!isAdmin) {
+  if (!isPlatformRole) {
     return (
       <div className="flex min-h-[420px] items-center justify-center">
         <Card className="max-w-md">
@@ -112,7 +115,7 @@ export default function AdminClientDetailPage({
               Admin Access Required
             </CardTitle>
             <CardDescription>
-              Client details are available only to platform administrators.
+              Client details are available only to platform staff.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -264,10 +267,12 @@ export default function AdminClientDetailPage({
                 Doctor users attached to this tenant.
               </CardDescription>
             </div>
-            <Button onClick={() => setIsDoctorDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Doctor
-            </Button>
+            {canEdit && (
+              <Button onClick={() => setIsDoctorDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Doctor
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>

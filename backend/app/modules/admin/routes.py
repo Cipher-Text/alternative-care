@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import RequireAdmin
+from app.core.dependencies import RequireAdmin, RequireAdminOrOperator
 from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
     AdminAddTenantDoctorResponse,
@@ -39,7 +39,7 @@ router = APIRouter()
     description="Get platform-level KPIs: tenant counts, user counts, plan breakdown.",
 )
 async def get_dashboard(
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -58,7 +58,7 @@ async def get_dashboard(
     description="List all tenant clients with primary doctor summaries.",
 )
 async def list_tenants(
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -88,7 +88,7 @@ async def provision_tenant(
     description="List tenants waiting for admin approval.",
 )
 async def list_pending_tenants(
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -103,7 +103,7 @@ async def list_pending_tenants(
 )
 async def get_tenant_detail(
     tenant_id: str,
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -118,7 +118,7 @@ async def get_tenant_detail(
 )
 async def get_tenant_usage(
     tenant_id: str,
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -185,7 +185,7 @@ async def create_tenant_doctor(
     description="List all users across the platform with role summary. Filter by role, tenant, or status.",
 )
 async def list_users(
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
     role: str | None = None,
     tenant_id: str | None = None,

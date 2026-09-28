@@ -57,10 +57,11 @@ function StatCard({
 export default function AdminDashboardPage() {
   const router = useRouter()
   const user = useAuthStore((state) => state.user)
-  const isAdmin = user?.role === 'admin'
-  const { data, isLoading } = useAdminDashboard(isAdmin)
+  // Dashboard is read-only — admins and operators both see it (backend: RequireAdminOrOperator).
+  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
+  const { data, isLoading } = useAdminDashboard(isPlatformRole)
 
-  if (!isAdmin) {
+  if (!isPlatformRole) {
     return (
       <div className="flex min-h-[420px] items-center justify-center">
         <Card className="max-w-md">
@@ -70,7 +71,7 @@ export default function AdminDashboardPage() {
               Admin Access Required
             </CardTitle>
             <CardDescription>
-              The platform dashboard is available only to platform administrators.
+              The platform dashboard is available only to platform staff.
             </CardDescription>
           </CardHeader>
           <CardContent>

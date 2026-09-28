@@ -12,7 +12,7 @@ There are two levels: **Platform** (no tenant) and **Tenant** (scoped to one cli
 | Role | Level | `tenant_id` in JWT | Implemented? |
 |---|---|---|---|
 | `admin` | Platform | `null` | ✅ Full |
-| `operator` | Platform | `null` | ⚠️ Stub — defined in RBAC, no endpoints yet |
+| `operator` | Platform | `null` | ✅ Read-only — enforced on all platform-admin GET endpoints |
 | `doctor` | Tenant | `<uuid>` | ✅ Full |
 | `receptionist` | Tenant | `<uuid>` | ⚠️ Stub — role string exists, no RBAC enforcement |
 
@@ -46,13 +46,17 @@ Read-only platform staff. Cannot mutate tenants or provision accounts.
 
 | Area | Access |
 |---|---|
-| List / view all tenants | ✅ Read *(planned)* |
-| Platform KPI dashboard | ✅ Read *(planned)* |
-| View audit log | ✅ Read *(planned)* |
-| Provision / approve / suspend | ❌ Forbidden |
+| List / view all tenants | ✅ Read |
+| View tenant detail / usage | ✅ Read |
+| Platform KPI dashboard | ✅ Read |
+| List users (role distribution) | ✅ Read |
+| View audit log | ✅ Read *(planned — no audit log endpoint exists yet)* |
+| Provision / approve / suspend tenant | ❌ Forbidden (`RequireAdmin`) |
+| Add doctor to tenant | ❌ Forbidden (`RequireAdmin`) |
+| Change user role / status | ❌ Forbidden (`RequireAdmin`) |
 
 Backend guard: `RequireAdminOrOperator` — enforces `role in ("admin", "operator")`.  
-**Status:** RBAC guard is coded but zero endpoints currently use it. Will be wired up in Platform Admin Phase B.
+**Status:** wired up on all 6 read-only endpoints in `admin/routes.py` (`GET /dashboard`, `GET /tenants`, `GET /tenants/pending`, `GET /tenants/{id}`, `GET /tenants/{id}/usage`, `GET /users`). The 5 write endpoints remain `RequireAdmin`-only. Frontend `/admin/*` pages mirror this: operators see the same read views as admins, with write controls (provision, approve, add doctor, edit user) hidden.
 
 ---
 

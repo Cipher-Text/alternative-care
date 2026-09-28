@@ -77,10 +77,14 @@ export default function AdminClientsPage() {
   const [form, setForm] = useState<AdminCreateTenantDoctorRequest>(initialForm)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [searchTerm, setSearchTerm] = useState('')
-  const isAdmin = user?.role === 'admin'
+  // Listing clients/pending tenants is read-only on the backend (RequireAdminOrOperator) —
+  // operators can view the directory. Provisioning, approving, and adding doctors are
+  // admin-only writes (canEdit below).
+  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
+  const canEdit = user?.role === 'admin'
 
-  const clients = useAdminClients(isAdmin)
-  const pendingTenants = usePendingTenants(isAdmin)
+  const clients = useAdminClients(isPlatformRole)
+  const pendingTenants = usePendingTenants(isPlatformRole)
   const provisionClient = useProvisionClient()
   const approveTenant = useApproveTenant()
 
@@ -155,7 +159,7 @@ export default function AdminClientsPage() {
     }
   }
 
-  if (!isAdmin) {
+  if (!isPlatformRole) {
     return (
       <div className="flex min-h-[420px] items-center justify-center">
         <Card className="max-w-md">
@@ -165,7 +169,7 @@ export default function AdminClientsPage() {
               Admin Access Required
             </CardTitle>
             <CardDescription>
-              Client provisioning is available only to platform administrators.
+              Client management is available only to platform staff.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -183,7 +187,9 @@ export default function AdminClientsPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Clients</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Provision clinic tenants, create primary doctors, and approve registrations.
+          {canEdit
+            ? 'Provision clinic tenants, create primary doctors, and approve registrations.'
+            : 'View clinic tenants, primary doctors, and approval status.'}
         </p>
       </div>
 
@@ -193,10 +199,12 @@ export default function AdminClientsPage() {
             <Building2 className="h-4 w-4 mr-2" />
             Client Directory
           </TabsTrigger>
-          <TabsTrigger value="provision">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Provision Client
-          </TabsTrigger>
+          {canEdit && (
+            <TabsTrigger value="provision">
+              <UserPlus className="h-4 w-4 mr-2" />
+              Provision Client
+            </TabsTrigger>
+          )}
           <TabsTrigger value="pending">
             <Users className="h-4 w-4 mr-2" />
             Pending Tenants
@@ -296,6 +304,7 @@ export default function AdminClientsPage() {
           </Card>
         </TabsContent>
 
+        {canEdit && (
         <TabsContent value="provision" className="mt-6">
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
@@ -533,6 +542,7 @@ export default function AdminClientsPage() {
             </div>
           </form>
         </TabsContent>
+        )}
 
         <TabsContent value="pending" className="mt-6">
           <Card>
@@ -587,14 +597,18 @@ export default function AdminClientsPage() {
                           <Badge variant="outline">Pending</Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            size="sm"
-                            onClick={() => approveTenant.mutate(tenant.id)}
-                            disabled={approveTenant.isLoading}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Approve
-                          </Button>
+                          {canEdit ? (
+                            <Button
+                              size="sm"
+                              onClick={() => approveTenant.mutate(tenant.id)}
+                              disabled={approveTenant.isLoading}
+                            >
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Approve
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Read only</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

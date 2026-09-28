@@ -160,14 +160,17 @@ function EditUserModal({
 export default function AdminUsersPage() {
   const router = useRouter()
   const user = useAuthStore((state) => state.user)
-  const isAdmin = user?.role === 'admin'
+  // GET /users is read-only on the backend (RequireAdminOrOperator) — operators can view
+  // role distribution. Only admins can change a user's role/status (canEdit below).
+  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
+  const canEdit = user?.role === 'admin'
 
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('all')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null)
 
-  const { data, isLoading } = useAdminUsers(undefined, isAdmin)
+  const { data, isLoading } = useAdminUsers(undefined, isPlatformRole)
 
   const filteredUsers = useMemo(() => {
     if (!data) return []
@@ -192,7 +195,7 @@ export default function AdminUsersPage() {
     return users
   }, [data, roleFilter, statusFilter, searchTerm])
 
-  if (!isAdmin) {
+  if (!isPlatformRole) {
     return (
       <div className="flex min-h-[420px] items-center justify-center">
         <Card className="max-w-md">
@@ -202,7 +205,7 @@ export default function AdminUsersPage() {
               Admin Access Required
             </CardTitle>
             <CardDescription>
-              User management is available only to platform administrators.
+              User management is available only to platform staff.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -350,13 +353,17 @@ export default function AdminUsersPage() {
                           {formatDate(u.last_login_at)}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setEditingUser(u)}
-                          >
-                            Edit
-                          </Button>
+                          {canEdit ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setEditingUser(u)}
+                            >
+                              Edit
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Read only</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
