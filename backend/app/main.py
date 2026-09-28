@@ -114,7 +114,7 @@ from app.modules.tenant import router as tenant_router
 from app.modules.geographic import router as geographic_router
 from app.modules.admin import router as admin_router
 from app.modules.public import router as public_router
-from app.modules.college import router as college_router
+from app.modules.institution import router as institution_router
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Platform Admin"])
@@ -131,7 +131,7 @@ app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines"
 app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"])
 app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])
 app.include_router(public_router, prefix=f"{settings.API_V1_PREFIX}/public", tags=["Public"])
-app.include_router(college_router, prefix=f"{settings.API_V1_PREFIX}/colleges", tags=["Colleges"])
+app.include_router(institution_router, prefix=f"{settings.API_V1_PREFIX}/institutions", tags=["Institutions"])
 
 
 if __name__ == "__main__":

@@ -101,7 +101,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - `operator` / `receptionist` role enforcement — Phase B
 - Public landing page
 
-**Scoped but not scheduled** — directory (practitioners, clinics, colleges), editorial content/CMS, and a knowledge taxonomy beyond Medicine/Symptom (discipline, condition, therapy, references). Direction decided, no dates: `docs/planning/future-scope-2026-09.md`.
+**Scoped but not scheduled** — directory (practitioners, clinics, institutions), editorial content/CMS, and a knowledge taxonomy beyond Medicine/Symptom (discipline, condition, therapy, references). Direction decided, no dates: `docs/planning/future-scope-2026-09.md`.
 
 ---
 
@@ -294,7 +294,7 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
 **Integration:** `integration_providers`, `tenant_integrations`, `integration_logs`
 **System:** `translations`, `usage_tracking`
 
-A knowledge-taxonomy expansion (discipline/condition/therapy/references), a college directory, and content/CMS tables are scoped but not scheduled or migrated — direction only, no table names locked in yet: `docs/planning/future-scope-2026-09.md`. Don't assume any of it exists without checking `alembic/versions/`.
+A knowledge-taxonomy expansion (discipline/condition/therapy/references) and content/CMS tables are scoped but not scheduled or migrated — direction only, no table names locked in yet: `docs/planning/future-scope-2026-09.md`. Don't assume any of it exists without checking `alembic/versions/`. (The institution directory itself — `institutions` table — has since landed; see `docs/planning/future-scope-2026-09.md`'s Track D.)
 
 **Table Patterns:**
 - Tenant-scoped: `tenant_id`, `created_at`, `updated_at`, `created_by`, `updated_by`

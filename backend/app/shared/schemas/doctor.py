@@ -74,9 +74,9 @@ class DoctorDegreeBase(BaseModel):
 
     institution_name: str = Field(..., max_length=500)
     institution_location: str | None = Field(None, max_length=255)
-    college_id: int | None = None
-    # Optional cross-reference into the colleges catalog (Track D) — stays
-    # optional since a degree's institution may not be in it yet.
+    institution_id: int | None = None
+    # Optional cross-reference into the institutions catalog (Track D) —
+    # stays optional since a degree's institution may not be in it yet.
 
     start_year: int | None = Field(None, ge=1900, le=2100)
     completion_year: int = Field(..., ge=1900, le=2100)
@@ -98,7 +98,7 @@ class DoctorDegreeUpdate(BaseModel):
     specialization: str | None = Field(None, max_length=255)
     institution_name: str | None = Field(None, max_length=500)
     institution_location: str | None = Field(None, max_length=255)
-    college_id: int | None = None
+    institution_id: int | None = None
     start_year: int | None = Field(None, ge=1900, le=2100)
     completion_year: int | None = Field(None, ge=1900, le=2100)
     certificate_url: str | None = Field(None, max_length=500)

@@ -30,13 +30,13 @@ class DoctorDegree(TenantScopedModel):
 
     # Institution — free text stays the source of truth (a doctor may hold
     # a degree from an institution not yet in the curated catalog, e.g.
-    # MBBS or foreign-trained), college_id is an optional structured
+    # MBBS or foreign-trained), institution_id is an optional structured
     # cross-reference when it does match one, same pattern as
-    # College.district_id -> location.
+    # Institution.district_id -> location.
     institution_name: Mapped[str] = mapped_column(String(500), nullable=False)
     institution_location: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    college_id: Mapped[int | None] = mapped_column(
-        ForeignKey("colleges.id", ondelete="SET NULL"), nullable=True, index=True
+    institution_id: Mapped[int | None] = mapped_column(
+        ForeignKey("institutions.id", ondelete="SET NULL"), nullable=True, index=True
     )
 
     # Dates

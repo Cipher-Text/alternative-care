@@ -1,4 +1,4 @@
-"""College/institution catalog model (Track D, docs/planning/future-scope-2026-09.md)."""
+"""Institution catalog model (Track D, docs/planning/future-scope-2026-09.md)."""
 
 from datetime import datetime
 
@@ -8,25 +8,26 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.models.base import GlobalCatalogModel
 
 
-class College(GlobalCatalogModel):
+class Institution(GlobalCatalogModel):
     """
-    Admin-curated directory of institutions teaching alternative-medicine
-    disciplines (homeopathy, ayurveda, unani, herbal).
+    Admin-curated directory of educational institutions teaching
+    alternative-medicine disciplines (homeopathy, ayurveda, unani, herbal) —
+    colleges, universities, or any other institution type.
 
-    Always global, never tenant-owned — colleges aren't tenants, so unlike
-    Medicine/Symptom this is a genuinely new catalog table, not a hybrid
-    global-or-tenant one (no tenant_id column at all; see ADR-008 and
+    Always global, never tenant-owned — institutions aren't tenants, so
+    unlike Medicine/Symptom this is a genuinely new catalog table, not a
+    hybrid global-or-tenant one (no tenant_id column at all; see ADR-008 and
     future-scope-2026-09.md, Track D).
     """
 
-    __tablename__ = "colleges"
+    __tablename__ = "institutions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     name_en: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
     name_bn: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    college_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    institution_type: Mapped[str] = mapped_column(String(20), nullable=False)
     # "government" | "private"
 
     disciplines: Mapped[list[str]] = mapped_column(
@@ -55,7 +56,7 @@ class College(GlobalCatalogModel):
     # (e.g. Bangladesh Homeopathic Medical Education Council's 3-digit
     # college code) — not unique in this column: the source register itself
     # has been observed to reuse a code across two differently named
-    # colleges, so this is provenance, not a candidate key.
+    # institutions, so this is provenance, not a candidate key.
     registration_code: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     # Provenance — every row seeded from a web search starts here, not from

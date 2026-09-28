@@ -1,8 +1,7 @@
 {
-  "colleges": [
+  "institutions": [
     {
       "name_en": "Government Homeopathic Medical College & Hospital",
-      "college_type": "government",
       "disciplines": [
         "homeopathy"
       ],
@@ -11,11 +10,11 @@
       "registration_code": null,
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "government"
     },
     {
       "name_en": "Bangladesh Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -24,11 +23,11 @@
       "registration_code": "001",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "private"
     },
     {
       "name_en": "Federal Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -37,11 +36,11 @@
       "registration_code": "009",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "private"
     },
     {
       "name_en": "Tanjim Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -50,11 +49,11 @@
       "registration_code": "002",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 3
+      "district_id": 3,
+      "institution_type": "private"
     },
     {
       "name_en": "Gazipur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -63,11 +62,11 @@
       "registration_code": "023",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 2
+      "district_id": 2,
+      "institution_type": "private"
     },
     {
       "name_en": "Tangail Homeo Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -76,11 +75,11 @@
       "registration_code": "032",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 4
+      "district_id": 4,
+      "institution_type": "private"
     },
     {
       "name_en": "Alahajj A. Kaddous Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -89,11 +88,11 @@
       "registration_code": "035",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 5
+      "district_id": 5,
+      "institution_type": "private"
     },
     {
       "name_en": "Faridpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -102,11 +101,11 @@
       "registration_code": "020",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 11
+      "district_id": 11,
+      "institution_type": "private"
     },
     {
       "name_en": "Rajbari Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -115,11 +114,11 @@
       "registration_code": "021",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 9
+      "district_id": 9,
+      "institution_type": "private"
     },
     {
       "name_en": "Gopalganj Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -128,11 +127,11 @@
       "registration_code": "031",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 12
+      "district_id": 12,
+      "institution_type": "private"
     },
     {
       "name_en": "Kazi Sirajul Islam Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -141,11 +140,11 @@
       "registration_code": "034",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 11
+      "district_id": 11,
+      "institution_type": "private"
     },
     {
       "name_en": "Narsingdi Begum Fotikunessa Idris Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -154,11 +153,11 @@
       "registration_code": "038",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 8
+      "district_id": 8,
+      "institution_type": "private"
     },
     {
       "name_en": "Shariatpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -167,11 +166,11 @@
       "registration_code": "042",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 10
+      "district_id": 10,
+      "institution_type": "private"
     },
     {
       "name_en": "Manikganj Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -180,11 +179,11 @@
       "registration_code": "049",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 6
+      "district_id": 6,
+      "institution_type": "private"
     },
     {
       "name_en": "Tungipara Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -193,11 +192,11 @@
       "registration_code": "050",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 12
+      "district_id": 12,
+      "institution_type": "private"
     },
     {
       "name_en": "Uttara Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -206,11 +205,11 @@
       "registration_code": "051",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "private"
     },
     {
       "name_en": "Sheikh Kamal Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -219,11 +218,11 @@
       "registration_code": "052",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 13
+      "district_id": 13,
+      "institution_type": "private"
     },
     {
       "name_en": "Savar Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -232,11 +231,11 @@
       "registration_code": "056",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "private"
     },
     {
       "name_en": "Dr. Dilip Roy Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -245,11 +244,11 @@
       "registration_code": "058",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 11
+      "district_id": 11,
+      "institution_type": "private"
     },
     {
       "name_en": "Hopes Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -258,11 +257,11 @@
       "registration_code": "064",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "private"
     },
     {
       "name_en": "Azizur Rahman Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -271,11 +270,11 @@
       "registration_code": "025",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 14
+      "district_id": 14,
+      "institution_type": "private"
     },
     {
       "name_en": "Dr. Zakir Hosen City Corporation Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -284,11 +283,11 @@
       "registration_code": "004",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 14
+      "district_id": 14,
+      "institution_type": "private"
     },
     {
       "name_en": "Chattogram Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -297,11 +296,11 @@
       "registration_code": "005",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 14
+      "district_id": 14,
+      "institution_type": "private"
     },
     {
       "name_en": "Hahnemann Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -310,11 +309,11 @@
       "registration_code": "017",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 16
+      "district_id": 16,
+      "institution_type": "private"
     },
     {
       "name_en": "Noakhali Maulvi Abdur Rahman Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -323,11 +322,11 @@
       "registration_code": "036",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 22
+      "district_id": 22,
+      "institution_type": "private"
     },
     {
       "name_en": "Adarsha Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -336,11 +335,11 @@
       "registration_code": "033",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 24
+      "district_id": 24,
+      "institution_type": "private"
     },
     {
       "name_en": "Brahmanbaria Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -349,11 +348,11 @@
       "registration_code": "022",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 18
+      "district_id": 18,
+      "institution_type": "private"
     },
     {
       "name_en": "Lakshmipur Rokeya N Islam Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -362,11 +361,11 @@
       "registration_code": "047",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 23
+      "district_id": 23,
+      "institution_type": "private"
     },
     {
       "name_en": "H M Parbatya Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -375,11 +374,11 @@
       "registration_code": "045",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 21
+      "district_id": 21,
+      "institution_type": "private"
     },
     {
       "name_en": "Feni Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -388,11 +387,11 @@
       "registration_code": "057",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 17
+      "district_id": 17,
+      "institution_type": "private"
     },
     {
       "name_en": "Chandpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -401,11 +400,11 @@
       "registration_code": "061",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 24
+      "district_id": 24,
+      "institution_type": "private"
     },
     {
       "name_en": "Nanglkot Haji Badsha-Amena Homeopathy Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -414,11 +413,11 @@
       "registration_code": "065",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 16
+      "district_id": 16,
+      "institution_type": "private"
     },
     {
       "name_en": "Rajshahi Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -427,11 +426,11 @@
       "registration_code": "006",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 25
+      "district_id": 25,
+      "institution_type": "private"
     },
     {
       "name_en": "Bogura Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -440,11 +439,11 @@
       "registration_code": "026",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 26
+      "district_id": 26,
+      "institution_type": "private"
     },
     {
       "name_en": "Pabna Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -453,11 +452,11 @@
       "registration_code": "010",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 27
+      "district_id": 27,
+      "institution_type": "private"
     },
     {
       "name_en": "Rohanpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -466,11 +465,11 @@
       "registration_code": "041",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 32
+      "district_id": 32,
+      "institution_type": "private"
     },
     {
       "name_en": "Motahar Hosen Talukdar Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -479,11 +478,11 @@
       "registration_code": "053",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 28
+      "district_id": 28,
+      "institution_type": "private"
     },
     {
       "name_en": "Naogaon Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -492,11 +491,11 @@
       "registration_code": "054",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 30
+      "district_id": 30,
+      "institution_type": "private"
     },
     {
       "name_en": "Shamsur Rahman Sharif Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -505,11 +504,11 @@
       "registration_code": "063",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 27
+      "district_id": 27,
+      "institution_type": "private"
     },
     {
       "name_en": "Khulna Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -518,11 +517,11 @@
       "registration_code": "003",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 33
+      "district_id": 33,
+      "institution_type": "private"
     },
     {
       "name_en": "Dibikhan Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -531,11 +530,11 @@
       "registration_code": "027",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 35
+      "district_id": 35,
+      "institution_type": "private"
     },
     {
       "name_en": "Bagerhat Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -544,11 +543,11 @@
       "registration_code": "030",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 36
+      "district_id": 36,
+      "institution_type": "private"
     },
     {
       "name_en": "Jessore Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -557,11 +556,11 @@
       "registration_code": "008",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 34
+      "district_id": 34,
+      "institution_type": "private"
     },
     {
       "name_en": "Kushtia Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -570,11 +569,11 @@
       "registration_code": "028",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 41
+      "district_id": 41,
+      "institution_type": "private"
     },
     {
       "name_en": "Narayail Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -583,11 +582,11 @@
       "registration_code": "029",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 39
+      "district_id": 39,
+      "institution_type": "private"
     },
     {
       "name_en": "Chuadanga Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -596,11 +595,11 @@
       "registration_code": "043",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 40
+      "district_id": 40,
+      "institution_type": "private"
     },
     {
       "name_en": "Kolaroa Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -609,11 +608,11 @@
       "registration_code": "060",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 35
+      "district_id": 35,
+      "institution_type": "private"
     },
     {
       "name_en": "Apex Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -622,11 +621,11 @@
       "registration_code": "015",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 43
+      "district_id": 43,
+      "institution_type": "private"
     },
     {
       "name_en": "Lions Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -635,11 +634,11 @@
       "registration_code": "019",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 46
+      "district_id": 46,
+      "institution_type": "private"
     },
     {
       "name_en": "Barguna Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -648,11 +647,11 @@
       "registration_code": "040",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 45
+      "district_id": 45,
+      "institution_type": "private"
     },
     {
       "name_en": "Patuakhali Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -661,11 +660,11 @@
       "registration_code": "039",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 44
+      "district_id": 44,
+      "institution_type": "private"
     },
     {
       "name_en": "Swarupkathi Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -674,11 +673,11 @@
       "registration_code": "048",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 48
+      "district_id": 48,
+      "institution_type": "private"
     },
     {
       "name_en": "Firoza Amu Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -687,11 +686,11 @@
       "registration_code": "029",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 47
+      "district_id": 47,
+      "institution_type": "private"
     },
     {
       "name_en": "Mawlana Aziuzur Rahman Nesarabadi Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -700,11 +699,11 @@
       "registration_code": "062",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 47
+      "district_id": 47,
+      "institution_type": "private"
     },
     {
       "name_en": "Amena Begum Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -713,11 +712,11 @@
       "registration_code": "066",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 43
+      "district_id": 43,
+      "institution_type": "private"
     },
     {
       "name_en": "Jalalabad Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -726,11 +725,11 @@
       "registration_code": "016",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 49
+      "district_id": 49,
+      "institution_type": "private"
     },
     {
       "name_en": "Rangpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -739,11 +738,11 @@
       "registration_code": "007",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 53
+      "district_id": 53,
+      "institution_type": "private"
     },
     {
       "name_en": "Dinajpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -752,11 +751,11 @@
       "registration_code": "012",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 54
+      "district_id": 54,
+      "institution_type": "private"
     },
     {
       "name_en": "Saidpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -765,11 +764,11 @@
       "registration_code": "018",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 58
+      "district_id": 58,
+      "institution_type": "private"
     },
     {
       "name_en": "Nilphamari Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -778,11 +777,11 @@
       "registration_code": "013",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 58
+      "district_id": 58,
+      "institution_type": "private"
     },
     {
       "name_en": "Panchagarh Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -791,11 +790,11 @@
       "registration_code": "037",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 59
+      "district_id": 59,
+      "institution_type": "private"
     },
     {
       "name_en": "Kurigram Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -804,11 +803,11 @@
       "registration_code": "044",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 56
+      "district_id": 56,
+      "institution_type": "private"
     },
     {
       "name_en": "Thakurgaon Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -817,11 +816,11 @@
       "registration_code": "046",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 60
+      "district_id": 60,
+      "institution_type": "private"
     },
     {
       "name_en": "Mymensingh Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -830,11 +829,11 @@
       "registration_code": "011",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 61
+      "district_id": 61,
+      "institution_type": "private"
     },
     {
       "name_en": "Jamalpur Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -843,11 +842,11 @@
       "registration_code": "024",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 62
+      "district_id": 62,
+      "institution_type": "private"
     },
     {
       "name_en": "Sarisabari Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -856,11 +855,11 @@
       "registration_code": "014",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 62
+      "district_id": 62,
+      "institution_type": "private"
     },
     {
       "name_en": "Bir Muktijoddha Atiur Rahman Model Homeopathic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "homeopathy"
       ],
@@ -869,11 +868,11 @@
       "registration_code": "059",
       "source_url": "https://bhmec.gov.bd/home/colleges",
       "is_active": true,
-      "district_id": 64
+      "district_id": 64,
+      "institution_type": "private"
     },
     {
       "name_en": "Government Unani and Ayurvedic Medical College & Hospital",
-      "college_type": "government",
       "disciplines": [
         "unani",
         "ayurveda"
@@ -883,11 +882,11 @@
       "registration_code": null,
       "source_url": "https://en.wikipedia.org/wiki/Government_Unani_and_Ayurvedic_Medical_College_%26_Hospital",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "government"
     },
     {
       "name_en": "Government Unani and Ayurvedic Medical College",
-      "college_type": "government",
       "disciplines": [
         "unani",
         "ayurveda"
@@ -897,11 +896,11 @@
       "registration_code": null,
       "source_url": "https://studybarta.com/list-of-homeopathic-unani-and-ayurvedic-colleges-under-dhaka-university/",
       "is_active": true,
-      "district_id": 49
+      "district_id": 49,
+      "institution_type": "government"
     },
     {
       "name_en": "Hamdard Unani Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani"
       ],
@@ -911,11 +910,11 @@
       "registration_code": null,
       "source_url": "https://humch.edu.bd/",
       "is_active": true,
-      "district_id": 26
+      "district_id": 26,
+      "institution_type": "private"
     },
     {
       "name_en": "TMSS Feroza Begum Ayurvedic-Unani Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani",
         "ayurveda"
@@ -926,11 +925,11 @@
       "registration_code": null,
       "source_url": "https://tmssayurved.com/",
       "is_active": true,
-      "district_id": 26
+      "district_id": 26,
+      "institution_type": "private"
     },
     {
       "name_en": "Hakim Said Eastern Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani"
       ],
@@ -940,11 +939,11 @@
       "registration_code": null,
       "source_url": "https://hsemch.edu.bd/",
       "is_active": true,
-      "district_id": 1
+      "district_id": 1,
+      "institution_type": "private"
     },
     {
       "name_en": "Hamdard Institute of Unani and Ayurvedic Medicine",
-      "college_type": "private",
       "disciplines": [
         "unani",
         "ayurveda"
@@ -955,11 +954,11 @@
       "website_url": null,
       "registration_code": null,
       "source_url": "https://www.tbsnews.net/economy/corporates/hamdards-unani-and-ayurvedic-medicine-gets-affiliation-dus-medicine-faculty",
-      "is_active": true
+      "is_active": true,
+      "institution_type": "private"
     },
     {
       "name_en": "Rawshan Jahan Eastern Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani"
       ],
@@ -969,11 +968,11 @@
       "website_url": "https://rjemch.edu.bd/",
       "registration_code": null,
       "source_url": "https://rjemch.edu.bd/",
-      "is_active": true
+      "is_active": true,
+      "institution_type": "private"
     },
     {
       "name_en": "Sheikh Md. Ibrahim Khalil Mazampara Unani Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani"
       ],
@@ -983,11 +982,11 @@
       "website_url": null,
       "registration_code": "EIIN 139102",
       "source_url": "https://www.facebook.com/people/Sheikh-Md-Ibrahim-Khalil-Mazampara-Unani-Medical-College-Hospital/100063889786911/",
-      "is_active": true
+      "is_active": true,
+      "institution_type": "private"
     },
     {
       "name_en": "Hafez Kari Abdus Salam Unani Ayurvedic Medical College & Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani",
         "ayurveda"
@@ -998,11 +997,11 @@
       "website_url": null,
       "registration_code": null,
       "source_url": "https://www.eduicon.com/Circular/Details/?Single_Circular_ID=42",
-      "is_active": true
+      "is_active": true,
+      "institution_type": "private"
     },
     {
       "name_en": "Hazrat Khajar Bashir Unani Ayurvedic Medical College and Hospital",
-      "college_type": "private",
       "disciplines": [
         "unani",
         "ayurveda"
@@ -1013,7 +1012,8 @@
       "website_url": "https://hkbuamch.org/",
       "registration_code": null,
       "source_url": "https://hkbuamch.org/",
-      "is_active": true
+      "is_active": true,
+      "institution_type": "private"
     }
   ]
 }

@@ -6,8 +6,8 @@ constructing the service with `tenant_id=None`, which `GlobalCatalogService`'s
 `_visible_query()` / `_fulltext_search()` already narrow to `is_global=True`
 rows only — the same mechanism a platform admin's view uses
 (`app/core/base_service.py`), reused rather than duplicated for the public
-case. Colleges have no tenant scoping at all (they aren't tenants), so
-`CollegeService` is exposed here as a straight passthrough instead.
+case. Institutions have no tenant scoping at all (they aren't tenants), so
+`InstitutionService` is exposed here as a straight passthrough instead.
 
 Deliberately not exposed here: `MedicineService.get_medicine_symptoms` /
 `get_symptom_medicines` (the cross-lookup endpoints). Both query
@@ -26,11 +26,11 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.modules.college.service import CollegeService
+from app.modules.institution.service import InstitutionService
 from app.modules.medicine.service import MedicineService
 from app.modules.symptom.service import SymptomService
 from app.shared.schemas import (
-    CollegeListItem,
+    InstitutionListItem,
     MedicineListItem,
     MedicineResponse,
     MedicineSearchResult,
@@ -52,14 +52,16 @@ def get_public_symptom_service(db: Annotated[AsyncSession, Depends(get_db)]) -> 
     return SymptomService(db=db, tenant_id=None)
 
 
-def get_public_college_service(db: Annotated[AsyncSession, Depends(get_db)]) -> CollegeService:
-    """Colleges have no tenant scoping at all — every row is already public data."""
-    return CollegeService(db=db)
+def get_public_institution_service(
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> InstitutionService:
+    """Institutions have no tenant scoping at all — every row is already public data."""
+    return InstitutionService(db=db)
 
 
 MedicineServiceDep = Annotated[MedicineService, Depends(get_public_medicine_service)]
 SymptomServiceDep = Annotated[SymptomService, Depends(get_public_symptom_service)]
-CollegeServiceDep = Annotated[CollegeService, Depends(get_public_college_service)]
+InstitutionServiceDep = Annotated[InstitutionService, Depends(get_public_institution_service)]
 
 
 # ===== Medicines =====
@@ -138,26 +140,27 @@ async def get_public_symptom(symptom_id: int, service: SymptomServiceDep):
     return await service.get_symptom(symptom_id)
 
 
-# ===== Colleges =====
+# ===== Institutions =====
 #
 # Every row is already admin-curated/global (no tenant scoping exists for
-# colleges at all), so this is a straight passthrough onto CollegeService —
-# no visibility narrowing needed, unlike medicines/symptoms above.
+# institutions at all), so this is a straight passthrough onto
+# InstitutionService — no visibility narrowing needed, unlike
+# medicines/symptoms above.
 
 
-@router.get("/colleges", response_model=list[CollegeListItem])
-async def list_public_colleges(
-    service: CollegeServiceDep,
+@router.get("/institutions", response_model=list[InstitutionListItem])
+async def list_public_institutions(
+    service: InstitutionServiceDep,
     discipline: str | None = Query(None, description="Filter by discipline"),
-    college_type: str | None = Query(None, description="Filter by government/private"),
+    institution_type: str | None = Query(None, description="Filter by government/private"),
     district_id: int | None = Query(None, description="Filter by district"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
 ):
     """Browse the admin-curated directory of alternative-medicine institutions."""
-    return await service.list_colleges(
+    return await service.list_institutions(
         discipline=discipline,
-        college_type=college_type,
+        institution_type=institution_type,
         district_id=district_id,
         is_active=True,
         limit=limit,
@@ -165,7 +168,7 @@ async def list_public_colleges(
     )
 
 
-@router.get("/colleges/{college_id:int}", response_model=CollegeListItem)
-async def get_public_college(college_id: int, service: CollegeServiceDep):
+@router.get("/institutions/{institution_id:int}", response_model=InstitutionListItem)
+async def get_public_institution(institution_id: int, service: InstitutionServiceDep):
     """Get an institution's public detail."""
-    return await service.get_college(college_id)
+    return await service.get_institution(institution_id)

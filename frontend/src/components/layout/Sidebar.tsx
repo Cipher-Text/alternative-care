@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   Building2,
   UserCog,
+  GraduationCap,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
@@ -33,14 +34,20 @@ const adminNavigation = [
   { name: 'Platform Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Clients', href: '/admin/clients', icon: Building2 },
   { name: 'Users', href: '/admin/users', icon: UserCog },
+  { name: 'Institutions', href: '/admin/institutions', icon: GraduationCap },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const user = useAuthStore((state) => state.user)
 
-  // Platform admins see only admin nav — no patient/appointment/prescription items
-  const items = user?.role === 'admin' ? adminNavigation : doctorNavigation
+  // Platform admins and operators (moderators) share the admin nav — no
+  // patient/appointment/prescription items, since neither role has a
+  // tenant. `operator` has no distinct endpoints yet (RBAC stub per
+  // docs/architecture/roles-access.md), so it sees the same nav as admin
+  // rather than a separate, currently-empty menu.
+  const items =
+    user?.role === 'admin' || user?.role === 'operator' ? adminNavigation : doctorNavigation
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">

@@ -1,11 +1,11 @@
-"""Integration tests for the college/institution catalog (Track D)."""
+"""Integration tests for the institution catalog (Track D)."""
 
 from uuid import uuid4
 
 import pytest
 
 from app.core.security import create_access_token
-from app.shared.models import College, Tenant, User
+from app.shared.models import Institution, Tenant, User
 
 
 @pytest.fixture
@@ -85,31 +85,31 @@ def admin_headers(admin):
 
 
 @pytest.fixture
-async def college(db_session):
-    college = College(
+async def institution(db_session):
+    institution = Institution(
         name_en="Government Homeopathic Medical College & Hospital",
-        college_type="government",
+        institution_type="government",
         disciplines=["homeopathy"],
         courses_offered="DHMS",
         location="Mirpur-14, Dhaka",
         is_active=True,
     )
-    db_session.add(college)
+    db_session.add(institution)
     await db_session.commit()
-    await db_session.refresh(college)
-    return college
+    await db_session.refresh(institution)
+    return institution
 
 
 # ===== Create =====
 
 
 @pytest.mark.asyncio
-async def test_create_college_requires_admin(client, headers_a):
+async def test_create_institution_requires_admin(client, headers_a):
     response = await client.post(
-        "/api/v1/colleges/",
+        "/api/v1/institutions/",
         json={
-            "name_en": "Test College",
-            "college_type": "private",
+            "name_en": "Test Institution",
+            "institution_type": "private",
             "disciplines": ["unani"],
         },
         headers=headers_a,
@@ -119,12 +119,12 @@ async def test_create_college_requires_admin(client, headers_a):
 
 
 @pytest.mark.asyncio
-async def test_create_college_as_admin(client, admin_headers):
+async def test_create_institution_as_admin(client, admin_headers):
     response = await client.post(
-        "/api/v1/colleges/",
+        "/api/v1/institutions/",
         json={
             "name_en": "Hamdard Unani Medical College & Hospital",
-            "college_type": "private",
+            "institution_type": "private",
             "disciplines": ["unani"],
             "courses_offered": "DUMS",
             "source_url": "https://hamdardfoundationbd.org/hamdard-unani-medical-college-hospital/",
@@ -134,7 +134,7 @@ async def test_create_college_as_admin(client, admin_headers):
 
     assert response.status_code == 201
     data = response.json()
-    assert data["college_type"] == "private"
+    assert data["institution_type"] == "private"
     assert data["disciplines"] == ["unani"]
     assert data["is_verified"] is False
 
@@ -143,40 +143,40 @@ async def test_create_college_as_admin(client, admin_headers):
 
 
 @pytest.mark.asyncio
-async def test_list_colleges(client, headers_a, college):
-    response = await client.get("/api/v1/colleges/", headers=headers_a)
+async def test_list_institutions(client, headers_a, institution):
+    response = await client.get("/api/v1/institutions/", headers=headers_a)
 
     assert response.status_code == 200
     names = [c["name_en"] for c in response.json()]
-    assert college.name_en in names
+    assert institution.name_en in names
 
 
 @pytest.mark.asyncio
-async def test_list_colleges_filter_by_discipline(client, headers_a, college):
+async def test_list_institutions_filter_by_discipline(client, headers_a, institution):
     response = await client.get(
-        "/api/v1/colleges/", params={"discipline": "unani"}, headers=headers_a
+        "/api/v1/institutions/", params={"discipline": "unani"}, headers=headers_a
     )
 
     assert response.status_code == 200
     ids = [c["id"] for c in response.json()]
-    assert college.id not in ids
+    assert institution.id not in ids
 
 
 @pytest.mark.asyncio
-async def test_get_college(client, headers_a, college):
-    response = await client.get(f"/api/v1/colleges/{college.id}", headers=headers_a)
+async def test_get_institution(client, headers_a, institution):
+    response = await client.get(f"/api/v1/institutions/{institution.id}", headers=headers_a)
 
     assert response.status_code == 200
-    assert response.json()["name_en"] == college.name_en
+    assert response.json()["name_en"] == institution.name_en
 
 
 # ===== Update / verification =====
 
 
 @pytest.mark.asyncio
-async def test_update_college_requires_admin(client, headers_a, college):
+async def test_update_institution_requires_admin(client, headers_a, institution):
     response = await client.patch(
-        f"/api/v1/colleges/{college.id}",
+        f"/api/v1/institutions/{institution.id}",
         json={"location": "Somewhere else"},
         headers=headers_a,
     )
@@ -185,11 +185,11 @@ async def test_update_college_requires_admin(client, headers_a, college):
 
 
 @pytest.mark.asyncio
-async def test_verify_college_stamps_verified_at(client, admin_headers, college):
-    assert college.is_verified is False
+async def test_verify_institution_stamps_verified_at(client, admin_headers, institution):
+    assert institution.is_verified is False
 
     response = await client.patch(
-        f"/api/v1/colleges/{college.id}",
+        f"/api/v1/institutions/{institution.id}",
         json={"is_verified": True},
         headers=admin_headers,
     )
@@ -205,19 +205,23 @@ async def test_verify_college_stamps_verified_at(client, admin_headers, college)
 
 
 @pytest.mark.asyncio
-async def test_deactivate_college_requires_admin(client, headers_a, college):
-    response = await client.delete(f"/api/v1/colleges/{college.id}", headers=headers_a)
+async def test_deactivate_institution_requires_admin(client, headers_a, institution):
+    response = await client.delete(f"/api/v1/institutions/{institution.id}", headers=headers_a)
 
     assert response.status_code == 403
 
 
 @pytest.mark.asyncio
-async def test_deactivate_college_as_admin(client, admin_headers, college):
-    response = await client.delete(f"/api/v1/colleges/{college.id}", headers=admin_headers)
+async def test_deactivate_institution_as_admin(client, admin_headers, institution):
+    response = await client.delete(
+        f"/api/v1/institutions/{institution.id}", headers=admin_headers
+    )
 
     assert response.status_code == 204
 
-    get_response = await client.get(f"/api/v1/colleges/{college.id}", headers=admin_headers)
+    get_response = await client.get(
+        f"/api/v1/institutions/{institution.id}", headers=admin_headers
+    )
     assert get_response.json()["is_active"] is False
 
 
@@ -225,17 +229,17 @@ async def test_deactivate_college_as_admin(client, admin_headers, college):
 
 
 @pytest.mark.asyncio
-async def test_public_colleges_requires_no_auth(client, college):
-    response = await client.get("/api/v1/public/colleges")
+async def test_public_institutions_requires_no_auth(client, institution):
+    response = await client.get("/api/v1/public/institutions")
 
     assert response.status_code == 200
     names = [c["name_en"] for c in response.json()]
-    assert college.name_en in names
+    assert institution.name_en in names
 
 
 @pytest.mark.asyncio
-async def test_public_college_detail_omits_verified_by(client, college):
-    response = await client.get(f"/api/v1/public/colleges/{college.id}")
+async def test_public_institution_detail_omits_verified_by(client, institution):
+    response = await client.get(f"/api/v1/public/institutions/{institution.id}")
 
     assert response.status_code == 200
     assert "verified_by" not in response.json()

@@ -4,7 +4,7 @@ import pytest
 from datetime import date
 from uuid import uuid4
 
-from app.shared.models import College, User, Tenant, DoctorDegree, DoctorTraining
+from app.shared.models import Institution, User, Tenant, DoctorDegree, DoctorTraining
 
 
 @pytest.fixture
@@ -169,48 +169,48 @@ async def test_create_degree(client, auth_headers):
 
 
 @pytest.fixture
-async def test_college(db_session):
-    college = College(
+async def test_institution(db_session):
+    institution = Institution(
         name_en="Government Homeopathic Medical College & Hospital",
-        college_type="government",
+        institution_type="government",
         disciplines=["homeopathy"],
         is_active=True,
     )
-    db_session.add(college)
+    db_session.add(institution)
     await db_session.commit()
-    await db_session.refresh(college)
-    return college
+    await db_session.refresh(institution)
+    return institution
 
 
 @pytest.mark.asyncio
-async def test_create_degree_with_college_id(client, auth_headers, test_college):
-    """Test creating a degree linked to a real college in the catalog."""
+async def test_create_degree_with_institution_id(client, auth_headers, test_institution):
+    """Test creating a degree linked to a real institution in the catalog."""
     response = await client.post(
         "/api/v1/doctor/degrees",
         json={
             "degree_type": "Diploma",
             "degree_name": "DHMS",
-            "institution_name": test_college.name_en,
-            "college_id": test_college.id,
+            "institution_name": test_institution.name_en,
+            "institution_id": test_institution.id,
             "completion_year": 2020,
         },
         headers=auth_headers,
     )
 
     assert response.status_code == 201
-    assert response.json()["college_id"] == test_college.id
+    assert response.json()["institution_id"] == test_institution.id
 
 
 @pytest.mark.asyncio
-async def test_create_degree_with_invalid_college_id_is_404(client, auth_headers):
-    """A college_id that doesn't reference a real college is rejected, not silently stored."""
+async def test_create_degree_with_invalid_institution_id_is_404(client, auth_headers):
+    """An institution_id that doesn't reference a real institution is rejected, not silently stored."""
     response = await client.post(
         "/api/v1/doctor/degrees",
         json={
             "degree_type": "Diploma",
             "degree_name": "DHMS",
             "institution_name": "Some College",
-            "college_id": 999999,
+            "institution_id": 999999,
             "completion_year": 2020,
         },
         headers=auth_headers,
@@ -220,8 +220,10 @@ async def test_create_degree_with_invalid_college_id_is_404(client, auth_headers
 
 
 @pytest.mark.asyncio
-async def test_update_degree_college_id(client, auth_headers, db_session, test_doctor, test_tenant, test_college):
-    """Test attaching a college_id to an existing degree via update."""
+async def test_update_degree_institution_id(
+    client, auth_headers, db_session, test_doctor, test_tenant, test_institution
+):
+    """Test attaching an institution_id to an existing degree via update."""
     degree = DoctorDegree(
         user_id=test_doctor.id,
         tenant_id=test_tenant.id,
@@ -236,12 +238,12 @@ async def test_update_degree_college_id(client, auth_headers, db_session, test_d
 
     response = await client.patch(
         f"/api/v1/doctor/degrees/{degree.id}",
-        json={"college_id": test_college.id},
+        json={"institution_id": test_institution.id},
         headers=auth_headers,
     )
 
     assert response.status_code == 200
-    assert response.json()["college_id"] == test_college.id
+    assert response.json()["institution_id"] == test_institution.id
 
 
 @pytest.mark.asyncio

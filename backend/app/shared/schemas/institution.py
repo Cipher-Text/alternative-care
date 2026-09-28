@@ -1,4 +1,4 @@
-"""College/institution catalog Pydantic schemas."""
+"""Institution catalog Pydantic schemas."""
 
 from datetime import datetime
 from typing import Literal
@@ -8,12 +8,12 @@ from pydantic import BaseModel, ConfigDict, Field
 DisciplineType = Literal["homeopathy", "ayurveda", "unani", "herbal"]
 
 
-class CollegeBase(BaseModel):
-    """Base college fields."""
+class InstitutionBase(BaseModel):
+    """Base institution fields."""
 
     name_en: str = Field(..., min_length=1, max_length=500)
     name_bn: str | None = Field(None, max_length=500)
-    college_type: Literal["government", "private"]
+    institution_type: Literal["government", "private"]
     disciplines: list[DisciplineType] = Field(..., min_length=1)
     courses_offered: str | None = None
     location: str | None = Field(None, max_length=500)
@@ -24,18 +24,18 @@ class CollegeBase(BaseModel):
     is_active: bool = True
 
 
-class CollegeCreate(CollegeBase):
-    """Create college request."""
+class InstitutionCreate(InstitutionBase):
+    """Create institution request."""
 
     pass
 
 
-class CollegeUpdate(BaseModel):
-    """Update college request (all fields optional)."""
+class InstitutionUpdate(BaseModel):
+    """Update institution request (all fields optional)."""
 
     name_en: str | None = Field(None, min_length=1, max_length=500)
     name_bn: str | None = Field(None, max_length=500)
-    college_type: Literal["government", "private"] | None = None
+    institution_type: Literal["government", "private"] | None = None
     disciplines: list[DisciplineType] | None = Field(None, min_length=1)
     courses_offered: str | None = None
     location: str | None = Field(None, max_length=500)
@@ -47,8 +47,8 @@ class CollegeUpdate(BaseModel):
     is_verified: bool | None = None
 
 
-class CollegeResponse(CollegeBase):
-    """College response with metadata — authenticated (admin/doctor) view."""
+class InstitutionResponse(InstitutionBase):
+    """Institution response with metadata — authenticated (admin/doctor) view."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -60,15 +60,15 @@ class CollegeResponse(CollegeBase):
     updated_at: datetime | None
 
 
-class CollegeListItem(BaseModel):
-    """Lightweight college list item — also used for the public directory (no verified_by)."""
+class InstitutionListItem(BaseModel):
+    """Lightweight institution list item — also used for the public directory (no verified_by)."""
 
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     name_en: str
     name_bn: str | None
-    college_type: str
+    institution_type: str
     disciplines: list[str]
     courses_offered: str | None
     location: str | None
