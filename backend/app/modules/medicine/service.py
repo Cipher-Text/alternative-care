@@ -80,11 +80,11 @@ class MedicineService(GlobalCatalogService[Medicine]):
         return await self.get_visible_or_404(medicine_id, detail="Medicine not found")
 
     async def update_medicine(
-        self, medicine_id: int, data: MedicineUpdate, updated_by: str
+        self, medicine_id: int, data: MedicineUpdate, updated_by: str, role: str
     ) -> Medicine:
-        """Update a tenant-owned medicine (not global)."""
+        """Update a tenant-owned medicine, or (admin only) a global one."""
         medicine = await self.get_own_or_404(
-            medicine_id, detail="Medicine not found or cannot be updated"
+            medicine_id, role=role, detail="Medicine not found or cannot be updated"
         )
 
         for field, value in data.model_dump(exclude_unset=True).items():
@@ -97,10 +97,10 @@ class MedicineService(GlobalCatalogService[Medicine]):
 
         return medicine
 
-    async def deactivate_medicine(self, medicine_id: int, updated_by: str) -> None:
-        """Deactivate a tenant-owned medicine (not global)."""
+    async def deactivate_medicine(self, medicine_id: int, updated_by: str, role: str) -> None:
+        """Deactivate a tenant-owned medicine, or (admin only) a global one."""
         medicine = await self.get_own_or_404(
-            medicine_id, detail="Medicine not found or cannot be deleted"
+            medicine_id, role=role, detail="Medicine not found or cannot be deleted"
         )
 
         medicine.is_active = False

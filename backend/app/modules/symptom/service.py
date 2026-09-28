@@ -74,11 +74,11 @@ class SymptomService(GlobalCatalogService[Symptom]):
         return await self.get_visible_or_404(symptom_id, detail="Symptom not found")
 
     async def update_symptom(
-        self, symptom_id: int, data: SymptomUpdate, updated_by: str
+        self, symptom_id: int, data: SymptomUpdate, updated_by: str, role: str
     ) -> Symptom:
-        """Update a tenant-owned symptom (not global)."""
+        """Update a tenant-owned symptom, or (admin only) a global one."""
         symptom = await self.get_own_or_404(
-            symptom_id, detail="Symptom not found or cannot be updated"
+            symptom_id, role=role, detail="Symptom not found or cannot be updated"
         )
 
         for field, value in data.model_dump(exclude_unset=True).items():
@@ -91,10 +91,10 @@ class SymptomService(GlobalCatalogService[Symptom]):
 
         return symptom
 
-    async def deactivate_symptom(self, symptom_id: int, updated_by: str) -> None:
-        """Deactivate a tenant-owned symptom (not global)."""
+    async def deactivate_symptom(self, symptom_id: int, updated_by: str, role: str) -> None:
+        """Deactivate a tenant-owned symptom, or (admin only) a global one."""
         symptom = await self.get_own_or_404(
-            symptom_id, detail="Symptom not found or cannot be deleted"
+            symptom_id, role=role, detail="Symptom not found or cannot be deleted"
         )
 
         symptom.is_active = False

@@ -91,10 +91,13 @@ async def update_symptom(
     """
     Update symptom.
 
-    - Can only update tenant-specific symptoms (not global)
+    - Doctors can only update their own tenant-specific symptoms
+    - Admins can also update global symptoms
     - Partial updates supported
     """
-    return await service.update_symptom(symptom_id, data, updated_by=user.user_id)
+    return await service.update_symptom(
+        symptom_id, data, updated_by=user.user_id, role=user.role
+    )
 
 
 @router.delete("/{symptom_id:int}", status_code=status.HTTP_204_NO_CONTENT)
@@ -102,10 +105,11 @@ async def delete_symptom(symptom_id: int, service: ServiceDep, user: UserDep):
     """
     Deactivate symptom.
 
-    - Can only delete tenant-specific symptoms (not global)
+    - Doctors can only deactivate their own tenant-specific symptoms
+    - Admins can also deactivate global symptoms
     - Marks record inactive
     """
-    await service.deactivate_symptom(symptom_id, updated_by=user.user_id)
+    await service.deactivate_symptom(symptom_id, updated_by=user.user_id, role=user.role)
 
 
 # ===== Symptom Search =====

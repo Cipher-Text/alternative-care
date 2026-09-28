@@ -262,18 +262,47 @@ async def test_update_own_symptom(client, headers_a):
 
 
 @pytest.mark.asyncio
-async def test_cannot_update_global_symptom_even_as_admin(
-    client, admin_headers, global_symptom
-):
-    """Pre-existing behavior, preserved by this refactor: not even an admin
-    can edit a global row through this endpoint."""
+async def test_admin_can_update_global_symptom(client, admin_headers, global_symptom):
     response = await client.patch(
         f"/api/v1/symptoms/{global_symptom.id}",
         json={"category": "respiratory"},
         headers=admin_headers,
     )
 
+    assert response.status_code == 200
+    assert response.json()["category"] == "respiratory"
+
+
+@pytest.mark.asyncio
+async def test_doctor_cannot_update_global_symptom(client, headers_a, global_symptom):
+    response = await client.patch(
+        f"/api/v1/symptoms/{global_symptom.id}",
+        json={"category": "respiratory"},
+        headers=headers_a,
+    )
+
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_admin_can_deactivate_global_symptom(client, admin_headers, global_symptom):
+    delete_response = await client.delete(
+        f"/api/v1/symptoms/{global_symptom.id}", headers=admin_headers
+    )
+    assert delete_response.status_code == 204
+
+    get_response = await client.get(
+        f"/api/v1/symptoms/{global_symptom.id}", headers=admin_headers
+    )
+    assert get_response.json()["is_active"] is False
+
+
+@pytest.mark.asyncio
+async def test_doctor_cannot_deactivate_global_symptom(client, headers_a, global_symptom):
+    delete_response = await client.delete(
+        f"/api/v1/symptoms/{global_symptom.id}", headers=headers_a
+    )
+    assert delete_response.status_code == 404
 
 
 @pytest.mark.asyncio

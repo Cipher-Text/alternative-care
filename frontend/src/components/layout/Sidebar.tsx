@@ -16,6 +16,7 @@ import {
   Building2,
   UserCog,
   GraduationCap,
+  Stethoscope,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
@@ -35,6 +36,8 @@ const adminNavigation = [
   { name: 'Clients', href: '/admin/clients', icon: Building2 },
   { name: 'Users', href: '/admin/users', icon: UserCog },
   { name: 'Institutions', href: '/admin/institutions', icon: GraduationCap },
+  { name: 'Medicines', href: '/admin/medicines', icon: Pill },
+  { name: 'Symptoms', href: '/admin/symptoms', icon: Stethoscope },
 ]
 
 export function Sidebar() {

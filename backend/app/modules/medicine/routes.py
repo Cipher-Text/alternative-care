@@ -98,10 +98,13 @@ async def update_medicine(
     """
     Update medicine.
 
-    - Can only update tenant-specific medicines (not global)
+    - Doctors can only update their own tenant-specific medicines
+    - Admins can also update global medicines
     - Partial updates supported
     """
-    return await service.update_medicine(medicine_id, data, updated_by=user.user_id)
+    return await service.update_medicine(
+        medicine_id, data, updated_by=user.user_id, role=user.role
+    )
 
 
 @router.delete("/{medicine_id:int}", status_code=status.HTTP_204_NO_CONTENT)
@@ -109,10 +112,11 @@ async def delete_medicine(medicine_id: int, service: ServiceDep, user: UserDep):
     """
     Deactivate medicine.
 
-    - Can only delete tenant-specific medicines (not global)
+    - Doctors can only deactivate their own tenant-specific medicines
+    - Admins can also deactivate global medicines
     - Marks record inactive
     """
-    await service.deactivate_medicine(medicine_id, updated_by=user.user_id)
+    await service.deactivate_medicine(medicine_id, updated_by=user.user_id, role=user.role)
 
 
 # ===== Medicine Search =====

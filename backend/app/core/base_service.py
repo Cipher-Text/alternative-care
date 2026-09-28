@@ -368,22 +368,24 @@ class GlobalCatalogService(Generic[ModelType]):
         return entity
 
     async def get_own_or_404(
-        self, id: str | int, *, detail: str | None = None
+        self, id: str | int, *, role: str | None = None, detail: str | None = None
     ) -> ModelType:
         """
-        Get a tenant-owned, non-global row by ID, or raise 404.
-
-        For update/delete — a caller (including an admin) can only modify
-        rows their own tenant owns, never a global row, through this path.
+        Get a row the caller may modify (update/delete), or raise 404: a
+        non-global row their own tenant owns, or — only for role="admin" —
+        a global row. A non-admin can never reach a global row through this
+        path, even by ID.
         """
+        own_tenant_row = and_(
+            self.model.tenant_id == self.tenant_id,
+            self.model.is_global == False,  # noqa: E712
+        )
+        conditions = own_tenant_row if role != "admin" else or_(
+            own_tenant_row, self.model.is_global == True  # noqa: E712
+        )
+
         result = await self.db.execute(
-            select(self.model).where(
-                and_(
-                    self.model.id == id,
-                    self.model.tenant_id == self.tenant_id,
-                    self.model.is_global == False,  # noqa: E712
-                )
-            )
+            select(self.model).where(self.model.id == id, conditions)
         )
         entity = result.scalar_one_or_none()
 
