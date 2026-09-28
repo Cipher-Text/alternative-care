@@ -108,22 +108,14 @@ class SymptomService(GlobalCatalogService[Symptom]):
     async def search_symptoms(
         self, q: str, category: str | None = None, limit: int = 20
     ) -> list[SymptomSearchResult]:
-        """Search symptoms by name or alias, with autocomplete-style ranking."""
+        """Search symptoms by name (unified tsvector search, D5) or alias, with autocomplete-style ranking."""
         search_term = f"%{q.lower()}%"
 
-        name_query = self._visible_query().where(
-            Symptom.is_active == True,  # noqa: E712
-            or_(
-                func.lower(Symptom.name_en).like(search_term),
-                func.lower(Symptom.name_bn).like(search_term),
-            ),
-        )
-
+        name_filters: list = [Symptom.is_active == True]  # noqa: E712
         if category:
-            name_query = name_query.where(Symptom.category == category)
+            name_filters.append(Symptom.category == category)
 
-        name_results = await self.db.execute(name_query.limit(limit))
-        symptoms_from_name = name_results.scalars().all()
+        name_matches = await self._fulltext_search(q, limit=limit, extra_filters=name_filters)
 
         alias_query = (
             select(Symptom, SymptomAlias.alias_en)
@@ -147,26 +139,32 @@ class SymptomService(GlobalCatalogService[Symptom]):
 
         results: list[SymptomSearchResult] = []
 
-        for symptom in symptoms_from_name:
+        for symptom, rank in name_matches:
             results.append(
                 SymptomSearchResult(
                     symptom=symptom,
                     matched_term=symptom.name_en,
                     match_type="exact",
-                    relevance_score=1.0,
+                    # ts_rank isn't bounded to [0, 1] the way this schema's
+                    # relevance_score is (unlike MedicineSearchResult.rank) —
+                    # clip rather than let an edge-case document raise a
+                    # response-validation error.
+                    relevance_score=min(rank, 1.0),
                 )
             )
 
+        matched_ids = {r.symptom.id for r in results}
         for symptom, matched_alias in symptoms_from_alias:
-            if symptom.id not in [r.symptom.id for r in results]:
+            if symptom.id not in matched_ids:
                 results.append(
                     SymptomSearchResult(
                         symptom=symptom,
                         matched_term=matched_alias,
                         match_type="alias",
-                        relevance_score=0.8,
+                        relevance_score=0.01,  # below every real tsvector name match, still a match
                     )
                 )
+                matched_ids.add(symptom.id)
 
         results.sort(key=lambda x: x.relevance_score, reverse=True)
         return results[:limit]

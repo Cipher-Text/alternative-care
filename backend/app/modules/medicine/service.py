@@ -114,22 +114,14 @@ class MedicineService(GlobalCatalogService[Medicine]):
     async def search_medicines(
         self, q: str, system: str | None = None, limit: int = 20
     ) -> list[MedicineSearchResult]:
-        """Search medicines by name or alias, with autocomplete-style ranking."""
+        """Search medicines by name (unified tsvector search, D5) or alias, with autocomplete-style ranking."""
         search_term = f"%{q.lower()}%"
 
-        name_query = self._visible_query().where(
-            Medicine.is_active == True,  # noqa: E712
-            or_(
-                func.lower(Medicine.name_en).like(search_term),
-                func.lower(Medicine.name_bn).like(search_term),
-            ),
-        )
-
+        name_filters: list = [Medicine.is_active == True]  # noqa: E712
         if system:
-            name_query = name_query.where(Medicine.system == system)
+            name_filters.append(Medicine.system == system)
 
-        name_results = await self.db.execute(name_query.limit(limit))
-        medicines_from_name = name_results.scalars().all()
+        name_matches = await self._fulltext_search(q, limit=limit, extra_filters=name_filters)
 
         alias_query = (
             select(Medicine, MedicineAlias.alias_en)
@@ -153,7 +145,7 @@ class MedicineService(GlobalCatalogService[Medicine]):
 
         results: list[MedicineSearchResult] = []
 
-        for medicine in medicines_from_name:
+        for medicine, rank in name_matches:
             results.append(
                 MedicineSearchResult(
                     id=medicine.id,
@@ -163,12 +155,13 @@ class MedicineService(GlobalCatalogService[Medicine]):
                     potency=medicine.potency,
                     category=medicine.category,
                     matched_alias=None,
-                    rank=1.0,  # Exact name matches get highest rank
+                    rank=rank,
                 )
             )
 
+        matched_ids = {r.id for r in results}
         for medicine, matched_alias in medicines_from_alias:
-            if medicine.id not in [r.id for r in results]:
+            if medicine.id not in matched_ids:
                 results.append(
                     MedicineSearchResult(
                         id=medicine.id,
@@ -178,9 +171,10 @@ class MedicineService(GlobalCatalogService[Medicine]):
                         potency=medicine.potency,
                         category=medicine.category,
                         matched_alias=matched_alias,
-                        rank=0.8,  # Alias matches get lower rank
+                        rank=0.01,  # below every real tsvector name match, still a match
                     )
                 )
+                matched_ids.add(medicine.id)
 
         results.sort(key=lambda x: x.rank, reverse=True)
         return results[:limit]

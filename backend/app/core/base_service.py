@@ -1,5 +1,6 @@
 """Base service class for tenant-scoped business logic."""
 
+import re
 from typing import Any, Generic, Type, TypeVar
 from uuid import uuid4
 
@@ -15,6 +16,24 @@ ModelType = TypeVar("ModelType", bound=Base)
 # Generic type for Pydantic schemas
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+
+_TSQUERY_TOKEN_RE = re.compile(r"[^\w]+", re.UNICODE)
+
+
+def _prefix_tsquery(query_text: str) -> str | None:
+    """
+    Build a `to_tsquery`-compatible prefix-search expression from free-typed
+    text: tokenize, AND the tokens together, and suffix each with `:*` so a
+    match fires on a partial word, not only once it's typed in full.
+    `plainto_tsquery`/`websearch_to_tsquery` only match complete lexemes,
+    which is the wrong behavior for autocomplete-as-you-type.
+
+    Returns None for input with no usable tokens (e.g. only punctuation).
+    """
+    tokens = [t for t in _TSQUERY_TOKEN_RE.split(query_text.strip().lower()) if t]
+    if not tokens:
+        return None
+    return " & ".join(f"{token}:*" for token in tokens)
 
 
 class BaseTenantService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -375,3 +394,44 @@ class GlobalCatalogService(Generic[ModelType]):
             )
 
         return entity
+
+    async def _fulltext_search(
+        self,
+        query_text: str,
+        *,
+        limit: int = 20,
+        extra_filters: list[Any] | None = None,
+    ) -> list[tuple[ModelType, float]]:
+        """
+        Rank rows visible to the caller against the model's `search_vector`
+        column (D5) — one full-text search implementation shared by every
+        GlobalCatalogService subclass with that column, instead of each
+        module hand-rolling its own. Works unchanged for a public/anonymous
+        caller: `tenant_id=None` narrows the same visibility OR to
+        global-only, exactly like `_visible_query()`.
+
+        Returns (row, rank) pairs, highest rank first. Empty for input with
+        no usable search tokens.
+        """
+        tsquery_str = _prefix_tsquery(query_text)
+        if tsquery_str is None:
+            return []
+
+        tsquery = func.to_tsquery("simple", tsquery_str)
+        rank = func.ts_rank(self.model.search_vector, tsquery).label("rank")
+
+        stmt = (
+            select(self.model, rank)
+            .where(
+                or_(self.model.is_global == True, self.model.tenant_id == self.tenant_id),  # noqa: E712
+                self.model.search_vector.op("@@")(tsquery),
+            )
+            .order_by(rank.desc())
+            .limit(limit)
+        )
+
+        if extra_filters:
+            stmt = stmt.where(*extra_filters)
+
+        result = await self.db.execute(stmt)
+        return [(row, float(row_rank)) for row, row_rank in result.all()]

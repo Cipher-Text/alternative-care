@@ -34,6 +34,15 @@ def test_static_search_routes_are_registered_before_dynamic_id_fallbacks():
     assert routes["/api/v1/symptoms/{symptom_id:int}"] >= {"GET", "PATCH", "DELETE"}
 
 
+def test_public_static_search_routes_are_registered_before_dynamic_id_fallbacks():
+    routes = _methods_by_path()
+
+    assert routes["/api/v1/public/medicines/search"] == {"GET"}
+    assert routes["/api/v1/public/symptoms/search"] == {"GET"}
+    assert routes["/api/v1/public/medicines/{medicine_id:int}"] == {"GET"}
+    assert routes["/api/v1/public/symptoms/{symptom_id:int}"] == {"GET"}
+
+
 def test_current_api_route_count_matches_docs():
     api_method_count = sum(
         len([method for method in getattr(route, "methods", set()) if method not in {"HEAD", "OPTIONS"}])
@@ -41,4 +50,6 @@ def test_current_api_route_count_matches_docs():
         if getattr(route, "path", "").startswith("/api/v1")
     )
 
-    assert api_method_count == 131
+    # D4: +6 for the new /api/v1/public/* router (medicines list/search/get,
+    # symptoms list/search/get) — 131 -> 137.
+    assert api_method_count == 137

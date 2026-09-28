@@ -1,6 +1,9 @@
 """Symptom models with normalization and alias support."""
 
-from sqlalchemy import Boolean, CheckConstraint, Integer, String, Text, ForeignKey, Index
+from typing import Any
+
+from sqlalchemy import Boolean, CheckConstraint, Computed, Integer, String, Text, ForeignKey, Index
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.models.base import GlobalCatalogModel
@@ -42,6 +45,17 @@ class Symptom(GlobalCatalogModel):
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
+    # Unified full-text search column (D5) — see Medicine.search_vector
+    # for why 'simple' rather than 'english'.
+    search_vector: Mapped[Any] = mapped_column(
+        TSVECTOR,
+        Computed(
+            "to_tsvector('simple', coalesce(name_en, '') || ' ' || coalesce(name_bn, ''))",
+            persisted=True,
+        ),
+        nullable=True,
+    )
+
     # Relationships
     medicine_symptoms: Mapped[list["MedicineSymptomMapping"]] = relationship(
         "MedicineSymptomMapping",
@@ -67,6 +81,7 @@ class Symptom(GlobalCatalogModel):
             postgresql_using="gin",
             postgresql_ops={"name_bn": "gin_trgm_ops"},
         ),
+        Index("ix_symptoms_search_vector", "search_vector", postgresql_using="gin"),
         CheckConstraint(
             "(is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL)",
             name="ck_symptoms_tenant_global",

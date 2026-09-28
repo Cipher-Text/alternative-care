@@ -1,6 +1,9 @@
 """Medicine database models."""
 
-from sqlalchemy import Boolean, CheckConstraint, Integer, String, Text, ForeignKey, Index
+from typing import Any
+
+from sqlalchemy import Boolean, CheckConstraint, Computed, Integer, String, Text, ForeignKey, Index
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.models.base import GlobalCatalogModel
@@ -64,6 +67,20 @@ class Medicine(GlobalCatalogModel):
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
+    # Unified full-text search column (D5) — 'simple' config rather than
+    # 'english', since Postgres has no Bengali text-search config and
+    # 'simple' (no stemming) is the one behavior that's correct for both
+    # languages in the same column. Generated/stored so it's always in
+    # sync with name_en/name_bn with no application-level upkeep.
+    search_vector: Mapped[Any] = mapped_column(
+        TSVECTOR,
+        Computed(
+            "to_tsvector('simple', coalesce(name_en, '') || ' ' || coalesce(name_bn, ''))",
+            persisted=True,
+        ),
+        nullable=True,
+    )
+
     # Relationships
     symptom_mappings: Mapped[list["MedicineSymptomMapping"]] = relationship(
         "MedicineSymptomMapping",
@@ -90,6 +107,7 @@ class Medicine(GlobalCatalogModel):
             postgresql_ops={"name_bn": "gin_trgm_ops"},
         ),
         Index("ix_medicines_system", "system"),
+        Index("ix_medicines_search_vector", "search_vector", postgresql_using="gin"),
         CheckConstraint(
             "(is_global AND tenant_id IS NULL) OR (NOT is_global AND tenant_id IS NOT NULL)",
             name="ck_medicines_tenant_global",
