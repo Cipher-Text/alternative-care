@@ -3,6 +3,7 @@
 from app.shared.models.base import Base, BaseAuditModel, TenantScopedModel, GlobalCatalogModel
 from app.shared.models.tenant import Tenant, User, UserSession
 from app.shared.models.doctor import DoctorDegree, DoctorTraining
+from app.shared.models.college import College
 from app.shared.models.geographic import Division, District, Upazila
 from app.shared.models.patient import Patient, PatientTag, PatientDiagnosis
 from app.shared.models.prescription import Prescription, PrescriptionItem
@@ -41,6 +42,7 @@ __all__ = [
     "UserSession",
     "DoctorDegree",
     "DoctorTraining",
+    "College",
     "Division",
     "District",
     "Upazila",

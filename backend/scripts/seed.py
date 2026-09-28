@@ -32,6 +32,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import AsyncSessionLocal
 from app.core.security import get_password_hash
 from app.shared.models import (
+    College,
     District,
     Division,
     IntegrationProvider,
@@ -247,6 +248,39 @@ class SeedData:
         await self.session.flush()
         return count
 
+    async def seed_colleges(self) -> int:
+        """
+        Seed the college/institution directory (Track D).
+
+        Homeopathy (67 rows: 1 government + 66 private) comes from the
+        Bangladesh Homeopathic Medical Education Council's own register
+        (https://bhmec.gov.bd/home/colleges) — every row carries its
+        `registration_code` and `source_url` for that reason. One code
+        (029) is reused across two differently named colleges in that
+        register itself; preserved as-is rather than silently altered.
+        Unani/Ayurvedic (5 rows) has no comparable official online register
+        found yet, so those are still web-search-sourced and explicitly
+        partial — see docs/planning/future-scope-2026-09.md's addendum and
+        the College model's docstring. None of the 72 rows are
+        `is_verified` — that flag means an admin has separately confirmed
+        it, which seeding from a register doesn't do on its own.
+        """
+        data = self.load_json("colleges.json")
+        count = 0
+
+        print("\n🏫 Seeding colleges...")
+        for college_data in data["colleges"]:
+            existing = await self.session.execute(
+                select(College).where(College.name_en == college_data["name_en"])
+            )
+            if not existing.scalar_one_or_none():
+                college = College(**college_data)
+                self.session.add(college)
+                count += 1
+
+        await self.session.flush()
+        return count
+
 
 async def main():
     """Main seed function."""
@@ -266,6 +300,7 @@ async def main():
                 default_tenant_id = await seeder.get_default_tenant_id()
                 medicines_count = await seeder.seed_medicines(default_tenant_id)
                 symptoms_count = await seeder.seed_symptoms(default_tenant_id)
+                colleges_count = await seeder.seed_colleges()
                 translations_count = await seeder.seed_translations()
 
                 # Commit transaction
@@ -282,6 +317,7 @@ async def main():
         print(f"  • Providers:     {providers_count:>3} created")
         print(f"  • Medicines:     {medicines_count:>3} created")
         print(f"  • Symptoms:      {symptoms_count:>3} created")
+        print(f"  • Colleges:      {colleges_count:>3} created")
         print(f"  • Translations:  {translations_count:>3} created")
         print(f"  • Tenants:       {sample_stats['tenants']:>3} created")
         print(f"  • Users:         {sample_stats['users']:>3} created")
@@ -302,6 +338,9 @@ async def main():
         print("  • Herbal:     Turmeric, Ginger, Chamomile")
         print("\n🩺 Symptoms:")
         print("  • 25+ common symptoms across all categories")
+        print("\n🏫 Colleges:")
+        print("  • 67 homeopathic (official BHMEC register) + 5 unani/ayurvedic (web-search-sourced)")
+        print("  • None marked is_verified yet — see College model docstring")
         print("\n🌐 Translations:")
         print("  • 80+ UI strings in English and Bengali")
         print("\n" + "=" * 60)

@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.shared.models import User, Tenant, DoctorDegree, DoctorTraining
+from app.shared.models import College, User, Tenant, DoctorDegree, DoctorTraining
 from app.shared.schemas import (
     DoctorProfileUpdate,
     DoctorDegreeCreate,
@@ -148,10 +148,26 @@ class DoctorService:
 
     # ===== Doctor Degree Methods =====
 
+    async def _validate_college_id(self, college_id: int | None) -> None:
+        """Raise 404 if college_id is given but doesn't reference a real, active college."""
+        if college_id is None:
+            return
+
+        result = await self.db.execute(
+            select(College).where(College.id == college_id, College.is_active == True)  # noqa: E712
+        )
+        if not result.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="College not found",
+            )
+
     async def create_degree(
         self, data: DoctorDegreeCreate, created_by: str
     ) -> DoctorDegree:
         """Create a new doctor degree."""
+        await self._validate_college_id(data.college_id)
+
         degree = DoctorDegree(
             user_id=self.user_id,
             tenant_id=self.tenant_id,
@@ -160,6 +176,7 @@ class DoctorService:
             specialization=data.specialization,
             institution_name=data.institution_name,
             institution_location=data.institution_location,
+            college_id=data.college_id,
             start_year=data.start_year,
             completion_year=data.completion_year,
             certificate_url=data.certificate_url,
@@ -218,6 +235,9 @@ class DoctorService:
         degree = await self.get_degree(degree_id)
 
         update_data = data.model_dump(exclude_unset=True)
+        if "college_id" in update_data:
+            await self._validate_college_id(update_data["college_id"])
+
         for field, value in update_data.items():
             setattr(degree, field, value)
 

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.shared.models.base import TenantScopedModel
@@ -28,9 +28,16 @@ class DoctorDegree(TenantScopedModel):
     specialization: Mapped[str | None] = mapped_column(String(255), nullable=True)
     # e.g., "Pediatrics", "Dermatology"
 
-    # Institution
+    # Institution — free text stays the source of truth (a doctor may hold
+    # a degree from an institution not yet in the curated catalog, e.g.
+    # MBBS or foreign-trained), college_id is an optional structured
+    # cross-reference when it does match one, same pattern as
+    # College.district_id -> location.
     institution_name: Mapped[str] = mapped_column(String(500), nullable=False)
     institution_location: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    college_id: Mapped[int | None] = mapped_column(
+        ForeignKey("colleges.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     # Dates
     start_year: Mapped[int | None] = mapped_column(Integer, nullable=True)

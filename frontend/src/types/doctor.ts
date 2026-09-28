@@ -56,6 +56,7 @@ export interface DoctorDegree {
   specialization: string | null
   institution_name: string
   institution_location: string | null
+  college_id: number | null
   start_year: number | null
   completion_year: number
   certificate_url: string | null
@@ -74,6 +75,7 @@ export interface DoctorDegreeCreate {
   specialization?: string | null
   institution_name: string
   institution_location?: string | null
+  college_id?: number | null
   start_year?: number | null
   completion_year: number
   certificate_url?: string | null
@@ -86,6 +88,7 @@ export interface DoctorDegreeUpdate {
   specialization?: string | null
   institution_name?: string
   institution_location?: string | null
+  college_id?: number | null
   start_year?: number | null
   completion_year?: number
   certificate_url?: string | null

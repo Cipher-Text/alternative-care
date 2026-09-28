@@ -126,6 +126,13 @@ from app.shared.schemas.dashboard import (
     PrescriptionByStatus,
     TopMedicine,
 )
+from app.shared.schemas.college import (
+    CollegeBase,
+    CollegeCreate,
+    CollegeUpdate,
+    CollegeResponse,
+    CollegeListItem,
+)
 from app.shared.schemas.integration import (
     IntegrationProviderResponse,
     IntegrationProviderListItem,
@@ -271,6 +278,12 @@ __all__ = [
     "PrescriptionAnalytics",
     "PrescriptionByStatus",
     "TopMedicine",
+    # Colleges
+    "CollegeBase",
+    "CollegeCreate",
+    "CollegeUpdate",
+    "CollegeResponse",
+    "CollegeListItem",
     # Integration Providers
     "IntegrationProviderResponse",
     "IntegrationProviderListItem",
