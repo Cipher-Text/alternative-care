@@ -15,7 +15,7 @@ This guide classifies planning documents by how they should be used.
 | `../ROADMAP.md` | Active | high-level priorities, current phase direction | endpoint-level implementation truth |
 | `roadmap-detailed.md` | Active | detailed phase execution planning and sequencing | exact API/UI implementation state without code verification |
 
-Historical phase notes, proposal drafts, one-time implementation reports, and completed checklists live in `../archive/`.
+Historical phase notes, proposal drafts, one-time implementation reports, and completed checklists are not maintained as a separate archive. Current decisions belong in active planning, architecture, or changelog documents.
 
 ## Source-of-Truth Rule
 

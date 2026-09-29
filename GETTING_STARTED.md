@@ -323,6 +323,6 @@ git push origin feat/your-feature
 1. **Architecture & Patterns:** See CLAUDE.md
 2. **API Documentation:** http://localhost:8000/docs
 3. **Troubleshooting:** CLAUDE.md § 6
-4. **Breaking Changes:** See docs/archive/BREAKING_CHANGES.md
+4. **Breaking Changes:** Review the relevant Alembic revision and the current migration guide before upgrading; historical migration notes are no longer maintained as a separate document.
 
 **You're all set!** Start coding with CLAUDE.md as your guide.

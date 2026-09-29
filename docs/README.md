@@ -61,4 +61,4 @@ When implementation changes:
 1. Update this map if files or sections moved.
 2. Update `status/current.md` for feature-state changes.
 3. Update API docs for endpoint changes.
-4. Move dated progress reports to `archive/` once they are no longer active planning material.
+4. Remove dated progress reports once they are no longer active planning material; keep lasting decisions in the changelog or current architecture docs.

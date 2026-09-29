@@ -82,4 +82,4 @@ When answering implementation questions, prefer these sources in order:
 - `../CLAUDE.md` - codebase guidance for AI coding agents
 - `../README.md` - public project overview
 - `../CHANGELOG.md` - release notes
-- `archive/SECURITY_AUDIT_REPORT.md` - security review summary
+- Security status: see current security guidance in `SECURITY.md`; historical audit snapshots are not maintained here

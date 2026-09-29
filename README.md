@@ -94,4 +94,4 @@ When docs disagree with behavior, verify in this order:
 
 - Long-form docs live under `docs/` — keep root to onboarding, release notes, security, and agent guidance
 - Update `docs/status/current.md` after any feature-state change
-- Move dated progress reports to `docs/archive/` once they stop guiding active work
+- Remove completed progress reports when they no longer guide active work; keep current decisions in the changelog and status docs

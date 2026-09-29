@@ -214,4 +214,4 @@ See [../CLAUDE.md § 6](../CLAUDE.md) for more troubleshooting.
 - API Overview: [API_ENDPOINTS.md](API_ENDPOINTS.md)
 - Detailed API Docs: [../docs/api/](../docs/api/)
 - Architecture & Patterns: [../CLAUDE.md](../CLAUDE.md)
-- Breaking Changes: [../docs/archive/BREAKING_CHANGES.md](../docs/archive/BREAKING_CHANGES.md)
+- Migration changes: review `alembic/versions/` and [the migration guide](MIGRATION_GUIDE.md)

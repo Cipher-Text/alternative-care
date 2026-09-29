@@ -2,7 +2,7 @@
 
 Practical guide for running and verifying Alembic migrations.
 
-**For breaking changes:** See [BREAKING_CHANGES.md](../docs/archive/BREAKING_CHANGES.md)
+**For migration-specific changes:** Review the Alembic revision scripts in `alembic/versions/` and the applicable module documentation before applying a migration.
 
 ---
 
@@ -421,7 +421,7 @@ alembic show <rev>                # Show migration
 
 ### Resources
 
-- **Breaking Changes:** [BREAKING_CHANGES.md](../docs/archive/BREAKING_CHANGES.md)
+- **Migration history:** `alembic/versions/` (revision scripts are the source of truth)
 - **Alias Examples:** [ALIAS_DATA_EXAMPLES.md](ALIAS_DATA_EXAMPLES.md)
 - **Architecture:** [../CLAUDE.md](../CLAUDE.md)
 - **Alembic Docs:** https://alembic.sqlalchemy.org
