@@ -21,6 +21,13 @@
 > `docs/planning/revision-2026-09.md`. Left the findings below as-written (this was a point-in-time
 > inspection); this note is the correction.
 
+> **⚠️ Router/frontend update — 2026-09-30.** The router inventory and frontend-boundary observations
+> below are the 2026-09-23 inspection snapshot. Current code registers 16 routers and 144 API methods
+> (`backend/tests/unit/test_route_registration.py`): the original 14 plus `public` (8 methods for
+> unauthenticated global catalog reads) and `institution` (5 methods). Public landing, knowledge
+> catalog, and institution pages now exist in the frontend. The practitioner directory remains
+> planned. Use `backend/app/main.py` and `frontend/src/app/` for current route truth.
+
 ## 1. Current architecture inventory
 
 AltCare is one Next.js application (`frontend/src/app`), one FastAPI application (`backend/app/main.py`), and a shared PostgreSQL schema managed by Alembic. SQLAlchemy async sessions are provided centrally by `app.core.database`. Redis is configured for rate limiting and Celery; `app.core.celery` configures a Celery app and currently imports integration tasks. MinIO endpoint/bucket credentials are settings only: no storage client or upload integration was found. `pgvector` is a dependency and the existing library model declares a 1536-dimensional vector column; no search or retrieval implementation was found.

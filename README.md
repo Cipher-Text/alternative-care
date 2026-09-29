@@ -2,14 +2,14 @@
 
 An integrated alternative medicine practice platform, expanding in stages into public knowledge, books, directories, publishing, search, and knowledge retrieval. Existing clinic workflows remain a core capability.
 
-## Current State (Code-Verified: 2026-09-23)
+## Current State (Code-Verified: 2026-09-30)
 
 - Backend: FastAPI + SQLAlchemy async, 34 table models
-- Active API modules: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- Module endpoints: 136 total (admin: 11, auth: 21, ai: 1, appointments: 10, dashboard: 6, doctor: 12, geographic: 3, integration: 12, medicine: 15, patient: 14, payment: 12, prescription: 8, symptom: 9, tenant: 2)
+- Active API modules: 16 routers: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`, `public`, `institution`
+- API route methods: 144 across `/api/v1` (route-registration assertion); plus `/`, `/health`, `/metrics`
 - System endpoints: `/`, `/health`, `/metrics`
-- Frontend: Next.js 16 + React 19 (132 source files)
-  - ✅ Complete: `/login`, `/dashboard`, `/patients/*`, `/appointments/*`, `/prescriptions/*`, `/profile`, `/payments/*`, `/settings/integrations`, `/medicines/*`, `/symptoms/*`, `/admin/clients`, `/admin/dashboard`, `/admin/users`
+- Frontend: Next.js 16 + React 19 (167 files under `frontend/src`)
+  - ✅ Implemented: authentication/recovery, public landing and knowledge pages, institutions directory, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, integrations, and platform admin
   - 📋 Pending: AI/RAG assistant UI
 
 ## Feature Snapshot

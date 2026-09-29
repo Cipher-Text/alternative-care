@@ -4,28 +4,18 @@ The product direction preserves working practice-management domains and expands 
 
 Tenant separation currently uses application-level explicit row isolation, not PostgreSQL RLS. See [architecture inventory](../architecture/architecture-inventory.md) for code-verified models, risks, and staged migration plan.
 
-> **⚠️ Status claims superseded — 2026-09-23, updated 2026-09-24.** See
-> [Plan, Architecture & Technology Revision, Stage 1](../planning/revision-2026-09.md#stage-1--shippable--by-2026-11-21)
-> for the current, live numbers — this file isn't kept in sync with them, don't quote figures from
-> here. Short version: the test suite is green (`pytest -q`: 442 passed / 1 xfailed / 0 failed,
-> was 322 passed / 76 failed); Sentry/structlog are initialised. Password reset and email
-> verification now work end to end (no longer commented out — see "Done 2026-09-23" below), and
-> Google Sign-In/registration shipped the same day. Global medicine/symptom creation is now also
-> fixed (2026-09-24, migration `ba209a25bf7d` — see "Done 2026-09-24" below), and so is billing
-> enforcement (2026-09-24, migration `ed07cf4aebc7` — see "Billing enforcement — done 2026-09-24"
-> below): `usage_tracking` now has real writers and plan checks hit the DB instead of the JWT claim.
-> Still true: there is no deployment path (no Dockerfile, no IaC) — a tracked, unfixed gap, not
-> newly discovered.
+> This status page is a code-aligned summary. Endpoint counts are checked against the route table
+> by `backend/tests/unit/test_route_registration.py`; dated milestone details below are historical.
 
 # Current Project Status
 
-Last Updated: 2026-09-24
+Last Updated: 2026-09-30
 
 ---
 
 ## Summary
 
-AltCare has a working FastAPI backend (14 registered modules, 131 endpoints) and a Next.js frontend (132 source files, 11 route groups) covering auth, dashboard, patients, appointments, prescriptions, payments, integrations, medicines, symptoms, and a full platform admin area.
+AltCare has a FastAPI backend with 16 registered routers and 144 API methods, plus a Next.js frontend covering authentication/recovery, public landing and knowledge pages, an institutions directory, practice workflows, and platform administration. See `backend/app/main.py` and the frontend route tree for implementation detail.
 
 Recent work (2026-09-24):
 - **Billing enforcement shipped** — plan checks are DB-backed, `usage_tracking` has writers. See "Billing enforcement — done 2026-09-24" below.
@@ -73,7 +63,7 @@ See `docs/architecture/roles-access.md` for the full authoritative reference.
 
 ## Backend
 
-Registered routers in `backend/app/main.py`:
+Registered routers in `backend/app/main.py` (route-method counts):
 
 | Module | Prefix | Endpoints | Notes |
 |---|---|---|---|
@@ -90,9 +80,11 @@ Registered routers in `backend/app/main.py`:
 | symptom | `/api/v1/symptoms` | 9 | CRUD, search, aliases |
 | tenant | `/api/v1/tenant` | 2 | Clinic profile |
 | geographic | `/api/v1/geographic` | 3 | Divisions/districts/upazilas |
+| public | `/api/v1/public` | 8 | Unauthenticated read-only global catalog and institution endpoints |
+| institution | `/api/v1/institutions` | 5 | Authenticated catalog reads, admin mutations |
 | admin | `/api/v1/admin` | 11 | Platform admin — tenants + users, incl. `POST /admin/tenants/{id}/doctors`, `GET /admin/tenants/{id}/usage` |
 
-**Total:** 131 module endpoints + `/`, `/health`, `/metrics`
+**Total:** 16 routers and 144 API methods under `/api/v1` + `/`, `/health`, `/metrics`
 
 The legacy `/auth/admin/*` endpoints (5, removed 2026-09-25) shadowed the canonical `/api/v1/admin/*`
 ones — the frontend had already migrated, so removal was pure cleanup.
@@ -120,6 +112,9 @@ Implemented routes:
 | `/admin/clients/[tenantId]` | ✅ detail view with lifecycle actions + add-doctor-to-tenant form |
 | `/admin/dashboard` | ✅ KPI cards |
 | `/admin/users` | ✅ Role distribution + user management |
+| `/` | ✅ Public landing page |
+| `/knowledge/medicines`, `/knowledge/symptoms` | ✅ Public global catalogs |
+| `/institutions` | ✅ Public institution directory |
 
 ---
 
@@ -242,8 +237,7 @@ Responses filtered by doctor's specializations. Every answer cites which source 
 
 ### Other unimplemented features
 - `receptionist` role enforcement (RBAC not applied)
-- Public doctor directory — mock at `mock/doctors.html` — see below
-- Public landing page
+- Public doctor directory remains planned; the public institutions directory and global medicine/symptom catalog pages are implemented.
 
 **Done 2026-09-23:** password reset (`POST /auth/password/forgot`, `/password/reset`) and email
 verification (`POST /auth/email/verify`, `/email/resend`) — previously commented-out code, now

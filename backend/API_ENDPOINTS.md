@@ -1,24 +1,19 @@
 # AltCare API Endpoints
 
-**Total:** 136 endpoints across 14 modules (+ `/`, `/health`, `/metrics`)
+**Total:** 144 API methods across 16 active routers (+ `/`, `/health`, `/metrics`)
 **Base URL:** `http://localhost:8000/api/v1`
 **Auth:** Bearer JWT (except `/auth/register`, `/auth/login`, `/auth/login-2fa`, `/auth/google`, `/auth/google/register`, `/auth/password/forgot`, `/auth/password/reset`, `/auth/email/verify`, `/auth/email/resend`)
 **Interactive Docs:** http://localhost:8000/docs
 
-> This file is a human-maintained overview. For the authoritative route table, use the live Swagger UI or `docs/api/README.md`.
+> This file is a human-maintained overview and its detailed legacy endpoint listing may lag implementation. For current routes, use `backend/app/main.py`, module `routes.py` files, and the live Swagger UI. The five former `/auth/admin/*` compatibility routes have been removed; admin routes are under `/admin/*`.
 
 ---
 
-## 1. Authentication (21)
+## 1. Authentication (16)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | POST | `/auth/register` | Register new doctor account | No |
-| POST | `/auth/admin/provision-client` | Admin: create tenant + primary doctor | Admin |
-| GET | `/auth/admin/clients` | Admin: list tenant clients | Admin |
-| GET | `/auth/admin/clients/{tenant_id}` | Admin: get client detail | Admin |
-| GET | `/auth/admin/tenants/pending` | Admin: list pending tenants | Admin |
-| POST | `/auth/admin/tenants/{tenant_id}/approve` | Admin: approve tenant | Admin |
 | POST | `/auth/login` | Login and get JWT tokens (or a 2FA challenge) | No |
 | POST | `/auth/login-2fa` | Complete login by resubmitting email/password + TOTP code | No |
 | POST | `/auth/google` | Sign in with a Google ID token; offers registration if no account exists | No |

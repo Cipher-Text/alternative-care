@@ -1,7 +1,7 @@
 ---
 title: "AltCare Documentation Index"
 type: "navigation"
-last_updated: "2026-09-21"
+last_updated: "2026-09-30"
 ai_purpose: "Fast navigation map for AI assistants"
 version: "1.1.0"
 ---
@@ -57,16 +57,16 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `testing/TEST_STRATEGY.md`
 - `planning/roadmap-detailed.md`
 
-## Code-Verified Snapshot (2026-09-23)
+## Code-Verified Snapshot (2026-09-30)
 
-- Backend routers registered in `backend/app/main.py`: `admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`
-- API endpoints: 131 module endpoints
+- Backend routers registered in `backend/app/main.py`: 16 (`admin`, `auth`, `ai`, `appointments`, `dashboard`, `doctor`, `patient`, `prescription`, `payment`, `integration`, `medicine`, `symptom`, `tenant`, `geographic`, `public`, `institution`)
+- API methods: 144 under `/api/v1` (route registration assertion), plus 3 system endpoints
 - Database table models: 34 (plus 3 base classes)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
-- Frontend implemented pages: login, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, settings/integrations, admin/clients, admin/dashboard, admin/users
+- Frontend implemented pages include authentication/recovery, public landing/knowledge/institution pages, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, integrations, and platform admin
 - Roles: `admin` (platform, full), `operator` (platform, stub), `doctor` (tenant, full), `receptionist` (tenant, stub)
-- Platform admin endpoints: 11 canonical endpoints in `admin/routes.py` (includes `POST /admin/tenants/{id}/doctors` — add a doctor under an existing tenant; `GET /admin/tenants/{id}/usage` — tenant billing usage); legacy compatibility endpoints remain under `auth/routes.py`
+- Platform admin endpoints: 11 canonical endpoints in `admin/routes.py` (includes `POST /admin/tenants/{id}/doctors` and `GET /admin/tenants/{id}/usage`); legacy `/auth/admin/*` compatibility endpoints were removed 2026-09-25
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint
 
 ## AI Assistant Notes

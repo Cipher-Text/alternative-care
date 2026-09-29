@@ -23,10 +23,10 @@ Product direction (2026-09-23): AltCare is the **Alternative Medicine Knowledge 
 
 | Metric | Value |
 |---|---|
-| Backend modules | 14 registered routers |
-| API endpoints | 135 (+ `/`, `/health`, `/metrics`) |
+| Backend modules | 16 registered routers |
+| API methods | 144 under `/api/v1` (+ `/`, `/health`, `/metrics`) |
 | Database tables | 34 models |
-| Frontend routes | 11 route groups (132 source files) |
+| Frontend routes | See `frontend/src/app/` (167 files under `frontend/src`) |
 | Security score | Unscored — the previous "A (95/100)" had no cited source, date, or method (see revision §1) |
 | Test coverage | `pytest -q`: 432 passed / 2 xfailed / 0 failed (2026-09-23, see revision Stage 0) |
 | Status | Feature-complete, not deployed, not production ready |
@@ -532,7 +532,7 @@ These are not features but quality concerns that should be addressed incremental
 ## Success Metrics
 
 ### Current (MVP v1.0) — superseded, see revision-2026-09.md §8 for the live numbers
-- 135 API endpoints across 14 modules
+- 144 API methods across 16 routers (current route count assertion)
 - 34 database tables
 - 132 frontend source files
 - Security score: unscored (previous "A (95/100)" had no cited source)

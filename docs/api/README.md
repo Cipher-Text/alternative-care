@@ -2,21 +2,21 @@
 title: "AltCare API Overview"
 type: "api-reference"
 version: "1.0.0"
-last_updated: "2026-09-24"
-ai_summary: "131 REST endpoints across 14 modules (including AI stub) with JWT authentication"
+last_updated: "2026-09-30"
+ai_summary: "144 API route methods across 16 routers, including authenticated practice APIs and public read-only catalogs"
 base_url: "http://localhost:8000/api/v1"
 ---
 
 # AltCare API Documentation
 
 **Base URL:** `http://localhost:8000/api/v1`
-**Total Endpoints:** 131 (module routes) + 3 system endpoints (`/`, `/health`, `/metrics`)
+**Total API methods:** 144 under `/api/v1` (verified by `backend/tests/unit/test_route_registration.py`) + 3 system endpoints (`/`, `/health`, `/metrics`)
 **Authentication:** JWT Bearer Token
 **Format:** JSON
 
 ## Overview
 
-**14 API Modules:**
+**16 API routers:**
 
 | Module | Endpoints | Purpose | Docs |
 |--------|-----------|---------|------|
@@ -34,12 +34,14 @@ base_url: "http://localhost:8000/api/v1"
 | **Medicine** | 15 | Global and tenant medicines, aliases, symptom mappings | N/A |
 | **Symptom** | 9 | Global and tenant symptoms, aliases | N/A |
 | **Tenant** | 2 | Clinic profile | N/A |
+| **Public** | 8 | Unauthenticated read-only global medicine, symptom, and institution catalogs | N/A |
+| **Institutions** | 5 | Authenticated institution catalog; admin-only mutations | N/A |
 
-**Total:** 131 module endpoints
+The public router exposes 8 methods: list/search/detail for global medicines and symptoms, plus list/detail for institutions. The institution router exposes 5 methods. Counts include each HTTP method registered on `/api/v1`; the regression assertion is authoritative when routes change.
 
 ## Authentication
 
-All endpoints except registration/login require bearer auth.
+Authenticated endpoints require bearer auth, except public read-only catalog endpoints under `/public`. Authentication endpoints document their own requirements.
 
 ```http
 Authorization: Bearer <access_token>

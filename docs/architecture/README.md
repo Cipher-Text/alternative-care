@@ -161,7 +161,7 @@ backend/app/
 │   ├── security.py     # JWT, bcrypt, TOTP
 │   ├── rate_limit.py    # Redis-backed rate limiting
 │   └── dependencies.py # Auth, CurrentUser, RBAC
-├── modules/             # 14 routed modules, 131 endpoints total
+├── modules/             # 16 active routers, 144 API methods total
 │   ├── auth/            # Login (incl. login-2fa), refresh, 2FA, password reset, email verification (16 endpoints)
 │   ├── admin/            # Platform admin — tenants, users, KPI dashboard, doctor provisioning, tenant usage (11 endpoints)
 │   ├── doctor/           # Profile, degrees, trainings (12 endpoints)
@@ -176,6 +176,8 @@ backend/app/
 │   ├── geographic/       # Divisions, districts, upazilas (3 endpoints)
 │   ├── tenant/           # Clinic profile (2 endpoints)
 │   ├── ai/               # Stub endpoint, pro-plan gated (1 endpoint)
+│   ├── public/           # Unauthenticated read-only global catalog (8 methods)
+│   ├── institution/      # Institution catalog (5 methods)
 │   ├── library/          # Models only, no routes yet (Phase C)
 │   └── notification/     # Placeholder, no routes
 └── shared/
@@ -276,12 +278,12 @@ class PatientService:
 
 ## 📊 System Statistics
 
-**Current Status (feature-complete, NOT production-ready — see root `CLAUDE.md` and `docs/planning/revision-2026-09.md`):**
-- **Backend modules:** 14 routed modules
-- **API Endpoints:** 131 (+ `/`, `/health`, `/metrics`)
+**Current Status (see `docs/status/current.md` and `docs/planning/revision-2026-09.md`):**
+- **Backend modules:** 16 registered routers
+- **API methods:** 144 under `/api/v1` (+ `/`, `/health`, `/metrics`)
 - **Database Tables:** 34
-- **Frontend:** 132 source files, 11 top-level route groups
-- **Test suite:** `pytest -q`: 442 passed / 1 xfailed / 0 failed (2026-09-24)
+- **Frontend:** see `frontend/src/app/` for the current route tree
+- **Test suite:** see the latest dated verification in `docs/planning/revision-2026-09.md`; no live test result is asserted here
 - **Security:** unscored (previous "A (95/100)" had no cited source)
 
 **Complete:**
@@ -300,7 +302,8 @@ class PatientService:
 - `operator`/`receptionist` role enforcement (Phase B)
 - Book library reader (models only, no routes/UI — Phase C)
 - AI/RAG assistant (stub 501 endpoint — Phase D)
-- Public doctor directory, landing page (Phase E)
+- Public landing page, global medicine/symptom knowledge pages, and institution directory are implemented
+- Public practitioner directory remains planned
 
 ---
 
@@ -334,7 +337,7 @@ class PatientService:
 → Row-level isolation: `tenant_id` from the JWT is passed into each service, and each service method explicitly filters by it (see [Multi-Tenancy](multi-tenancy.md) for why this isn't an automatic/global filter)
 
 **Q: How many API endpoints?**
-→ 131 endpoints across 14 backend modules
+→ 144 API methods across 16 registered routers; checked by `backend/tests/unit/test_route_registration.py`
 
 **Q: What database tables exist?**
 → 34 tables (see database-schema.md)

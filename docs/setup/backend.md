@@ -247,7 +247,7 @@ curl http://localhost:8000/health
 ### 2. API Documentation
 Visit: http://localhost:8000/docs
 
-**Should see:** Swagger UI with 131 API endpoints across 14 modules
+**Should see:** Swagger UI with 144 API methods across 16 active routers (route-count assertion: `backend/tests/unit/test_route_registration.py`)
 
 ### 3. Root Endpoint
 Visit: http://localhost:8000/
