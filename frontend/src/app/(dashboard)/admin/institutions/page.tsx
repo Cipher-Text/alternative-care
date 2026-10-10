@@ -231,12 +231,13 @@ export default function AdminInstitutionsPage() {
               <Input
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search name, location, or registration code"
+                aria-label="Search name, location, or registration code"
+ placeholder="Search name, location, or registration code"
                 className="pl-9"
               />
             </div>
             <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-              <SelectTrigger className="md:w-48">
+              <SelectTrigger aria-label="Discipline" className="md:w-48">
                 <SelectValue placeholder="Discipline" />
               </SelectTrigger>
               <SelectContent>
@@ -249,7 +250,7 @@ export default function AdminInstitutionsPage() {
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="md:w-40">
+              <SelectTrigger aria-label="Type" className="md:w-40">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -412,7 +413,7 @@ export default function AdminInstitutionsPage() {
                       updateForm('institution_type', value as 'government' | 'private')
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="Type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

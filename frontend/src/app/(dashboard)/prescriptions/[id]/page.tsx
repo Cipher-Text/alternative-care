@@ -139,11 +139,11 @@ export default function PrescriptionDetailPage({
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
-          <Link href="/prescriptions">
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/prescriptions" aria-label="Back">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold">Prescription</h1>

@@ -186,7 +186,7 @@ export default function EditMedicinePage({ params }: { params: Promise<{ id: str
                       setFormData({ ...formData, system: value as MedicalSystem })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="Medical System">
                       <SelectValue placeholder="Select system" />
                     </SelectTrigger>
                     <SelectContent>

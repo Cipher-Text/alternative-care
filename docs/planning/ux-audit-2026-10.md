@@ -151,6 +151,16 @@ real data (none exists in the dev database) · invoice creation flow · admin pa
 - **Bengali font (fixed):** Noto Sans Bengali is loaded via `next/font` and added to the font
   stacks (Latin keeps DM Sans / Plus Jakarta Sans; Bengali glyphs fall back per character), with
   extra line height for `:lang(bn)`. Verified on the Bengali login page.
-- **Still open from this audit:** Bengali *translation* (8 of 104 files translated), unlabeled
-  inputs, icon-only buttons without names, calendar tap targets under 36px (third-party calendar),
-  autocomplete "0%" chip.
+- **Accessibility basics (fixed):**
+  - All 47 `Select` dropdowns now have accessible names (taken from their visible labels), 14
+    search boxes are labeled, and the medicine autocomplete is a proper combobox (role,
+    `aria-expanded`, listbox/options, active descendant).
+  - Icon-only controls have names; the back arrows are a single link (`Button asChild` + `Link
+    aria-label="Back"`) instead of a button nested inside a link.
+  - Calendar (react-big-calendar) toolbar buttons are 40px and date links at least 28px; nothing
+    on the appointments page is under 24px.
+  - The meaningless "0%" relevance chip is gone from medicine search results.
+  - Re-measured on the main pages: 0 unlabeled controls, 0 unnamed icon buttons, one `<h1>` each.
+- **Still open from this audit:** Bengali *translation* (8 of 104 files translated); every page
+  shares one `<title>` (client pages cannot export metadata — needs a per-route title mechanism);
+  color-contrast and keyboard-only passes were not done.

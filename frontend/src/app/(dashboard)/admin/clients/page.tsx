@@ -225,7 +225,8 @@ export default function AdminClientsPage() {
                 <Input
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
-                  placeholder="Search clinic, tenant, doctor, or email"
+                  aria-label="Search clinic, tenant, doctor, or email"
+ placeholder="Search clinic, tenant, doctor, or email"
                   className="pl-9"
                 />
               </div>
@@ -373,7 +374,7 @@ export default function AdminClientsPage() {
                           value={form.language}
                           onValueChange={(value) => updateForm('language', value as 'en' | 'bn')}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger aria-label="Language">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -438,7 +439,7 @@ export default function AdminClientsPage() {
                           value={form.plan}
                           onValueChange={(value) => updateForm('plan', value as SubscriptionPlan)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger aria-label="Plan">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -455,7 +456,7 @@ export default function AdminClientsPage() {
                           value={form.auto_approve ? 'yes' : 'no'}
                           onValueChange={(value) => updateForm('auto_approve', value === 'yes')}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger aria-label="Approval">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>

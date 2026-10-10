@@ -66,7 +66,8 @@ function SymptomsDirectory() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search symptoms by name..."
+          aria-label="Search symptoms by name"
+ placeholder="Search symptoms by name..."
           className="pl-9"
         />
       </div>

@@ -74,14 +74,15 @@ export default function PatientsPage() {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-500" />
           <Input
-            placeholder="Search by name, phone, or code..."
+            aria-label="Search by name, phone, or code"
+ placeholder="Search by name, phone, or code..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder:text-gray-500"
           />
         </div>
         <Select value={gender} onValueChange={setGender}>
-          <SelectTrigger className="w-[180px] bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+          <SelectTrigger aria-label="All Genders" className="w-[180px] bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
             <SelectValue placeholder="All Genders" />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">

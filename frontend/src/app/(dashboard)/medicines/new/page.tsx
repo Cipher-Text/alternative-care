@@ -132,7 +132,7 @@ export default function NewMedicinePage() {
                       setFormData({ ...formData, system: value as MedicalSystem })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="Medical System">
                       <SelectValue placeholder="Select system" />
                     </SelectTrigger>
                     <SelectContent>

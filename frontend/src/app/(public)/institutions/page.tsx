@@ -62,12 +62,13 @@ export default function PublicInstitutionsPage() {
           <Input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search name or location"
+            aria-label="Search name or location"
+ placeholder="Search name or location"
             className="pl-9"
           />
         </div>
         <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-          <SelectTrigger className="md:w-48">
+          <SelectTrigger aria-label="Discipline" className="md:w-48">
             <SelectValue placeholder="Discipline" />
           </SelectTrigger>
           <SelectContent>
@@ -80,7 +81,7 @@ export default function PublicInstitutionsPage() {
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="md:w-40">
+          <SelectTrigger aria-label="Type" className="md:w-40">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>

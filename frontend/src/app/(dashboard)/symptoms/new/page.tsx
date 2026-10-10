@@ -112,7 +112,7 @@ export default function NewSymptomPage() {
                       setFormData({ ...formData, category: value as SymptomCategory })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="Category">
                       <SelectValue placeholder="Select category (optional)" />
                     </SelectTrigger>
                     <SelectContent>

@@ -406,7 +406,7 @@ export default function AdminClientDetailPage({
                   value={doctorForm.language}
                   onValueChange={(value) => updateDoctorForm('language', value as DoctorForm['language'])}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-label="Language">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

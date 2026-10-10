@@ -90,7 +90,8 @@ export default function SymptomsPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                placeholder="Search symptoms..."
+                aria-label="Search symptoms"
+ placeholder="Search symptoms..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -106,7 +107,7 @@ export default function SymptomsPage() {
                 setFilters({ ...filters, category: value === 'all' ? undefined : value as SymptomCategory })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Category">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
@@ -138,7 +139,7 @@ export default function SymptomsPage() {
                 })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Source">
                 <SelectValue placeholder="All Sources" />
               </SelectTrigger>
               <SelectContent>
@@ -160,7 +161,7 @@ export default function SymptomsPage() {
                 })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Status">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>

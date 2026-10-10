@@ -29,11 +29,11 @@ export default function NewInvoicePage() {
     <div className="flex-1 space-y-6 p-4 pt-4 sm:p-8 sm:pt-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/payments/invoices">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
+        <Button variant="ghost" size="icon" asChild>
+            <Link href="/payments/invoices" aria-label="Back">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </Button>
-        </Link>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Create Invoice</h1>
           <p className="text-muted-foreground">Create a new invoice for a patient</p>

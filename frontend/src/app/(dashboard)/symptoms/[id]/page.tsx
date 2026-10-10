@@ -224,7 +224,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
             value={medicineSystem}
             onValueChange={(value) => setMedicineSystem(value as MedicalSystem | 'all')}
           >
-            <SelectTrigger className="w-44">
+            <SelectTrigger aria-label="Filter medicines by medical system" className="w-44">
               <SelectValue placeholder="All Systems" />
             </SelectTrigger>
             <SelectContent>
@@ -301,7 +301,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
                     setAliasForm({ ...aliasForm, alias_type: value as SymptomAliasType })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-label="Type">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>

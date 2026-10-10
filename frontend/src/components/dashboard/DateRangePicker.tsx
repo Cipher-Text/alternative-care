@@ -49,7 +49,7 @@ export function DateRangePicker({ onRangeChange }: DateRangePickerProps) {
 
   return (
     <Select value={preset} onValueChange={handlePresetChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger aria-label="Date range" className="w-[180px]">
         <SelectValue placeholder="Select period" />
       </SelectTrigger>
       <SelectContent>

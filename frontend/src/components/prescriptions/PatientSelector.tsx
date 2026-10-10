@@ -100,7 +100,8 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name or phone..."
+              aria-label="Search by name or phone"
+ placeholder="Search by name or phone..."
               value={searchQuery}
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}

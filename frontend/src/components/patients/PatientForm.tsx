@@ -158,7 +158,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 }
                 disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Gender">
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
                 <SelectContent>
@@ -204,7 +204,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 onValueChange={(value) => setValue('blood_group', value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Blood Group">
                   <SelectValue placeholder="Select blood group" />
                 </SelectTrigger>
                 <SelectContent>
@@ -247,7 +247,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 onValueChange={(value) => setValue('division_id', value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Division">
                   <SelectValue placeholder="Select division" />
                 </SelectTrigger>
                 <SelectContent>
@@ -267,7 +267,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 onValueChange={(value) => setValue('district_id', value)}
                 disabled={!selectedDivision || isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="District">
                   <SelectValue placeholder="Select district" />
                 </SelectTrigger>
                 <SelectContent>
@@ -287,7 +287,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 onValueChange={(value) => setValue('upazila_id', value)}
                 disabled={!selectedDistrict || isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Upazila">
                   <SelectValue placeholder="Select upazila" />
                 </SelectTrigger>
                 <SelectContent>

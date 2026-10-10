@@ -59,7 +59,7 @@ export default function EditPrescriptionPage({
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href={`/prescriptions/${id}`}>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" aria-label="Back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>

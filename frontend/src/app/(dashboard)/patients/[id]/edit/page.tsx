@@ -48,7 +48,7 @@ export default function EditPatientPage({ params }: { params: Promise<{ id: stri
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href={`/patients/${id}`}>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" aria-label="Back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>

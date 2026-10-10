@@ -158,7 +158,7 @@ function MedicineFormDialog({
               value={form.system}
               onValueChange={(value) => updateForm('system', value as MedicalSystem)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="System">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -197,7 +197,7 @@ function MedicineFormDialog({
               value={form.is_active ? 'active' : 'inactive'}
               onValueChange={(value) => updateForm('is_active', value === 'active')}
             >
-              <SelectTrigger className="w-40">
+              <SelectTrigger aria-label="Status" className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -401,12 +401,13 @@ export default function AdminMedicinesPage() {
               <Input
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search name or category"
+                aria-label="Search name or category"
+ placeholder="Search name or category"
                 className="pl-9"
               />
             </div>
             <Select value={systemFilter} onValueChange={setSystemFilter}>
-              <SelectTrigger className="md:w-48">
+              <SelectTrigger aria-label="System" className="md:w-48">
                 <SelectValue placeholder="System" />
               </SelectTrigger>
               <SelectContent>
@@ -422,7 +423,7 @@ export default function AdminMedicinesPage() {
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as 'active' | 'inactive')}
             >
-              <SelectTrigger className="md:w-36">
+              <SelectTrigger aria-label="Status" className="md:w-36">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>

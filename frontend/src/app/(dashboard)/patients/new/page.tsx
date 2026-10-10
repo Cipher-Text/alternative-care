@@ -25,11 +25,11 @@ export default function NewPatientPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/patients">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
+        <Button variant="ghost" size="icon" asChild>
+            <Link href="/patients" aria-label="Back">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </Button>
-        </Link>
         <div>
           <h1 className="text-3xl font-bold">Add New Patient</h1>
           <p className="text-muted-foreground">

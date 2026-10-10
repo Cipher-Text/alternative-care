@@ -145,7 +145,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                   setFormData({ ...formData, language: value as 'en' | 'bn' })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Language">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -194,7 +194,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                   setFormData({ ...formData, division_id: parseInt(value) })
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Division">
                   <SelectValue placeholder="Select division" />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,7 +217,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                 }}
                 disabled={!selectedDivision}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="District">
                   <SelectValue placeholder="Select district" />
                 </SelectTrigger>
                 <SelectContent>
@@ -239,7 +239,7 @@ export function ProfileForm({ profile, isEditing, onCancel, onSuccess }: Profile
                 }
                 disabled={!selectedDistrict}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Upazila">
                   <SelectValue placeholder="Select upazila" />
                 </SelectTrigger>
                 <SelectContent>

@@ -309,7 +309,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
                     setAliasForm({ ...aliasForm, alias_type: value as MedicineAliasType })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-label="Type">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>

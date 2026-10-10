@@ -112,7 +112,8 @@ export default function HomePage() {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search medicines, e.g. Arnica, Ashwagandha..."
+                aria-label="Search medicines, e.g. Arnica, Ashwagandha"
+ placeholder="Search medicines, e.g. Arnica, Ashwagandha..."
                 className="pl-9 h-11"
               />
             </div>

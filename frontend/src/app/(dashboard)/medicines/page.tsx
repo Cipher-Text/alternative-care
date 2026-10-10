@@ -103,7 +103,8 @@ export default function MedicinesPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
               <Input
-                placeholder="Search medicines..."
+                aria-label="Search medicines"
+ placeholder="Search medicines..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder:text-gray-500"
@@ -119,7 +120,7 @@ export default function MedicinesPage() {
                 setFilters({ ...filters, system: value === 'all' ? undefined : value as MedicalSystem })
               }
             >
-              <SelectTrigger className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+              <SelectTrigger aria-label="Medical System" className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
                 <SelectValue placeholder="All Systems" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white">
@@ -143,7 +144,7 @@ export default function MedicinesPage() {
                 })
               }
             >
-              <SelectTrigger className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+              <SelectTrigger aria-label="Source" className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
                 <SelectValue placeholder="All Sources" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white">
@@ -165,7 +166,7 @@ export default function MedicinesPage() {
                 })
               }
             >
-              <SelectTrigger className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+              <SelectTrigger aria-label="Status" className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white">

@@ -133,6 +133,12 @@ export function MedicineAutocomplete({
           placeholder={placeholder}
           className="pl-10 pr-10"
           disabled={disabled}
+          role="combobox"
+          aria-label={placeholder ? placeholder.replace(/\.{3}$/, '') : 'Search medicines'}
+          aria-autocomplete="list"
+          aria-expanded={showResults && results.length > 0}
+          aria-controls="medicine-results"
+          aria-activedescendant={selectedIndex >= 0 ? `medicine-option-${selectedIndex}` : undefined}
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
@@ -141,10 +147,13 @@ export function MedicineAutocomplete({
 
       {/* Results Dropdown */}
       {showResults && results.length > 0 && (
-        <Card className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto shadow-lg">
+        <Card id="medicine-results" role="listbox" className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto shadow-lg">
           {results.map((medicine, index) => (
             <div
               key={medicine.id}
+              id={`medicine-option-${index}`}
+              role="option"
+              aria-selected={index === selectedIndex}
               className={`p-4 cursor-pointer border-b last:border-b-0 transition-colors ${
                 index === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
               }`}
@@ -199,12 +208,6 @@ export function MedicineAutocomplete({
                   )}
                 </div>
 
-                {/* Match rank indicator */}
-                {medicine.rank !== undefined && (
-                  <div className="text-xs text-gray-400 shrink-0">
-                    {Math.round(medicine.rank * 100)}%
-                  </div>
-                )}
               </div>
             </div>
           ))}

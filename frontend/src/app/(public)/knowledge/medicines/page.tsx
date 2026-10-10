@@ -64,12 +64,13 @@ function MedicinesDirectory() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search medicines by name..."
+            aria-label="Search medicines by name"
+ placeholder="Search medicines by name..."
             className="pl-9"
           />
         </div>
         <Select value={system} onValueChange={setSystem}>
-          <SelectTrigger className="sm:w-48">
+          <SelectTrigger aria-label="Discipline" className="sm:w-48">
             <SelectValue placeholder="Discipline" />
           </SelectTrigger>
           <SelectContent>

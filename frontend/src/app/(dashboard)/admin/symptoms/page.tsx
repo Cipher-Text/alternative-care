@@ -149,7 +149,7 @@ function SymptomFormDialog({
               value={form.category || 'none'}
               onValueChange={(value) => updateForm('category', value === 'none' ? null : value)}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Category">
                 <SelectValue placeholder="No category" />
               </SelectTrigger>
               <SelectContent>
@@ -169,7 +169,7 @@ function SymptomFormDialog({
                 value={form.is_active ? 'active' : 'inactive'}
                 onValueChange={(value) => updateForm('is_active', value === 'active')}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -346,12 +346,13 @@ export default function AdminSymptomsPage() {
               <Input
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search name or category"
+                aria-label="Search name or category"
+ placeholder="Search name or category"
                 className="pl-9"
               />
             </div>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="md:w-52">
+              <SelectTrigger aria-label="Category" className="md:w-52">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -367,7 +368,7 @@ export default function AdminSymptomsPage() {
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as 'active' | 'inactive')}
             >
-              <SelectTrigger className="md:w-36">
+              <SelectTrigger aria-label="Status" className="md:w-36">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>

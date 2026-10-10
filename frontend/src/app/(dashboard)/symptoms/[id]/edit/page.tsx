@@ -158,7 +158,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
                       setFormData({ ...formData, category: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger aria-label="Category">
                       <SelectValue placeholder="Select category (optional)" />
                     </SelectTrigger>
                     <SelectContent>

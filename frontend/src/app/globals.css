@@ -99,3 +99,15 @@ h1, h2, h3, h4, h5, h6 {
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* react-big-calendar ships with very small buttons. Keep tap targets comfortable: toolbar
+   buttons 40px, date-number links at least 28px (WCAG 2.5.8 asks for 24px minimum). */
+.rbc-calendar .rbc-toolbar button {
+  min-height: 40px;
+  min-width: 40px;
+  padding: 0 0.75rem;
+}
+.rbc-calendar .rbc-button-link {
+  min-height: 28px;
+  min-width: 28px;
+}

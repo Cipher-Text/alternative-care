@@ -85,11 +85,11 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
-          <Link href="/patients">
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/patients" aria-label="Back">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold">{fullName}</h1>
             <p className="text-muted-foreground">{patient.is_active ? 'Active' : 'Inactive'}</p>

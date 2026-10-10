@@ -101,7 +101,7 @@ function EditUserModal({
           <div className="space-y-2">
             <Label>Role</Label>
             <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
-              <SelectTrigger>
+              <SelectTrigger aria-label="Role">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -126,7 +126,7 @@ function EditUserModal({
               value={isActive ? 'active' : 'inactive'}
               onValueChange={(v) => setIsActive(v === 'active')}
             >
-              <SelectTrigger>
+              <SelectTrigger aria-label="Status">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -287,12 +287,13 @@ export default function AdminUsersPage() {
                   <Input
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by name, email, or clinic"
+                    aria-label="Search by name, email, or clinic"
+ placeholder="Search by name, email, or clinic"
                     className="pl-9"
                   />
                 </div>
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-[160px]">
+                  <SelectTrigger aria-label="All roles" className="w-[160px]">
                     <SelectValue placeholder="All roles" />
                   </SelectTrigger>
                   <SelectContent>
@@ -305,7 +306,7 @@ export default function AdminUsersPage() {
                   </SelectContent>
                 </Select>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger aria-label="All status" className="w-[140px]">
                     <SelectValue placeholder="All status" />
                   </SelectTrigger>
                   <SelectContent>
