@@ -94,6 +94,7 @@ class MedicineSearchResult(BaseModel):
     system: str
     potency: str | None
     category: str | None
+    is_global: bool = False
     matched_alias: str | None = None  # If matched via alias
     rank: float = 0.0  # Search ranking score
 

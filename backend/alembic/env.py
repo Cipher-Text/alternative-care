@@ -18,8 +18,11 @@ from app.shared import models  # noqa: F401 - Import all models for autogenerate
 # access to the values within the .ini file in use.
 config = context.config
 
-# Override sqlalchemy.url with our settings
-config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
+# Override sqlalchemy.url with our settings. Migrations create extensions and own the tables, so
+# they use MIGRATION_DATABASE_URL (owner role) when set; the app runtime uses DATABASE_URL.
+config.set_main_option(
+    "sqlalchemy.url", str(settings.MIGRATION_DATABASE_URL or settings.DATABASE_URL)
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

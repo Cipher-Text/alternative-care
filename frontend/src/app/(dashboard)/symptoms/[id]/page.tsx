@@ -13,7 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, ArrowLeft, Edit, Trash2, Plus, X } from 'lucide-react';
+import { useSymptomMedicines } from '@/lib/hooks/useMedicines';
 import type { SymptomAliasType } from '@/types/symptom';
+import type { MedicalSystem } from '@/types/medicine';
 
 export default function SymptomDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -22,6 +24,11 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
 
   const { data: symptom, isLoading } = useSymptom(symptomId);
   const { data: aliases = [] } = useSymptomAliases(symptomId);
+  const [medicineSystem, setMedicineSystem] = useState<MedicalSystem | 'all'>('all');
+  const { data: medicines = [], isLoading: medicinesLoading } = useSymptomMedicines(
+    symptomId,
+    medicineSystem === 'all' ? undefined : medicineSystem
+  );
   const deleteSymptom = useDeleteSymptom();
   const createAlias = useCreateSymptomAlias();
   const deleteAlias = useDeleteSymptomAlias();
@@ -206,6 +213,58 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </Card>
       )}
+
+      {/* Medicines for this symptom */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Medicines for this symptom</h2>
+          <Select
+            value={medicineSystem}
+            onValueChange={(value) => setMedicineSystem(value as MedicalSystem | 'all')}
+          >
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="All Systems" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Systems</SelectItem>
+              <SelectItem value="homeopathy">Homeopathy</SelectItem>
+              <SelectItem value="ayurveda">Ayurveda</SelectItem>
+              <SelectItem value="unani">Unani</SelectItem>
+              <SelectItem value="herbal">Herbal</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {medicinesLoading ? (
+          <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+        ) : medicines.length > 0 ? (
+          <div className="space-y-2">
+            {medicines.map((medicine) => (
+              <button
+                key={medicine.id}
+                type="button"
+                onClick={() => router.push(`/medicines/${medicine.id}`)}
+                className="w-full flex items-center justify-between p-3 border rounded-lg text-left hover:bg-gray-50 dark:hover:bg-slate-800/50"
+              >
+                <div>
+                  <span className="font-medium">{medicine.name_en}</span>
+                  {medicine.name_bn && (
+                    <span className="ml-2 text-sm text-gray-500">{medicine.name_bn}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {medicine.potency && (
+                    <Badge variant="outline" className="text-xs">{medicine.potency}</Badge>
+                  )}
+                  <Badge variant="outline" className="text-xs capitalize">{medicine.system}</Badge>
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">No medicines are linked to this symptom yet</p>
+        )}
+      </Card>
 
       {/* Aliases */}
       <Card className="p-6">

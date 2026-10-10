@@ -15,6 +15,7 @@ import type {
   MedicineFilters,
   MedicineSearchParams,
   MedicineAliasCreate,
+  MedicalSystem,
 } from '@/types/medicine';
 
 // Create base CRUD hooks using factory
@@ -39,6 +40,15 @@ export function useSearchMedicines(params: MedicineSearchParams) {
       enabled: params.q.length > 0,
       staleTime: 30000,
     }
+  );
+}
+
+// Medicines linked to a symptom
+export function useSymptomMedicines(symptomId: number, system?: MedicalSystem) {
+  return useQuery(
+    ['medicines', 'symptom', symptomId, system ?? 'all'],
+    () => medicinesApi.listForSymptom(symptomId, { system }),
+    { enabled: !!symptomId }
   );
 }
 

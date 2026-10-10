@@ -154,6 +154,7 @@ class MedicineService(GlobalCatalogService[Medicine]):
                     system=medicine.system,
                     potency=medicine.potency,
                     category=medicine.category,
+                    is_global=medicine.is_global,
                     matched_alias=None,
                     rank=rank,
                 )
@@ -170,6 +171,7 @@ class MedicineService(GlobalCatalogService[Medicine]):
                         system=medicine.system,
                         potency=medicine.potency,
                         category=medicine.category,
+                        is_global=medicine.is_global,
                         matched_alias=matched_alias,
                         rank=0.01,  # below every real tsvector name match, still a match
                     )

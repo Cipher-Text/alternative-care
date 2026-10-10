@@ -67,10 +67,10 @@ Global-or-tenant tables (medicines, symptoms, their aliases and mappings) share 
    `appointments`, `visits`, `prescriptions`, `prescription_items`, `payments`, `invoices`,
    `patient_diagnoses`) carry a `tenant_isolation` RLS policy on it (migration `273747e56a3f`).
 
-> **Gap:** PostgreSQL superusers bypass RLS. Local dev and CI connect as a superuser, so layer 2
-> protects nothing in practice. Needed: a least-privileged **app role** for runtime and a separate
-> **migration role** (migrations run `CREATE EXTENSION`). The policies are proven in
-> `tests/integration/test_rls_policies.py` using a throwaway non-superuser role.
+> **Status (2026-10-10):** the app runtime connects as the non-superuser role `altcare`
+> (`DATABASE_URL`); Alembic uses the owner role via `MIGRATION_DATABASE_URL`. Grants:
+> `backend/scripts/grant_app_role.sql`. Verified: `altcare` without a tenant setting sees 0 patient
+> rows while the superuser sees all. Still to do: mirror this in CI and the deploy environment.
 
 ---
 
@@ -171,7 +171,7 @@ marketing pages (`/`, `/about`, `/pricing`, `/for-practitioners`).
 | Symptom to medicine lookup UI | Backend only |
 | Medicine search page | Uses client-side filter of 100 rows, not `/medicines/search` |
 | Receptionist permissions | Not enforced |
-| RLS protection | Written, inert until a non-superuser app role is used |
+| RLS protection | Active locally (app runs as non-superuser); CI/deploy still to mirror |
 | Subscription billing and quota blocking | Plan field and usage counters only |
 | Book library, AI assistant (RAG) | Models only; AI endpoint returns 501 |
 | Specialization-based filtering | Field stored, not used |
@@ -181,7 +181,7 @@ marketing pages (`/`, `/about`, `/pricing`, `/for-practitioners`).
 
 ## 7. Recommended order of work
 
-1. **DB roles:** app role (runtime) plus migration role, so RLS becomes real.
+1. ~~DB roles~~ done locally; mirror in CI and the deploy environment.
 2. **Receptionist RBAC:** enforce and flip the `xfail` to a passing test.
 3. **Symptom to medicine page** and wire the medicine page to `/medicines/search`.
 4. **Subscription flow:** plan selection, payment, quota enforcement from `usage_tracking`.

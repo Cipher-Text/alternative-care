@@ -13,6 +13,7 @@ import type {
   MedicineSearchParams,
   MedicineAlias,
   MedicineAliasCreate,
+  MedicalSystem,
 } from '@/types/medicine';
 
 export const medicinesApi = {
@@ -48,6 +49,15 @@ export const medicinesApi = {
   // Search medicines (autocomplete)
   search: async (params: MedicineSearchParams): Promise<MedicineSearchResult[]> => {
     const { data } = await apiClient.get('/medicines/search', { params });
+    return data;
+  },
+
+  // Medicines linked to a symptom (ordered by mapping strength)
+  listForSymptom: async (
+    symptomId: number,
+    params?: { system?: MedicalSystem; limit?: number }
+  ): Promise<MedicineListItem[]> => {
+    const { data } = await apiClient.get(`/medicines/symptoms/${symptomId}/medicines`, { params });
     return data;
   },
 

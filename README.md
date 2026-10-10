@@ -57,6 +57,8 @@ cd frontend && npm install && cd ..
 
 `run.sh` loads the root `.env` and starts the backend (uvicorn, port 8000) and frontend (Next.js, port 3000) directly, without Docker. Seed data: `backend/scripts/run_seed.sh`.
 
+**Database roles:** run the app as a non-superuser role so row-level security applies. Grant it access with `psql -d <db> -v app_role=<app> -v owner_role=<owner> -f backend/scripts/grant_app_role.sql`, set `DATABASE_URL` to the app role and `MIGRATION_DATABASE_URL` to the owner (used only by Alembic).
+
 **Docker alternative:** `docker compose up --build` runs Redis, MinIO, the API, Celery and the frontend from `backend/Dockerfile` and `frontend/Dockerfile`. PostgreSQL is still expected on the host (`host.docker.internal:5432`).
 
 - API docs: http://localhost:8000/docs

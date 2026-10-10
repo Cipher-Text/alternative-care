@@ -28,6 +28,9 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: PostgresDsn
+    # Optional owner/superuser connection used only by Alembic migrations. The app itself should
+    # connect as a least-privileged role (DATABASE_URL) so PostgreSQL RLS is actually enforced.
+    MIGRATION_DATABASE_URL: PostgresDsn | None = None
     DATABASE_ECHO: bool = False
 
     # Redis

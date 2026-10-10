@@ -4,9 +4,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMedicines, useDeleteMedicine } from '@/lib/hooks/useMedicines';
+import { useMedicines, useDeleteMedicine, useSearchMedicines } from '@/lib/hooks/useMedicines';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,21 @@ export default function MedicinesPage() {
   });
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: medicines, isLoading } = useMedicines(filters);
+  // Debounce the search box, then query GET /medicines/search (names + aliases, ranked)
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedTerm(searchTerm.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+  const isSearching = debouncedTerm.length > 0;
+
+  const { data: listed, isLoading: listLoading } = useMedicines(filters);
+  const { data: searched, isLoading: searchLoading } = useSearchMedicines({
+    q: debouncedTerm,
+    system: filters.system,
+    limit: 100,
+  });
+  const isLoading = isSearching ? searchLoading : listLoading;
   const deleteMedicine = useDeleteMedicine();
 
   const handleDelete = async (id: number) => {
@@ -51,11 +65,13 @@ export default function MedicinesPage() {
     }
   };
 
-  // Filter medicines by search term (client-side)
-  const filteredMedicines = medicines?.filter((med) =>
-    med.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    med.name_bn?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search results omit is_active/is_global, so default them for display and apply the
+  // Source filter client-side; the system filter is already applied by the API.
+  const filteredMedicines = isSearching
+    ? searched
+        ?.map((m) => ({ ...m, is_global: m.is_global ?? false, is_active: true }))
+        .filter((m) => filters.is_global === undefined || m.is_global === filters.is_global)
+    : listed;
 
   return (
     <div className="space-y-6">
