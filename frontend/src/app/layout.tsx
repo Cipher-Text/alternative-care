@@ -55,18 +55,17 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
+                // Two themes only (light / dark); the app never follows the OS. Default: light.
+                // A legacy stored "system" is resolved once so nobody's look changes suddenly.
                 const stored = localStorage.getItem('theme-storage');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                let theme = 'light';
                 if (stored) {
-                  const { state } = JSON.parse(stored);
-                  const theme = state.theme || 'system';
-                  const resolved = theme === 'system'
-                    ? (prefersDark ? 'dark' : 'light')
-                    : theme;
-                  document.documentElement.classList.add(resolved);
-                } else {
-                  document.documentElement.classList.add(prefersDark ? 'dark' : 'light');
+                  const saved = (JSON.parse(stored).state || {}).theme;
+                  theme = saved === 'dark' ? 'dark'
+                    : saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark'
+                    : 'light';
                 }
+                document.documentElement.classList.add(theme);
               } catch (e) {
                 document.documentElement.classList.add('light');
               }

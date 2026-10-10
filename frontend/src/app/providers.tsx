@@ -31,8 +31,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 // Separate component to use theme store
 function ThemedToaster() {
-  const { resolvedTheme } = useThemeStore()
-  const isDark = resolvedTheme === 'dark'
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
 
   return (
     <Toaster
