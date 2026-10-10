@@ -17,6 +17,7 @@ import {
   UserCog,
   GraduationCap,
   Stethoscope,
+  Tags,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
@@ -34,6 +35,7 @@ const doctorNavigation = [
 const adminNavigation = [
   { name: 'Platform Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Clients', href: '/admin/clients', icon: Building2 },
+  { name: 'Plans & Pricing', href: '/admin/plans', icon: Tags },
   { name: 'Users', href: '/admin/users', icon: UserCog },
   { name: 'Institutions', href: '/admin/institutions', icon: GraduationCap },
   { name: 'Medicines', href: '/admin/medicines', icon: Pill },

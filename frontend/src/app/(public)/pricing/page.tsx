@@ -1,63 +1,109 @@
+'use client'
+
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { usePublicPlans } from '@/lib/hooks/usePlans'
+import type { CatalogItem, PublicPlan } from '@/types/plans'
 
-const plans = [
+// Shown only if the plans API cannot be reached, so the page never renders empty.
+const FALLBACK_PLANS: Array<{ key: string; name: string; tagline: string; features: string[] }> = [
   {
+    key: 'free',
     name: 'Free',
-    slug: 'free',
     tagline: 'For solo practitioners getting started',
-    features: [
-      'Patient records & appointments',
-      'Prescription builder',
-      'Global medicine & symptom library',
-    ],
+    features: ['Patient records & appointments', 'Prescription builder', 'Medicine & symptom library'],
   },
   {
+    key: 'plus',
     name: 'Plus',
-    slug: 'plus',
     tagline: 'For growing clinics',
-    features: [
-      'Everything in Free',
-      'Payments & invoicing',
-      'SMS/email integrations',
-    ],
-    highlighted: true,
+    features: ['Everything in Free', 'Payments & invoicing', 'SMS/email integrations'],
   },
   {
+    key: 'pro',
     name: 'Pro',
-    slug: 'pro',
     tagline: 'For established practices',
-    features: [
-      'Everything in Plus',
-      'AI-assisted lookups (coming soon)',
-      'Priority support',
-    ],
+    features: ['Everything in Plus', 'AI-assisted lookups (coming soon)', 'Priority support'],
   },
 ]
 
+const CORE_FEATURES = ['Patient records & appointments', 'Prescription builder', 'Medicine & symptom library']
+
+/** Turn a plan's entitlements into human-readable bullet points, in catalog order. */
+function featureLines(plan: PublicPlan, catalog: CatalogItem[]): string[] {
+  const lines = [...CORE_FEATURES]
+  for (const item of catalog) {
+    const value = plan.entitlements.find((e) => e.key === item.key)
+    if (!value) continue
+    if (item.kind === 'feature') {
+      if (value.enabled) lines.push(item.label_en)
+    } else if (value.limit === null) {
+      lines.push(`${item.label_en}: unlimited`)
+    } else if (value.limit > 0) {
+      lines.push(`${item.label_en}: ${value.limit.toLocaleString()}`)
+    }
+  }
+  return lines
+}
+
+function priceText(plan: PublicPlan): { main: string; sub?: string } {
+  if (plan.price_monthly === null) return { main: 'Contact us' }
+  const monthly = Number(plan.price_monthly)
+  const main = monthly === 0 ? 'Free' : `${plan.currency} ${monthly.toLocaleString()}/month`
+  const sub =
+    plan.price_yearly !== null && monthly > 0
+      ? `or ${plan.currency} ${Number(plan.price_yearly).toLocaleString()}/year`
+      : undefined
+  return { main, sub }
+}
+
 export default function PricingPage() {
+  const { data } = usePublicPlans()
+
+  const cards = data
+    ? data.plans.map((plan, index) => ({
+        key: plan.key,
+        name: plan.name_en,
+        tagline: plan.description_en ?? '',
+        price: priceText(plan),
+        features: featureLines(plan, data.catalog),
+        highlighted: index === 1,
+      }))
+    : FALLBACK_PLANS.map((plan, index) => ({
+        key: plan.key,
+        name: plan.name,
+        tagline: plan.tagline,
+        price: { main: 'Contact us' } as { main: string; sub?: string },
+        features: plan.features,
+        highlighted: index === 1,
+      }))
+
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Pricing</h1>
         <p className="mt-3 text-gray-600 dark:text-gray-400">
-          Every account starts on Free while we review it. Pick the plan you are interested in
-          and tell us more during sign-up, or sign in to see what is available for your account.
+          Every account starts on Free while we review it. Pick the plan you are interested in and
+          tell us more during sign-up, or sign in to see what is available for your account.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {plans.map((plan) => (
-          <Card key={plan.name} className={plan.highlighted ? 'border-emerald-500 shadow-md' : ''}>
+        {cards.map((plan) => (
+          <Card key={plan.key} className={plan.highlighted ? 'border-emerald-500 shadow-md' : ''}>
             <CardHeader>
               <div className="flex items-center gap-2">
                 <CardTitle className="text-xl">{plan.name}</CardTitle>
                 {plan.highlighted && <Badge>Popular</Badge>}
               </div>
               <CardDescription>{plan.tagline}</CardDescription>
+              <div className="pt-2">
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">{plan.price.main}</p>
+                {plan.price.sub && <p className="text-xs text-muted-foreground">{plan.price.sub}</p>}
+              </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
@@ -69,7 +115,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Button asChild className="w-full mt-6" variant={plan.highlighted ? 'default' : 'outline'}>
-                <Link href={`/register?plan=${plan.slug}`}>Get Started</Link>
+                <Link href={`/register?plan=${plan.key}`}>Get Started</Link>
               </Button>
             </CardContent>
           </Card>

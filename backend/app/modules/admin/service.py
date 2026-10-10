@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.entitlements import EntitlementService
 from app.core.onboarding_emails import send_tenant_approved_email
 from app.core.security import get_password_hash
 from app.core.usage_tracking import UsageService
@@ -329,6 +330,8 @@ class AdminService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Tenant not found",
             )
+
+        await EntitlementService(self.db).check_limit(tenant.id, "max_seats")
 
         email_result = await self.db.execute(select(User).where(User.email == data.email))
         if email_result.scalar_one_or_none():

@@ -9,6 +9,7 @@ from sqlalchemy import select, and_, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.base_service import BaseTenantService
+from app.core.entitlements import EntitlementService
 from app.shared.models import Patient, PatientTag, PatientDiagnosis
 from app.shared.schemas import (
     PatientCreate,
@@ -44,6 +45,8 @@ class PatientService(BaseTenantService[Patient, PatientCreate, PatientUpdate]):
         Returns:
             Created patient
         """
+        await EntitlementService(self.db).check_limit(self.tenant_id, "max_patients")
+
         # Use base class create method with is_active=True
         return await self.create(data, created_by, is_active=True)
 

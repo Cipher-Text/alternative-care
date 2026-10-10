@@ -244,4 +244,32 @@ def require_plan(*allowed_plans: str):
 RequireDoctor = Annotated[CurrentUser, Depends(require_role("doctor"))]
 RequireAdmin = Annotated[CurrentUser, Depends(require_role("admin"))]
 RequireAdminOrOperator = Annotated[CurrentUser, Depends(require_role("admin", "operator"))]
+
+
+def require_feature(entitlement_key: str):
+    """
+    Dependency factory: require a plan feature (see `app/core/entitlements.py`).
+
+    Reads the tenant's effective entitlements from the database on every request, so a plan
+    change, expiry or per-tenant override takes effect immediately, not at token expiry.
+    """
+
+    async def _check_feature(
+        user: CurrentUser = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
+    ) -> CurrentUser:
+        from app.core.entitlements import EntitlementService
+
+        if not user.tenant_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={"code": "no_tenant", "message": "This feature requires a clinic account."},
+            )
+        await EntitlementService(db).check_feature(user.tenant_id, entitlement_key)
+        return user
+
+    return _check_feature
+
+
 RequireProPlan = Annotated[CurrentUser, Depends(require_plan("pro"))]
+RequireAiAssistant = Annotated[CurrentUser, Depends(require_feature("feature_ai_assistant"))]

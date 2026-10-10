@@ -31,8 +31,18 @@ from app.shared.models.integration import (
 )
 from app.shared.models.translation import Translation
 from app.shared.models.usage import UsageTracking
+from app.shared.models.plan import (
+    Plan,
+    PlanEntitlement,
+    TenantEntitlementOverride,
+    PlanAuditLog,
+)
 
 __all__ = [
+    "Plan",
+    "PlanEntitlement",
+    "TenantEntitlementOverride",
+    "PlanAuditLog",
     "Base",
     "BaseAuditModel",
     "TenantScopedModel",

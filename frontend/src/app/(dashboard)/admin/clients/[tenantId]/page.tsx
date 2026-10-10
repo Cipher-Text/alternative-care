@@ -17,6 +17,7 @@ import {
   User,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { TenantEntitlementsCard } from '@/components/admin/TenantEntitlementsCard'
 import { useAdminClient, useCreateTenantDoctor } from '@/lib/hooks/useAdminClients'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -345,6 +346,8 @@ export default function AdminClientDetailPage({
           )}
         </CardContent>
       </Card>
+
+      <TenantEntitlementsCard tenantId={tenantId} canEdit={canEdit} />
 
       <Dialog open={isDoctorDialogOpen} onOpenChange={setIsDoctorDialogOpen}>
         <DialogContent>

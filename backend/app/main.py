@@ -115,6 +115,12 @@ from app.modules.geographic import router as geographic_router
 from app.modules.admin import router as admin_router
 from app.modules.public import router as public_router
 from app.modules.institution import router as institution_router
+from app.modules.plans.routes import (
+    admin_router as plans_admin_router,
+    me_router as entitlements_me_router,
+    public_router as plans_public_router,
+    tenant_admin_router as tenant_entitlements_admin_router,
+)
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Platform Admin"])
@@ -132,6 +138,14 @@ app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", 
 app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])
 app.include_router(public_router, prefix=f"{settings.API_V1_PREFIX}/public", tags=["Public"])
 app.include_router(institution_router, prefix=f"{settings.API_V1_PREFIX}/institutions", tags=["Institutions"])
+app.include_router(plans_public_router, prefix=f"{settings.API_V1_PREFIX}/plans", tags=["Plans"])
+app.include_router(plans_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/plans", tags=["Platform Admin"])
+app.include_router(
+    tenant_entitlements_admin_router,
+    prefix=f"{settings.API_V1_PREFIX}/admin/tenants",
+    tags=["Platform Admin"],
+)
+app.include_router(entitlements_me_router, prefix=f"{settings.API_V1_PREFIX}/entitlements", tags=["Plans"])
 
 
 if __name__ == "__main__":

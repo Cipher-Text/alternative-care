@@ -29,12 +29,12 @@ export default function DashboardPage() {
   const user = useAuthStore((state) => state.user)
 
   useEffect(() => {
-    if (user?.tenant_id === null && (user.role === 'admin' || user.role === 'operator')) {
+    if (user && !user.tenant_id && (user.role === 'admin' || user.role === 'operator')) {
       router.replace('/admin/dashboard')
     }
   }, [router, user])
 
-  if (user?.tenant_id === null && (user.role === 'admin' || user.role === 'operator')) {
+  if (user && !user.tenant_id && (user.role === 'admin' || user.role === 'operator')) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />

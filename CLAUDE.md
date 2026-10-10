@@ -343,6 +343,7 @@ backend/app/
 │   ├── symptom/          # ✅ CRUD, search, aliases (9 endpoints)
 │   ├── geographic/       # ✅ Divisions, districts, upazilas (3 endpoints)
 │   ├── tenant/           # ✅ Clinic profile (2 endpoints)
+│   ├── plans/            # ✅ Plan & entitlement configuration, public pricing, per-tenant overrides (8 endpoints; enforcement lives in `app/core/entitlements.py`)
 │   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
 │   └── notification/     # 📋 Placeholder
 └── shared/

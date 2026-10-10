@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, and_, func, extract
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.entitlements import EntitlementService
 from app.shared.models import Payment, Invoice
 from app.shared.schemas import (
     PaymentCreate,
@@ -359,6 +360,8 @@ class PaymentService:
         Raises:
             HTTPException: If payment not found
         """
+        await EntitlementService(self.db).check_feature(self.tenant_id, "feature_invoicing")
+
         # Verify payment exists and belongs to tenant
         payment = await self.get_payment(data.payment_id)
 

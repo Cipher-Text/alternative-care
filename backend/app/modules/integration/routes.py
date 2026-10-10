@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.dependencies import CurrentUser, get_current_user, require_tenant_user
 from app.core.security import decrypt_credentials
+from app.core.entitlements import EntitlementService
 from app.core.usage_tracking import UsageService
 from app.modules.integration.factory import IntegrationProviderFactory
 from app.modules.integration.service import IntegrationService
@@ -378,6 +379,8 @@ async def send_sms(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No primary SMS provider configured. Configure one first.",
             )
+
+    await EntitlementService(service.db).check_limit(current_user.tenant_id, "monthly_sms")
 
     # Queue SMS send task
     task = send_sms_task.delay(

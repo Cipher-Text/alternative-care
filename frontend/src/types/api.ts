@@ -17,7 +17,7 @@ export interface ValidationError {
  * Standard API error response from backend
  */
 export interface APIError {
-  detail: string | ValidationError[]
+  detail: string | ValidationError[] | { code?: string; message?: string }
   status?: number
 }
 
@@ -55,6 +55,14 @@ export function getErrorMessage(error: unknown, fallback = 'An error occurred'):
     // Handle string detail (normal error)
     if (typeof detail === 'string') {
       return detail
+    }
+
+    // Handle structured detail, e.g. plan limits: { code, message, ... }
+    if (detail && typeof detail === 'object' && !Array.isArray(detail)) {
+      const message = (detail as { message?: unknown }).message
+      if (typeof message === 'string') {
+        return message
+      }
     }
 
     // Handle array of validation errors (Pydantic)

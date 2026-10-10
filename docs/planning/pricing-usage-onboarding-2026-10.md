@@ -1,7 +1,7 @@
 # Pricing, Usage & Onboarding — Product Revision
 
 **Date:** 2026-10-10
-**Status:** Proposal for product-owner decision. Findings are verified against the code; everything
+**Status:** Proposal for product-owner decision. **Built so far (2026-10-10):** step 1 (signup page, pending state, lifecycle emails) and step 2 (admin-configurable plans and entitlements with enforcement at patient creation, SMS, AI, invoicing and seats; public pricing page rendered from the configuration; admin page `/admin/plans`; per-tenant overrides). Default limits are unlimited, so nothing is capped until an admin sets a value. Findings are verified against the code; everything
 under "Recommendation" is a proposal. **No price points are proposed here** — they need evidence
 (see §2.4). This supersedes the "Contact us for pricing" stopgap in
 `docs/planning/future-scope-2026-09.md` only once the decisions in §5 are made.

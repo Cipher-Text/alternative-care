@@ -53,5 +53,8 @@ def test_current_api_route_count_matches_docs():
     # D4: +6 for the new /api/v1/public/* router (medicines list/search/get,
     # symptoms list/search/get) — 131 -> 137. Institutions (Track D): +5 for
     # /api/v1/institutions (list/create/get/update/delete) +2 for
-    # /api/v1/public/institutions (list/get) — 137 -> 144.
-    assert api_method_count == 144
+    # /api/v1/public/institutions (list/get) — 137 -> 144. Plans & entitlements: +1
+    # /api/v1/plans, +3 /api/v1/admin/plans (list/audit/update), +3
+    # /api/v1/admin/tenants/{id}/entitlements (get/put/delete), +1 /api/v1/entitlements/me
+    # — 144 -> 152.
+    assert api_method_count == 152
