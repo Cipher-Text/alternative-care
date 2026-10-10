@@ -7,6 +7,7 @@
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMedicine, useMedicineAliases, useDeleteMedicine, useCreateMedicineAlias, useDeleteMedicineAlias } from '@/lib/hooks/useMedicines';
+import { useCan } from '@/lib/auth/permissions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import type { MedicalSystem, MedicineAliasType } from '@/types/medicine';
 
 export default function MedicineDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const can = useCan();
   const { id } = use(params);
   const medicineId = parseInt(id);
 
@@ -131,7 +133,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        {!medicine.is_global && (
+        {(!medicine.is_global && can.writeClinical) && (
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -278,7 +280,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Aliases</h2>
-          {!medicine.is_global && (
+          {(!medicine.is_global && can.writeClinical) && (
             <Button size="sm" onClick={() => setShowAddAlias(!showAddAlias)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Alias
@@ -286,7 +288,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
           )}
         </div>
 
-        {showAddAlias && !medicine.is_global && (
+        {showAddAlias && (!medicine.is_global && can.writeClinical) && (
           <form onSubmit={handleAddAlias} className="mb-4 p-4 border rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -346,7 +348,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
                     {alias.alias_type}
                   </Badge>
                 </div>
-                {!medicine.is_global && (
+                {(!medicine.is_global && can.writeClinical) && (
                   <Button
                     variant="ghost"
                     size="sm"

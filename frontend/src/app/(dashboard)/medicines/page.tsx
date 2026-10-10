@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMedicines, useDeleteMedicine, useSearchMedicines } from '@/lib/hooks/useMedicines';
+import { useCan } from '@/lib/auth/permissions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import type { MedicalSystem, MedicineFilters } from '@/types/medicine';
 
 export default function MedicinesPage() {
   const router = useRouter();
+  const can = useCan();
   const [filters, setFilters] = useState<MedicineFilters>({
     is_active: true,
     limit: 100,
@@ -82,13 +84,15 @@ export default function MedicinesPage() {
             Manage medicines for all systems
           </p>
         </div>
-        <Button
-          onClick={() => router.push('/medicines/new')}
-          className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Medicine
-        </Button>
+        {can.writeClinical && (
+          <Button
+            onClick={() => router.push('/medicines/new')}
+            className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Medicine
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -182,6 +186,7 @@ export default function MedicinesPage() {
       ) : !filteredMedicines || filteredMedicines.length === 0 ? (
         <Card className="p-12 text-center bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
           <p className="text-gray-600 dark:text-gray-400">No medicines found</p>
+          {can.writeClinical && (
           <Button
             className="mt-4 bg-primary hover:bg-slate-950 text-white"
             onClick={() => router.push('/medicines/new')}
@@ -189,6 +194,7 @@ export default function MedicinesPage() {
             <Plus className="w-4 h-4 mr-2" />
             Add First Medicine
           </Button>
+          )}
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -247,7 +253,7 @@ export default function MedicinesPage() {
                   <Eye className="w-4 h-4 mr-1" />
                   View
                 </Button>
-                {!medicine.is_global && (
+                {!medicine.is_global && can.writeClinical && (
                   <>
                     <Button
                       variant="outline"

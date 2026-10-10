@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import ExpiredSignatureError, JWTError
 from sqlalchemy import select, text
@@ -172,6 +172,47 @@ def require_role(*allowed_roles: str):
         return user
 
     return _check_role
+
+
+_SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
+
+# POST routes that only *render* existing data and change no clinical records, so the read-only
+# role may use them (a receptionist prints prescriptions for patients).
+_READ_ONLY_POST_ROUTES = frozenset({"/api/v1/prescriptions/{prescription_id}/generate-pdf"})
+
+
+async def deny_receptionist_writes(
+    request: Request, user: CurrentUser = Depends(get_current_user)
+) -> None:
+    """
+    Router-level guard: receptionists get read-only access (see docs/architecture/roles-access.md).
+
+    Applied with `dependencies=[Depends(deny_receptionist_writes)]` so any write route added to
+    the router later is protected automatically; it never needs to be remembered per endpoint.
+    """
+    if user.role == "receptionist" and request.method not in _SAFE_METHODS:
+        route = request.scope.get("route")
+        if getattr(route, "path", None) in _READ_ONLY_POST_ROUTES:
+            return
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "role_not_permitted",
+                "message": "Your role (receptionist) has read-only access here.",
+            },
+        )
+
+
+async def deny_receptionist(user: CurrentUser = Depends(get_current_user)) -> None:
+    """Router-level guard: this area is not available to receptionists at all."""
+    if user.role == "receptionist":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "role_not_permitted",
+                "message": "Your role (receptionist) cannot access this area.",
+            },
+        )
 
 
 async def require_tenant_user(

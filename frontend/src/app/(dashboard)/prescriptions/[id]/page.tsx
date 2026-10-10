@@ -10,6 +10,7 @@ import {
   useGeneratePrescriptionPDF,
   useDeletePrescriptionItem,
 } from '@/lib/hooks/usePrescriptions'
+import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -72,6 +73,7 @@ export default function PrescriptionDetailPage({
 }) {
   const { id } = use(params)
   const router = useRouter()
+  const can = useCan()
   const [showIssueDialog, setShowIssueDialog] = useState(false)
   const [showVoidDialog, setShowVoidDialog] = useState(false)
 
@@ -125,6 +127,8 @@ export default function PrescriptionDetailPage({
   }
 
   const isDraft = prescription.status === 'draft'
+  // receptionists view and print prescriptions but never edit, issue or void them
+  const canEditRx = can.writeClinical && isDraft
   const isIssued = prescription.status === 'issued'
   const isVoided = prescription.status === 'voided'
   const statusInfo = statusConfig[prescription.status]
@@ -158,7 +162,7 @@ export default function PrescriptionDetailPage({
         </div>
 
         <div className="flex gap-2">
-          {isDraft && (
+          {canEditRx && (
             <>
               <Link href={`/prescriptions/${id}/edit`}>
                 <Button variant="outline">
@@ -186,10 +190,12 @@ export default function PrescriptionDetailPage({
                 )}
                 Download PDF
               </Button>
-              <Button variant="destructive" onClick={() => setShowVoidDialog(true)}>
-                <XCircle className="h-4 w-4 mr-2" />
-                Void
-              </Button>
+              {can.writeClinical && (
+                <Button variant="destructive" onClick={() => setShowVoidDialog(true)}>
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Void
+                </Button>
+              )}
             </>
           )}
         </div>
@@ -285,7 +291,7 @@ export default function PrescriptionDetailPage({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Medicines ({prescription.items.length})</CardTitle>
-            {isDraft && (
+            {canEditRx && (
               <Link href={`/prescriptions/${id}/edit`}>
                 <Button variant="outline" size="sm">
                   Add Medicine
@@ -306,7 +312,7 @@ export default function PrescriptionDetailPage({
                   <TableHead>Duration</TableHead>
                   <TableHead>Quantity</TableHead>
                   <TableHead>Instructions</TableHead>
-                  {isDraft && <TableHead className="text-right">Actions</TableHead>}
+                  {canEditRx && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -321,7 +327,7 @@ export default function PrescriptionDetailPage({
                     <TableCell>{item.duration || '-'}</TableCell>
                     <TableCell>{item.quantity || '-'}</TableCell>
                     <TableCell>{item.instructions || '-'}</TableCell>
-                    {isDraft && (
+                    {canEditRx && (
                       <TableCell className="text-right">
                         <Button
                           variant="ghost"
@@ -340,7 +346,7 @@ export default function PrescriptionDetailPage({
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>No medicines added yet</p>
-              {isDraft && (
+              {canEditRx && (
                 <Link href={`/prescriptions/${id}/edit`}>
                   <Button variant="outline" className="mt-4" size="sm">
                     Add Medicines

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import structlog
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
@@ -99,6 +99,7 @@ async def metrics():
 
 
 # API routes
+from app.core.dependencies import deny_receptionist, deny_receptionist_writes
 from app.modules.auth import router as auth_router
 from app.modules.ai import router as ai_router
 from app.modules.appointments import router as appointments_router
@@ -124,17 +125,17 @@ from app.modules.plans.routes import (
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Platform Admin"])
-app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"])
-app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"])
+app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"], dependencies=[Depends(deny_receptionist)])
 app.include_router(appointments_router, prefix=f"{settings.API_V1_PREFIX}/appointments", tags=["Appointments"])
 app.include_router(dashboard_router, prefix=f"{settings.API_V1_PREFIX}/dashboard", tags=["Dashboard"])
-app.include_router(doctor_router, prefix=f"{settings.API_V1_PREFIX}/doctor", tags=["Doctor"])
-app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", tags=["Patients"])
-app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"])
+app.include_router(doctor_router, prefix=f"{settings.API_V1_PREFIX}/doctor", tags=["Doctor"], dependencies=[Depends(deny_receptionist)])
+app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", tags=["Patients"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"], dependencies=[Depends(deny_receptionist_writes)])
 app.include_router(payment_router, prefix=f"{settings.API_V1_PREFIX}/payments", tags=["Payments"])
-app.include_router(integration_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"])
-app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"])
-app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"])
+app.include_router(integration_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"], dependencies=[Depends(deny_receptionist)])
+app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"], dependencies=[Depends(deny_receptionist_writes)])
 app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])
 app.include_router(public_router, prefix=f"{settings.API_V1_PREFIX}/public", tags=["Public"])
 app.include_router(institution_router, prefix=f"{settings.API_V1_PREFIX}/institutions", tags=["Institutions"])

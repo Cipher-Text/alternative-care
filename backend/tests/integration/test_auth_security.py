@@ -298,17 +298,6 @@ class Test2FASecurityBypass:
 class TestRoleBasedAccessControl:
     """Test role-based access control (RBAC)."""
 
-    @pytest.mark.xfail(
-        reason=(
-            "app/modules/doctor/routes.py guards endpoints with "
-            "get_current_user/require_tenant_user only — there is no "
-            "require_role('doctor') check, so any tenant-scoped role "
-            "(including receptionist) can call them today. Documented as "
-            "'receptionist: no enforcement' in CLAUDE.md; role enforcement "
-            "is Phase B in docs/ROADMAP.md, not yet built."
-        ),
-        strict=True,
-    )
     async def test_receptionist_cannot_access_doctor_endpoints(
         self, client: AsyncClient, db_session, test_tenant
     ):

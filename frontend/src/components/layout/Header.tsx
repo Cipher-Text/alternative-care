@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
+import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,6 +23,7 @@ import { LanguageSwitcher } from '@/components/language/LanguageSwitcher'
 export function Header() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
+  const can = useCan()
   const tAuth = useTranslations('auth')
   const tNav = useTranslations('nav')
 
@@ -79,6 +81,8 @@ export function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-200 dark:bg-slate-700" />
+            {can.manageClinicSettings && (
+              <>
             <DropdownMenuItem
               onClick={() => router.push('/profile')}
               className="hover:bg-gray-100 dark:hover:bg-slate-700 focus:bg-gray-100 dark:focus:bg-slate-700 cursor-pointer"
@@ -93,6 +97,8 @@ export function Header() {
               <Settings className="mr-2 h-4 w-4" />
               {tNav('settings')}
             </DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuSeparator className="bg-gray-200 dark:bg-slate-700" />
             <DropdownMenuItem
               onClick={handleLogout}

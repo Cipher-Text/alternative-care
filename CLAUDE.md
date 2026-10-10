@@ -12,7 +12,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
 > Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
-> 2026-09-26: `pytest -q` runs **508 passed / 1 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
+> 2026-09-26: `pytest -q` runs **552 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
 > are initialised (`app/core/observability.py`).
 > **PostgreSQL RLS on the 8 clinical tables landed 2026-09-26** (Stage 2, D2): migration
 > `273747e56a3f` adds `ENABLE`/`FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy to
@@ -61,8 +61,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 > and a `(tenant_id, usage_date)` unique constraint), surfaced read-only via
 > `GET /admin/tenants/{id}/usage`. Quota *enforcement* (blocking at a monthly limit) is still Stage 4 —
 > this stage only makes the data trustworthy. Still true: **no IaC, no deploy path**
-> (the rest of Stage 1; `backend/Dockerfile`, `frontend/Dockerfile` and a compose file for local use exist, but nothing deploys them); the receptionist-RBAC gap is pinned as the one remaining `xfail` so it can't
-> silently regress further.
+> (the rest of Stage 1; `backend/Dockerfile`, `frontend/Dockerfile` and a compose file for local use exist, but nothing deploys them); receptionist RBAC is now enforced (router-level guards, 2026-10-10).
 >
 > **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
 > stage plan (Stage 0 Truth & Green → Stage 4 Retrieval Assistant), the architecture decisions
@@ -98,7 +97,6 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
   - Knowledge sources: book library (vector search via pgvector) + medicine DB + symptom DB (structured lookup)
   - Responses filtered by doctor's specializations; every answer cites its source
   - Pro plan only; 200 queries/month quota tracked in `usage_tracking`
-- `operator` / `receptionist` role enforcement — Phase B
 - Public landing page
 
 **Scoped but not scheduled** — directory (practitioners, clinics, institutions), editorial content/CMS, and a knowledge taxonomy beyond Medicine/Symptom (discipline, condition, therapy, references). Direction decided, no dates: `docs/planning/future-scope-2026-09.md`.
@@ -247,7 +245,7 @@ async def test_tenant_isolation(db_session):
 | `admin` | Platform | `null` | ✅ Full |
 | `operator` | Platform | `null` | ⚠️ RBAC stub, no endpoints |
 | `doctor` | Tenant | `<uuid>` | ✅ Full |
-| `receptionist` | Tenant | `<uuid>` | ⚠️ No enforcement |
+| `receptionist` | Tenant | `<uuid>` | ✅ Read-only on clinical records (see `docs/architecture/roles-access.md`) |
 
 Platform users (`tenant_id = null`) are rejected with **403** from all tenant-scoped service factories.
 

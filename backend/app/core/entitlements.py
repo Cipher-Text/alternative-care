@@ -207,7 +207,11 @@ class EntitlementService:
             result = await self.db.execute(
                 select(func.count())
                 .select_from(User)
-                .where(User.tenant_id == tenant_id, User.is_active.is_(True))
+                .where(
+                    User.tenant_id == tenant_id,
+                    User.is_active.is_(True),
+                    User.role == "doctor",
+                )
             )
             return int(result.scalar_one())
         if key in ("monthly_sms", "monthly_ai_queries"):

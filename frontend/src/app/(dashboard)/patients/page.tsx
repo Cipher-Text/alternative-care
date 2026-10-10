@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePatients } from '@/lib/hooks/usePatients'
 import { PatientCard } from '@/components/patients/PatientCard'
+import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -16,6 +17,7 @@ import {
 import { PlusCircle, Search, Loader2 } from 'lucide-react'
 
 export default function PatientsPage() {
+  const can = useCan()
   const [search, setSearch] = useState('')
   const [gender, setGender] = useState<string>('')
 
@@ -57,12 +59,14 @@ export default function PatientsPage() {
             Manage your patient records and information
           </p>
         </div>
-        <Link href="/patients/new">
-          <Button className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Patient
-          </Button>
-        </Link>
+        {can.writeClinical && (
+          <Link href="/patients/new">
+            <Button className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add Patient
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Filters */}
@@ -123,7 +127,7 @@ export default function PatientsPage() {
               ? 'No patients found matching your filters'
               : 'No patients yet. Add your first patient to get started.'}
           </p>
-          {!search && !gender && (
+          {!search && !gender && can.writeClinical && (
             <Link href="/patients/new">
               <Button className="mt-4 bg-primary hover:bg-slate-950 text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />

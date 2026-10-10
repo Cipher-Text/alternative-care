@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSymptoms, useDeleteSymptom } from '@/lib/hooks/useSymptoms';
+import { useCan } from '@/lib/auth/permissions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import type { SymptomCategory, SymptomFilters } from '@/types/symptom';
 
 export default function SymptomsPage() {
   const router = useRouter();
+  const can = useCan();
   const [filters, setFilters] = useState<SymptomFilters>({
     is_active: true,
     limit: 100,
@@ -72,10 +74,12 @@ export default function SymptomsPage() {
             Manage symptoms catalog
           </p>
         </div>
-        <Button onClick={() => router.push('/symptoms/new')}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Symptom
-        </Button>
+        {can.writeClinical && (
+          <Button onClick={() => router.push('/symptoms/new')}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Symptom
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -177,10 +181,12 @@ export default function SymptomsPage() {
       ) : !filteredSymptoms || filteredSymptoms.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-gray-500">No symptoms found</p>
+          {can.writeClinical && (
           <Button className="mt-4" onClick={() => router.push('/symptoms/new')}>
             <Plus className="w-4 h-4 mr-2" />
             Add First Symptom
           </Button>
+          )}
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -220,7 +226,7 @@ export default function SymptomsPage() {
                   <Eye className="w-4 h-4 mr-1" />
                   View
                 </Button>
-                {!symptom.is_global && (
+                {!symptom.is_global && can.writeClinical && (
                   <>
                     <Button
                       variant="outline"

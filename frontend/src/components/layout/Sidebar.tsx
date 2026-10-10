@@ -20,6 +20,7 @@ import {
   Tags,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { useCan } from '@/lib/auth/permissions'
 
 const doctorNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -45,6 +46,7 @@ const adminNavigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const user = useAuthStore((state) => state.user)
+  const can = useCan()
 
   // Platform admins and operators (moderators) share the admin nav — no
   // patient/appointment/prescription items, since neither role has a
@@ -52,7 +54,9 @@ export function Sidebar() {
   // docs/architecture/roles-access.md), so it sees the same nav as admin
   // rather than a separate, currently-empty menu.
   const items =
-    user?.role === 'admin' || user?.role === 'operator' ? adminNavigation : doctorNavigation
+    user?.role === 'admin' || user?.role === 'operator'
+      ? adminNavigation
+      : doctorNavigation.filter((item) => can.manageClinicSettings || item.href !== '/settings')
 
   return (
     <div className="hidden md:flex md:w-64 md:flex-col">

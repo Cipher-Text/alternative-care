@@ -4,6 +4,7 @@ import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { usePatient, useDeletePatient, usePatientTags, usePatientDiagnoses } from '@/lib/hooks/usePatients'
+import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -39,6 +40,7 @@ import {
 export default function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
+  const can = useCan()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const { data: patient, isLoading, error } = usePatient(id)
@@ -93,6 +95,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <p className="text-muted-foreground">{patient.is_active ? 'Active' : 'Inactive'}</p>
           </div>
         </div>
+        {can.writeClinical && (
         <div className="flex gap-2">
           <Link href={`/patients/${id}/edit`}>
             <Button variant="outline">
@@ -108,6 +111,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             Delete
           </Button>
         </div>
+        )}
       </div>
 
       {/* Patient Profile */}

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, deny_receptionist_writes, get_current_user
 from app.modules.appointments.service import AppointmentService
 from app.shared.schemas import (
     AppointmentCreate,
@@ -83,65 +83,16 @@ async def list_appointments(
     )
 
 
-@router.get("/{appointment_id}", response_model=AppointmentResponse)
-async def get_appointment(
-    appointment_id: str,
-    service: Annotated[AppointmentService, Depends(get_appointment_service)],
-):
-    """Get appointment by ID with tenant filtering."""
-    return await service.get_appointment(appointment_id)
-
-
-@router.patch("/{appointment_id}", response_model=AppointmentResponse)
-async def update_appointment(
-    appointment_id: str,
-    data: AppointmentUpdate,
-    service: Annotated[AppointmentService, Depends(get_appointment_service)],
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
-):
-    """
-    Update appointment details.
-
-    - Can update date, time, status, notes, etc.
-    - Validates new time slot if date/time changed
-    - Prevents conflicts with existing appointments
-    """
-    return await service.update_appointment(
-        appointment_id, data, updated_by=current_user.user_id
-    )
-
-
-@router.post("/{appointment_id}/cancel", response_model=AppointmentResponse)
-async def cancel_appointment(
-    appointment_id: str,
-    data: AppointmentCancel,
-    service: Annotated[AppointmentService, Depends(get_appointment_service)],
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
-):
-    """
-    Cancel an appointment.
-
-    - Sets status to cancelled
-    - Records cancellation reason and timestamp
-    - Can send notification (if configured)
-    """
-    return await service.cancel_appointment(
-        appointment_id, data, updated_by=current_user.user_id
-    )
-
-
-@router.delete("/{appointment_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_appointment(
-    appointment_id: str,
-    service: Annotated[AppointmentService, Depends(get_appointment_service)],
-):
-    """Delete an appointment (hard delete)."""
-    await service.delete_appointment(appointment_id)
-
-
+# NOTE: the visits routes are registered *before* the `/{appointment_id}` routes below.
+# Otherwise `GET /appointments/visits` is captured by `GET /appointments/{appointment_id}` and
+# 404s as an unknown appointment.
 # ===== Visit Endpoints =====
 
-visits_router = APIRouter(prefix="/visits", tags=["visits"])
+# Visits hold clinical notes (examination, diagnosis, treatment plan): receptionists may
+# read them but not author or change them.
+visits_router = APIRouter(
+    prefix="/visits", tags=["visits"], dependencies=[Depends(deny_receptionist_writes)]
+)
 
 
 def get_visit_service(
@@ -222,3 +173,59 @@ async def update_visit(
 
 # Include visits router
 router.include_router(visits_router)
+
+
+@router.get("/{appointment_id}", response_model=AppointmentResponse)
+async def get_appointment(
+    appointment_id: str,
+    service: Annotated[AppointmentService, Depends(get_appointment_service)],
+):
+    """Get appointment by ID with tenant filtering."""
+    return await service.get_appointment(appointment_id)
+
+
+@router.patch("/{appointment_id}", response_model=AppointmentResponse)
+async def update_appointment(
+    appointment_id: str,
+    data: AppointmentUpdate,
+    service: Annotated[AppointmentService, Depends(get_appointment_service)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+):
+    """
+    Update appointment details.
+
+    - Can update date, time, status, notes, etc.
+    - Validates new time slot if date/time changed
+    - Prevents conflicts with existing appointments
+    """
+    return await service.update_appointment(
+        appointment_id, data, updated_by=current_user.user_id
+    )
+
+
+@router.post("/{appointment_id}/cancel", response_model=AppointmentResponse)
+async def cancel_appointment(
+    appointment_id: str,
+    data: AppointmentCancel,
+    service: Annotated[AppointmentService, Depends(get_appointment_service)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+):
+    """
+    Cancel an appointment.
+
+    - Sets status to cancelled
+    - Records cancellation reason and timestamp
+    - Can send notification (if configured)
+    """
+    return await service.cancel_appointment(
+        appointment_id, data, updated_by=current_user.user_id
+    )
+
+
+@router.delete("/{appointment_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_appointment(
+    appointment_id: str,
+    service: Annotated[AppointmentService, Depends(get_appointment_service)],
+):
+    """Delete an appointment (hard delete)."""
+    await service.delete_appointment(appointment_id)

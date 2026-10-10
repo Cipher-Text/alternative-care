@@ -14,7 +14,7 @@ There are two levels: **Platform** (no tenant) and **Tenant** (scoped to one cli
 | `admin` | Platform | `null` | ✅ Full |
 | `operator` | Platform | `null` | ✅ Read-only — enforced on all platform-admin GET endpoints |
 | `doctor` | Tenant | `<uuid>` | ✅ Full |
-| `receptionist` | Tenant | `<uuid>` | ⚠️ Stub — role string exists, no RBAC enforcement |
+| `receptionist` | Tenant | `<uuid>` | ✅ Enforced (2026-10-10) — read-only on clinical records, see matrix below |
 
 **Platform users** (`tenant_id = null`) cannot access any tenant-scoped data.  
 All clinical modules (`/patients`, `/appointments`, `/prescriptions`, etc.) reject platform users with **403**.
@@ -79,18 +79,38 @@ Primary practitioner. Full access to all clinical data within their tenant.
 Backend guard: `RequireDoctor` or `CurrentUser` (any authenticated tenant user).
 
 ### `receptionist`
-Front-desk / administrative role. Clinical write operations are restricted.
+Front-desk / administrative role. Clinical records are read-only; scheduling and payments are full.
 
-| Area | Access |
-|---|---|
-| Patients — Read | ✅ *(planned enforcement)* |
-| Appointments — Read + Write | ✅ *(planned enforcement)* |
-| Prescriptions — Read only | ✅ *(planned enforcement)* |
-| Payments — Read + Write | ✅ *(planned enforcement)* |
-| Profile / Clinic | ✅ Read *(planned enforcement)* |
-| Medicines / Prescriptions write | ❌ *(planned enforcement)* |
+| Area | Access | Enforcement |
+|---|---|---|
+| Patients | Read | writes blocked (router guard) |
+| Appointments | Read + Write | none needed |
+| Visits (clinical notes) | Read | writes blocked |
+| Prescriptions | Read, and print (PDF) | create/edit/issue/void blocked; `generate-pdf` explicitly allowed |
+| Payments & invoices | Read + Write | none needed |
+| Medicines / Symptoms library | Read | writes blocked |
+| Clinic profile (`/tenant`) | Read | writes blocked |
+| Dashboard | Read | — |
+| Doctor profile, degrees, trainings | None | blocked entirely |
+| Integrations (SMS/email/payment providers) | None | blocked entirely |
+| AI assistant | None | blocked entirely |
 
-**Status:** Role string stored in DB. No RBAC guards distinguish it from `doctor` yet. Will be enforced in Platform Admin Phase B.
+Errors are `403` with `detail = {"code": "role_not_permitted", "message": ...}`. A receptionist
+does **not** use a practitioner seat (`max_seats` counts active doctors only).
+
+**Implementation:** two router-level guards in `app/core/dependencies.py`, wired in `app/main.py`
+(and on the visits router): `deny_receptionist_writes` (anything but GET/HEAD/OPTIONS) and
+`deny_receptionist` (everything). Because they sit on the router, a write route added later is
+protected automatically. Read-only POSTs are listed in `_READ_ONLY_POST_ROUTES`. The frontend hides
+the matching controls via `useCan()` (`src/lib/auth/permissions.ts`); the server is the authority.
+
+**Open product questions (defaults chosen, change in one place):**
+- Patient creation is blocked for receptionists, per this document's original matrix. Many clinics
+  want the front desk to register walk-ins; allowing it is one change (move `patient_router` from
+  `deny_receptionist_writes` to no guard, or carve out `POST /patients`).
+- SMS/email sending is blocked together with integrations; reminders are a front-desk task.
+- There is no endpoint yet to create a receptionist (only the seed). A doctor-side "invite staff"
+  flow is the missing piece.
 
 ---
 

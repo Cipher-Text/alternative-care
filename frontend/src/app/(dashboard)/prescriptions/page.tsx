@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePrescriptions } from '@/lib/hooks/usePrescriptions'
+import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -32,6 +33,7 @@ const statusColors: Record<PrescriptionStatus, string> = {
 }
 
 export default function PrescriptionsPage() {
+  const can = useCan()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<string>('')
 
@@ -73,12 +75,14 @@ export default function PrescriptionsPage() {
             Manage patient prescriptions and medical advice
           </p>
         </div>
+        {can.writeClinical && (
         <Link href="/prescriptions/new">
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
             New Prescription
           </Button>
         </Link>
+        )}
       </div>
 
       {/* Filters */}
@@ -203,7 +207,7 @@ export default function PrescriptionsPage() {
               ? 'No prescriptions found matching your filters'
               : 'No prescriptions yet. Create your first prescription to get started.'}
           </p>
-          {!search && !status && (
+          {!search && !status && can.writeClinical && (
             <Link href="/prescriptions/new">
               <Button className="mt-4">
                 <PlusCircle className="mr-2 h-4 w-4" />

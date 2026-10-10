@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useCan } from '@/lib/auth/permissions'
 import { useAuthStore } from '@/store/authStore'
 import { useOverviewStats, useFinancialAnalytics, usePatientAnalytics } from '@/lib/hooks/useDashboard'
 import { StatsCard } from '@/components/dashboard/StatsCard'
@@ -47,6 +48,7 @@ export default function DashboardPage() {
 
 function TenantDashboardContent({ userName }: { userName?: string }) {
   const router = useRouter()
+  const can = useCan()
   const [dateRange, setDateRange] = useState<{
     date_from?: string
     date_to?: string
@@ -98,6 +100,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {can.writeClinical && (
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:border-emerald-300 text-gray-700 dark:text-gray-200"
@@ -106,6 +109,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               <UserPlus className="h-5 w-5 mb-2 text-emerald-600 dark:text-emerald-400" />
               <span className="font-medium text-sm">New Patient</span>
             </Button>
+            )}
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-green-50 dark:hover:bg-green-950 hover:border-green-300 text-gray-700 dark:text-gray-200"
@@ -114,6 +118,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               <Calendar className="h-5 w-5 mb-2 text-green-600 dark:text-green-400" />
               <span className="font-medium text-sm">Schedule</span>
             </Button>
+            {can.writeClinical && (
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-300 text-gray-700 dark:text-gray-200"
@@ -122,6 +127,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               <FilePlus className="h-5 w-5 mb-2 text-purple-600 dark:text-purple-400" />
               <span className="font-medium text-sm">Prescription</span>
             </Button>
+            )}
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-300 text-gray-700 dark:text-gray-200"
