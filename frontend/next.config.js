@@ -21,9 +21,9 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 
-  // Image optimization
+  // No remote image hosts are currently used by the frontend.
   images: {
-    domains: ['localhost'],
+    remotePatterns: [],
   },
 }
 

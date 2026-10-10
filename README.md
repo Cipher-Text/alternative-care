@@ -47,22 +47,11 @@ An integrated alternative medicine practice platform, expanding in stages into p
 ## Quick Start
 
 ```bash
-# 1) Infrastructure (Redis + MinIO only — PostgreSQL 16 must already be running locally)
-docker compose up -d
-
-# 2) Backend
-cd backend
-./quick_start.sh
-source venv/bin/activate
-alembic upgrade head
-./scripts/run_seed.sh
-uvicorn app.main:app --reload
-
-# 3) Frontend (new terminal)
-cd frontend
-npm install
-npm run dev
+# Start local PostgreSQL and Redis first, then configure the root .env
+./run.sh
 ```
+
+`run.sh` reads the root `.env` and passes its settings to both apps. Create it from `.env.example`, then set `DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, and `INTEGRATION_ENCRYPTION_KEY` for this machine. It starts the backend and frontend directly; it does not use Docker. For first-time setup, install the backend dependencies in `backend/venv` and run `npm install` in `frontend/`. Apply database migrations with `cd backend && venv/bin/alembic upgrade head` before the first launch.
 
 - API docs: http://localhost:8000/docs
 - Frontend: http://localhost:3000

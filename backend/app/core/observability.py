@@ -69,13 +69,19 @@ def init_sentry() -> None:
 
     import sentry_sdk
     from sentry_sdk.integrations.fastapi import FastApiIntegration
+    from sentry_sdk.utils import BadDsn
 
-    sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
-        environment=settings.ENVIRONMENT,
-        integrations=[FastApiIntegration()],
-        traces_sample_rate=0.1 if settings.ENVIRONMENT == "production" else 1.0,
-    )
+    try:
+        sentry_sdk.init(
+            dsn=settings.SENTRY_DSN,
+            environment=settings.ENVIRONMENT,
+            integrations=[FastApiIntegration()],
+            traces_sample_rate=0.1 if settings.ENVIRONMENT == "production" else 1.0,
+        )
+    except BadDsn:
+        # Monitoring is optional; an unset or placeholder DSN must not keep
+        # the API from starting in local development.
+        logging.getLogger(__name__).warning("Ignoring invalid SENTRY_DSN; Sentry is disabled")
 
 
 async def request_id_middleware(request: Request, call_next):
