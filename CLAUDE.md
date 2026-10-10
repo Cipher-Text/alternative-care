@@ -119,7 +119,7 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 # Add to backend/.env: INTEGRATION_ENCRYPTION_KEY=<key>
 
 # 3. Backend setup
-cd backend && python3 -m venv venv && venv/bin/pip install -e .   # quick_start.sh is outdated (assumes Dockerised Postgres)
+cd backend && python3 -m venv venv && venv/bin/pip install -e .
 source venv/bin/activate
 alembic upgrade head
 ./scripts/run_seed.sh

@@ -34,23 +34,17 @@ git clone https://github.com/your-org/alternative-care.git
 cd alternative-care
 ```
 
-### Backend Setup (Automated)
+### Backend Setup
+
+Requires a local PostgreSQL 16 (+ pgvector) and Redis already running.
 
 ```bash
 cd backend
-./quick_start.sh
+python3 -m venv venv && venv/bin/pip install -e .
+venv/bin/alembic upgrade head   # creates the tables
 ```
 
-**This script:**
-- Starts Docker services (Redis 7, MinIO) — assumes a local PostgreSQL 16 instance is already running on port 5432
-- Creates Python virtual environment
-- Installs dependencies
-- Installs pgvector extension
-- Runs database migrations (creates 34 tables)
-
-**Duration:** ~5-10 minutes
-
-**Then seed initial data** (the script above does not do this automatically):
+**Then seed initial data:**
 
 ```bash
 ./scripts/run_seed.sh

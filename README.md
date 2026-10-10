@@ -57,7 +57,7 @@ cd frontend && npm install && cd ..
 
 `run.sh` loads the root `.env` and starts the backend (uvicorn, port 8000) and frontend (Next.js, port 3000) directly, without Docker. Seed data: `backend/scripts/run_seed.sh`.
 
-**Docker alternative:** `docker compose up --build` runs Redis, MinIO, the API, Celery and the frontend from `backend/Dockerfile` and `frontend/Dockerfile`. PostgreSQL is still expected on the host (`host.docker.internal:5432`). Note that `backend/quick_start.sh` assumes a Dockerised PostgreSQL and is outdated.
+**Docker alternative:** `docker compose up --build` runs Redis, MinIO, the API, Celery and the frontend from `backend/Dockerfile` and `frontend/Dockerfile`. PostgreSQL is still expected on the host (`host.docker.internal:5432`).
 
 - API docs: http://localhost:8000/docs
 - Frontend: http://localhost:3000

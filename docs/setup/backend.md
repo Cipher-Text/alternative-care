@@ -41,37 +41,13 @@ git --version      # Any recent version
 
 ---
 
-## 🚀 Quick Start (Automated)
-
-**Recommended method - runs all setup steps automatically:**
-
-```bash
-# 1. Navigate to backend
-cd backend
-
-# 2. Run automated setup
-./quick_start.sh
-```
-
-**What this does:**
-1. ✅ Starts Docker services (Redis, MinIO) — assumes a local PostgreSQL 16 instance is already running on port 5432
-2. ✅ Creates Python virtual environment
-3. ✅ Installs dependencies
-4. ✅ Creates `.env` file
-5. ✅ Installs pgvector extension
-6. ✅ Runs database migrations (creates 34 tables)
-7. ✅ Seeds initial data
-8. ✅ Verifies installation
-
-**Time:** ~5 minutes
-
-**If successful, skip to** [Verification](#verification)
+The automated setup script has been removed. Follow the manual steps below, then start both apps with `./run.sh` from the repo root.
 
 ---
 
 ## 🔧 Manual Setup
 
-If automated setup doesn't work, follow these steps:
+Follow these steps:
 
 ### Step 1: Start Infrastructure Services
 

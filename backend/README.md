@@ -9,11 +9,11 @@ FastAPI backend for multi-tenant alternative medicine practice management.
 ## Quick Start
 
 ```bash
-# 1. Start infrastructure (Redis + MinIO only — PostgreSQL 16 must already be running locally)
-docker compose up -d
+# 1. PostgreSQL 16 and Redis must already be running locally
 
-# 2. Run automated setup
-./quick_start.sh
+# 2. Install dependencies and migrate
+python3 -m venv venv && venv/bin/pip install -e .
+venv/bin/alembic upgrade head
 
 # 3. Start development server
 source venv/bin/activate
