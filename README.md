@@ -46,12 +46,18 @@ An integrated alternative medicine practice platform, expanding in stages into p
 
 ## Quick Start
 
+Prerequisites: a local PostgreSQL 16 (+ pgvector) and Redis already running.
+
 ```bash
-# Start local PostgreSQL and Redis first, then configure the root .env
+cp .env.example .env            # then set DATABASE_URL, REDIS_URL, SECRET_KEY, INTEGRATION_ENCRYPTION_KEY
+cd backend && python3 -m venv venv && venv/bin/pip install -e . && venv/bin/alembic upgrade head && cd ..
+cd frontend && npm install && cd ..
 ./run.sh
 ```
 
-`run.sh` reads the root `.env` and passes its settings to both apps. Create it from `.env.example`, then set `DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, and `INTEGRATION_ENCRYPTION_KEY` for this machine. It starts the backend and frontend directly; it does not use Docker. For first-time setup, install the backend dependencies in `backend/venv` and run `npm install` in `frontend/`. Apply database migrations with `cd backend && venv/bin/alembic upgrade head` before the first launch.
+`run.sh` loads the root `.env` and starts the backend (uvicorn, port 8000) and frontend (Next.js, port 3000) directly, without Docker. Seed data: `backend/scripts/run_seed.sh`.
+
+**Docker alternative:** `docker compose up --build` runs Redis, MinIO, the API, Celery and the frontend from `backend/Dockerfile` and `frontend/Dockerfile`. PostgreSQL is still expected on the host (`host.docker.internal:5432`). Note that `backend/quick_start.sh` assumes a Dockerised PostgreSQL and is outdated.
 
 - API docs: http://localhost:8000/docs
 - Frontend: http://localhost:3000

@@ -12,7 +12,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
 > Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
-> 2026-09-26: `pytest -q` runs **476 passed / 1 xfailed / 0 failed** locally. Sentry and structlog
+> 2026-09-26: `pytest -q` runs **508 passed / 1 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
 > are initialised (`app/core/observability.py`).
 > **PostgreSQL RLS on the 8 clinical tables landed 2026-09-26** (Stage 2, D2): migration
 > `273747e56a3f` adds `ENABLE`/`FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy to
@@ -60,8 +60,8 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 > AI query each write a per-tenant daily counter (migration `ed07cf4aebc7` adds a `sms_sent` column
 > and a `(tenant_id, usage_date)` unique constraint), surfaced read-only via
 > `GET /admin/tenants/{id}/usage`. Quota *enforcement* (blocking at a monthly limit) is still Stage 4 —
-> this stage only makes the data trustworthy. Still true: **no Dockerfile, no IaC, no deploy path**
-> (the rest of Stage 1); the receptionist-RBAC gap is pinned as the one remaining `xfail` so it can't
+> this stage only makes the data trustworthy. Still true: **no IaC, no deploy path**
+> (the rest of Stage 1; `backend/Dockerfile`, `frontend/Dockerfile` and a compose file for local use exist, but nothing deploys them); the receptionist-RBAC gap is pinned as the one remaining `xfail` so it can't
 > silently regress further.
 >
 > **Read `docs/planning/revision-2026-09.md` before planning work.** It carries the current
@@ -80,7 +80,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
 - Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
-- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 442-passed total, 2026-09-24) ✅
+- Multi-tenant isolation (covered by the isolation suites in `pytest -q`'s 508-passed total, 2026-10-10) ✅
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management, tenant usage ✅
 
@@ -111,7 +111,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 ```bash
 # 1. Start infrastructure (Redis + MinIO; PostgreSQL runs natively, not in Docker)
-docker compose up -d
+docker compose up -d redis minio
 # Ensure a local PostgreSQL 16 (+ pgvector) instance is running and DATABASE_URL in backend/.env points to it
 
 # 2. Generate encryption key
@@ -119,7 +119,7 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 # Add to backend/.env: INTEGRATION_ENCRYPTION_KEY=<key>
 
 # 3. Backend setup
-cd backend && ./quick_start.sh
+cd backend && python3 -m venv venv && venv/bin/pip install -e .   # quick_start.sh is outdated (assumes Dockerised Postgres)
 source venv/bin/activate
 alembic upgrade head
 ./scripts/run_seed.sh
@@ -131,6 +131,10 @@ cd frontend && npm install
 ### Daily Development
 
 ```bash
+# Both apps at once, no Docker (reads root .env)
+./run.sh
+
+# Or individually:
 # Backend (port 8000)
 cd backend && source venv/bin/activate
 uvicorn app.main:app --reload
