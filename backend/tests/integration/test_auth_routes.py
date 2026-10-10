@@ -11,11 +11,16 @@ from app.shared.models import User
 
 
 def _mock_email_capture(monkeypatch):
-    """Patch send_system_email_task.delay and return the dict its kwargs land in."""
+    """Patch send_system_email_task.delay and return the dict its kwargs land in.
+
+    `captured` holds the most recent non-onboarding email (verification / password reset);
+    onboarding lifecycle emails are covered in test_onboarding_emails.py.
+    """
     captured = {}
 
     def _fake_delay(**kwargs):
-        captured.update(kwargs)
+        if "registration" not in kwargs["subject"] and "signup" not in kwargs["subject"]:
+            captured.update(kwargs)
         return SimpleNamespace(id="task-1")
 
     monkeypatch.setattr("app.modules.auth.service.send_system_email_task.delay", _fake_delay)

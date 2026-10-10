@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TwoFactorForm } from './TwoFactorForm'
 import { GoogleSignInButton } from './GoogleSignInButton'
+import { PendingApprovalNotice } from './PendingApprovalNotice'
 import { getErrorMessage } from '@/types/api'
 import { stashGoogleIdToken } from '@/lib/auth/google-session'
 
@@ -65,6 +66,19 @@ export function LoginForm() {
   const setAuth = useAuthStore((state) => state.setAuth)
   const [loading, setLoading] = useState(false)
   const [pending2FA, setPending2FA] = useState<Pending2FA | null>(null)
+  const [awaitingApproval, setAwaitingApproval] = useState(false)
+
+  // The backend answers 403 "...pending admin approval" for not-yet-approved tenants; show a
+  // designed status page for that instead of an error toast.
+  const handleLoginError = (error: unknown) => {
+    const message = getErrorMessage(error, t('loginFailed'))
+    if (message.toLowerCase().includes('pending admin approval')) {
+      setAwaitingApproval(true)
+    } else {
+      toast.error(message)
+    }
+    setLoading(false)
+  }
 
   const loginSchema = z.object({
     email: z.string().email({ message: t('invalidEmail') }),
@@ -95,8 +109,7 @@ export function LoginForm() {
         router.push(getPostLoginPath(response.user))
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, t('loginFailed')))
-      setLoading(false)
+      handleLoginError(error)
     }
   }
 
@@ -125,9 +138,12 @@ export function LoginForm() {
       toast.success(t('loginSuccess'))
       router.push(getPostLoginPath(response.user))
     } catch (error) {
-      toast.error(getErrorMessage(error, t('loginFailed')))
-      setLoading(false)
+      handleLoginError(error)
     }
+  }
+
+  if (awaitingApproval) {
+    return <PendingApprovalNotice variant="login" onBack={() => setAwaitingApproval(false)} />
   }
 
   if (pending2FA) {
@@ -214,6 +230,13 @@ export function LoginForm() {
           </div>
 
           <GoogleSignInButton onCredential={handleGoogleCredential} />
+
+          <p className="text-center text-sm">
+            {t('noAccount')}{' '}
+            <Link href="/register" className="font-medium text-primary hover:underline">
+              {t('createOne')}
+            </Link>
+          </p>
 
           {process.env.NODE_ENV !== 'production' && (
             <div className="space-y-2 border-t pt-4">

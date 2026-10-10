@@ -39,6 +39,18 @@ export interface AdminCreateTenantDoctorRequest {
   auto_approve: boolean
 }
 
+export type RequestedPlan = 'free' | 'plus' | 'pro'
+
+export interface RegisterRequest {
+  email: string
+  password: string
+  full_name: string
+  phone?: string | null
+  language: 'en' | 'bn'
+  specializations: MedicalSystem[]
+  requested_plan?: RequestedPlan | null
+}
+
 export interface RegisterResponse {
   message: string
   user_id: string

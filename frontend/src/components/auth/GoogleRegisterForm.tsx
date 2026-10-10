@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PendingApprovalNotice } from '@/components/auth/PendingApprovalNotice'
 import type { MedicalSystem } from '@/types/auth'
 
 const MEDICAL_SYSTEMS: Array<{ value: MedicalSystem; label: string }> = [
@@ -43,7 +44,7 @@ interface GoogleRegisterFormProps {
 
 export function GoogleRegisterForm({ idToken, email, fullName, language }: GoogleRegisterFormProps) {
   const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
 
   const {
     register,
@@ -71,7 +72,7 @@ export function GoogleRegisterForm({ idToken, email, fullName, language }: Googl
   const onSubmit = async (data: GoogleRegisterFormData) => {
     setLoading(true)
     try {
-      const response = await authApi.googleRegister({
+      await authApi.googleRegister({
         id_token: idToken,
         language,
         phone: data.phone?.trim() || null,
@@ -80,7 +81,7 @@ export function GoogleRegisterForm({ idToken, email, fullName, language }: Googl
         license_number: data.license_number?.trim() || null,
         specializations: data.specializations,
       })
-      setSubmitted(response.message)
+      setSubmitted(true)
     } catch (error) {
       toast.error(getErrorMessage(error, 'Registration failed'))
     } finally {
@@ -89,19 +90,7 @@ export function GoogleRegisterForm({ idToken, email, fullName, language }: Googl
   }
 
   if (submitted) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Registration submitted</CardTitle>
-          <CardDescription>{submitted}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link href="/login" className="text-sm font-medium text-primary hover:underline">
-            Back to login
-          </Link>
-        </CardContent>
-      </Card>
-    )
+    return <PendingApprovalNotice variant="submitted" email={email} />
   }
 
   return (

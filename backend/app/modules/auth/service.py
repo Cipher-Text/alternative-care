@@ -26,6 +26,10 @@ from app.core.security import (
     verify_token,
     verify_totp,
 )
+from app.core.onboarding_emails import (
+    notify_admins_new_signup,
+    send_signup_received_email,
+)
 from app.core.system_email import send_system_email_task
 from app.modules.auth.schemas import (
     ForgotPasswordResponse,
@@ -123,7 +127,8 @@ class AuthService:
         await self.db.refresh(user)
 
         await self._send_verification_email(user)
-        # TODO: Notify admins of new registration
+        send_signup_received_email(user)
+        await notify_admins_new_signup(self.db, tenant, user, data.requested_plan)
 
         return RegisterResponse(
             message="Registration successful. Your account is pending admin approval.",
@@ -429,7 +434,8 @@ class AuthService:
         await self.db.commit()
         await self.db.refresh(user)
 
-        # TODO: Notify admins of new registration
+        send_signup_received_email(user)
+        await notify_admins_new_signup(self.db, tenant, user)
 
         return RegisterResponse(
             message="Registration successful. Your account is pending admin approval.",

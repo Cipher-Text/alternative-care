@@ -8,6 +8,7 @@ import type {
   GoogleRegisterRequest,
   RefreshTokenResponse,
   UserProfileResponse,
+  RegisterRequest,
   RegisterResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
@@ -28,6 +29,12 @@ export const authApi = {
   // Login with 2FA
   loginWith2FA: async (data: TwoFactorRequest): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login-2fa', data)
+    return response.data
+  },
+
+  // Register with email + password (account starts pending admin approval)
+  register: async (data: RegisterRequest): Promise<RegisterResponse> => {
+    const response = await apiClient.post('/auth/register', data)
     return response.data
   },
 

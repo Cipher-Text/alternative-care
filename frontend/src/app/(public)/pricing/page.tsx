@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 const plans = [
   {
     name: 'Free',
+    slug: 'free',
     tagline: 'For solo practitioners getting started',
     features: [
       'Patient records & appointments',
@@ -16,6 +17,7 @@ const plans = [
   },
   {
     name: 'Plus',
+    slug: 'plus',
     tagline: 'For growing clinics',
     features: [
       'Everything in Free',
@@ -26,6 +28,7 @@ const plans = [
   },
   {
     name: 'Pro',
+    slug: 'pro',
     tagline: 'For established practices',
     features: [
       'Everything in Plus',
@@ -41,8 +44,8 @@ export default function PricingPage() {
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Pricing</h1>
         <p className="mt-3 text-gray-600 dark:text-gray-400">
-          Plans are tailored to your clinic during onboarding. Sign in to see what&apos;s
-          available for your account, or get started to talk to us.
+          Every account starts on Free while we review it. Pick the plan you are interested in
+          and tell us more during sign-up, or sign in to see what is available for your account.
         </p>
       </div>
 
@@ -66,7 +69,7 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Button asChild className="w-full mt-6" variant={plan.highlighted ? 'default' : 'outline'}>
-                <Link href="/login">Get Started</Link>
+                <Link href={`/register?plan=${plan.slug}`}>Get Started</Link>
               </Button>
             </CardContent>
           </Card>

@@ -54,6 +54,10 @@ class RegisterRequest(BaseModel):
     # License
     license_number: str | None = Field(None, max_length=100)
 
+    # Plan the visitor was looking at on the pricing page. Informational only (shown to admins);
+    # every tenant still starts on the free plan.
+    requested_plan: Literal["free", "plus", "pro"] | None = None
+
     @field_validator("specializations")
     @classmethod
     def validate_specializations(cls, v: list[str]) -> list[str]:

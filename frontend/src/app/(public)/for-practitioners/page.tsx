@@ -57,7 +57,7 @@ export default function ForPractitionersPage() {
         </p>
         <div className="mt-8">
           <Button asChild size="lg">
-            <Link href="/login">
+            <Link href="/register">
               Get Started <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

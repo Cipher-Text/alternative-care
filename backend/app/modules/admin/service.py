@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.onboarding_emails import send_tenant_approved_email
 from app.core.security import get_password_hash
 from app.core.usage_tracking import UsageService
 from app.modules.admin.schemas import (
@@ -265,13 +266,26 @@ class AdminService:
                 detail="Tenant not found",
             )
 
+        was_approved = tenant.is_approved
         tenant.is_approved = True
         tenant.approved_at = datetime.now(timezone.utc)
         tenant.approved_by = admin_user_id
 
         await self.db.commit()
         await self.db.refresh(tenant)
+        if not was_approved:
+            await self._send_approval_emails(tenant)
         return AdminTenantItem.model_validate(tenant)
+
+    async def _send_approval_emails(self, tenant: Tenant) -> None:
+        """Email the tenant's doctors that their account is now approved."""
+        result = await self.db.execute(
+            select(User).where(
+                User.tenant_id == tenant.id, User.role == "doctor", User.is_active.is_(True)
+            )
+        )
+        for doctor in result.scalars().all():
+            send_tenant_approved_email(doctor)
 
     async def update_tenant(
         self, tenant_id: str, data: AdminUpdateTenantRequest
@@ -289,11 +303,14 @@ class AdminService:
             tenant.plan = data.plan
         if data.is_active is not None:
             tenant.is_active = data.is_active
+        newly_approved = data.is_approved is True and not tenant.is_approved
         if data.is_approved is not None:
             tenant.is_approved = data.is_approved
 
         await self.db.commit()
         await self.db.refresh(tenant)
+        if newly_approved:
+            await self._send_approval_emails(tenant)
         return AdminTenantItem.model_validate(tenant)
 
     async def create_tenant_doctor(
