@@ -19,6 +19,7 @@ import { toast } from 'react-hot-toast'
 import { authApi } from '@/lib/api/auth'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { LanguageSwitcher } from '@/components/language/LanguageSwitcher'
+import { MobileNav } from '@/components/layout/MobileNav'
 
 export function Header() {
   const router = useRouter()
@@ -50,9 +51,13 @@ export function Header() {
   }
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors">
-      <div className="flex-1">
-        {/* Search or breadcrumbs can go here */}
+    <header className="h-16 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-3 sm:px-6 transition-colors">
+      <div className="flex flex-1 items-center gap-1 min-w-0">
+        {/* Below the md breakpoint the sidebar is hidden: menu button + wordmark instead */}
+        <MobileNav />
+        <span className="md:hidden text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+          AltCare
+        </span>
       </div>
 
       <div className="flex items-center gap-2">

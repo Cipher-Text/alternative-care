@@ -31,7 +31,10 @@
   --foreground: 248 250 252;
   --card: 30 41 59;
   --card-foreground: 248 250 252;
-  --primary: 15 23 42;
+  /* Dark mode: the light-theme navy primary equals the dark page background (1:1 contrast, so
+     buttons had no visible shape). Use the design system's sage family instead
+     (emerald-700 #047857: 5.5:1 against white text, ~3.4:1 against the page). */
+  --primary: 4 120 87;
   --primary-foreground: 255 255 255;
   --secondary: 51 65 85;
   --secondary-foreground: 248 250 252;
@@ -68,8 +71,8 @@
   --color-ring: rgb(var(--ring));
   --color-popover: rgb(var(--popover));
   --color-popover-foreground: rgb(var(--popover-foreground));
-  --font-sans: var(--font-dm-sans);
-  --font-heading: var(--font-plus-jakarta);
+  --font-sans: var(--font-dm-sans), var(--font-noto-bengali);
+  --font-heading: var(--font-plus-jakarta), var(--font-noto-bengali);
   --font-mono: var(--font-fira-code);
 }
 
@@ -78,14 +81,18 @@
 body {
   background: rgb(var(--background));
   color: rgb(var(--foreground));
-  font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), var(--font-noto-bengali), Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-plus-jakarta), var(--font-dm-sans), sans-serif;
+  font-family: var(--font-plus-jakarta), var(--font-dm-sans), var(--font-noto-bengali), sans-serif;
 }
+
+/* Bengali has tall vowel signs above and below the line: give it more room than Latin. */
+:lang(bn) body { line-height: 1.75; }
+:lang(bn) h1, :lang(bn) h2, :lang(bn) h3, :lang(bn) h4 { line-height: 1.45; }
 
 *:where(:not(input):not(textarea):not(select):not(button)) {
   transition-property: background-color, border-color, color;

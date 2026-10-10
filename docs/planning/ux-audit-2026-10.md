@@ -1,6 +1,7 @@
 # UX & Design Audit — the doctor's daily loop
 
 **Date:** 2026-10-10
+**Status:** P0-1 (PDFs) and P0-2/P0-3 (mobile navigation and overflow) fixed 2026-10-10 — see "Mobile fixes" at the end.
 **Scope:** patient → appointment → prescription (build, issue, PDF) → payment, as a doctor
 (`dr.rahman@example.com`), against the local build.
 **Method:** browser session at phone (375×812), desktop (1024×768), light/dark; automated checks
@@ -131,3 +132,25 @@ real data (none exists in the dev database) · invoice creation flow · admin pa
 3. Dark-mode primary + Bengali font + dead nav items + a11y basics (P1-5, 4-font, 6, 7) — small, high
    value, mostly one-line changes.
 4. Translate the daily loop into Bengali (P1-4), then the rest.
+
+---
+
+## Mobile fixes (2026-10-10)
+
+- **Navigation:** a hamburger in the header opens a slide-over drawer (`MobileNav`, Radix Dialog:
+  focus trap, Esc, screen-reader title) with the same role-aware links as the sidebar
+  (`NavLinks`). It closes after navigating. The header shows the wordmark on phones.
+- **Overflow at 375px:** all audited pages now measure 0px overflow (was 71–366px on eight
+  pages). Fixes: header and action rows wrap (`flex-wrap`), filter rows stack, fixed `p-8` page
+  padding is `p-4 sm:p-8`, tab rows scroll horizontally instead of pushing the page wider, the
+  prescription builder's sticky action bar stacks on small screens, profile summary row wraps.
+- **Headings:** the sidebar logo is no longer an `<h1>`; payments pages now have a real `<h1>`.
+- **Nav list:** removed "Library" (404) and added "Symptoms".
+- **Dark-mode primary buttons (fixed):** the dark `--primary` is now emerald-700 (`#047857`) instead
+  of the page's own navy. Measured: button vs page 3.26:1 (was 1.0:1), label text 5.48:1.
+- **Bengali font (fixed):** Noto Sans Bengali is loaded via `next/font` and added to the font
+  stacks (Latin keeps DM Sans / Plus Jakarta Sans; Bengali glyphs fall back per character), with
+  extra line height for `:lang(bn)`. Verified on the Bengali login page.
+- **Still open from this audit:** Bengali *translation* (8 of 104 files translated), unlabeled
+  inputs, icon-only buttons without names, calendar tap targets under 36px (third-party calendar),
+  autocomplete "0%" chip.

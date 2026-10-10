@@ -226,7 +226,7 @@ export function MedicineItemsBuilder({
           <div className="space-y-4 py-4">
             {/* Medicine Name */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <Label htmlFor="medicine_name">
                   Medicine Name <span className="text-red-500">*</span>
                 </Label>

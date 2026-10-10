@@ -260,7 +260,7 @@ export function ConfigurationWizard({
                 )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" onClick={onClose}>
                   Cancel
                 </Button>
@@ -306,7 +306,7 @@ export function ConfigurationWizard({
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       type="button"
                       variant="outline"
@@ -337,7 +337,7 @@ export function ConfigurationWizard({
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       type="button"
                       variant="outline"
@@ -367,7 +367,7 @@ export function ConfigurationWizard({
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button type="button" className="flex-1" onClick={handleComplete}>
                   Done
                 </Button>

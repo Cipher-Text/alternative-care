@@ -39,7 +39,7 @@ export default function DashboardError({
               )}
             </div>
           )}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={reset} className="flex-1">
               Try again
             </Button>

@@ -134,7 +134,7 @@ export default function AppointmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
           <h1 className="text-3xl font-bold">Appointments</h1>
           <p className="text-muted-foreground">Manage upcoming and past appointments</p>
@@ -178,7 +178,7 @@ export default function AppointmentsPage() {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">View</label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant={viewMode === 'calendar' ? 'default' : 'outline'}

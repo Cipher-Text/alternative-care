@@ -77,7 +77,7 @@ export default function MedicinesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Medicine Library</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -87,7 +87,7 @@ export default function MedicinesPage() {
         {can.writeClinical && (
           <Button
             onClick={() => router.push('/medicines/new')}
-            className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10"
+            className="bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white shadow-lg shadow-slate-900/10"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Medicine
@@ -188,7 +188,7 @@ export default function MedicinesPage() {
           <p className="text-gray-600 dark:text-gray-400">No medicines found</p>
           {can.writeClinical && (
           <Button
-            className="mt-4 bg-primary hover:bg-slate-950 text-white"
+            className="mt-4 bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white"
             onClick={() => router.push('/medicines/new')}
           >
             <Plus className="w-4 h-4 mr-2" />

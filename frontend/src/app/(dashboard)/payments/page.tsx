@@ -18,16 +18,16 @@ export default function PaymentsPage() {
   });
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-4 pt-4 sm:p-8 sm:pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Payments & Billing</h2>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Payments & Billing</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Manage payments, invoices, and financial records
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link href="/payments/invoices/new">
             <Button
               variant="outline"
@@ -38,7 +38,7 @@ export default function PaymentsPage() {
             </Button>
           </Link>
           <Link href="/payments/transactions">
-            <Button className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10">
+            <Button className="bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white shadow-lg shadow-slate-900/10">
               <Plus className="mr-2 h-4 w-4" />
               Record Payment
             </Button>
@@ -92,13 +92,13 @@ export default function PaymentsPage() {
           <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">Payment Methods</h3>
           {summary && !summaryLoading && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Cash</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   ৳{summary.cash_amount.toLocaleString()}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-gray-600 dark:text-gray-400">bKash</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   ৳{summary.bkash_amount.toLocaleString()}
@@ -118,11 +118,11 @@ export default function PaymentsPage() {
           <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">Quick Stats</h3>
           {summary && !summaryLoading && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Total Transactions</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">{summary.total_payments}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Average Transaction</span>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   ৳{summary.total_payments > 0
@@ -130,7 +130,7 @@ export default function PaymentsPage() {
                     : 0}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-sm text-gray-400">Collection Rate</span>
                 <span className="text-sm font-medium text-green-400">
                   {summary.total_amount > 0

@@ -138,7 +138,7 @@ export function DegreesSection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
           <h2 className="text-2xl font-bold">Academic Degrees</h2>
           <p className="text-muted-foreground">Manage your academic qualifications</p>

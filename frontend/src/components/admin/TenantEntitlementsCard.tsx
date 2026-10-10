@@ -150,7 +150,7 @@ export function TenantEntitlementsCard({
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
                           />
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
                             <Button size="sm" onClick={() => save(item)} disabled={setOverride.isLoading}>
                               Save
                             </Button>

@@ -70,11 +70,11 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-4 pt-4 sm:p-8 sm:pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Transaction History</h2>
+          <h1 className="text-3xl font-bold tracking-tight">Transaction History</h1>
           <p className="text-muted-foreground">
             View and manage all payment transactions
           </p>

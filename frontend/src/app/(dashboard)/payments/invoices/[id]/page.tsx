@@ -43,7 +43,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex-1 space-y-6 p-8 pt-6">
+      <div className="flex-1 space-y-6 p-4 pt-4 sm:p-8 sm:pt-6">
         <div className="h-8 w-64 animate-pulse bg-gray-200 rounded" />
         <Card>
           <CardContent className="pt-6">
@@ -60,7 +60,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
 
   if (!invoice) {
     return (
-      <div className="flex-1 p-8 pt-6">
+      <div className="flex-1 p-4 pt-4 sm:p-8 sm:pt-6">
         <Card>
           <CardContent className="pt-12 pb-12 text-center">
             <h3 className="text-lg font-semibold mb-2">Invoice not found</h3>
@@ -76,9 +76,9 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-4 pt-4 sm:p-8 sm:pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Link href="/payments/invoices">
             <Button variant="ghost" size="icon">
@@ -87,7 +87,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
           </Link>
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-bold tracking-tight">{invoice.invoice_number}</h2>
+              <h1 className="text-3xl font-bold tracking-tight">{invoice.invoice_number}</h1>
               <InvoiceStatusBadge status={invoice.status} />
             </div>
             <p className="text-muted-foreground">{invoice.patient_name}</p>

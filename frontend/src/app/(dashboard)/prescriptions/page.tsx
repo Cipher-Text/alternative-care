@@ -69,7 +69,7 @@ export default function PrescriptionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
           <h1 className="text-3xl font-bold">Prescriptions</h1>
           <p className="text-muted-foreground">
@@ -87,7 +87,7 @@ export default function PrescriptionsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -111,7 +111,7 @@ export default function PrescriptionsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
           <p className="text-sm text-muted-foreground">Total</p>
           <p className="text-2xl font-bold">{prescriptions?.length || 0}</p>

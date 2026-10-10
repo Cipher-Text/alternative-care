@@ -205,7 +205,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       </Card>
 
       {/* Actions */}
-      <div className="flex justify-between items-center sticky bottom-4 bg-background p-4 border rounded-lg shadow-lg">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center sticky bottom-4 bg-background p-4 border rounded-lg shadow-lg">
         <div className="text-sm text-muted-foreground">
           {!isValid && (
             <p className="text-amber-600">
@@ -213,7 +213,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             </p>
           )}
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button
             variant="outline"
             onClick={handleSaveDraft}

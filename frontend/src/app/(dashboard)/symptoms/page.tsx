@@ -67,7 +67,7 @@ export default function SymptomsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Symptom Library</h1>
           <p className="text-gray-600 mt-2">
@@ -216,7 +216,7 @@ export default function SymptomsPage() {
                 )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"

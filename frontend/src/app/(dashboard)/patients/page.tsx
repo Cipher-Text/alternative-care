@@ -52,7 +52,7 @@ export default function PatientsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Patients</h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -61,7 +61,7 @@ export default function PatientsPage() {
         </div>
         {can.writeClinical && (
           <Link href="/patients/new">
-            <Button className="bg-primary hover:bg-slate-950 text-white shadow-lg shadow-slate-900/10">
+            <Button className="bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white shadow-lg shadow-slate-900/10">
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Patient
             </Button>
@@ -70,7 +70,7 @@ export default function PatientsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-500" />
           <Input
@@ -129,7 +129,7 @@ export default function PatientsPage() {
           </p>
           {!search && !gender && can.writeClinical && (
             <Link href="/patients/new">
-              <Button className="mt-4 bg-primary hover:bg-slate-950 text-white">
+              <Button className="mt-4 bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add First Patient
               </Button>

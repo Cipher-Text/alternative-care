@@ -36,7 +36,7 @@ export function StatsCard({
         <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
           {value}
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           {description && (
             <p className="text-xs text-gray-600 dark:text-gray-400">
               {description}

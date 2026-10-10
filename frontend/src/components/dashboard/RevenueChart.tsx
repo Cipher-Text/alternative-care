@@ -32,7 +32,7 @@ export function RevenueChart({ data, title = 'Revenue Trend' }: RevenueChartProp
   return (
     <Card className="hover:shadow-md transition-shadow duration-200">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             {title}
           </CardTitle>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Plus_Jakarta_Sans, Fira_Code } from "next/font/google";
+import { DM_Sans, Plus_Jakarta_Sans, Fira_Code, Noto_Sans_Bengali } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
@@ -13,6 +13,16 @@ const dmSans = DM_Sans({
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
   subsets: ["latin"],
+});
+
+// DM Sans and Plus Jakarta Sans have no Bengali glyphs. Without this, Bengali text falls back to
+// whatever the OS provides and looks different (or breaks) from device to device. The browser
+// picks glyphs per character, so Latin keeps its own face and Bengali uses Noto Sans Bengali.
+const notoSansBengali = Noto_Sans_Bengali({
+  variable: "--font-noto-bengali",
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const firaCode = Fira_Code({
@@ -36,7 +46,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${dmSans.variable} ${plusJakarta.variable} ${firaCode.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${plusJakarta.variable} ${notoSansBengali.variable} ${firaCode.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

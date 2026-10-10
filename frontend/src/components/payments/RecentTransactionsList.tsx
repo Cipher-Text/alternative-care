@@ -64,7 +64,7 @@ export function RecentTransactionsList({
   return (
     <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-400">

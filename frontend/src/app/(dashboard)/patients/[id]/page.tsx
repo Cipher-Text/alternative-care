@@ -83,7 +83,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Link href="/patients">
             <Button variant="ghost" size="icon">
@@ -96,7 +96,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
         {can.writeClinical && (
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link href={`/patients/${id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />

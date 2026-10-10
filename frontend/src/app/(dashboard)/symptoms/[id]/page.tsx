@@ -127,7 +127,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -147,7 +147,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
         </div>
 
         {(!symptom.is_global && can.writeClinical) && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               onClick={() => router.push(`/symptoms/${symptomId}/edit`)}

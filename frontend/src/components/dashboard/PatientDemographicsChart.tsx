@@ -30,7 +30,7 @@ export function PatientDemographicsChart({ data }: PatientDemographicsChartProps
   return (
     <Card className="hover:shadow-md transition-shadow duration-200">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
             Patient Demographics
           </CardTitle>

@@ -121,7 +121,7 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
       {/* Items */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <CardTitle>Invoice Items</CardTitle>
             <Button
               type="button"
@@ -145,7 +145,7 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
 
               return (
                 <div key={field.id} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <span className="text-sm font-medium">Item {index + 1}</span>
                     {fields.length > 1 && (
                       <Button

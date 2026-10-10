@@ -82,7 +82,7 @@ export function ProviderCard({
           </Button>
         ) : (
           <Button
-            className="w-full bg-primary hover:bg-slate-950 text-white"
+            className="w-full bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white"
             onClick={() => onSetup(provider.id)}
           >
             Setup Integration

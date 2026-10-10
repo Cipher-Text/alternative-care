@@ -55,7 +55,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Doctor Profile</h1>
           <p className="text-muted-foreground">Manage your professional information</p>
@@ -81,11 +81,11 @@ export default function ProfilePage() {
       {/* Profile Summary Card */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-start gap-6">
+          <div className="flex flex-wrap items-start gap-4 sm:gap-6">
             <div className="bg-emerald-100 dark:bg-emerald-900 p-4 rounded-full">
               <User className="h-12 w-12 text-emerald-600 dark:text-emerald-300" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-[12rem]">
               <h2 className="text-2xl font-bold">{profile.full_name}</h2>
               <p className="text-muted-foreground">{profile.email}</p>
               {profile.phone && <p className="text-sm text-muted-foreground">{profile.phone}</p>}
@@ -109,7 +109,7 @@ export default function ProfilePage() {
 
       {/* Tabs */}
       <div className="border-b">
-        <div className="flex space-x-8">
+        <div className="flex gap-5 overflow-x-auto sm:gap-8">
           {tabs.map((tab) => {
             const Icon = tab.icon
             return (
@@ -119,7 +119,7 @@ export default function ProfilePage() {
                   setActiveTab(tab.id)
                   if (tab.id !== 'profile') setIsEditingProfile(false)
                 }}
-                className={`flex items-center gap-2 pb-4 border-b-2 transition-colors ${
+                className={`flex shrink-0 items-center gap-2 whitespace-nowrap pb-4 border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-emerald-600 text-emerald-600 font-medium'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
