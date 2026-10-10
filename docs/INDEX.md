@@ -41,6 +41,7 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - `architecture/database.md`
 - `architecture/database-schema.md`
 - `architecture/authentication.md`
+- `architecture/flows-and-architecture.md`
 - `architecture/multi-tenancy.md`
 - `architecture/tech-stack.md`
 
