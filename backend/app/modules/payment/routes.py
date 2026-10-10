@@ -3,7 +3,7 @@
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -179,22 +179,30 @@ async def update_invoice(
     return await service.update_invoice(invoice_id, data, updated_by=current_user.user_id)
 
 
-@router.post("/invoices/{invoice_id}/generate-pdf", response_model=dict)
-async def generate_invoice_pdf(
+@router.get(
+    "/invoices/{invoice_id}/pdf",
+    response_class=Response,
+    responses={200: {"content": {"application/pdf": {}}}},
+)
+async def get_invoice_pdf(
     invoice_id: str,
     service: Annotated[PaymentService, Depends(get_payment_service)],
 ):
     """
-    Generate PDF for invoice.
+    Download the printable invoice as a PDF.
 
-    - Creates PDF from invoice data
-    - Stores PDF URL in invoice record
-    - Returns: { pdf_url: string }
-
-    TODO: Implement actual PDF generation
+    - Rendered on demand with bilingual labels
+    - Read-only: available to every tenant role
     """
-    pdf_url = await service.generate_invoice_pdf(invoice_id)
-    return {"pdf_url": pdf_url}
+    pdf, filename = await service.build_invoice_pdf(invoice_id)
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "private, no-store",
+        },
+    )
 
 
 @router.get("/{payment_id}", response_model=PaymentResponse)

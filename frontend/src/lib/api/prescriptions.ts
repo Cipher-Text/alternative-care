@@ -7,7 +7,6 @@ import type {
   PrescriptionListParams,
   PrescriptionItemCreate,
   PrescriptionItem,
-  PrescriptionPDFResponse,
 } from '@/types/prescription'
 
 export const prescriptionsApi = {
@@ -47,9 +46,9 @@ export const prescriptionsApi = {
     return response.data
   },
 
-  // Generate PDF
-  generatePDF: async (id: string): Promise<PrescriptionPDFResponse> => {
-    const response = await apiClient.post(`/prescriptions/${id}/generate-pdf`)
+  // Printable PDF (rendered on demand by the server)
+  downloadPdf: async (id: string): Promise<Blob> => {
+    const response = await apiClient.get(`/prescriptions/${id}/pdf`, { responseType: 'blob' })
     return response.data
   },
 

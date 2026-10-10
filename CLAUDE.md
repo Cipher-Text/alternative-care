@@ -12,7 +12,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
 > Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
-> 2026-09-26: `pytest -q` runs **552 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
+> 2026-09-26: `pytest -q` runs **567 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
 > are initialised (`app/core/observability.py`).
 > **PostgreSQL RLS on the 8 clinical tables landed 2026-09-26** (Stage 2, D2): migration
 > `273747e56a3f` adds `ENABLE`/`FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy to
@@ -455,7 +455,7 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 # Immutable: draft → issued → voided
 # Only drafts editable
 # Items: medicine_id (DB) OR medicine_name (free-text)
-# PDF: ReportLab/WeasyPrint
+# PDF: WeasyPrint, rendered on demand (GET /prescriptions/{id}/pdf) — see app/core/pdf.py
 ```
 
 **Frontend Auth Flow:**

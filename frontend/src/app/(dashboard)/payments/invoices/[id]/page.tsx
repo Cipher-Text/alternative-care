@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, Send, CheckCircle } from "lucide-react";
-import { useInvoice, useUpdateInvoice, useGenerateInvoicePdf } from "@/lib/hooks/usePayments";
+import { useInvoice, useUpdateInvoice, useViewInvoicePdf } from "@/lib/hooks/usePayments";
 import { InvoiceStatusBadge } from "@/components/payments/InvoiceStatusBadge";
 
 interface InvoiceDetailPageProps {
@@ -20,7 +20,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
 
   const { data: invoice, isLoading } = useInvoice(id);
   const updateInvoice = useUpdateInvoice();
-  const generatePdf = useGenerateInvoicePdf();
+  const viewPdf = useViewInvoicePdf();
 
   const handleStatusUpdate = async (status: "sent" | "paid" | "cancelled") => {
     try {
@@ -37,18 +37,8 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
     }
   };
 
-  const handleGeneratePdf = async () => {
-    try {
-      const result = await generatePdf.mutateAsync(id);
-      // Open PDF in new tab
-      if (result.pdf_url) {
-        window.open(result.pdf_url, "_blank");
-        toast.success("PDF generated successfully");
-      }
-    } catch (error: any) {
-      console.error("Failed to generate PDF:", error);
-      toast.error(error?.response?.data?.detail || "Failed to generate PDF");
-    }
+  const handleViewPdf = async () => {
+    await viewPdf.mutateAsync(id);
   };
 
   if (isLoading) {
@@ -105,9 +95,9 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleGeneratePdf} disabled={generatePdf.isLoading}>
+          <Button variant="outline" onClick={handleViewPdf} disabled={viewPdf.isLoading}>
             <FileText className="mr-2 h-4 w-4" />
-            {generatePdf.isLoading ? "Generating..." : "Generate PDF"}
+            {viewPdf.isLoading ? "Preparing..." : "View / Print PDF"}
           </Button>
 
           {invoice.status === "draft" && (

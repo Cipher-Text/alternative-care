@@ -1,6 +1,7 @@
 """Prescription service layer with business logic."""
 
 from datetime import datetime
+from types import SimpleNamespace
 from typing import Optional
 from uuid import uuid4
 
@@ -9,8 +10,18 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.pdf import render_pdf
 from app.core.usage_tracking import UsageService
-from app.shared.models import Prescription, PrescriptionItem
+from app.modules.prescription.pdf import build_prescription_html
+from app.shared.models import (
+    DoctorDegree,
+    Medicine,
+    Patient,
+    Prescription,
+    PrescriptionItem,
+    Tenant,
+    User,
+)
 from app.shared.schemas import (
     PrescriptionCreate,
     PrescriptionUpdate,
@@ -239,20 +250,16 @@ class PrescriptionService:
 
         return prescription
 
-    async def generate_pdf(self, prescription_id: str) -> str:
+    async def build_pdf(self, prescription_id: str) -> tuple[bytes, str]:
         """
-        Generate PDF for a prescription.
+        Render a prescription as a PDF document.
 
-        Args:
-            prescription_id: Prescription ID
-
-        Returns:
-            PDF URL
+        Returns (pdf bytes, suggested filename). Generated on demand and not stored: issued
+        prescriptions are immutable, and an on-demand render is always current (a voided one gets
+        a VOID stamp), has no stale links, and needs no object storage.
 
         Raises:
-            HTTPException: If prescription not found
-
-        TODO: Implement actual PDF generation using ReportLab or WeasyPrint
+            HTTPException: 404 if not found, 400 for drafts, 503 if PDF rendering is unavailable
         """
         prescription = await self.get_prescription(prescription_id)
 
@@ -262,22 +269,51 @@ class PrescriptionService:
                 detail="Cannot generate PDF for draft prescription. Please issue it first.",
             )
 
-        # TODO: Implement PDF generation
-        # 1. Fetch patient details
-        # 2. Fetch doctor details
-        # 3. Generate PDF using template
-        # 4. Upload to MinIO/S3
-        # 5. Update prescription with pdf_url and pdf_generated_at
+        patient = (
+            await self.db.execute(
+                select(Patient).where(
+                    Patient.id == prescription.patient_id, Patient.tenant_id == self.tenant_id
+                )
+            )
+        ).scalar_one()
+        tenant = (
+            await self.db.execute(select(Tenant).where(Tenant.id == self.tenant_id))
+        ).scalar_one()
+        doctor = (
+            await self.db.execute(select(User).where(User.id == prescription.prescribed_by))
+        ).scalar_one_or_none()
+        degrees = []
+        if doctor is not None:
+            degrees = (
+                await self.db.execute(
+                    select(DoctorDegree)
+                    .where(DoctorDegree.user_id == doctor.id)
+                    .order_by(DoctorDegree.completion_year.desc())
+                    .limit(4)
+                )
+            ).scalars().all()
+        else:
+            # The prescriber's account may have been removed; fall back to the clinic's name.
+            doctor = SimpleNamespace(full_name=tenant.name)
 
-        # Placeholder implementation
-        pdf_url = f"https://storage.example.com/prescriptions/{prescription_id}.pdf"
-        prescription.pdf_url = pdf_url
-        prescription.pdf_generated_at = datetime.utcnow().isoformat()
+        medicine_ids = {i.medicine_id for i in prescription.items if i.medicine_id is not None}
+        medicines_by_id = {}
+        if medicine_ids:
+            rows = await self.db.execute(select(Medicine).where(Medicine.id.in_(medicine_ids)))
+            medicines_by_id = {m.id: m for m in rows.scalars().all()}
 
-        await self.db.commit()
-        await self.db.refresh(prescription)
+        html = build_prescription_html(
+            prescription=prescription,
+            patient=patient,
+            doctor=doctor,
+            tenant=tenant,
+            degrees=degrees,
+            medicines_by_id=medicines_by_id,
+        )
+        pdf = await render_pdf(html)
 
-        return pdf_url
+        await UsageService(self.db, self.tenant_id).increment("pdfs_generated")
+        return pdf, f"prescription-{prescription.id[:8]}.pdf"
 
     # ===== Prescription Item Methods =====
 

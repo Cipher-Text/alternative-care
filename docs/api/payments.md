@@ -454,26 +454,24 @@ PATCH /api/v1/payments/invoices/{id}
 
 ---
 
-#### Generate Invoice PDF
+#### Download Invoice PDF
 
 ```http
-POST /api/v1/payments/invoices/{id}/generate-pdf
+GET /api/v1/payments/invoices/{id}/pdf
 ```
+
+Returns the printable invoice as a real PDF, rendered on demand (nothing is stored), with
+bilingual labels. Available to every tenant role.
 
 **Path Parameters:**
 - `id` (uuid, required): Invoice ID
 
-**Response:** `200 OK`
-```json
-{
-  "pdf_url": "https://storage.example.com/invoices/{id}.pdf"
-}
-```
+**Response:** `200 OK`, `Content-Type: application/pdf`,
+`Content-Disposition: inline; filename="invoice-<invoice number>.pdf"`
 
 **Errors:**
-- `404 Not Found`: Invoice doesn't exist
-
-<!-- AI: Placeholder implementation - returns mock URL, needs WeasyPrint integration -->
+- `404 Not Found`: Invoice doesn't exist (or belongs to another tenant)
+- `503 Service Unavailable`: PDF rendering is not available on this server (Pango missing)
 
 ---
 

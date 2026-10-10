@@ -7,7 +7,7 @@ import {
   usePrescription,
   useIssuePrescription,
   useVoidPrescription,
-  useGeneratePrescriptionPDF,
+  useViewPrescriptionPdf,
   useDeletePrescriptionItem,
 } from '@/lib/hooks/usePrescriptions'
 import { useCan } from '@/lib/auth/permissions'
@@ -80,7 +80,7 @@ export default function PrescriptionDetailPage({
   const { data: prescription, isLoading, error } = usePrescription(id)
   const issuePrescription = useIssuePrescription()
   const voidPrescription = useVoidPrescription()
-  const generatePDF = useGeneratePrescriptionPDF()
+  const viewPdf = useViewPrescriptionPdf()
   const deleteItem = useDeletePrescriptionItem()
 
   const handleIssue = async () => {
@@ -93,8 +93,8 @@ export default function PrescriptionDetailPage({
     setShowVoidDialog(false)
   }
 
-  const handleGeneratePDF = async () => {
-    await generatePDF.mutateAsync(id)
+  const handleViewPdf = async () => {
+    await viewPdf.mutateAsync(id)
   }
 
   const handleDeleteItem = async (itemId: number) => {
@@ -180,15 +180,15 @@ export default function PrescriptionDetailPage({
             <>
               <Button
                 variant="outline"
-                onClick={handleGeneratePDF}
-                disabled={generatePDF.isLoading}
+                onClick={handleViewPdf}
+                disabled={viewPdf.isLoading}
               >
-                {generatePDF.isLoading ? (
+                {viewPdf.isLoading ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <Download className="h-4 w-4 mr-2" />
                 )}
-                Download PDF
+                View / Print PDF
               </Button>
               {can.writeClinical && (
                 <Button variant="destructive" onClick={() => setShowVoidDialog(true)}>

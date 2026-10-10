@@ -90,9 +90,9 @@ class TestReceptionistWriteRestrictions:
         _denied(await desk.request(method, path, json={}))
 
     async def test_can_print_prescription_pdf(self, desk: AsyncClient):
-        # generate-pdf is a POST that only renders existing data; the guard must let it through
-        # (404 = got past the role check and found no such prescription).
-        response = await desk.post("/api/v1/prescriptions/no-such-id/generate-pdf")
+        # printing is a GET (read-only), so the role guard lets it through; 404 = got past the
+        # role check and found no such prescription.
+        response = await desk.get("/api/v1/prescriptions/no-such-id/pdf")
         assert response.status_code == 404, response.text
 
     @pytest.mark.parametrize(

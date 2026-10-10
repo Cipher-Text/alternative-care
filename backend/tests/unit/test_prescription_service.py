@@ -548,6 +548,7 @@ async def test_delete_item_from_issued_prescription_fails(
 # ===== PDF Generation Test =====
 
 
+@pytest.mark.requires_pdf
 @pytest.mark.asyncio
 async def test_generate_pdf_for_issued_prescription(
     prescription_service, test_patient, doctor_id
@@ -563,16 +564,11 @@ async def test_generate_pdf_for_issued_prescription(
         data, prescribed_by=doctor_id
     )
 
-    # Generate PDF
-    pdf_url = await prescription_service.generate_pdf(prescription.id)
+    # Generate PDF (a real document, rendered on demand)
+    pdf, filename = await prescription_service.build_pdf(prescription.id)
 
-    assert pdf_url is not None
-    assert "prescription" in pdf_url.lower()
-
-    # Verify prescription updated
-    updated = await prescription_service.get_prescription(prescription.id)
-    assert updated.pdf_url == pdf_url
-    assert updated.pdf_generated_at is not None
+    assert pdf.startswith(b"%PDF")
+    assert filename == f"prescription-{prescription.id[:8]}.pdf"
 
 
 @pytest.mark.asyncio
@@ -592,6 +588,6 @@ async def test_generate_pdf_for_draft_prescription_fails(
 
     # Try to generate PDF
     with pytest.raises(HTTPException) as exc:
-        await prescription_service.generate_pdf(prescription.id)
+        await prescription_service.build_pdf(prescription.id)
     assert exc.value.status_code == 400
     assert "draft" in str(exc.value.detail).lower()

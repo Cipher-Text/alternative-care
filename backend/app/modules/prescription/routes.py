@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -130,21 +130,31 @@ async def void_prescription(
     return await service.void_prescription(prescription_id, updated_by=current_user.user_id)
 
 
-@router.post("/{prescription_id}/generate-pdf", response_model=dict)
-async def generate_prescription_pdf(
+@router.get(
+    "/{prescription_id}/pdf",
+    response_class=Response,
+    responses={200: {"content": {"application/pdf": {}}}},
+)
+async def get_prescription_pdf(
     prescription_id: str,
     service: Annotated[PrescriptionService, Depends(get_prescription_service)],
 ):
     """
-    Generate PDF for a prescription.
+    Download the printable prescription as a PDF.
 
-    - Only works for issued prescriptions (not drafts)
-    - Returns PDF URL
-    - PDF is stored in MinIO/S3
-    - Updates prescription with pdf_url and timestamp
+    - Only issued or voided prescriptions (drafts are rejected)
+    - Rendered on demand with bilingual labels; voided prescriptions carry a VOID stamp
+    - Read-only: available to every tenant role, including receptionists
     """
-    pdf_url = await service.generate_pdf(prescription_id)
-    return {"pdf_url": pdf_url}
+    pdf, filename = await service.build_pdf(prescription_id)
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "private, no-store",
+        },
+    )
 
 
 # ===== Prescription Item Endpoints =====

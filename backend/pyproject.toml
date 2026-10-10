@@ -66,6 +66,9 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 addopts = "-v --cov=app --cov-report=term-missing"
+markers = [
+    "requires_pdf: needs WeasyPrint and its native libraries (Pango); skipped when unavailable",
+]
 
 [tool.mypy]
 python_version = "3.12"

@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test'
 const DOCTOR_EMAIL = 'dr.rahman@example.com'
 const DOCTOR_PASSWORD = 'Test@1234'
 
-test('login, create patient, issue prescription, generate PDF', async ({ page }) => {
+test('login, create patient, issue prescription, view PDF', async ({ page }) => {
   const patientName = `E2E Smoke Patient ${Date.now()}`
 
   await test.step('login', async () => {
@@ -59,16 +59,15 @@ test('login, create patient, issue prescription, generate PDF', async ({ page })
     expect(issueResponse.ok()).toBe(true)
   })
 
-  await test.step('generate PDF', async () => {
-    // pdf_url is a placeholder domain today (no storage adapter yet — D6,
-    // Stage 3), so assert at the API layer rather than fetching the file.
+  await test.step('view PDF', async () => {
+    // The PDF is rendered by the backend on demand and fetched with the auth header, so assert
+    // on the API response: a real PDF document, not a placeholder link.
     const [pdfResponse] = await Promise.all([
-      page.waitForResponse((res) => res.url().endsWith('/generate-pdf')),
-      page.getByRole('button', { name: 'Download PDF' }).click(),
+      page.waitForResponse((res) => res.url().endsWith('/pdf') && res.request().method() === 'GET'),
+      page.getByRole('button', { name: 'View / Print PDF' }).click(),
     ])
     expect(pdfResponse.ok()).toBe(true)
-    const body = await pdfResponse.json()
-    expect(typeof body.pdf_url).toBe('string')
-    expect(body.pdf_url.length).toBeGreaterThan(0)
+    expect(pdfResponse.headers()['content-type']).toBe('application/pdf')
+    expect((await pdfResponse.body()).subarray(0, 4).toString()).toBe('%PDF')
   })
 })

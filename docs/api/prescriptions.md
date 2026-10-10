@@ -27,7 +27,7 @@ authentication: "required"
   - [Get Prescription](#get-prescription)
   - [Update Prescription](#update-prescription)
   - [Void Prescription](#void-prescription)
-  - [Generate PDF](#generate-pdf)
+  - [Download PDF](#download-pdf)
   - [Add Item](#add-item)
   - [Delete Item](#delete-item)
 - [Business Rules](#business-rules)
@@ -295,27 +295,29 @@ POST /api/v1/prescriptions/{id}/void
 
 ---
 
-### Generate PDF
+### Download PDF
 
 ```http
-POST /api/v1/prescriptions/{id}/generate-pdf
+GET /api/v1/prescriptions/{id}/pdf
 ```
+
+Returns the printable prescription as a real PDF, rendered on demand (nothing is stored).
+Bilingual (English / Bengali) labels; voided prescriptions carry a VOID stamp. The doctor's
+internal notes are **not** printed. Available to every tenant role, including receptionists.
 
 **Path Parameters:**
 - `id` (uuid, required): Prescription ID
 
-**Response:** `200 OK`
-```json
-{
-  "pdf_url": "https://storage.example.com/prescriptions/{id}.pdf"
-}
-```
+**Response:** `200 OK`, `Content-Type: application/pdf`,
+`Content-Disposition: inline; filename="prescription-<first 8 chars of id>.pdf"`,
+`Cache-Control: private, no-store`
 
 **Errors:**
-- `400 Bad Request`: Cannot generate PDF for draft prescription
-- `404 Not Found`: Prescription doesn't exist
+- `400 Bad Request`: Cannot generate PDF for a draft prescription
+- `404 Not Found`: Prescription doesn't exist (or belongs to another tenant)
+- `503 Service Unavailable`: PDF rendering is not available on this server (Pango missing)
 
-<!-- AI: Placeholder implementation - returns mock URL -->
+Each successful download increments the tenant's `pdfs_generated` usage counter.
 
 ---
 
@@ -439,7 +441,7 @@ DELETE /api/v1/prescriptions/{id}/items/{item_id}
 **Any authenticated user:**
 - GET /prescriptions (list)
 - GET /prescriptions/{id} (get)
-- POST /prescriptions/{id}/generate-pdf
+- GET /prescriptions/{id}/pdf
 
 ---
 
@@ -501,15 +503,14 @@ const response = await fetch(
 const newItem = await response.json()
 ```
 
-### Generate PDF (Python)
+### Download PDF (Python)
 
 ```python
-response = requests.post(
-    f"http://localhost:8000/api/v1/prescriptions/{prescription_id}/generate-pdf",
-    headers={"Authorization": f"Bearer {token}"}
+response = requests.get(
+    f"http://localhost:8000/api/v1/prescriptions/{prescription_id}/pdf",
+    headers={"Authorization": f"Bearer {token}"},
 )
-pdf_data = response.json()
-print(f"PDF URL: {pdf_data['pdf_url']}")
+open("prescription.pdf", "wb").write(response.content)
 ```
 
 ### List Patient Prescriptions (Python)

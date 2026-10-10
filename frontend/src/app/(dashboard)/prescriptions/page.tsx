@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePrescriptions } from '@/lib/hooks/usePrescriptions'
+import { usePrescriptions, useViewPrescriptionPdf } from '@/lib/hooks/usePrescriptions'
 import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,6 +34,7 @@ const statusColors: Record<PrescriptionStatus, string> = {
 
 export default function PrescriptionsPage() {
   const can = useCan()
+  const viewPdf = useViewPrescriptionPdf()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<string>('')
 
@@ -173,15 +174,17 @@ export default function PrescriptionsPage() {
                     {format(new Date(prescription.created_at), 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell>
-                    {prescription.pdf_url ? (
-                      <a
-                        href={prescription.pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {prescription.status !== 'draft' ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label="View / Print PDF"
+                        onClick={() => viewPdf.mutate(prescription.id)}
+                        disabled={viewPdf.isLoading}
                         className="text-emerald-600 hover:text-emerald-800"
                       >
                         <FileText className="h-4 w-4" />
-                      </a>
+                      </Button>
                     ) : (
                       <span className="text-muted-foreground">-</span>
                     )}

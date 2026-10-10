@@ -9,7 +9,10 @@ from sqlalchemy import select, and_, func, extract
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.entitlements import EntitlementService
-from app.shared.models import Payment, Invoice
+from app.core.pdf import render_pdf
+from app.core.usage_tracking import UsageService
+from app.modules.payment.pdf import build_invoice_html
+from app.shared.models import Invoice, Patient, Payment, Tenant
 from app.shared.schemas import (
     PaymentCreate,
     PaymentUpdate,
@@ -469,26 +472,27 @@ class PaymentService:
 
         return invoice
 
-    async def generate_invoice_pdf(self, invoice_id: str) -> str:
+    async def build_invoice_pdf(self, invoice_id: str) -> tuple[bytes, str]:
         """
-        Generate PDF for invoice.
+        Render an invoice as a PDF document (on demand, not stored).
 
-        Args:
-            invoice_id: Invoice ID
-
-        Returns:
-            PDF URL
-
-        TODO: Implement actual PDF generation
+        Returns (pdf bytes, suggested filename).
         """
         invoice = await self.get_invoice(invoice_id)
+        payment = await self.get_payment(invoice.payment_id)
+        patient = (
+            await self.db.execute(
+                select(Patient).where(
+                    Patient.id == payment.patient_id, Patient.tenant_id == self.tenant_id
+                )
+            )
+        ).scalar_one()
+        tenant = (
+            await self.db.execute(select(Tenant).where(Tenant.id == self.tenant_id))
+        ).scalar_one()
 
-        # Placeholder implementation
-        pdf_url = f"https://storage.example.com/invoices/{invoice_id}.pdf"
-        invoice.pdf_url = pdf_url
-        invoice.updated_at = datetime.utcnow()
+        html = build_invoice_html(invoice=invoice, payment=payment, patient=patient, tenant=tenant)
+        pdf = await render_pdf(html)
 
-        await self.db.commit()
-        await self.db.refresh(invoice)
-
-        return pdf_url
+        await UsageService(self.db, self.tenant_id).increment("pdfs_generated")
+        return pdf, f"invoice-{invoice.invoice_number}.pdf"

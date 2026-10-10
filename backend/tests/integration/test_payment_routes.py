@@ -458,19 +458,19 @@ class TestInvoiceRoutes:
         assert data["status"] == "sent"
         assert data["due_date"] == str(new_due_date)
 
+    @pytest.mark.requires_pdf
     async def test_generate_invoice_pdf(
         self, client: AsyncClient, doctor_token: str, test_invoice: Invoice
     ):
         """Test generating invoice PDF."""
-        response = await client.post(
-            f"/api/v1/payments/invoices/{test_invoice.id}/generate-pdf",
+        response = await client.get(
+            f"/api/v1/payments/invoices/{test_invoice.id}/pdf",
             headers={"Authorization": f"Bearer {doctor_token}"},
         )
 
         assert response.status_code == 200
-        data = response.json()
-        assert "pdf_url" in data
-        assert test_invoice.id in data["pdf_url"]
+        assert response.headers["content-type"] == "application/pdf"
+        assert response.content.startswith(b"%PDF")
 
     async def test_create_invoice_for_nonexistent_payment(
         self, client: AsyncClient, doctor_token: str

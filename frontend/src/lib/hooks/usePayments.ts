@@ -4,6 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { paymentsApi, invoicesApi, bkashApi } from '@/lib/api/payments';
+import { openPdf } from '@/lib/utils/pdf';
 import type {
   PaymentCreate,
   PaymentFilters,
@@ -143,17 +144,11 @@ export function useUpdateInvoice() {
 }
 
 /**
- * Generate invoice PDF
+ * View / print an invoice as a PDF (opens in a new tab)
  */
-export function useGenerateInvoicePdf() {
-  const queryClient = useQueryClient();
-
+export function useViewInvoicePdf() {
   return useMutation({
-    mutationFn: (id: string) => invoicesApi.generatePdf(id),
-    onSuccess: (_, id) => {
-      // Invalidate specific invoice (to refresh pdf_url)
-      queryClient.invalidateQueries({ queryKey: invoiceKeys.detail(id) });
-    },
+    mutationFn: (id: string) => openPdf(() => invoicesApi.downloadPdf(id), `invoice-${id.slice(0, 8)}.pdf`),
   });
 }
 

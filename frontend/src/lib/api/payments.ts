@@ -145,13 +145,11 @@ export const invoicesApi = {
   },
 
   /**
-   * Generate invoice PDF
-   * POST /api/v1/payments/invoices/{id}/generate-pdf
+   * Printable invoice PDF (rendered on demand by the server)
+   * GET /api/v1/payments/invoices/{id}/pdf
    */
-  generatePdf: async (id: string): Promise<{ pdf_url: string }> => {
-    const response = await apiClient.post<{ pdf_url: string }>(
-      `${BASE_PATH}/invoices/${id}/generate-pdf`
-    );
+  downloadPdf: async (id: string): Promise<Blob> => {
+    const response = await apiClient.get(`${BASE_PATH}/invoices/${id}/pdf`, { responseType: 'blob' });
     return response.data;
   },
 };

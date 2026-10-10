@@ -89,6 +89,3 @@ export interface PrescriptionListParams {
 }
 
 // PDF Generation Response
-export interface PrescriptionPDFResponse {
-  pdf_url: string
-}

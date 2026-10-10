@@ -667,3 +667,15 @@ async def other_tenant_invoice(
     await db_session.commit()
     await db_session.refresh(invoice)
     return invoice
+
+
+def pytest_collection_modifyitems(config, items):
+    """Skip tests marked `requires_pdf` when WeasyPrint's native libraries are missing."""
+    from app.core.pdf import pdf_available
+
+    if pdf_available():
+        return
+    skip = pytest.mark.skip(reason="WeasyPrint/Pango not available (see app/core/pdf.py)")
+    for item in items:
+        if "requires_pdf" in item.keywords:
+            item.add_marker(skip)

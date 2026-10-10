@@ -463,9 +463,10 @@ async def test_update_invoice(payment_service, test_patient, user_id):
     assert updated.updated_by == user_id
 
 
+@pytest.mark.requires_pdf
 @pytest.mark.asyncio
 async def test_generate_invoice_pdf(payment_service, test_patient, user_id):
-    """Test invoice PDF generation (placeholder)."""
+    """Test invoice PDF generation."""
     # Create payment and invoice
     payment_data = PaymentCreate(
         patient_id=test_patient.id,
@@ -477,11 +478,11 @@ async def test_generate_invoice_pdf(payment_service, test_patient, user_id):
     invoice_data = InvoiceCreate(payment_id=payment.id)
     invoice = await payment_service.create_invoice(invoice_data, created_by=user_id)
 
-    # Generate PDF
-    pdf_url = await payment_service.generate_invoice_pdf(invoice.id)
+    # Generate PDF (a real document, rendered on demand)
+    pdf, filename = await payment_service.build_invoice_pdf(invoice.id)
 
-    assert pdf_url is not None
-    assert "invoice" in pdf_url.lower()
+    assert pdf.startswith(b"%PDF")
+    assert filename == f"invoice-{invoice.invoice_number}.pdf"
 
 
 # ===== Refund Tests =====

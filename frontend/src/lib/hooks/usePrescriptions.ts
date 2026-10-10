@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { openPdf } from '@/lib/utils/pdf'
 import { prescriptionsApi } from '@/lib/api/prescriptions'
 import type {
   Prescription,
@@ -100,25 +101,10 @@ export function useVoidPrescription() {
   )
 }
 
-// Generate PDF
-export function useGeneratePrescriptionPDF() {
-  const queryClient = useQueryClient()
-
-  return useMutation(
-    (id: string) => prescriptionsApi.generatePDF(id),
-    {
-      onSuccess: (data, id) => {
-        queryClient.invalidateQueries(['prescription', id])
-        toast.success('PDF generated successfully')
-        // Open PDF in new tab
-        if (data.pdf_url) {
-          window.open(data.pdf_url, '_blank')
-        }
-      },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to generate PDF')
-      },
-    }
+// View / print the prescription as a PDF (opens in a new tab)
+export function useViewPrescriptionPdf() {
+  return useMutation((id: string) =>
+    openPdf(() => prescriptionsApi.downloadPdf(id), `prescription-${id.slice(0, 8)}.pdf`)
   )
 }
 

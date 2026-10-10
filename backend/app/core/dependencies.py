@@ -176,11 +176,6 @@ def require_role(*allowed_roles: str):
 
 _SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
-# POST routes that only *render* existing data and change no clinical records, so the read-only
-# role may use them (a receptionist prints prescriptions for patients).
-_READ_ONLY_POST_ROUTES = frozenset({"/api/v1/prescriptions/{prescription_id}/generate-pdf"})
-
-
 async def deny_receptionist_writes(
     request: Request, user: CurrentUser = Depends(get_current_user)
 ) -> None:
@@ -191,9 +186,6 @@ async def deny_receptionist_writes(
     the router later is protected automatically; it never needs to be remembered per endpoint.
     """
     if user.role == "receptionist" and request.method not in _SAFE_METHODS:
-        route = request.scope.get("route")
-        if getattr(route, "path", None) in _READ_ONLY_POST_ROUTES:
-            return
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={

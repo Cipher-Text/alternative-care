@@ -532,6 +532,7 @@ async def test_void_prescription(client, auth_headers, test_patient, db_session)
 # ===== PDF Generation Tests =====
 
 
+@pytest.mark.requires_pdf
 @pytest.mark.asyncio
 async def test_generate_pdf(client, auth_headers, test_patient, db_session):
     """Test generating PDF for prescription."""
@@ -548,14 +549,13 @@ async def test_generate_pdf(client, auth_headers, test_patient, db_session):
     db_session.add(prescription)
     await db_session.commit()
 
-    response = await client.post(
-        f"/api/v1/prescriptions/{prescription.id}/generate-pdf", headers=auth_headers
+    response = await client.get(
+        f"/api/v1/prescriptions/{prescription.id}/pdf", headers=auth_headers
     )
 
     assert response.status_code == 200
-    data = response.json()
-    assert "pdf_url" in data
-    assert data["pdf_url"] is not None
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content.startswith(b"%PDF")
 
 
 # ===== Multi-Tenant Isolation Tests =====

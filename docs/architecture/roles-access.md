@@ -86,7 +86,7 @@ Front-desk / administrative role. Clinical records are read-only; scheduling and
 | Patients | Read | writes blocked (router guard) |
 | Appointments | Read + Write | none needed |
 | Visits (clinical notes) | Read | writes blocked |
-| Prescriptions | Read, and print (PDF) | create/edit/issue/void blocked; `generate-pdf` explicitly allowed |
+| Prescriptions | Read, and print (PDF) | create/edit/issue/void blocked; `GET /pdf` is a read |
 | Payments & invoices | Read + Write | none needed |
 | Medicines / Symptoms library | Read | writes blocked |
 | Clinic profile (`/tenant`) | Read | writes blocked |
@@ -101,7 +101,7 @@ does **not** use a practitioner seat (`max_seats` counts active doctors only).
 **Implementation:** two router-level guards in `app/core/dependencies.py`, wired in `app/main.py`
 (and on the visits router): `deny_receptionist_writes` (anything but GET/HEAD/OPTIONS) and
 `deny_receptionist` (everything). Because they sit on the router, a write route added later is
-protected automatically. Read-only POSTs are listed in `_READ_ONLY_POST_ROUTES`. The frontend hides
+protected automatically. The frontend hides
 the matching controls via `useCan()` (`src/lib/auth/permissions.ts`); the server is the authority.
 
 **Open product questions (defaults chosen, change in one place):**
