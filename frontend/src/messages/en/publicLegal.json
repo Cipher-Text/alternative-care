@@ -1,0 +1,54 @@
+{
+  "publicLegalUi": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "updated": "Last updated: 11 October 2026",
+      "intro": "This explains what AltCare collects, why, and the choices you have. It applies to this website and the AltCare clinic software.",
+      "s1Title": "What we collect",
+      "s1Body": "Account details (name, email, clinic details, role). The records a clinic enters into the software — patients, appointments, prescriptions and payments. Basic technical data such as IP address and device type, used for security and to prevent abuse.",
+      "s2Title": "Who controls patient records",
+      "s2Body": "Each clinic decides what it records about its patients and is responsible for it. AltCare stores that information on the clinic's behalf and does not use it for advertising.",
+      "s3Title": "How it is protected",
+      "s3Body": "Each clinic's records are kept separate from every other clinic's. Passwords are stored hashed, integration credentials are encrypted, and connections use HTTPS.",
+      "s4Title": "Cookies and local storage",
+      "s4Body": "We use a sign-in cookie that is needed for the service to work, and remember your language and light/dark choice on your device. We do not use advertising cookies. If we measure visits, we use privacy-friendly statistics that do not follow you across sites.",
+      "s5Title": "Your choices",
+      "s5Body": "You can ask to see, correct or delete your account information. Patients should ask their clinic about records the clinic holds. Use the contact details below.",
+      "s6Title": "Changes",
+      "s6Body": "If this policy changes materially we will update the date above and, where appropriate, tell account holders."
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "updated": "Last updated: 11 October 2026",
+      "intro": "By creating an account or using AltCare you agree to these terms.",
+      "s1Title": "Who may use AltCare",
+      "s1Body": "AltCare is for alternative medicine practitioners and their clinic staff. New accounts are reviewed by our team before they are activated, and we may decline or suspend an account.",
+      "s2Title": "Your account",
+      "s2Body": "Keep your sign-in details private and do not share a login between people. You are responsible for activity under your account.",
+      "s3Title": "Clinical responsibility",
+      "s3Body": "AltCare is a tool for keeping records and issuing documents. It does not replace your professional judgement. You are responsible for the accuracy of what you record and prescribe, and for complying with the rules that apply to your practice.",
+      "s4Title": "Plans and limits",
+      "s4Body": "What is included depends on your plan. Plan contents and limits may change; we will give notice of material changes.",
+      "s5Title": "Acceptable use",
+      "s5Body": "Do not misuse the service, attempt to access other clinics' data, or use AltCare for anything unlawful.",
+      "s6Title": "Liability",
+      "s6Body": "AltCare is provided as is. To the extent the law allows, we are not liable for indirect loss arising from its use."
+    },
+    "disclaimer": {
+      "title": "Medical Disclaimer",
+      "updated": "Last updated: 11 October 2026",
+      "intro": "AltCare provides software for practitioners and general information. It is not medical advice.",
+      "s1Title": "Not medical advice",
+      "s1Body": "Nothing on this website is a diagnosis, treatment plan or substitute for advice from a qualified practitioner. Do not delay or avoid seeking care because of something you read here.",
+      "s2Title": "Emergencies",
+      "s2Body": "In an emergency, contact local emergency services or go to the nearest hospital.",
+      "s3Title": "Traditional and alternative medicine",
+      "s3Body": "Many traditional remedies have not been tested to the standard of conventional medicine. Information is shown for reference and does not promise any result.",
+      "s4Title": "Practitioners and institutions",
+      "s4Body": "Mention of a practitioner, institution or product is not an endorsement. Check qualifications and registration before relying on anyone."
+    },
+    "contactTitle": "Contact",
+    "contactBody": "Questions about this page: ",
+    "draftNote": "This text is a working draft and is pending legal review."
+  }
+}

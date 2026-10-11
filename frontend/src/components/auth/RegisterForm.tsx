@@ -210,6 +210,16 @@ export function RegisterForm({ plan }: { plan?: string | null }) {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t('creatingAccount') : t('createAccount')}
           </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            {t('consentPrefix')}{' '}
+            <Link href="/terms" className="underline" target="_blank">
+              {t('consentTerms')}
+            </Link>{' '}
+            {t('consentAnd')}{' '}
+            <Link href="/privacy" className="underline" target="_blank">
+              {t('consentPrivacy')}
+            </Link>
+          </p>
 
           <p className="text-center text-xs text-gray-500 dark:text-gray-400">{t('googleHint')}</p>
           <p className="text-center text-sm">

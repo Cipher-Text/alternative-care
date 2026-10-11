@@ -113,7 +113,8 @@ Implemented routes:
 | `/admin/dashboard` | ✅ KPI cards |
 | `/admin/users` | ✅ Role distribution + user management |
 | `/` | ✅ Public landing page |
-| `/knowledge/medicines`, `/knowledge/symptoms` | ✅ Public global catalogs |
+| `/privacy`, `/terms`, `/disclaimer` | ✅ Public legal pages (working drafts, pending legal review) |
+| ~~`/knowledge/medicines`, `/knowledge/symptoms`~~ | Removed 2026-10-11 — catalogs are no longer public; `GET /api/v1/public/stats` serves counts only |
 | `/institutions` | ✅ Public institution directory |
 
 ---

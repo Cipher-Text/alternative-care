@@ -29,7 +29,7 @@ When any planning document conflicts with implementation:
 
 - Backend active routers: 16 modules (`backend/app/main.py`)
 - API route methods: 144 under `/api/v1`, plus `/`, `/health`, `/metrics` (asserted in `backend/tests/unit/test_route_registration.py`)
-- Frontend includes auth/recovery, public landing/knowledge/institutions, practice workflows, and platform-admin routes; inspect `frontend/src/app/` for the live route tree
+- Frontend includes auth/recovery, public landing/pricing/legal/institutions, practice workflows, and platform-admin routes; inspect `frontend/src/app/` for the live route tree
 - The public doctor/practitioner directory remains planned; public global medicine/symptom catalogs and institutions directory are implemented
 - AI route status: `/api/v1/ai/query` exists as a `501 Not Implemented` contract stub, gated by a DB-backed plan check and now tracked in `usage_tracking` (Stage 1 "Billing enforcement", 2026-09-24)
 - Admin Phase A: complete — `app/modules/admin/` at `/api/v1/admin` with 11 endpoints, including `POST /admin/tenants/{id}/doctors` (add a doctor under an existing tenant, shipped 2026-07-12) and `GET /admin/tenants/{id}/usage` (tenant billing usage, shipped 2026-09-24)

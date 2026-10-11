@@ -25,22 +25,6 @@
       "source": "Source",
       "emptyTitle": "No institutions found",
       "emptyHint": "Try a different search or filter."
-    },
-    "medicines": {
-      "title": "Medicine Directory",
-      "subtitle": "The global, admin-curated medicine catalog — browse by discipline or search by name.",
-      "searchLabel": "Search medicines by name",
-      "searchPlaceholder": "Search medicines by name...",
-      "emptyTitle": "No medicines found",
-      "emptyHint": "Try a different search term or discipline."
-    },
-    "symptoms": {
-      "title": "Symptom Directory",
-      "subtitle": "The global, admin-curated symptom catalog — search by name or common alias.",
-      "searchLabel": "Search symptoms by name",
-      "searchPlaceholder": "Search symptoms by name...",
-      "emptyTitle": "No symptoms found",
-      "emptyHint": "Try a different search term."
     }
   }
 }

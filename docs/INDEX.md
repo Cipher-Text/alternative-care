@@ -65,7 +65,7 @@ Purpose: quick navigation for developers and AI assistants using only currently 
 - Database table models: 34 (plus 3 base classes)
 - System endpoints: `/`, `/health`, `/metrics`
 - Frontend stack: Next.js 16 + React 19
-- Frontend implemented pages include authentication/recovery, public landing/knowledge/institution pages, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, integrations, and platform admin
+- Frontend implemented pages include authentication/recovery, public landing/pricing/legal/institution pages, dashboard, patients, appointments, prescriptions, profile, payments, medicines, symptoms, integrations, and platform admin
 - Roles: `admin` (platform, full), `operator` (platform, stub), `doctor` (tenant, full), `receptionist` (tenant, stub)
 - Platform admin endpoints: 11 canonical endpoints in `admin/routes.py` (includes `POST /admin/tenants/{id}/doctors` and `GET /admin/tenants/{id}/usage`); legacy `/auth/admin/*` compatibility endpoints were removed 2026-09-25
 - AI module status: `/api/v1/ai/query` is wired as a `501 Not Implemented` stub endpoint

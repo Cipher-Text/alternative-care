@@ -5,27 +5,7 @@
  */
 
 import { apiClient } from './client';
-import type {
-  Medicine,
-  MedicineListItem,
-  MedicineSearchResult,
-  MedicalSystem,
-} from '@/types/medicine';
-import type { Symptom, SymptomListItem, SymptomSearchResult } from '@/types/symptom';
 import type { InstitutionListItem, Discipline, InstitutionType } from '@/types/institution';
-
-export interface PublicMedicineFilters {
-  system?: MedicalSystem;
-  category?: string;
-  limit?: number;
-  offset?: number;
-}
-
-export interface PublicSymptomFilters {
-  category?: string;
-  limit?: number;
-  offset?: number;
-}
 
 export interface PublicInstitutionFilters {
   discipline?: Discipline;
@@ -35,39 +15,19 @@ export interface PublicInstitutionFilters {
   offset?: number;
 }
 
-export const publicApi = {
-  medicines: {
-    list: async (params?: PublicMedicineFilters): Promise<MedicineListItem[]> => {
-      const { data } = await apiClient.get('/public/medicines', { params });
-      return data;
-    },
-    search: async (q: string, system?: MedicalSystem, limit = 20): Promise<MedicineSearchResult[]> => {
-      const { data } = await apiClient.get('/public/medicines/search', {
-        params: { q, system, limit },
-      });
-      return data;
-    },
-    get: async (id: number): Promise<Medicine> => {
-      const { data } = await apiClient.get(`/public/medicines/${id}`);
-      return data;
-    },
-  },
+export interface PublicStats {
+  medicines: number;
+  symptoms: number;
+  institutions: number;
+  clinics: number;
+  practitioners: number;
+}
 
-  symptoms: {
-    list: async (params?: PublicSymptomFilters): Promise<SymptomListItem[]> => {
-      const { data } = await apiClient.get('/public/symptoms', { params });
-      return data;
-    },
-    search: async (q: string, category?: string, limit = 20): Promise<SymptomSearchResult[]> => {
-      const { data } = await apiClient.get('/public/symptoms/search', {
-        params: { q, category, limit },
-      });
-      return data;
-    },
-    get: async (id: number): Promise<Symptom> => {
-      const { data } = await apiClient.get(`/public/symptoms/${id}`);
-      return data;
-    },
+export const publicApi = {
+  /** Headline counts only — the medicine/symptom catalogs themselves are not public. */
+  stats: async (): Promise<PublicStats> => {
+    const { data } = await apiClient.get('/public/stats');
+    return data;
   },
 
   institutions: {

@@ -151,7 +151,7 @@ request, so a downgrade takes effect immediately rather than at token expiry.
 
 ### 5.4 Public knowledge directory
 
-Unauthenticated pages: `/knowledge/medicines`, `/knowledge/symptoms`, `/institutions`, plus
+Unauthenticated pages: `/institutions` (the medicine/symptom catalogs are no longer public — only `GET /public/stats` counts), plus
 marketing pages (`/`, `/about`, `/pricing`, `/for-practitioners`).
 
 ---
