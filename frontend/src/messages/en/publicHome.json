@@ -1,0 +1,37 @@
+{
+  "publicHomeUi": {
+    "heroBadge": "Homeopathy · Ayurveda · Unani · Herbal",
+    "heroTitle": "The alternative medicine platform for clinics and patients alike",
+    "heroSubtitle": "AltCare runs the clinic — patients, appointments, prescriptions, and payments — and hosts an open directory of medicines, symptoms, and institutions across all four disciplines.",
+    "searchAria": "Search medicines, e.g. Arnica, Ashwagandha",
+    "searchPlaceholder": "Search medicines, e.g. Arnica, Ashwagandha...",
+    "searchButton": "Search",
+    "browseInstitutions": "Browse Institutions",
+    "forPractitioners": "For Practitioners",
+    "statMedicines": "Medicines cataloged",
+    "statSymptoms": "Symptoms indexed",
+    "statInstitutions": "Institutions listed",
+    "disciplinesTitle": "Browse by discipline",
+    "disciplinesSubtitle": "Every medicine and institution is tagged to the disciplines it serves.",
+    "disciplines": {
+      "homeopathy": { "label": "Homeopathy", "description": "Remedies, potencies, and repertory guidance." },
+      "ayurveda": { "label": "Ayurveda", "description": "Classical formulations and herbal preparations." },
+      "unani": { "label": "Unani", "description": "Traditional Unani-Tibb medicines and practice." },
+      "herbal": { "label": "Herbal", "description": "Plant-based remedies used across disciplines." }
+    },
+    "institutionsTitle": "Institutions directory",
+    "institutionsSubtitle": "Colleges and institutes teaching alternative medicine in Bangladesh.",
+    "viewAll": "View all",
+    "viewAllInstitutions": "View all institutions",
+    "ctaTitle": "Run your clinic on AltCare",
+    "ctaSubtitle": "Patients, appointments, prescriptions, payments, and your own medicine library — one system built for Homeopathy, Ayurveda, Unani, and Herbal practices.",
+    "featurePatientsTitle": "Patient records",
+    "featurePatientsDesc": "Full history, tags, and diagnoses in one place.",
+    "featureAppointmentsTitle": "Appointments & prescriptions",
+    "featureAppointmentsDesc": "Scheduling, visit notes, and a prescription builder with autocomplete.",
+    "featureSecurityTitle": "Multi-tenant security",
+    "featureSecurityDesc": "Row-level isolation keeps every clinic's data separate.",
+    "getStarted": "Get Started",
+    "builtForEvery": "Built for every discipline"
+  }
+}

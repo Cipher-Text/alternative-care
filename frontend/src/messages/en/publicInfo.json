@@ -1,0 +1,60 @@
+{
+  "publicInfoUi": {
+    "about": {
+      "title": "About AltCare",
+      "intro": "AltCare is a practice management platform built specifically for alternative medicine practitioners — Homeopathy, Ayurveda, Unani, and Herbal medicine — alongside a public knowledge directory of medicines, symptoms, and the institutions that train the next generation of practitioners.",
+      "homeopathy": "Homeopathy",
+      "ayurveda": "Ayurveda",
+      "unani": "Unani",
+      "herbal": "Herbal",
+      "clinicsTitle": "Built for clinics",
+      "clinicsBody": "Every clinic's data is row-level isolated. Patients, prescriptions, and payments stay private to the practice that created them.",
+      "knowledgeTitle": "Open knowledge",
+      "knowledgeBody": "The medicine, symptom, and institution catalogs are admin-curated and free to browse — no account required."
+    },
+    "practitioners": {
+      "title": "Practice management built for alternative medicine",
+      "intro": "Homeopathy, Ayurveda, Unani, and Herbal Medicine practitioners run their whole clinic on AltCare — patients, appointments, prescriptions, and payments.",
+      "getStarted": "Get Started",
+      "patientsTitle": "Patient management",
+      "patientsBody": "Full patient records, tags, diagnoses, and history in one place.",
+      "appointmentsTitle": "Appointments & visits",
+      "appointmentsBody": "Scheduling, calendar views, and visit notes tied to each patient.",
+      "prescriptionsTitle": "Prescriptions",
+      "prescriptionsBody": "A prescription builder with medicine autocomplete and an issue/void workflow.",
+      "medicinesTitle": "Your own medicine library",
+      "medicinesBody": "Start from the global catalog and add your own medicines, aliases, and dosages.",
+      "paymentsTitle": "Payments & invoicing",
+      "paymentsBody": "Track payments and generate invoices without leaving the platform.",
+      "securityTitle": "Multi-tenant security",
+      "securityBody": "Row-level isolation keeps every clinic's data separate and private."
+    },
+    "pricing": {
+      "title": "Pricing",
+      "intro": "Every account starts on Free while we review it. Pick the plan you are interested in and tell us more during sign-up, or sign in to see what is available for your account.",
+      "popular": "Popular",
+      "getStarted": "Get Started",
+      "contactUs": "Contact us",
+      "free": "Free",
+      "perMonth": "{currency} {amount}/month",
+      "perYear": "or {currency} {amount}/year",
+      "unlimited": "{label}: unlimited",
+      "limited": "{label}: {value}",
+      "coreRecords": "Patient records & appointments",
+      "coreBuilder": "Prescription builder",
+      "coreLibrary": "Medicine & symptom library",
+      "fallbackFreeName": "Free",
+      "fallbackFreeTagline": "For solo practitioners getting started",
+      "fallbackPlusName": "Plus",
+      "fallbackPlusTagline": "For growing clinics",
+      "fallbackPlusFeature1": "Everything in Free",
+      "fallbackPlusFeature2": "Payments & invoicing",
+      "fallbackPlusFeature3": "SMS/email integrations",
+      "fallbackProName": "Pro",
+      "fallbackProTagline": "For established practices",
+      "fallbackProFeature1": "Everything in Plus",
+      "fallbackProFeature2": "AI-assisted lookups (coming soon)",
+      "fallbackProFeature3": "Priority support"
+    }
+  }
+}

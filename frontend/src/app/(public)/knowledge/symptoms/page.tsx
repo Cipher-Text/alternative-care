@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { Search, Loader2, Stethoscope } from 'lucide-react'
 import { usePublicSymptoms, usePublicSymptomSearch } from '@/lib/hooks/usePublicCatalog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,6 +19,8 @@ interface SymptomCardData {
 }
 
 function SymptomsDirectory() {
+  const t = useTranslations('publicDirectoryUi')
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [debouncedQuery, setDebouncedQuery] = useState(query)
@@ -66,9 +69,9 @@ function SymptomsDirectory() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Symptom Directory</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('symptoms.title')}</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          The global, admin-curated symptom catalog — search by name or common alias.
+          {t('symptoms.subtitle')}
         </p>
       </div>
 
@@ -77,8 +80,8 @@ function SymptomsDirectory() {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search symptoms by name"
- placeholder="Search symptoms by name..."
+          aria-label={t('symptoms.searchLabel')}
+          placeholder={t('symptoms.searchPlaceholder')}
           className="pl-9"
         />
       </div>
@@ -94,8 +97,12 @@ function SymptomsDirectory() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <CardTitle className="text-base">{symptom.name_en}</CardTitle>
-                    {symptom.name_bn && <CardDescription>{symptom.name_bn}</CardDescription>}
+                    <CardTitle className="text-base">
+                      {locale === 'bn' && symptom.name_bn ? symptom.name_bn : symptom.name_en}
+                    </CardTitle>
+                    {locale === 'bn'
+                      ? symptom.name_bn && <CardDescription>{symptom.name_en}</CardDescription>
+                      : symptom.name_bn && <CardDescription>{symptom.name_bn}</CardDescription>}
                   </div>
                   <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0">
                     <Stethoscope className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
@@ -110,7 +117,7 @@ function SymptomsDirectory() {
                 )}
                 {symptom.matchedTerm && (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Also known as: <span className="font-medium">{symptom.matchedTerm}</span>
+                    {t('alsoKnownAs')} <span className="font-medium">{symptom.matchedTerm}</span>
                   </p>
                 )}
               </CardContent>
@@ -120,8 +127,8 @@ function SymptomsDirectory() {
       ) : (
         <div className="text-center py-16">
           <Stethoscope className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold">No symptoms found</h3>
-          <p className="text-muted-foreground mt-2">Try a different search term.</p>
+          <h3 className="text-lg font-semibold">{t('symptoms.emptyTitle')}</h3>
+          <p className="text-muted-foreground mt-2">{t('symptoms.emptyHint')}</p>
         </div>
       )}
       <Pager

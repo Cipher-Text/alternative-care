@@ -1,0 +1,19 @@
+{
+  "publicShellUi": {
+    "navMedicines": "ঔষধ",
+    "navSymptoms": "লক্ষণ",
+    "navInstitutions": "প্রতিষ্ঠান",
+    "navPractitioners": "চিকিৎসকদের জন্য",
+    "navPricing": "মূল্য",
+    "navAbout": "আমাদের সম্পর্কে",
+    "signIn": "সাইন ইন",
+    "getStarted": "শুরু করুন",
+    "goToDashboard": "ড্যাশবোর্ডে যান",
+    "toggleMenu": "মেনু খুলুন বা বন্ধ করুন",
+    "footerTagline": "হোমিওপ্যাথি, আয়ুর্বেদ, ইউনানি ও ভেষজ চিকিৎসকদের জন্য প্র্যাকটিস ম্যানেজমেন্ট এবং একটি উন্মুক্ত জ্ঞানভান্ডার।",
+    "colDirectory": "তালিকা",
+    "colProduct": "পণ্য",
+    "colCompany": "কোম্পানি",
+    "rights": "© {year} AltCare। সর্বস্বত্ব সংরক্ষিত।"
+  }
+}

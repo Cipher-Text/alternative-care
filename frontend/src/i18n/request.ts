@@ -8,7 +8,7 @@ import { cookies } from 'next/headers'
  *                                     namespaces (e.g. patients.json -> "patientsUi": {...})
  * Keep this list, scripts/check-i18n.js and the files in step.
  */
-export const MESSAGE_AREAS = ['patients', 'prescriptions', 'appointments', 'payments', 'home', 'library', 'symptoms'] as const
+export const MESSAGE_AREAS = ['patients', 'prescriptions', 'appointments', 'payments', 'home', 'library', 'symptoms', 'publicShell', 'publicHome', 'publicInfo', 'publicDirectory'] as const
 
 export default getRequestConfig(async () => {
   const store = await cookies()

@@ -1,29 +1,31 @@
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 const columns = [
   {
-    title: 'Directory',
+    title: 'colDirectory',
     links: [
-      { name: 'Medicines', href: '/knowledge/medicines' },
-      { name: 'Symptoms', href: '/knowledge/symptoms' },
-      { name: 'Institutions', href: '/institutions' },
+      { key: 'navMedicines', href: '/knowledge/medicines' },
+      { key: 'navSymptoms', href: '/knowledge/symptoms' },
+      { key: 'navInstitutions', href: '/institutions' },
     ],
   },
   {
-    title: 'Product',
+    title: 'colProduct',
     links: [
-      { name: 'For Practitioners', href: '/for-practitioners' },
-      { name: 'Pricing', href: '/pricing' },
-      { name: 'Sign In', href: '/login' },
+      { key: 'navPractitioners', href: '/for-practitioners' },
+      { key: 'navPricing', href: '/pricing' },
+      { key: 'signIn', href: '/login' },
     ],
   },
   {
-    title: 'Company',
-    links: [{ name: 'About', href: '/about' }],
+    title: 'colCompany',
+    links: [{ key: 'navAbout', href: '/about' }],
   },
-]
+] as const
 
 export function PublicFooter() {
+  const t = useTranslations('publicShellUi')
   return (
     <footer className="border-t border-gray-200 dark:border-slate-800 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -33,15 +35,14 @@ export function PublicFooter() {
               AltCare
             </span>
             <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-              Practice management and a public knowledge directory for Homeopathy, Ayurveda,
-              Unani, and Herbal medicine practitioners.
+              {t('footerTagline')}
             </p>
           </div>
 
           {columns.map((column) => (
-            <div key={column.title}>
+            <div key={t(column.title)}>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                {column.title}
+                {t(column.title)}
               </h3>
               <ul className="mt-3 space-y-2">
                 {column.links.map((link) => (
@@ -50,7 +51,7 @@ export function PublicFooter() {
                       href={link.href}
                       className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     >
-                      {link.name}
+                      {t(link.key)}
                     </Link>
                   </li>
                 ))}
@@ -60,7 +61,7 @@ export function PublicFooter() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-gray-200 dark:border-slate-800 text-sm text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} AltCare. All rights reserved.
+          {t('rights', { year: new Date().getFullYear() })}
         </div>
       </div>
     </footer>

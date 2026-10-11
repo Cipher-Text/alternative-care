@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { Pager, clientPage, usePager } from '@/components/shared/Pager'
 import { BadgeCheck, ExternalLink, GraduationCap, Loader2, Search } from 'lucide-react'
 import { usePublicInstitutions } from '@/lib/hooks/usePublicCatalog'
@@ -17,14 +18,11 @@ import {
 } from '@/components/ui/select'
 import type { Discipline } from '@/types/institution'
 
-const disciplines: Array<{ value: Discipline; label: string }> = [
-  { value: 'homeopathy', label: 'Homeopathy' },
-  { value: 'ayurveda', label: 'Ayurveda' },
-  { value: 'unani', label: 'Unani' },
-  { value: 'herbal', label: 'Herbal' },
-]
+const disciplines: Discipline[] = ['homeopathy', 'ayurveda', 'unani', 'herbal']
 
 export default function PublicInstitutionsPage() {
+  const t = useTranslations('publicDirectoryUi')
+  const locale = useLocale()
   const [searchTerm, setSearchTerm] = useState('')
   const [disciplineFilter, setDisciplineFilter] = useState<string>('all')
   const [typeFilter, setTypeFilter] = useState<string>('all')
@@ -52,11 +50,10 @@ export default function PublicInstitutionsPage() {
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Institution Directory
+          {t('institutions.title')}
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Colleges and institutes teaching Homeopathy, Ayurveda, Unani, and Herbal Medicine.
-          Admin-curated and cross-checked against issuing boards where possible.
+          {t('institutions.subtitle')}
         </p>
       </div>
 
@@ -66,32 +63,32 @@ export default function PublicInstitutionsPage() {
           <Input
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            aria-label="Search name or location"
- placeholder="Search name or location"
+            aria-label={t('institutions.searchLabel')}
+            placeholder={t('institutions.searchPlaceholder')}
             className="pl-9"
           />
         </div>
         <Select value={disciplineFilter} onValueChange={setDisciplineFilter}>
-          <SelectTrigger aria-label="Discipline" className="md:w-48">
-            <SelectValue placeholder="Discipline" />
+          <SelectTrigger aria-label={t('discipline')} className="md:w-48">
+            <SelectValue placeholder={t('discipline')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All disciplines</SelectItem>
+            <SelectItem value="all">{t('allDisciplines')}</SelectItem>
             {disciplines.map((d) => (
-              <SelectItem key={d.value} value={d.value}>
-                {d.label}
+              <SelectItem key={d} value={d}>
+                {t(`disciplines.${d}`)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger aria-label="Type" className="md:w-40">
-            <SelectValue placeholder="Type" />
+          <SelectTrigger aria-label={t('institutions.typeLabel')} className="md:w-40">
+            <SelectValue placeholder={t('institutions.typeLabel')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Government + Private</SelectItem>
-            <SelectItem value="government">Government</SelectItem>
-            <SelectItem value="private">Private</SelectItem>
+            <SelectItem value="all">{t('institutions.allTypes')}</SelectItem>
+            <SelectItem value="government">{t('institutions.types.government')}</SelectItem>
+            <SelectItem value="private">{t('institutions.types.private')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -110,7 +107,11 @@ export default function PublicInstitutionsPage() {
                     <GraduationCap className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
                   </div>
                   <div className="min-w-0">
-                    <CardTitle className="text-base leading-snug">{institution.name_en}</CardTitle>
+                    <CardTitle className="text-base leading-snug">
+                      {locale === 'bn' && institution.name_bn
+                        ? institution.name_bn
+                        : institution.name_en}
+                    </CardTitle>
                     {institution.location && (
                       <CardDescription>{institution.location}</CardDescription>
                     )}
@@ -119,30 +120,30 @@ export default function PublicInstitutionsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex flex-wrap gap-1.5">
-                  <Badge variant="outline" className="capitalize">
-                    {institution.institution_type}
+                  <Badge variant="outline">
+                    {t(`institutions.types.${institution.institution_type}`)}
                   </Badge>
                   {institution.disciplines.map((d) => (
-                    <Badge key={d} variant="secondary" className="capitalize">
-                      {d}
+                    <Badge key={d} variant="secondary">
+                      {t(`disciplines.${d}`)}
                     </Badge>
                   ))}
                   {institution.is_verified && (
                     <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                       <BadgeCheck className="h-3 w-3 mr-1" />
-                      Verified
+                      {t('institutions.verified')}
                     </Badge>
                   )}
                 </div>
                 {institution.courses_offered && (
                   <p className="text-sm text-muted-foreground">
-                    Courses: {institution.courses_offered}
+                    {t('institutions.courses', { courses: institution.courses_offered })}
                   </p>
                 )}
                 {institution.source_url && (
                   <Button asChild size="sm" variant="ghost" className="px-0">
                     <a href={institution.source_url} target="_blank" rel="noreferrer">
-                      Source <ExternalLink className="h-3.5 w-3.5 ml-1" />
+                      {t('institutions.source')} <ExternalLink className="h-3.5 w-3.5 ml-1" />
                     </a>
                   </Button>
                 )}
@@ -153,8 +154,8 @@ export default function PublicInstitutionsPage() {
       ) : (
         <div className="text-center py-16">
           <GraduationCap className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold">No institutions found</h3>
-          <p className="text-muted-foreground mt-2">Try a different search or filter.</p>
+          <h3 className="text-lg font-semibold">{t('institutions.emptyTitle')}</h3>
+          <p className="text-muted-foreground mt-2">{t('institutions.emptyHint')}</p>
         </div>
       )}
       <Pager

@@ -1,0 +1,46 @@
+{
+  "publicDirectoryUi": {
+    "disciplines": {
+      "homeopathy": "Homeopathy",
+      "ayurveda": "Ayurveda",
+      "unani": "Unani",
+      "herbal": "Herbal"
+    },
+    "allDisciplines": "All disciplines",
+    "discipline": "Discipline",
+    "alsoKnownAs": "Also known as:",
+    "institutions": {
+      "title": "Institution Directory",
+      "subtitle": "Colleges and institutes teaching Homeopathy, Ayurveda, Unani, and Herbal Medicine. Admin-curated and cross-checked against issuing boards where possible.",
+      "searchLabel": "Search name or location",
+      "searchPlaceholder": "Search name or location",
+      "typeLabel": "Type",
+      "allTypes": "Government + Private",
+      "types": {
+        "government": "Government",
+        "private": "Private"
+      },
+      "verified": "Verified",
+      "courses": "Courses: {courses}",
+      "source": "Source",
+      "emptyTitle": "No institutions found",
+      "emptyHint": "Try a different search or filter."
+    },
+    "medicines": {
+      "title": "Medicine Directory",
+      "subtitle": "The global, admin-curated medicine catalog — browse by discipline or search by name.",
+      "searchLabel": "Search medicines by name",
+      "searchPlaceholder": "Search medicines by name...",
+      "emptyTitle": "No medicines found",
+      "emptyHint": "Try a different search term or discipline."
+    },
+    "symptoms": {
+      "title": "Symptom Directory",
+      "subtitle": "The global, admin-curated symptom catalog — search by name or common alias.",
+      "searchLabel": "Search symptoms by name",
+      "searchPlaceholder": "Search symptoms by name...",
+      "emptyTitle": "No symptoms found",
+      "emptyHint": "Try a different search term."
+    }
+  }
+}

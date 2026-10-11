@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { Search, Loader2, Pill } from 'lucide-react'
 import { usePublicMedicines, usePublicMedicineSearch } from '@/lib/hooks/usePublicCatalog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,12 +18,7 @@ import {
 } from '@/components/ui/select'
 import type { MedicalSystem, MedicineListItem, MedicineSearchResult } from '@/types/medicine'
 
-const systems: Array<{ value: MedicalSystem; label: string }> = [
-  { value: 'homeopathy', label: 'Homeopathy' },
-  { value: 'ayurveda', label: 'Ayurveda' },
-  { value: 'unani', label: 'Unani' },
-  { value: 'herbal', label: 'Herbal' },
-]
+const systems: MedicalSystem[] = ['homeopathy', 'ayurveda', 'unani', 'herbal']
 
 const systemColor: Record<MedicalSystem, string> = {
   homeopathy: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -32,6 +28,8 @@ const systemColor: Record<MedicalSystem, string> = {
 }
 
 function MedicinesDirectory() {
+  const t = useTranslations('publicDirectoryUi')
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const [debouncedQuery, setDebouncedQuery] = useState(query)
@@ -65,9 +63,9 @@ function MedicinesDirectory() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Medicine Directory</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('medicines.title')}</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          The global, admin-curated medicine catalog — browse by discipline or search by name.
+          {t('medicines.subtitle')}
         </p>
       </div>
 
@@ -77,20 +75,20 @@ function MedicinesDirectory() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search medicines by name"
- placeholder="Search medicines by name..."
+            aria-label={t('medicines.searchLabel')}
+            placeholder={t('medicines.searchPlaceholder')}
             className="pl-9"
           />
         </div>
         <Select value={system} onValueChange={setSystem}>
-          <SelectTrigger aria-label="Discipline" className="sm:w-48">
-            <SelectValue placeholder="Discipline" />
+          <SelectTrigger aria-label={t('discipline')} className="sm:w-48">
+            <SelectValue placeholder={t('discipline')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All disciplines</SelectItem>
+            <SelectItem value="all">{t('allDisciplines')}</SelectItem>
             {systems.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
+              <SelectItem key={s} value={s}>
+                {t(`disciplines.${s}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -108,8 +106,12 @@ function MedicinesDirectory() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <CardTitle className="text-base">{medicine.name_en}</CardTitle>
-                    {medicine.name_bn && <CardDescription>{medicine.name_bn}</CardDescription>}
+                    <CardTitle className="text-base">
+                      {locale === 'bn' && medicine.name_bn ? medicine.name_bn : medicine.name_en}
+                    </CardTitle>
+                    {locale === 'bn'
+                      ? medicine.name_bn && <CardDescription>{medicine.name_en}</CardDescription>
+                      : medicine.name_bn && <CardDescription>{medicine.name_bn}</CardDescription>}
                   </div>
                   <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center shrink-0">
                     <Pill className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
@@ -119,7 +121,7 @@ function MedicinesDirectory() {
               <CardContent>
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className={systemColor[medicine.system]}>
-                    {medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
+                    {t(`disciplines.${medicine.system}`)}
                   </Badge>
                   {medicine.potency && <Badge variant="outline">{medicine.potency}</Badge>}
                   {medicine.category && (
@@ -128,7 +130,7 @@ function MedicinesDirectory() {
                 </div>
                 {'matched_alias' in medicine && medicine.matched_alias && (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Also known as: <span className="font-medium">{medicine.matched_alias}</span>
+                    {t('alsoKnownAs')} <span className="font-medium">{medicine.matched_alias}</span>
                   </p>
                 )}
               </CardContent>
@@ -138,8 +140,8 @@ function MedicinesDirectory() {
       ) : (
         <div className="text-center py-16">
           <Pill className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold">No medicines found</h3>
-          <p className="text-muted-foreground mt-2">Try a different search term or discipline.</p>
+          <h3 className="text-lg font-semibold">{t('medicines.emptyTitle')}</h3>
+          <p className="text-muted-foreground mt-2">{t('medicines.emptyHint')}</p>
         </div>
       )}
       <Pager

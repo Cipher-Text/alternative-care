@@ -1,32 +1,31 @@
 import { FlaskConical, Leaf, Sprout, Stethoscope, ShieldCheck, BookOpen } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const disciplines = [
-  { icon: FlaskConical, label: 'Homeopathy' },
-  { icon: Leaf, label: 'Ayurveda' },
-  { icon: Sprout, label: 'Unani' },
-  { icon: Stethoscope, label: 'Herbal' },
-]
+  { icon: FlaskConical, key: 'homeopathy' },
+  { icon: Leaf, key: 'ayurveda' },
+  { icon: Sprout, key: 'unani' },
+  { icon: Stethoscope, key: 'herbal' },
+] as const
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = await getTranslations('publicInfoUi.about')
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">About AltCare</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
       <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-        AltCare is a practice management platform built specifically for alternative medicine
-        practitioners — Homeopathy, Ayurveda, Unani, and Herbal medicine — alongside a public
-        knowledge directory of medicines, symptoms, and the institutions that train the next
-        generation of practitioners.
+        {t('intro')}
       </p>
 
       <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
         {disciplines.map((d) => (
           <div
-            key={d.label}
+            key={d.key}
             className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-700 p-4 text-center"
           >
             <d.icon className="h-6 w-6 text-emerald-600 dark:text-emerald-300" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">{d.label}</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">{t(d.key)}</span>
           </div>
         ))}
       </div>
@@ -35,21 +34,19 @@ export default function AboutPage() {
         <Card>
           <CardHeader>
             <ShieldCheck className="h-6 w-6 text-emerald-600 mb-2" />
-            <CardTitle className="text-lg">Built for clinics</CardTitle>
+            <CardTitle className="text-lg">{t('clinicsTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-gray-600 dark:text-gray-400">
-            Every clinic&apos;s data is row-level isolated. Patients, prescriptions, and payments
-            stay private to the practice that created them.
+            {t('clinicsBody')}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <BookOpen className="h-6 w-6 text-emerald-600 mb-2" />
-            <CardTitle className="text-lg">Open knowledge</CardTitle>
+            <CardTitle className="text-lg">{t('knowledgeTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-gray-600 dark:text-gray-400">
-            The medicine, symptom, and institution catalogs are admin-curated and free to browse —
-            no account required.
+            {t('knowledgeBody')}
           </CardContent>
         </Card>
       </div>

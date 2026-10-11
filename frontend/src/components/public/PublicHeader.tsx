@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { LanguageSwitcher } from '@/components/language/LanguageSwitcher'
 import { useAuthStore } from '@/store/authStore'
 import { getPostLoginPath } from '@/lib/auth/redirects'
 import { Button } from '@/components/ui/button'
@@ -11,15 +13,16 @@ import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const navigation = [
-  { name: 'Medicines', href: '/knowledge/medicines' },
-  { name: 'Symptoms', href: '/knowledge/symptoms' },
-  { name: 'Institutions', href: '/institutions' },
-  { name: 'For Practitioners', href: '/for-practitioners' },
-  { name: 'Pricing', href: '/pricing' },
-  { name: 'About', href: '/about' },
-]
+  { key: 'navMedicines', href: '/knowledge/medicines' },
+  { key: 'navSymptoms', href: '/knowledge/symptoms' },
+  { key: 'navInstitutions', href: '/institutions' },
+  { key: 'navPractitioners', href: '/for-practitioners' },
+  { key: 'navPricing', href: '/pricing' },
+  { key: 'navAbout', href: '/about' },
+] as const
 
 export function PublicHeader() {
+  const t = useTranslations('publicShellUi')
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const user = useAuthStore((state) => state.user)
@@ -47,24 +50,25 @@ export function PublicHeader() {
                     : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                 )}
               >
-                {item.name}
+                {t(item.key)}
               </Link>
             ))}
           </nav>
 
           <div className="hidden lg:flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             {isAuthenticated && user ? (
               <Button asChild size="sm">
-                <Link href={getPostLoginPath(user)}>Go to Dashboard</Link>
+                <Link href={getPostLoginPath(user)}>{t('goToDashboard')}</Link>
               </Button>
             ) : (
               <>
                 <Button asChild variant="ghost" size="sm">
-                  <Link href="/login">Sign In</Link>
+                  <Link href="/login">{t('signIn')}</Link>
                 </Button>
                 <Button asChild size="sm">
-                  <Link href="/register">Get Started</Link>
+                  <Link href="/register">{t('getStarted')}</Link>
                 </Button>
               </>
             )}
@@ -73,7 +77,7 @@ export function PublicHeader() {
           <button
             className="lg:hidden p-2 text-gray-600 dark:text-gray-300"
             onClick={() => setMobileOpen((open) => !open)}
-            aria-label="Toggle menu"
+            aria-label={t('toggleMenu')}
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -88,22 +92,23 @@ export function PublicHeader() {
                 onClick={() => setMobileOpen(false)}
                 className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800"
               >
-                {item.name}
+                {t(item.key)}
               </Link>
             ))}
             <div className="flex items-center gap-2 pt-2 px-3">
-              <ThemeToggle />
+              <LanguageSwitcher />
+            <ThemeToggle />
               {isAuthenticated && user ? (
                 <Button asChild size="sm" className="flex-1">
-                  <Link href={getPostLoginPath(user)}>Go to Dashboard</Link>
+                  <Link href={getPostLoginPath(user)}>{t('goToDashboard')}</Link>
                 </Button>
               ) : (
                 <>
                   <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link href="/login">Sign In</Link>
+                    <Link href="/login">{t('signIn')}</Link>
                   </Button>
                   <Button asChild size="sm" className="flex-1">
-                    <Link href="/register">Get Started</Link>
+                    <Link href="/register">{t('getStarted')}</Link>
                   </Button>
                 </>
               )}

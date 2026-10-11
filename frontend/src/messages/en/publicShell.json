@@ -1,0 +1,19 @@
+{
+  "publicShellUi": {
+    "navMedicines": "Medicines",
+    "navSymptoms": "Symptoms",
+    "navInstitutions": "Institutions",
+    "navPractitioners": "For Practitioners",
+    "navPricing": "Pricing",
+    "navAbout": "About",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "goToDashboard": "Go to Dashboard",
+    "toggleMenu": "Toggle menu",
+    "footerTagline": "Practice management and a public knowledge directory for Homeopathy, Ayurveda, Unani, and Herbal medicine practitioners.",
+    "colDirectory": "Directory",
+    "colProduct": "Product",
+    "colCompany": "Company",
+    "rights": "© {year} AltCare. All rights reserved."
+  }
+}

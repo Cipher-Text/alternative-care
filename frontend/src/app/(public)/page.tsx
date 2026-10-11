@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Pill,
@@ -25,37 +26,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 
 const disciplines = [
-  {
-    value: 'homeopathy',
-    label: 'Homeopathy',
-    icon: FlaskConical,
-    description: 'Remedies, potencies, and repertory guidance.',
-  },
-  {
-    value: 'ayurveda',
-    label: 'Ayurveda',
-    icon: Leaf,
-    description: 'Classical formulations and herbal preparations.',
-  },
-  {
-    value: 'unani',
-    label: 'Unani',
-    icon: Sprout,
-    description: 'Traditional Unani-Tibb medicines and practice.',
-  },
-  {
-    value: 'herbal',
-    label: 'Herbal',
-    icon: Stethoscope,
-    description: 'Plant-based remedies used across disciplines.',
-  },
+  { value: 'homeopathy', icon: FlaskConical },
+  { value: 'ayurveda', icon: Leaf },
+  { value: 'unani', icon: Sprout },
+  { value: 'herbal', icon: Stethoscope },
 ] as const
+
+function isDiscipline(value: string): value is (typeof disciplines)[number]['value'] {
+  return disciplines.some((d) => d.value === value)
+}
 
 function formatCount(count: number, cap: number) {
   return count >= cap ? `${count}+` : `${count}`
 }
 
 export default function HomePage() {
+  const t = useTranslations('publicHomeUi')
   const router = useRouter()
   const user = useAuthStore((state) => state.user)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -95,15 +81,13 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-50 to-transparent dark:from-emerald-950/20 dark:to-transparent" />
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
           <Badge variant="outline" className="mb-4">
-            Homeopathy · Ayurveda · Unani · Herbal
+            {t('heroBadge')}
           </Badge>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
-            The alternative medicine platform for clinics and patients alike
+            {t('heroTitle')}
           </h1>
           <p className="mt-6 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            AltCare runs the clinic — patients, appointments, prescriptions, and payments — and
-            hosts an open directory of medicines, symptoms, and institutions across all four
-            disciplines.
+            {t('heroSubtitle')}
           </p>
 
           <form onSubmit={handleSearch} className="mt-10 max-w-xl mx-auto flex gap-2">
@@ -112,24 +96,24 @@ export default function HomePage() {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                aria-label="Search medicines, e.g. Arnica, Ashwagandha"
- placeholder="Search medicines, e.g. Arnica, Ashwagandha..."
+                aria-label={t('searchAria')}
+                placeholder={t('searchPlaceholder')}
                 className="pl-9 h-11"
               />
             </div>
             <Button type="submit" size="lg" className="h-11">
-              Search
+              {t('searchButton')}
             </Button>
           </form>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Button asChild variant="outline">
               <Link href="/institutions">
-                Browse Institutions <ArrowRight className="ml-2 h-4 w-4" />
+                {t('browseInstitutions')} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/for-practitioners">For Practitioners</Link>
+              <Link href="/for-practitioners">{t('forPractitioners')}</Link>
             </Button>
           </div>
         </div>
@@ -142,19 +126,19 @@ export default function HomePage() {
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {medicines ? formatCount(medicines.length, medicinesCap) : '—'}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Medicines cataloged</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statMedicines')}</p>
           </div>
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {symptoms ? formatCount(symptoms.length, symptomsCap) : '—'}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Symptoms indexed</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statSymptoms')}</p>
           </div>
           <div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {institutions ? formatCount(institutions.length, institutionsCap) : '—'}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Institutions listed</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('statInstitutions')}</p>
           </div>
         </div>
       </section>
@@ -162,9 +146,9 @@ export default function HomePage() {
       {/* Disciplines */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Browse by discipline</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{t('disciplinesTitle')}</h2>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Every medicine and institution is tagged to the disciplines it serves.
+            {t('disciplinesSubtitle')}
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -175,8 +159,8 @@ export default function HomePage() {
                   <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center mb-2">
                     <d.icon className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
                   </div>
-                  <CardTitle className="text-lg">{d.label}</CardTitle>
-                  <CardDescription>{d.description}</CardDescription>
+                  <CardTitle className="text-lg">{t(`disciplines.${d.value}.label`)}</CardTitle>
+                  <CardDescription>{t(`disciplines.${d.value}.description`)}</CardDescription>
                 </CardHeader>
               </Card>
             </Link>
@@ -191,15 +175,15 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-10">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  Institutions directory
+                  {t('institutionsTitle')}
                 </h2>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">
-                  Colleges and institutes teaching alternative medicine in Bangladesh.
+                  {t('institutionsSubtitle')}
                 </p>
               </div>
               <Button asChild variant="outline" className="hidden sm:inline-flex">
                 <Link href="/institutions">
-                  View all <ArrowRight className="ml-2 h-4 w-4" />
+                  {t('viewAll')} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -225,7 +209,7 @@ export default function HomePage() {
                     <div className="flex flex-wrap gap-1">
                       {institution.disciplines.map((d) => (
                         <Badge key={d} variant="secondary" className="capitalize text-xs">
-                          {d}
+                          {isDiscipline(d) ? t(`disciplines.${d}.label`) : d}
                         </Badge>
                       ))}
                     </div>
@@ -236,7 +220,7 @@ export default function HomePage() {
             <div className="mt-8 text-center sm:hidden">
               <Button asChild variant="outline">
                 <Link href="/institutions">
-                  View all institutions <ArrowRight className="ml-2 h-4 w-4" />
+                  {t('viewAllInstitutions')} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -249,19 +233,18 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Run your clinic on AltCare
+              {t('ctaTitle')}
             </h2>
             <p className="mt-4 text-gray-600 dark:text-gray-400">
-              Patients, appointments, prescriptions, payments, and your own medicine library — one
-              system built for Homeopathy, Ayurveda, Unani, and Herbal practices.
+              {t('ctaSubtitle')}
             </p>
             <div className="mt-6 space-y-4">
               <div className="flex items-start gap-3">
                 <Users2 className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Patient records</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{t('featurePatientsTitle')}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Full history, tags, and diagnoses in one place.
+                    {t('featurePatientsDesc')}
                   </p>
                 </div>
               </div>
@@ -269,10 +252,10 @@ export default function HomePage() {
                 <CalendarClock className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    Appointments &amp; prescriptions
+                    {t('featureAppointmentsTitle')}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Scheduling, visit notes, and a prescription builder with autocomplete.
+                    {t('featureAppointmentsDesc')}
                   </p>
                 </div>
               </div>
@@ -280,10 +263,10 @@ export default function HomePage() {
                 <ShieldCheck className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    Multi-tenant security
+                    {t('featureSecurityTitle')}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Row-level isolation keeps every clinic&apos;s data separate.
+                    {t('featureSecurityDesc')}
                   </p>
                 </div>
               </div>
@@ -291,7 +274,7 @@ export default function HomePage() {
             <div className="mt-8">
               <Button asChild size="lg">
                 <Link href="/register">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                  {t('getStarted')} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -301,7 +284,7 @@ export default function HomePage() {
               <div className="flex items-center gap-2 mb-4">
                 <Pill className="h-5 w-5 text-emerald-600" />
                 <p className="font-semibold text-gray-900 dark:text-white">
-                  Built for every discipline
+                  {t('builtForEvery')}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -312,7 +295,7 @@ export default function HomePage() {
                   >
                     <d.icon className="h-4 w-4 text-emerald-600 dark:text-emerald-300 shrink-0" />
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {d.label}
+                      {t(`disciplines.${d.value}.label`)}
                     </span>
                   </div>
                 ))}
