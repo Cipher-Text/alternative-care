@@ -472,6 +472,102 @@ class PaymentService:
 
         return invoice
 
+    async def payment_list_views(self, payments: list[Payment]) -> list[dict]:
+        """Payments plus the patient's name and phone, for list screens."""
+        if not payments:
+            return []
+        patients = {
+            p.id: p
+            for p in (
+                await self.db.execute(
+                    select(Patient).where(
+                        Patient.tenant_id == self.tenant_id,
+                        Patient.id.in_({p.patient_id for p in payments}),
+                    )
+                )
+            ).scalars()
+        }
+        return [
+            {
+                **{
+                    c: getattr(p, c)
+                    for c in (
+                        "id", "patient_id", "amount", "currency", "payment_method", "status",
+                        "payment_date", "description", "created_at",
+                    )
+                },
+                "patient_name": patients[p.patient_id].full_name if p.patient_id in patients else None,
+                "patient_phone": patients[p.patient_id].phone if p.patient_id in patients else None,
+            }
+            for p in payments
+        ]
+
+    async def invoice_views(self, invoices: list[Invoice]) -> list[dict]:
+        """Invoices plus the fields a client shows, derived from each invoiced payment."""
+        if not invoices:
+            return []
+        payments = {
+            p.id: p
+            for p in (
+                await self.db.execute(
+                    select(Payment).where(
+                        Payment.tenant_id == self.tenant_id,
+                        Payment.id.in_({i.payment_id for i in invoices}),
+                    )
+                )
+            ).scalars()
+        }
+        patients = {
+            p.id: p
+            for p in (
+                await self.db.execute(
+                    select(Patient).where(
+                        Patient.tenant_id == self.tenant_id,
+                        Patient.id.in_({p.patient_id for p in payments.values()}),
+                    )
+                )
+            ).scalars()
+        }
+        views = []
+        for inv in invoices:
+            payment = payments.get(inv.payment_id)
+            patient = patients.get(payment.patient_id) if payment else None
+            amount = float(payment.amount) if payment else 0.0
+            views.append(
+                {
+                    **{
+                        c: getattr(inv, c)
+                        for c in (
+                            "id", "tenant_id", "payment_id", "invoice_number", "pdf_url", "status",
+                            "due_date", "created_at", "updated_at", "created_by", "updated_by",
+                        )
+                    },
+                    "patient_id": payment.patient_id if payment else None,
+                    "patient_name": patient.full_name if patient else None,
+                    "patient_phone": getattr(patient, "phone", None) if patient else None,
+                    "amount": amount,
+                    "currency": payment.currency if payment else "BDT",
+                    "issue_date": payment.payment_date if payment else None,
+                    "items": (
+                        [
+                            {
+                                "description": payment.description or "Consultation",
+                                "quantity": 1,
+                                "unit_price": amount,
+                                "total": amount,
+                            }
+                        ]
+                        if payment
+                        else []
+                    ),
+                    "notes": None,
+                }
+            )
+        return views
+
+    async def invoice_view(self, invoice: Invoice) -> dict:
+        return (await self.invoice_views([invoice]))[0]
+
     async def build_invoice_pdf(self, invoice_id: str) -> tuple[bytes, str]:
         """
         Render an invoice as a PDF document (on demand, not stored).

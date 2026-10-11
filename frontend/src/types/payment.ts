@@ -76,33 +76,31 @@ export interface InvoiceItem {
   total: number;
 }
 
+/** An invoice is a document for one recorded payment; patient/amount/date/items come from it. */
 export interface Invoice {
   id: string;
   tenant_id: string;
-  patient_id: string;
+  payment_id: string;
   invoice_number: string;
-  amount: number;
   status: InvoiceStatus;
-  issue_date: string; // ISO date string
-  due_date?: string; // ISO date string
-  items: InvoiceItem[];
-  notes?: string;
-  pdf_url?: string;
+  due_date?: string | null; // ISO date string
+  pdf_url?: string | null;
   created_at: string;
-  updated_at: string;
-  deleted_at?: string;
+  updated_at?: string | null;
 
-  // Populated fields
-  patient_name?: string;
-  patient_phone?: string;
+  // Derived from the invoiced payment
+  patient_id?: string | null;
+  patient_name?: string | null;
+  patient_phone?: string | null;
+  amount: number;
+  currency: string;
+  issue_date?: string | null;
+  items: InvoiceItem[];
+  notes?: string | null;
 }
 
 export interface InvoiceCreate {
-  patient_id: string;
-  amount: number;
-  items: InvoiceItem[];
-  notes?: string;
-  issue_date?: string; // ISO date string, defaults to today
+  payment_id: string;
   due_date?: string; // ISO date string
 }
 
@@ -113,13 +111,15 @@ export interface InvoiceUpdate {
 
 export interface InvoiceListItem {
   id: string;
-  patient_id: string;
-  patient_name: string;
+  payment_id: string;
+  patient_id?: string | null;
+  patient_name?: string | null;
   invoice_number: string;
   amount: number;
+  currency: string;
   status: InvoiceStatus;
-  issue_date: string;
-  due_date?: string;
+  issue_date?: string | null;
+  due_date?: string | null;
   created_at: string;
 }
 

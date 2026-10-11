@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, Loader2 } from "lucide-react";
-import type { InvoiceCreate, InvoiceItem } from "@/types/payment";
+import { Loader2 } from "lucide-react";
+import { usePayments } from "@/lib/hooks/usePayments";
+import type { InvoiceCreate } from "@/types/payment";
 
 interface InvoiceFormProps {
   onSubmit: (data: InvoiceCreate) => Promise<void>;
@@ -18,101 +17,62 @@ interface InvoiceFormProps {
 }
 
 interface InvoiceFormData {
-  patient_id: string;
-  items: InvoiceItem[];
-  notes?: string;
-  issue_date: string;
+  payment_id: string;
   due_date?: string;
 }
 
 export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormProps) {
   const t = useTranslations("payFormUi");
+  const { data: payments, isLoading: paymentsLoading } = usePayments({ limit: 100 });
   const {
     register,
-    control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<InvoiceFormData>({
     defaultValues: {
-      patient_id: defaultValues?.patient_id || "",
-      items: defaultValues?.items || [{ description: "", quantity: 1, unit_price: 0, total: 0 }],
-      notes: defaultValues?.notes || "",
-      issue_date: defaultValues?.issue_date || new Date().toISOString().split("T")[0],
+      payment_id: defaultValues?.payment_id || "",
       due_date: defaultValues?.due_date || "",
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "items",
-  });
-
-  const items = watch("items");
-
-  // Calculate totals
-  const subtotal = items.reduce((sum, item) => {
-    const qty = Number(item.quantity) || 0;
-    const price = Number(item.unit_price) || 0;
-    return sum + qty * price;
-  }, 0);
-
   const handleFormSubmit = async (data: InvoiceFormData) => {
-    // Calculate totals for each item
-    const itemsWithTotals = data.items.map((item) => ({
-      ...item,
-      quantity: Number(item.quantity),
-      unit_price: Number(item.unit_price),
-      total: Number(item.quantity) * Number(item.unit_price),
-    }));
-
-    const invoiceData: InvoiceCreate = {
-      patient_id: data.patient_id,
-      amount: subtotal,
-      items: itemsWithTotals,
-      notes: data.notes,
-      issue_date: data.issue_date,
-      due_date: data.due_date || undefined,
-    };
-
-    await onSubmit(invoiceData);
+    await onSubmit({ payment_id: data.payment_id, due_date: data.due_date || undefined });
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Basic Info */}
       <Card>
         <CardHeader>
           <CardTitle>{t("invoiceInfo")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Patient ID */}
-            <div className="space-y-2">
-              <Label htmlFor="patient_id">
-                {t("patientId")} <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="patient_id"
-                {...register("patient_id", { required: t("patientIdRequired") })}
-                placeholder={t("patientIdPlaceholder")}
-              />
-              {errors.patient_id && (
-                <p className="text-sm text-red-500">{errors.patient_id.message}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                {t("patientSearchSoon")}
-              </p>
-            </div>
-
-            {/* Issue Date */}
-            <div className="space-y-2">
-              <Label htmlFor="issue_date">{t("issueDate")}</Label>
-              <Input id="issue_date" type="date" {...register("issue_date")} />
-            </div>
+          <p className="text-sm text-muted-foreground">{t("invoiceForPaymentNote")}</p>
+          <div className="space-y-2">
+            <Label htmlFor="payment_id">
+              {t("paymentLabel")} <span className="text-red-500">*</span>
+            </Label>
+            <select
+              id="payment_id"
+              disabled={paymentsLoading}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              {...register("payment_id", { required: t("paymentRequired") })}
+            >
+              <option value="">{t("paymentPlaceholder")}</option>
+              {(payments ?? []).map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.patient_name ?? p.patient_id.slice(0, 8)} — ৳{Number(p.amount).toLocaleString()} —{" "}
+                  {p.payment_date}
+                </option>
+              ))}
+            </select>
+            {errors.payment_id && (
+              <p className="text-sm text-red-500">{errors.payment_id.message}</p>
+            )}
+            {!paymentsLoading && (payments ?? []).length === 0 && (
+              <p className="text-sm text-muted-foreground">{t("noPayments")}</p>
+            )}
           </div>
 
-          {/* Due Date */}
           <div className="space-y-2">
             <Label htmlFor="due_date">{t("dueDateOptional")}</Label>
             <Input id="due_date" type="date" {...register("due_date")} />
@@ -120,142 +80,8 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
         </CardContent>
       </Card>
 
-      {/* Items */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle>{t("itemsTitle")}</CardTitle>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                append({ description: "", quantity: 1, unit_price: 0, total: 0 })
-              }
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t("addItem")}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {fields.map((field, index) => {
-              const qty = Number(items[index]?.quantity) || 0;
-              const price = Number(items[index]?.unit_price) || 0;
-              const itemTotal = qty * price;
-
-              return (
-                <div key={field.id} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-sm font-medium">{t("itemN", { n: index + 1 })}</span>
-                    {fields.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => remove(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    )}
-                  </div>
-
-                  <div className="grid gap-3 md:grid-cols-4">
-                    {/* Description */}
-                    <div className="md:col-span-2 space-y-2">
-                      <Label htmlFor={`items.${index}.description`}>{t("description")}</Label>
-                      <Input
-                        {...register(`items.${index}.description`, {
-                          required: t("descriptionRequired"),
-                        })}
-                        placeholder={t("descriptionPlaceholder")}
-                      />
-                      {errors.items?.[index]?.description && (
-                        <p className="text-sm text-red-500">
-                          {errors.items[index]?.description?.message}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Quantity */}
-                    <div className="space-y-2">
-                      <Label htmlFor={`items.${index}.quantity`}>{t("qty")}</Label>
-                      <Input
-                        type="number"
-                        min="1"
-                        step="1"
-                        {...register(`items.${index}.quantity`, {
-                          required: t("quantityRequired"),
-                          min: 1,
-                        })}
-                      />
-                    </div>
-
-                    {/* Unit Price */}
-                    <div className="space-y-2">
-                      <Label htmlFor={`items.${index}.unit_price`}>{t("price")}</Label>
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        {...register(`items.${index}.unit_price`, {
-                          required: t("priceRequired"),
-                          min: 0,
-                        })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Item Total */}
-                  <div className="flex justify-end">
-                    <span className="text-sm font-medium">
-                      {t("itemTotal", { amount: itemTotal.toFixed(2) })}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Subtotal */}
-          <div className="mt-6 pt-4 border-t">
-            <div className="flex justify-end space-y-2">
-              <div className="w-64 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>{t("subtotal")}</span>
-                  <span className="font-medium">৳{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                  <span>{t("total")}</span>
-                  <span>৳{subtotal.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("notesTitle")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            {...register("notes")}
-            placeholder={t("notesPlaceholder")}
-            rows={3}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Actions */}
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" disabled={isLoading}>
-          {t("cancel")}
-        </Button>
-        <Button type="submit" disabled={isLoading || subtotal === 0}>
+        <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {t("createInvoice")}
         </Button>

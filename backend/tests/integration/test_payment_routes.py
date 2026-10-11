@@ -425,6 +425,37 @@ class TestInvoiceRoutes:
         assert len(data) >= 1
         assert any(inv["id"] == test_invoice.id for inv in data)
 
+    async def test_invoice_responses_carry_payment_fields(
+        self, client: AsyncClient, doctor_token: str, test_invoice: Invoice, test_payment
+    ):
+        """The pages need patient, amount, issue date and items; they come from the payment."""
+        headers = {"Authorization": f"Bearer {doctor_token}"}
+        detail = (await client.get(f"/api/v1/payments/invoices/{test_invoice.id}", headers=headers)).json()
+        listed = next(
+            i
+            for i in (await client.get("/api/v1/payments/invoices", headers=headers)).json()
+            if i["id"] == test_invoice.id
+        )
+        for body in (detail, listed):
+            assert body["amount"] == float(test_payment.amount)
+            assert body["patient_id"] == test_payment.patient_id
+            assert body["patient_name"]
+            assert body["issue_date"] == test_payment.payment_date.isoformat()
+        assert len(detail["items"]) == 1
+        assert detail["items"][0]["total"] == float(test_payment.amount)
+
+    async def test_payment_list_includes_patient_name(
+        self, client: AsyncClient, doctor_token: str, test_payment
+    ):
+        data = (
+            await client.get(
+                "/api/v1/payments", headers={"Authorization": f"Bearer {doctor_token}"}
+            )
+        ).json()
+        row = next(p for p in data if p["id"] == test_payment.id)
+        assert row["patient_name"]
+        assert row["currency"] == "BDT"
+
     async def test_list_invoices_filter_by_status(
         self, client: AsyncClient, doctor_token: str
     ):

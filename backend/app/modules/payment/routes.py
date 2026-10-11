@@ -79,15 +79,17 @@ async def list_payments(
     - Supports pagination
     - Ordered by payment date (newest first)
     """
-    return await service.list_payments(
-        patient_id=patient_id,
-        visit_id=visit_id,
-        payment_method=payment_method,
-        status=status,
-        date_from=date_from,
-        date_to=date_to,
-        limit=limit,
-        offset=offset,
+    return await service.payment_list_views(
+        await service.list_payments(
+            patient_id=patient_id,
+            visit_id=visit_id,
+            payment_method=payment_method,
+            status=status,
+            date_from=date_from,
+            date_to=date_to,
+            limit=limit,
+            offset=offset,
+        )
     )
 
 
@@ -129,7 +131,9 @@ async def create_invoice(
     - Links invoice to payment
     - Initial status: 'draft'
     """
-    return await service.create_invoice(data, created_by=current_user.user_id)
+    return await service.invoice_view(
+        await service.create_invoice(data, created_by=current_user.user_id)
+    )
 
 
 @router.get("/invoices", response_model=list[InvoiceListItem])
@@ -146,7 +150,9 @@ async def list_invoices(
     - Supports pagination
     - Ordered by creation date (newest first)
     """
-    return await service.list_invoices(status=status, limit=limit, offset=offset)
+    return await service.invoice_views(
+        await service.list_invoices(status=status, limit=limit, offset=offset)
+    )
 
 
 @router.get("/invoices/{invoice_id}", response_model=InvoiceResponse)
@@ -160,7 +166,7 @@ async def get_invoice(
     - Returns full invoice details
     - Tenant filtering applied automatically
     """
-    return await service.get_invoice(invoice_id)
+    return await service.invoice_view(await service.get_invoice(invoice_id))
 
 
 @router.patch("/invoices/{invoice_id}", response_model=InvoiceResponse)
@@ -176,7 +182,9 @@ async def update_invoice(
     - Can update status and due date
     - Maintains audit trail
     """
-    return await service.update_invoice(invoice_id, data, updated_by=current_user.user_id)
+    return await service.invoice_view(
+        await service.update_invoice(invoice_id, data, updated_by=current_user.user_id)
+    )
 
 
 @router.get(

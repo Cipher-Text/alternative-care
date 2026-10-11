@@ -56,10 +56,14 @@ class PaymentListItem(BaseModel):
 
     id: str
     patient_id: str
+    patient_name: str | None = None
+    patient_phone: str | None = None
     amount: float
+    currency: str = "BDT"
     payment_method: str
     status: str
     payment_date: date
+    description: str | None = None
     created_at: datetime
 
 
@@ -131,8 +135,21 @@ class InvoiceUpdate(BaseModel):
     due_date: date | None = None
 
 
+class InvoiceItemOut(BaseModel):
+    """One billed line (an invoice bills exactly one payment, so there is one)."""
+
+    description: str
+    quantity: int = 1
+    unit_price: float
+    total: float
+
+
 class InvoiceResponse(InvoiceBase):
-    """Invoice response with all fields."""
+    """Invoice response with all fields.
+
+    The `patient_*`, `amount`, `issue_date`, `items` and `notes` fields are derived from the
+    invoiced payment (an invoice is a document for one payment, not a standalone bill).
+    """
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -146,6 +163,14 @@ class InvoiceResponse(InvoiceBase):
     updated_at: datetime | None
     created_by: str | None
     updated_by: str | None
+    patient_id: str | None = None
+    patient_name: str | None = None
+    patient_phone: str | None = None
+    amount: float = 0
+    currency: str = "BDT"
+    issue_date: date | None = None
+    items: list[InvoiceItemOut] = []
+    notes: str | None = None
 
 
 class InvoiceListItem(BaseModel):
@@ -158,6 +183,12 @@ class InvoiceListItem(BaseModel):
     payment_id: str
     status: str
     created_at: datetime
+    due_date: date | None = None
+    patient_id: str | None = None
+    patient_name: str | None = None
+    amount: float = 0
+    currency: str = "BDT"
+    issue_date: date | None = None
 
 
 # ===== Payment Summary Schemas =====

@@ -133,7 +133,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t("issueDate")}</span>
-              <span>{fmt(invoice.issue_date, "P")}</span>
+              <span>{invoice.issue_date ? fmt(invoice.issue_date, "P") : "—"}</span>
             </div>
             {invoice.due_date && (
               <div className="flex justify-between">

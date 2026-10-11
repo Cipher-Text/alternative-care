@@ -116,7 +116,12 @@
     "modalDescPlaceholder": "e.g., Consultation fee, Follow-up visit",
     "recordedOk": "Payment of ৳{amount} recorded successfully",
     "recordFail": "Failed to record payment",
-    "recordPayment": "Record Payment"
+    "recordPayment": "Record Payment",
+    "paymentLabel": "Payment to invoice",
+    "paymentRequired": "Choose a payment",
+    "paymentPlaceholder": "Select a payment…",
+    "noPayments": "There are no payments yet. Record a payment first, then invoice it.",
+    "invoiceForPaymentNote": "An invoice is issued for one recorded payment; the patient, amount and date come from it."
   },
   "payTxUi": {
     "title": "Transaction History",

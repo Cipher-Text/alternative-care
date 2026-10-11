@@ -111,7 +111,7 @@ export default function InvoicesPage() {
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">{t("issueDate")}</span>
                         <span>
-                          {fmt(invoice.issue_date, "P")}
+                          {invoice.issue_date ? fmt(invoice.issue_date, "P") : "—"}
                         </span>
                       </div>
                       {invoice.due_date && (
