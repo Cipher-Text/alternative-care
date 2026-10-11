@@ -13,6 +13,7 @@ import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const navigation = [
+  { key: 'navArticles', href: '/articles' },
   { key: 'navInstitutions', href: '/institutions' },
   { key: 'navPractitioners', href: '/for-practitioners' },
   { key: 'navPricing', href: '/pricing' },

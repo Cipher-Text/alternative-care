@@ -4,7 +4,7 @@ import type { MetadataRoute } from 'next'
 const PRIVATE_PATHS = [
   '/login', '/register', '/forgot-password', '/reset-password', '/verify-email',
   '/dashboard', '/patients', '/appointments', '/prescriptions', '/payments', '/medicines',
-  '/symptoms', '/pharmacies', '/profile', '/settings', '/admin',
+  '/symptoms', '/pharmacies', '/content', '/profile', '/settings', '/admin',
 ]
 
 export default function robots(): MetadataRoute.Robots {

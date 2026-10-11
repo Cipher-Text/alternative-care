@@ -1,0 +1,145 @@
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { toast } from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
+import { articlesApi } from '@/lib/api/articles'
+import type { Article, ArticleInput, ArticleStatus } from '@/types/article'
+
+type ApiError = { response?: { data?: { detail?: unknown } } }
+
+/** The API's `detail` is a string for our own errors and an array for validation errors. */
+function detailOf(error: unknown): string | undefined {
+  const detail = (error as ApiError)?.response?.data?.detail
+  return typeof detail === 'string' ? detail : undefined
+}
+
+export function useArticles(params?: { status?: ArticleStatus; limit?: number; offset?: number }) {
+  return useQuery(['articles', params], () => articlesApi.list(params), {
+    staleTime: 30000,
+    keepPreviousData: true,
+  })
+}
+
+export function useArticle(id: string | undefined) {
+  return useQuery(['article', id], () => articlesApi.get(id as string), {
+    enabled: !!id,
+    staleTime: 30000,
+  })
+}
+
+/** Shared cache handling: refresh the lists and put the returned article straight into the detail cache. */
+function useAfterChange() {
+  const queryClient = useQueryClient()
+  return (article?: Article, id?: string) => {
+    queryClient.invalidateQueries('articles')
+    if (article) queryClient.setQueryData(['article', article.id], article)
+    else if (id) queryClient.removeQueries(['article', id])
+  }
+}
+
+export function useCreateArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation((data: ArticleInput) => articlesApi.create(data), {
+    onSuccess: (article) => {
+      after(article)
+      toast.success(t('toast.created'))
+    },
+    onError: (error) => {
+      toast.error(detailOf(error) || t('toast.createFailed'))
+    },
+  })
+}
+
+export function useUpdateArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation(
+    ({ id, data }: { id: string; data: ArticleInput }) => articlesApi.update(id, data),
+    {
+      onSuccess: (article) => {
+        after(article)
+        toast.success(t('toast.saved'))
+      },
+      onError: (error) => {
+      toast.error(detailOf(error) || t('toast.saveFailed'))
+    },
+    }
+  )
+}
+
+export function useDeleteArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation((id: string) => articlesApi.remove(id), {
+    onSuccess: (_, id) => {
+      after(undefined, id)
+      toast.success(t('toast.deleted'))
+    },
+    onError: (error) => {
+      toast.error(detailOf(error) || t('toast.deleteFailed'))
+    },
+  })
+}
+
+export function useSubmitArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation((id: string) => articlesApi.submit(id), {
+    onSuccess: (article) => {
+      after(article)
+      toast.success(t('toast.submitted'))
+    },
+    onError: (error) => {
+      toast.error(detailOf(error) || t('toast.submitFailed'))
+    },
+  })
+}
+
+export function usePublishArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation(
+    ({ id, data }: { id: string; data: { reviewer_display: string; review_due_at?: string } }) =>
+      articlesApi.publish(id, data),
+    {
+      onSuccess: (article) => {
+        after(article)
+        toast.success(t('toast.published'))
+      },
+      onError: (error) => {
+      toast.error(detailOf(error) || t('toast.publishFailed'))
+    },
+    }
+  )
+}
+
+export function useReturnArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation(
+    ({ id, note }: { id: string; note: string }) => articlesApi.returnToAuthor(id, note),
+    {
+      onSuccess: (article) => {
+        after(article)
+        toast.success(t('toast.returned'))
+      },
+      onError: (error) => {
+      toast.error(detailOf(error) || t('toast.returnFailed'))
+    },
+    }
+  )
+}
+
+export function useUnpublishArticle() {
+  const t = useTranslations('contentAdminUi')
+  const after = useAfterChange()
+  return useMutation((id: string) => articlesApi.unpublish(id), {
+    onSuccess: (article) => {
+      after(article)
+      toast.success(t('toast.unpublished'))
+    },
+    onError: (error) => {
+      toast.error(detailOf(error) || t('toast.unpublishFailed'))
+    },
+  })
+}

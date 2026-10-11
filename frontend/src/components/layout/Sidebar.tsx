@@ -18,6 +18,7 @@ import {
   Stethoscope,
   Store,
   Tags,
+  Newspaper,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -32,6 +33,7 @@ const doctorNavigation = [
   { key: 'medicines', href: '/medicines', icon: Pill },
   { key: 'pharmacies', href: '/pharmacies', icon: Store },
   { key: 'symptoms', href: '/symptoms', icon: Stethoscope },
+  { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'settings', href: '/settings', icon: Settings },
 ]
 
@@ -40,6 +42,7 @@ const adminNavigation = [
   { key: 'clients', href: '/admin/clients', icon: Building2 },
   { key: 'plansPricing', href: '/admin/plans', icon: Tags },
   { key: 'users', href: '/admin/users', icon: UserCog },
+  { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },
   { key: 'pharmacies', href: '/admin/pharmacies', icon: Store },
   { key: 'medicines', href: '/admin/medicines', icon: Pill },
@@ -57,8 +60,13 @@ export function useNavItems() {
   // docs/architecture/roles-access.md), so it sees the same nav as admin
   // rather than a separate, currently-empty menu.
   return user?.role === 'admin' || user?.role === 'operator'
-    ? adminNavigation
-    : doctorNavigation.filter((item) => can.manageClinicSettings || item.href !== '/settings')
+    ? // the content API is doctor/admin only, so operators don't get the Articles link
+      adminNavigation.filter((item) => user.role === 'admin' || item.href !== '/content')
+    : doctorNavigation.filter(
+        (item) =>
+          (can.manageClinicSettings || item.href !== '/settings') &&
+          (!can.isReceptionist || item.href !== '/content') // articles: doctors and admins only
+      )
 }
 
 export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

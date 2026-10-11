@@ -59,4 +59,5 @@ def test_current_api_route_count_matches_docs():
     # deactivate) — 152 -> 158. PATCH /auth/me/language — 158 -> 159.
     # Public medicine/symptom list/search/get removed (-6) and GET /public/stats added (+1)
     # — 159 -> 154.
-    assert api_method_count == 154
+    # Editorial content (Phase 1): +9 /api/v1/articles authoring, +2 /public/articles — 154 -> 165.
+    assert api_method_count == 165
