@@ -83,7 +83,11 @@
     "pendingStepReview": "We review your details, usually within a short time.",
     "pendingStepApproved": "We email you when you are approved, then you can log in and set up your clinic.",
     "pendingHelp": "Questions? Reply to the email we sent you.",
-    "useAnotherAccount": "Use a different account"
+    "useAnotherAccount": "Use a different account",
+    "consentPrefix": "By creating an account you agree to our",
+    "consentTerms": "Terms of Use",
+    "consentAnd": "and",
+    "consentPrivacy": "Privacy Policy"
   },
   "nav": {
     "profile": "Profile",

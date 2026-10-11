@@ -1,7 +1,5 @@
 {
   "publicShellUi": {
-    "navMedicines": "Medicines",
-    "navSymptoms": "Symptoms",
     "navInstitutions": "Institutions",
     "navPractitioners": "For Practitioners",
     "navPricing": "Pricing",
@@ -14,6 +12,45 @@
     "colDirectory": "Directory",
     "colProduct": "Product",
     "colCompany": "Company",
-    "rights": "© {year} AltCare. All rights reserved."
+    "rights": "© {year} AltCare. All rights reserved.",
+    "colLegal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "disclaimer": "Medical Disclaimer",
+    "contact": "Contact"
+  },
+  "publicMetaUi": {
+    "default": {
+      "title": "AltCare — Clinic software for alternative medicine practitioners",
+      "description": "Patients, appointments, prescriptions and payments in one simple system, in English and Bengali, for Homeopathy, Ayurveda, Unani and Herbal practitioners."
+    },
+    "about": {
+      "title": "About",
+      "description": "Who builds AltCare and how we work with alternative medicine practitioners."
+    },
+    "practitioners": {
+      "title": "For practitioners",
+      "description": "Manage patients, prescriptions, appointments and payments for your alternative medicine clinic."
+    },
+    "pricing": {
+      "title": "Pricing",
+      "description": "Plans for solo practitioners and growing clinics. Start on the free plan."
+    },
+    "institutions": {
+      "title": "Institutions directory",
+      "description": "Colleges and institutes teaching Homeopathy, Ayurveda and Unani in Bangladesh."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "What AltCare collects, how it is protected and the choices you have."
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "description": "The terms for using AltCare."
+    },
+    "disclaimer": {
+      "title": "Medical Disclaimer",
+      "description": "AltCare provides software and information, not medical advice."
+    }
   }
 }

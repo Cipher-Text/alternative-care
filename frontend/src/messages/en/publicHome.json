@@ -1,37 +1,50 @@
 {
   "publicHomeUi": {
     "heroBadge": "Homeopathy · Ayurveda · Unani · Herbal",
-    "heroTitle": "The alternative medicine platform for clinics and patients alike",
-    "heroSubtitle": "AltCare runs the clinic — patients, appointments, prescriptions, and payments — and hosts an open directory of medicines, symptoms, and institutions across all four disciplines.",
-    "searchAria": "Search medicines, e.g. Arnica, Ashwagandha",
-    "searchPlaceholder": "Search medicines, e.g. Arnica, Ashwagandha...",
-    "searchButton": "Search",
-    "browseInstitutions": "Browse Institutions",
-    "forPractitioners": "For Practitioners",
-    "statMedicines": "Medicines cataloged",
+    "heroTitle": "Run your alternative medicine clinic with confidence",
+    "heroSubtitle": "AltCare brings patients, appointments, prescriptions and payments into one simple system — in English and Bengali, built for Homeopathy, Ayurveda, Unani and Herbal practitioners.",
+    "getStarted": "Get Started",
+    "seePricing": "See pricing",
+    "signIn": "Sign in",
+    "statPractitioners": "Practitioners",
+    "statClinics": "Clinics",
+    "statMedicines": "Medicines in the library",
     "statSymptoms": "Symptoms indexed",
     "statInstitutions": "Institutions listed",
-    "disciplinesTitle": "Browse by discipline",
-    "disciplinesSubtitle": "Every medicine and institution is tagged to the disciplines it serves.",
+    "doorsTitle": "Who is AltCare for?",
+    "doorPractitionerTitle": "For practitioners",
+    "doorPractitionerDesc": "Manage patients, issue prescriptions as PDFs, schedule visits and track payments, with a medicine and symptom library built for your discipline.",
+    "doorPractitionerCta": "Start with AltCare",
+    "doorPatientTitle": "For patients and the curious",
+    "doorPatientDesc": "A directory of verified practitioners and reviewed health articles is on the way.",
+    "comingSoon": "Coming soon",
+    "disciplinesTitle": "Built for every discipline",
+    "disciplinesSubtitle": "One system for the four traditions practised across Bangladesh.",
     "disciplines": {
-      "homeopathy": { "label": "Homeopathy", "description": "Remedies, potencies, and repertory guidance." },
-      "ayurveda": { "label": "Ayurveda", "description": "Classical formulations and herbal preparations." },
-      "unani": { "label": "Unani", "description": "Traditional Unani-Tibb medicines and practice." },
-      "herbal": { "label": "Herbal", "description": "Plant-based remedies used across disciplines." }
+      "homeopathy": {
+        "label": "Homeopathy",
+        "description": "Remedies, potencies, and repertory guidance."
+      },
+      "ayurveda": {
+        "label": "Ayurveda",
+        "description": "Classical formulations and herbal preparations."
+      },
+      "unani": {
+        "label": "Unani",
+        "description": "Traditional Unani-Tibb medicines and practice."
+      },
+      "herbal": {
+        "label": "Herbal",
+        "description": "Plant-based remedies used across disciplines."
+      }
     },
-    "institutionsTitle": "Institutions directory",
-    "institutionsSubtitle": "Colleges and institutes teaching alternative medicine in Bangladesh.",
-    "viewAll": "View all",
-    "viewAllInstitutions": "View all institutions",
-    "ctaTitle": "Run your clinic on AltCare",
-    "ctaSubtitle": "Patients, appointments, prescriptions, payments, and your own medicine library — one system built for Homeopathy, Ayurveda, Unani, and Herbal practices.",
     "featurePatientsTitle": "Patient records",
     "featurePatientsDesc": "Full history, tags, and diagnoses in one place.",
     "featureAppointmentsTitle": "Appointments & prescriptions",
     "featureAppointmentsDesc": "Scheduling, visit notes, and a prescription builder with autocomplete.",
-    "featureSecurityTitle": "Multi-tenant security",
-    "featureSecurityDesc": "Row-level isolation keeps every clinic's data separate.",
-    "getStarted": "Get Started",
-    "builtForEvery": "Built for every discipline"
+    "featureSecurityTitle": "Your data stays yours",
+    "featureSecurityDesc": "Every clinic's records are kept separate from every other clinic's.",
+    "ctaTitle": "Everything a clinic needs, nothing it doesn't",
+    "ctaSubtitle": "Start on the free plan. New accounts are reviewed by our team before they are activated."
   }
 }

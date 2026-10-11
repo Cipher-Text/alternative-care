@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCan } from '@/lib/auth/permissions'
 import { useAuthStore } from '@/store/authStore'
 import { useOverviewStats, useFinancialAnalytics, usePatientAnalytics } from '@/lib/hooks/useDashboard'
+import { OnboardingChecklist } from '@/components/dashboard/OnboardingChecklist'
 import { StatsCard } from '@/components/dashboard/StatsCard'
 import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { PatientDemographicsChart } from '@/components/dashboard/PatientDemographicsChart'
@@ -95,6 +96,15 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           <DateRangePicker onRangeChange={handleDateRangeChange} />
         </div>
       </div>
+
+      {/* First-run guide: only on the unfiltered, all-time view and only for roles that write records */}
+      {can.writeClinical && overview && !dateRange.date_from && !dateRange.date_to && (
+        <OnboardingChecklist
+          totalPatients={overview.total_patients}
+          totalAppointments={overview.total_appointments}
+          totalPrescriptions={overview.total_prescriptions}
+        />
+      )}
 
       {/* Quick Actions */}
       <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950 dark:to-slate-900">

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, Plus_Jakarta_Sans, Fira_Code, Noto_Sans_Bengali } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 import { Providers } from './providers'
 
@@ -30,10 +31,15 @@ const firaCode = Fira_Code({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "AltCare - Alternative Medicine Practice Management",
-  description: "Comprehensive clinic management system for alternative medicine practitioners",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("publicMetaUi.default");
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+    title: { default: t("title"), template: "%s · AltCare" },
+    description: t("description"),
+    openGraph: { siteName: "AltCare", type: "website", title: t("title"), description: t("description") },
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -76,6 +82,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
+          <Analytics />
         </NextIntlClientProvider>
       </body>
     </html>

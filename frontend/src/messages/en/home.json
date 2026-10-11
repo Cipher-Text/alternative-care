@@ -121,5 +121,15 @@
     "unavailableDesc": "This listing could not be loaded. It may have been removed.",
     "distanceAway": "{distance} away",
     "mapLabel": "Map of pharmacies"
+  },
+  "onboardingUi": {
+    "title": "Get started with AltCare",
+    "subtitle": "Three steps to your first prescription.",
+    "stepPatient": "Add your first patient",
+    "stepAppointment": "Schedule an appointment",
+    "stepPrescription": "Issue your first prescription",
+    "done": "Done",
+    "start": "Start",
+    "progress": "{done} of {total} done"
   }
 }

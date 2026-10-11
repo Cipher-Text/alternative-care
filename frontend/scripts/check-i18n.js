@@ -11,7 +11,7 @@ const path = require('node:path')
 
 const ROOT = path.join(__dirname, '..')
 const MSG = path.join(ROOT, 'src', 'messages')
-const AREAS = ['patients', 'prescriptions', 'appointments', 'payments', 'home', 'library', 'symptoms', 'publicShell', 'publicHome', 'publicInfo', 'publicDirectory']
+const AREAS = ['patients', 'prescriptions', 'appointments', 'payments', 'home', 'library', 'symptoms', 'publicShell', 'publicHome', 'publicInfo', 'publicDirectory', 'publicLegal']
 
 function load(locale) {
   const out = JSON.parse(fs.readFileSync(path.join(MSG, `${locale}.json`), 'utf8'))
