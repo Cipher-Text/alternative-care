@@ -217,7 +217,7 @@ export function IntegrationLogs() {
       </Card>
 
       {/* Pagination */}
-      {logs && logs.length >= (filters.limit || 50) && (
+      {logs && ((filters.offset ?? 0) > 0 || logs.length >= (filters.limit || 50)) && (
         <div className="flex justify-center gap-2">
           <Button
             variant="outline"
@@ -233,6 +233,7 @@ export function IntegrationLogs() {
           </Button>
           <Button
             variant="outline"
+            disabled={logs.length < (filters.limit || 50)}
             onClick={() =>
               setFilters((prev) => ({
                 ...prev,

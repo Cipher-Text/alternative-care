@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.entitlements import EntitlementService
@@ -98,10 +98,32 @@ class AdminService:
     # Tenant management
     # ========================================================================
 
-    async def list_tenants(self) -> list[AdminTenantListItem]:
-        """List all tenants with primary doctor summaries."""
+    async def list_tenants(
+        self, search: str | None = None, limit: int = 100, offset: int = 0
+    ) -> list[AdminTenantListItem]:
+        """List tenants (newest first, paginated) with primary doctor summaries."""
+        query = select(Tenant)
+        if search and search.strip():
+            pattern = f"%{search.strip()}%"
+            doctor_match = (
+                select(User.id)
+                .where(
+                    User.tenant_id == Tenant.id,
+                    User.role == "doctor",
+                    User.full_name.ilike(pattern),
+                )
+                .exists()
+            )
+            query = query.where(
+                or_(
+                    Tenant.name.ilike(pattern),
+                    Tenant.clinic_name.ilike(pattern),
+                    Tenant.email.ilike(pattern),
+                    doctor_match,
+                )
+            )
         tenant_result = await self.db.execute(
-            select(Tenant).order_by(Tenant.created_at.desc())
+            query.order_by(Tenant.created_at.desc()).limit(limit).offset(offset)
         )
         tenants = tenant_result.scalars().all()
 
@@ -185,12 +207,16 @@ class AdminService:
             **usage,
         )
 
-    async def list_pending_tenants(self) -> list[AdminTenantItem]:
-        """List tenants waiting for approval."""
+    async def list_pending_tenants(
+        self, limit: int = 100, offset: int = 0
+    ) -> list[AdminTenantItem]:
+        """List tenants waiting for approval (newest first, paginated)."""
         result = await self.db.execute(
             select(Tenant)
             .where(Tenant.is_approved == False)  # noqa: E712
             .order_by(Tenant.created_at.desc())
+            .limit(limit)
+            .offset(offset)
         )
         return [AdminTenantItem.model_validate(t) for t in result.scalars().all()]
 
@@ -373,19 +399,42 @@ class AdminService:
         role: str | None = None,
         tenant_id: str | None = None,
         is_active: bool | None = None,
+        search: str | None = None,
+        limit: int = 100,
+        offset: int = 0,
     ) -> AdminUsersResponse:
-        """List all users across the platform, grouped by role."""
-        query = select(User)
-
-        if role is not None:
-            query = query.where(User.role == role)
+        """List users (paginated); the role summary covers the whole filtered set."""
+        filters = []
         if tenant_id is not None:
-            query = query.where(User.tenant_id == tenant_id)
+            filters.append(User.tenant_id == tenant_id)
         if is_active is not None:
-            query = query.where(User.is_active == is_active)
+            filters.append(User.is_active == is_active)
+        if search and search.strip():
+            pattern = f"%{search.strip()}%"
+            clinic_match = (
+                select(Tenant.id)
+                .where(Tenant.id == User.tenant_id, Tenant.name.ilike(pattern))
+                .exists()
+            )
+            filters.append(
+                or_(User.full_name.ilike(pattern), User.email.ilike(pattern), clinic_match)
+            )
 
-        query = query.order_by(User.role, User.created_at.asc())
-        result = await self.db.execute(query)
+        # Role summary: every role's count under the other filters (so the role cards still show
+        # the whole distribution while one role is selected), not just this page
+        counts = await self.db.execute(
+            select(User.role, func.count()).where(*filters).group_by(User.role)
+        )
+        count_by_role = {r: c for r, c in counts.all()}
+
+        page_filters = [User.role == role, *filters] if role is not None else filters
+        result = await self.db.execute(
+            select(User)
+            .where(*page_filters)
+            .order_by(User.role, User.created_at.asc(), User.id)
+            .limit(limit)
+            .offset(offset)
+        )
         users = result.scalars().all()
 
         # Fetch tenant names for tenant users
@@ -414,21 +463,11 @@ class AdminService:
             for u in users
         ]
 
-        # Build role summary
-        by_role: dict[str, int] = {
-            "admin": 0,
-            "operator": 0,
-            "doctor": 0,
-            "receptionist": 0,
-        }
-        for item in user_items:
-            if item.role in by_role:
-                by_role[item.role] += 1
-            else:
-                by_role[item.role] = 1
+        by_role: dict[str, int] = {"admin": 0, "operator": 0, "doctor": 0, "receptionist": 0}
+        by_role.update(count_by_role)
 
         return AdminUsersResponse(
-            summary={"total": len(user_items), "by_role": by_role},
+            summary={"total": sum(by_role.values()), "by_role": by_role},
             users=user_items,
         )
 

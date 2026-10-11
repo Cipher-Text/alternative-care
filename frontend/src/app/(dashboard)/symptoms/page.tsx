@@ -6,7 +6,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSymptoms, useDeleteSymptom } from '@/lib/hooks/useSymptoms';
+import { useSymptoms, useSearchSymptoms, useDeleteSymptom } from '@/lib/hooks/useSymptoms';
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
+import { Pager, clientPage, serverPage, usePager } from '@/components/shared/Pager';
 import { useCan } from '@/lib/auth/permissions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,11 +23,25 @@ export default function SymptomsPage() {
   const can = useCan();
   const [filters, setFilters] = useState<SymptomFilters>({
     is_active: true,
-    limit: 100,
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedTerm = useDebouncedValue(searchTerm.trim());
+  const isSearching = debouncedTerm.length > 0;
+  const pager = usePager(undefined, [filters, debouncedTerm]);
 
-  const { data: symptoms, isLoading } = useSymptoms(filters);
+  // Browsing pages on the server (one extra row tells us a next page exists)
+  const { data: listedRows, isLoading: listLoading } = useSymptoms(
+    { ...filters, limit: pager.pageSize + 1, offset: pager.offset },
+    { keepPreviousData: true }
+  );
+  const { items: listed, hasNext: listHasNext } = serverPage(listedRows, pager.pageSize);
+  // Search returns the top-ranked matches (no offset), so those are paged in the browser
+  const { data: searched, isLoading: searchLoading } = useSearchSymptoms({
+    q: debouncedTerm,
+    category: filters.category,
+    limit: 100,
+  });
+  const isLoading = isSearching ? searchLoading : listLoading;
   const deleteSymptom = useDeleteSymptom();
 
   const handleDelete = async (id: number) => {
@@ -59,11 +75,10 @@ export default function SymptomsPage() {
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
-  // Filter symptoms by search term (client-side)
-  const filteredSymptoms = symptoms?.filter((symptom) =>
-    symptom.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    symptom.name_bn?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const searchMatches = isSearching ? (searched ?? []).map((r) => r.symptom) : [];
+  const searchPage = clientPage(searchMatches, pager.page, pager.pageSize);
+  const filteredSymptoms = isSearching ? searchPage.items : listed;
+  const hasNext = isSearching ? searchPage.hasNext : listHasNext;
 
   return (
     <div className="space-y-6">
@@ -179,7 +194,7 @@ export default function SymptomsPage() {
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
         </div>
-      ) : !filteredSymptoms || filteredSymptoms.length === 0 ? (
+      ) : filteredSymptoms.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-gray-500">No symptoms found</p>
           {can.writeClinical && (
@@ -251,6 +266,16 @@ export default function SymptomsPage() {
           ))}
         </div>
       )}
+
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={filteredSymptoms.length}
+        hasNext={hasNext}
+        onPageChange={pager.setPage}
+        total={isSearching ? searchPage.total : undefined}
+        noun="symptoms"
+      />
     </div>
   );
 }

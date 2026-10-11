@@ -5,7 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-hot-toast'
 import { AxiosError } from 'axios'
-import { adminApi } from '@/lib/api/admin'
+import { adminApi, type AdminListParams } from '@/lib/api/admin'
 import type { AdminAddTenantDoctorRequest, AdminProvisionRequest } from '@/types/admin'
 
 function getErrorMessage(error: unknown, fallback: string): string {
@@ -16,17 +16,19 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return fallback
 }
 
-export function usePendingTenants(enabled = true) {
-  return useQuery(['admin', 'tenants-pending'], () => adminApi.listPendingTenants(), {
+export function usePendingTenants(enabled = true, params?: AdminListParams) {
+  return useQuery(['admin', 'tenants-pending', params], () => adminApi.listPendingTenants(params), {
     enabled,
     staleTime: 30000,
+    keepPreviousData: true,
   })
 }
 
-export function useAdminClients(enabled = true) {
-  return useQuery(['admin', 'tenants'], () => adminApi.listTenants(), {
+export function useAdminClients(enabled = true, params?: AdminListParams) {
+  return useQuery(['admin', 'tenants', 'list', params], () => adminApi.listTenants(params), {
     enabled,
     staleTime: 30000,
+    keepPreviousData: true,
   })
 }
 

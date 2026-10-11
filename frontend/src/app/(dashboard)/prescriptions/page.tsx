@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePrescriptions, useViewPrescriptionPdf } from '@/lib/hooks/usePrescriptions'
 import { useCan } from '@/lib/auth/permissions'
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
+import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -38,16 +40,18 @@ export default function PrescriptionsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<string>('')
 
-  const { data: prescriptions, isLoading, error } = usePrescriptions({
-    status: (status || undefined) as PrescriptionStatus | undefined,
-  })
+  const debouncedSearch = useDebouncedValue(search)
+  const pager = usePager(undefined, [debouncedSearch.trim(), status])
 
-  // Client-side filtering for search
-  const filteredPrescriptions = prescriptions?.filter((prescription) =>
-    `${prescription.id} ${prescription.patient_id} ${prescription.diagnosis || ''}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  )
+  // Status, search and paging all run on the server; one extra row tells us a next page exists
+  const { data, isLoading, error, isFetching } = usePrescriptions({
+    status: (status || undefined) as PrescriptionStatus | undefined,
+    search: debouncedSearch.trim() || undefined,
+    limit: pager.pageSize + 1,
+    offset: pager.offset,
+  })
+  const { items: prescriptions, hasNext } = serverPage(data, pager.pageSize)
+  const filteredPrescriptions = prescriptions
 
   if (isLoading) {
     return (
@@ -98,7 +102,10 @@ export default function PrescriptionsPage() {
             className="pl-10"
           />
         </div>
-        <Select value={status} onValueChange={setStatus}>
+        <Select
+          value={status || 'all'}
+          onValueChange={(value) => setStatus(value === 'all' ? '' : value)}
+        >
           <SelectTrigger aria-label="All Statuses" className="w-[180px]">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
@@ -114,31 +121,31 @@ export default function PrescriptionsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Total</p>
-          <p className="text-2xl font-bold">{prescriptions?.length || 0}</p>
+          <p className="text-sm text-muted-foreground">On this page</p>
+          <p className="text-2xl font-bold">{prescriptions.length}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Drafts</p>
+          <p className="text-sm text-muted-foreground">Drafts (this page)</p>
           <p className="text-2xl font-bold">
-            {prescriptions?.filter((p) => p.status === 'draft').length || 0}
+            {prescriptions.filter((p) => p.status === 'draft').length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Issued</p>
+          <p className="text-sm text-muted-foreground">Issued (this page)</p>
           <p className="text-2xl font-bold">
-            {prescriptions?.filter((p) => p.status === 'issued').length || 0}
+            {prescriptions.filter((p) => p.status === 'issued').length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Voided</p>
+          <p className="text-sm text-muted-foreground">Voided (this page)</p>
           <p className="text-2xl font-bold">
-            {prescriptions?.filter((p) => p.status === 'voided').length || 0}
+            {prescriptions.filter((p) => p.status === 'voided').length}
           </p>
         </div>
       </div>
 
       {/* Prescriptions Table */}
-      {filteredPrescriptions && filteredPrescriptions.length > 0 ? (
+      {filteredPrescriptions.length > 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg border">
           <Table>
             <TableHeader>
@@ -221,6 +228,16 @@ export default function PrescriptionsPage() {
           )}
         </div>
       )}
+
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={prescriptions.length}
+        hasNext={hasNext}
+        onPageChange={pager.setPage}
+        isLoading={isFetching}
+        noun="prescriptions"
+      />
     </div>
   )
 }

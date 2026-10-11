@@ -84,6 +84,7 @@ export interface PrescriptionListParams {
   patient_id?: string
   visit_id?: string
   status?: PrescriptionStatus
+  search?: string
   limit?: number
   offset?: number
 }

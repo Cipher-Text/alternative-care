@@ -92,6 +92,7 @@ export function useInvoices(filters?: InvoiceFilters) {
   return useQuery({
     queryKey: invoiceKeys.list(filters),
     queryFn: () => invoicesApi.list(filters),
+    keepPreviousData: true,
   });
 }
 

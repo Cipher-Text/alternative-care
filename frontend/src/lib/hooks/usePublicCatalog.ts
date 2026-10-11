@@ -14,13 +14,14 @@ import {
 export function usePublicMedicines(params?: PublicMedicineFilters) {
   return useQuery(['public', 'medicines', params], () => publicApi.medicines.list(params), {
     staleTime: 5 * 60 * 1000,
+    keepPreviousData: true,
   });
 }
 
 export function usePublicMedicineSearch(q: string, system?: PublicMedicineFilters['system']) {
   return useQuery(
     ['public', 'medicines', 'search', q, system],
-    () => publicApi.medicines.search(q, system),
+    () => publicApi.medicines.search(q, system, 100), // top 100 ranked; paged in the browser
     { enabled: q.trim().length > 0, staleTime: 60 * 1000 }
   );
 }
@@ -28,13 +29,14 @@ export function usePublicMedicineSearch(q: string, system?: PublicMedicineFilter
 export function usePublicSymptoms(params?: PublicSymptomFilters) {
   return useQuery(['public', 'symptoms', params], () => publicApi.symptoms.list(params), {
     staleTime: 5 * 60 * 1000,
+    keepPreviousData: true,
   });
 }
 
 export function usePublicSymptomSearch(q: string, category?: string) {
   return useQuery(
     ['public', 'symptoms', 'search', q, category],
-    () => publicApi.symptoms.search(q, category),
+    () => publicApi.symptoms.search(q, category, 100), // top 100 ranked; paged in the browser
     { enabled: q.trim().length > 0, staleTime: 60 * 1000 }
   );
 }

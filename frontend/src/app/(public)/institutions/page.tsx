@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Pager, clientPage, usePager } from '@/components/shared/Pager'
 import { BadgeCheck, ExternalLink, GraduationCap, Loader2, Search } from 'lucide-react'
 import { usePublicInstitutions } from '@/lib/hooks/usePublicCatalog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -43,6 +44,9 @@ export default function PublicInstitutionsPage() {
         .some((value) => value.toLowerCase().includes(term))
     )
   }, [institutions, searchTerm])
+
+  const pager = usePager(undefined, [searchTerm, disciplineFilter, typeFilter])
+  const page = clientPage(filtered, pager.page, pager.pageSize)
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
@@ -98,7 +102,7 @@ export default function PublicInstitutionsPage() {
         </div>
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((institution) => (
+          {page.items.map((institution) => (
             <Card key={institution.id}>
               <CardHeader className="pb-3">
                 <div className="flex items-start gap-3">
@@ -153,6 +157,15 @@ export default function PublicInstitutionsPage() {
           <p className="text-muted-foreground mt-2">Try a different search or filter.</p>
         </div>
       )}
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={page.items.length}
+        hasNext={page.hasNext}
+        total={page.total}
+        onPageChange={pager.setPage}
+        noun="institutions"
+      />
     </div>
   )
 }

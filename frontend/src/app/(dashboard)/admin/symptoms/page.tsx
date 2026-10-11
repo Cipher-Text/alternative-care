@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Pager, clientPage, usePager } from '@/components/shared/Pager'
 import { useRouter } from 'next/navigation'
 import {
   Loader2,
@@ -254,6 +255,9 @@ export default function AdminSymptomsPage() {
     )
   }, [symptoms.data, searchTerm])
 
+  const pager = usePager(undefined, [searchTerm, categoryFilter, statusFilter])
+  const page = clientPage(filtered, pager.page, pager.pageSize)
+
   const openCreateDialog = () => {
     setEditingId(null)
     setDialogOpen(true)
@@ -393,7 +397,7 @@ export default function AdminSymptomsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((symptom) => (
+                {page.items.map((symptom) => (
                   <TableRow key={symptom.id}>
                     <TableCell>
                       <div>
@@ -455,6 +459,15 @@ export default function AdminSymptomsPage() {
               </p>
             </div>
           )}
+          <Pager
+            page={pager.page}
+            pageSize={pager.pageSize}
+            count={page.items.length}
+            hasNext={page.hasNext}
+            total={page.total}
+            onPageChange={pager.setPage}
+            noun="symptoms"
+          />
         </CardContent>
       </Card>
 

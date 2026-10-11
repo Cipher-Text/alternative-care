@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePatients } from '@/lib/hooks/usePatients'
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
+import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { PatientCard } from '@/components/patients/PatientCard'
 import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
@@ -21,16 +23,19 @@ export default function PatientsPage() {
   const [search, setSearch] = useState('')
   const [gender, setGender] = useState<string>('')
 
-  const { data: patients, isLoading, error } = usePatients()
+  const debouncedSearch = useDebouncedValue(search)
+  const pager = usePager(undefined, [debouncedSearch.trim()])
 
-  // Client-side filtering
-  const filteredPatients = patients?.filter((patient) => {
-    const matchesSearch = `${patient.full_name} ${patient.phone ?? ''}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-    const matchesGender = !gender || patient.gender === gender
-    return matchesSearch && matchesGender
+  // Search and paging run on the server; ask for one extra row to know whether a next page exists
+  const { data, isLoading, error, isFetching } = usePatients({
+    search: debouncedSearch.trim() || undefined,
+    limit: pager.pageSize + 1,
+    offset: pager.offset,
   })
+  const { items: patients, hasNext } = serverPage(data, pager.pageSize)
+
+  // Gender has no server filter yet, so it narrows the rows on the current page
+  const filteredPatients = patients.filter((patient) => !gender || gender === 'all' || patient.gender === gender)
 
   if (isLoading) {
     return (
@@ -81,7 +86,7 @@ export default function PatientsPage() {
             className="pl-10 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder:text-gray-500"
           />
         </div>
-        <Select value={gender} onValueChange={setGender}>
+        <Select value={gender} onValueChange={(value) => setGender(value === 'all' ? '' : value)}>
           <SelectTrigger aria-label="All Genders" className="w-[180px] bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
             <SelectValue placeholder="All Genders" />
           </SelectTrigger>
@@ -97,25 +102,25 @@ export default function PatientsPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Total Patients</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{patients?.length || 0}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">On this page</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{patients.length}</p>
         </div>
         <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Male</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Male (this page)</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {patients?.filter((p) => p.gender === 'male').length || 0}
+            {patients.filter((p) => p.gender === 'male').length}
           </p>
         </div>
         <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Female</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Female (this page)</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
-            {patients?.filter((p) => p.gender === 'female').length || 0}
+            {patients.filter((p) => p.gender === 'female').length}
           </p>
         </div>
       </div>
 
       {/* Patient Grid */}
-      {filteredPatients && filteredPatients.length > 0 ? (
+      {filteredPatients.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredPatients.map((patient) => (
             <PatientCard key={patient.id} patient={patient} />
@@ -138,6 +143,16 @@ export default function PatientsPage() {
           )}
         </div>
       )}
+
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={patients.length}
+        hasNext={hasNext}
+        onPageChange={pager.setPage}
+        isLoading={isFetching}
+        noun="patients"
+      />
     </div>
   )
 }

@@ -14,6 +14,13 @@ import type {
   AdminUpdateUserResponse,
 } from '@/types/admin'
 
+/** Paging and search accepted by the admin list endpoints */
+export interface AdminListParams {
+  search?: string
+  limit?: number
+  offset?: number
+}
+
 export const adminApi = {
   // Dashboard
   getDashboard: async (): Promise<AdminDashboard> => {
@@ -22,8 +29,8 @@ export const adminApi = {
   },
 
   // Tenants
-  listTenants: async (): Promise<AdminTenantListItem[]> => {
-    const response = await apiClient.get('/admin/tenants')
+  listTenants: async (params?: AdminListParams): Promise<AdminTenantListItem[]> => {
+    const response = await apiClient.get('/admin/tenants', { params })
     return response.data
   },
 
@@ -32,8 +39,8 @@ export const adminApi = {
     return response.data
   },
 
-  listPendingTenants: async (): Promise<AdminTenantItem[]> => {
-    const response = await apiClient.get('/admin/tenants/pending')
+  listPendingTenants: async (params?: AdminListParams): Promise<AdminTenantItem[]> => {
+    const response = await apiClient.get('/admin/tenants/pending', { params })
     return response.data
   },
 
@@ -61,11 +68,13 @@ export const adminApi = {
   },
 
   // Users
-  listUsers: async (params?: {
-    role?: string
-    tenant_id?: string
-    is_active?: boolean
-  }): Promise<AdminUsersResponse> => {
+  listUsers: async (
+    params?: AdminListParams & {
+      role?: string
+      tenant_id?: string
+      is_active?: boolean
+    }
+  ): Promise<AdminUsersResponse> => {
     const response = await apiClient.get('/admin/users', { params })
     return response.data
   },

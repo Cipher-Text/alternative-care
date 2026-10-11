@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Pager, clientPage, usePager } from '@/components/shared/Pager'
 import { useRouter } from 'next/navigation'
 import {
   BadgeCheck,
@@ -126,6 +127,9 @@ export default function AdminInstitutionsPage() {
       ].some((value) => value.toLowerCase().includes(term))
     )
   }, [institutions.data, searchTerm])
+
+  const pager = usePager(undefined, [searchTerm, disciplineFilter, typeFilter])
+  const page = clientPage(filtered, pager.page, pager.pageSize)
 
   const updateForm = <K extends keyof InstitutionCreate>(key: K, value: InstitutionCreate[K]) => {
     setForm((current) => ({ ...current, [key]: value }))
@@ -278,7 +282,7 @@ export default function AdminInstitutionsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((institution) => (
+                {page.items.map((institution) => (
                   <TableRow key={institution.id}>
                     <TableCell>
                       <div>
@@ -369,6 +373,15 @@ export default function AdminInstitutionsPage() {
               </p>
             </div>
           )}
+          <Pager
+            page={pager.page}
+            pageSize={pager.pageSize}
+            count={page.items.length}
+            hasNext={page.hasNext}
+            total={page.total}
+            onPageChange={pager.setPage}
+            noun="institutions"
+          />
         </CardContent>
       </Card>
 

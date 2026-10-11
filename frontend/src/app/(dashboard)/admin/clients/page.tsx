@@ -1,6 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
+import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -83,8 +85,28 @@ export default function AdminClientsPage() {
   const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
   const canEdit = user?.role === 'admin'
 
-  const clients = useAdminClients(isPlatformRole)
-  const pendingTenants = usePendingTenants(isPlatformRole)
+  const debouncedSearch = useDebouncedValue(searchTerm.trim())
+  const clientPager = usePager(undefined, [debouncedSearch])
+  const pendingPager = usePager()
+
+  // Search and paging run on the server; one extra row tells us a next page exists
+  const clients = useAdminClients(isPlatformRole, {
+    search: debouncedSearch || undefined,
+    limit: clientPager.pageSize + 1,
+    offset: clientPager.offset,
+  })
+  const pendingTenants = usePendingTenants(isPlatformRole, {
+    limit: pendingPager.pageSize + 1,
+    offset: pendingPager.offset,
+  })
+  const { items: filteredClients, hasNext: clientsHaveNext } = serverPage(
+    clients.data,
+    clientPager.pageSize
+  )
+  const { items: pendingItems, hasNext: pendingHasNext } = serverPage(
+    pendingTenants.data,
+    pendingPager.pageSize
+  )
   const provisionClient = useProvisionClient()
   const approveTenant = useApproveTenant()
 
@@ -92,25 +114,6 @@ export default function AdminClientsPage() {
     () => new Set(form.specializations),
     [form.specializations]
   )
-  const filteredClients = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase()
-    if (!term) return clients.data || []
-
-    return (clients.data || []).filter((client) => {
-      const tenant = client.tenant
-      const doctor = client.primary_doctor
-
-      return [
-        tenant.name,
-        tenant.email,
-        tenant.clinic_name || '',
-        tenant.plan,
-        doctor?.full_name || '',
-        doctor?.email || '',
-      ].some((value) => value.toLowerCase().includes(term))
-    })
-  }, [clients.data, searchTerm])
-
   const validateForm = () => {
     const nextErrors: Record<string, string> = {}
 
@@ -301,6 +304,15 @@ export default function AdminClientsPage() {
                   </p>
                 </div>
               )}
+              <Pager
+                page={clientPager.page}
+                pageSize={clientPager.pageSize}
+                count={filteredClients.length}
+                hasNext={clientsHaveNext}
+                onPageChange={clientPager.setPage}
+                isLoading={clients.isFetching}
+                noun="clients"
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -558,7 +570,7 @@ export default function AdminClientsPage() {
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
                 </div>
-              ) : pendingTenants.data && pendingTenants.data.length > 0 ? (
+              ) : pendingItems.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -571,7 +583,7 @@ export default function AdminClientsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pendingTenants.data.map((tenant) => (
+                    {pendingItems.map((tenant) => (
                       <TableRow key={tenant.id}>
                         <TableCell>
                           <div>
@@ -624,6 +636,15 @@ export default function AdminClientsPage() {
                   </p>
                 </div>
               )}
+              <Pager
+                page={pendingPager.page}
+                pageSize={pendingPager.pageSize}
+                count={pendingItems.length}
+                hasNext={pendingHasNext}
+                onPageChange={pendingPager.setPage}
+                isLoading={pendingTenants.isFetching}
+                noun="pending tenants"
+              />
             </CardContent>
           </Card>
         </TabsContent>

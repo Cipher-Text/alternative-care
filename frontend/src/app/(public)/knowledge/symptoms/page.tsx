@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Search, Loader2, Stethoscope } from 'lucide-react'
 import { usePublicSymptoms, usePublicSymptomSearch } from '@/lib/hooks/usePublicCatalog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Pager, clientPage, serverPage, usePager } from '@/components/shared/Pager'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 
@@ -26,16 +27,26 @@ function SymptomsDirectory() {
     return () => clearTimeout(timer)
   }, [query])
 
-  const searchResults = usePublicSymptomSearch(debouncedQuery)
-  const browseResults = usePublicSymptoms({ limit: 100 })
-
   const isSearching = debouncedQuery.trim().length > 0
+  const pager = usePager(12, [debouncedQuery])
+  const searchResults = usePublicSymptomSearch(debouncedQuery)
+  // Browsing pages on the server (one extra row tells us a next page exists); search results are
+  // the top-ranked matches and are paged in the browser
+  const browseResults = usePublicSymptoms({ limit: pager.pageSize + 1, offset: pager.offset })
   const { data, isLoading } = isSearching ? searchResults : browseResults
+
+  const searchPage = clientPage(
+    isSearching ? (searchResults.data ?? []) : [],
+    pager.page,
+    pager.pageSize
+  )
+  const browsePage = serverPage(isSearching ? [] : browseResults.data, pager.pageSize)
+  const hasNext = isSearching ? searchPage.hasNext : browsePage.hasNext
 
   const symptoms: SymptomCardData[] = useMemo(() => {
     if (!data) return []
     if (isSearching) {
-      return (data as NonNullable<typeof searchResults.data>).map((result) => ({
+      return searchPage.items.map((result) => ({
         id: result.symptom.id,
         name_en: result.symptom.name_en,
         name_bn: result.symptom.name_bn,
@@ -44,13 +55,13 @@ function SymptomsDirectory() {
           result.matched_term !== result.symptom.name_en ? result.matched_term : undefined,
       }))
     }
-    return (data as NonNullable<typeof browseResults.data>).map((item) => ({
+    return browsePage.items.map((item) => ({
       id: item.id,
       name_en: item.name_en,
       name_bn: item.name_bn,
       category: item.category,
     }))
-  }, [data, isSearching])
+  }, [data, isSearching, searchPage.items, browsePage.items])
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
@@ -113,6 +124,15 @@ function SymptomsDirectory() {
           <p className="text-muted-foreground mt-2">Try a different search term.</p>
         </div>
       )}
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={symptoms.length}
+        hasNext={hasNext}
+        total={isSearching ? searchPage.total : undefined}
+        onPageChange={pager.setPage}
+        noun="symptoms"
+      />
     </div>
   )
 }

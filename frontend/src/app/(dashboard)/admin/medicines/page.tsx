@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Pager, clientPage, usePager } from '@/components/shared/Pager'
 import { useRouter } from 'next/navigation'
 import {
   Loader2,
@@ -301,6 +302,9 @@ export default function AdminMedicinesPage() {
     )
   }, [medicines.data, searchTerm])
 
+  const pager = usePager(undefined, [searchTerm, systemFilter, statusFilter])
+  const page = clientPage(filtered, pager.page, pager.pageSize)
+
   const openCreateDialog = () => {
     setEditingId(null)
     setDialogOpen(true)
@@ -450,7 +454,7 @@ export default function AdminMedicinesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((medicine) => (
+                {page.items.map((medicine) => (
                   <TableRow key={medicine.id}>
                     <TableCell>
                       <div>
@@ -514,6 +518,15 @@ export default function AdminMedicinesPage() {
               </p>
             </div>
           )}
+          <Pager
+            page={pager.page}
+            pageSize={pager.pageSize}
+            count={page.items.length}
+            hasNext={page.hasNext}
+            total={page.total}
+            onPageChange={pager.setPage}
+            noun="medicines"
+          />
         </CardContent>
       </Card>
 

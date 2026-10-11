@@ -1,6 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
+import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { useRouter } from 'next/navigation'
 import {
   AlertCircle,
@@ -170,30 +172,21 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null)
 
-  const { data, isLoading } = useAdminUsers(undefined, isPlatformRole)
+  const debouncedSearch = useDebouncedValue(searchTerm.trim())
+  const pager = usePager(undefined, [debouncedSearch, roleFilter, statusFilter])
 
-  const filteredUsers = useMemo(() => {
-    if (!data) return []
-    let users = data.users
-
-    if (roleFilter !== 'all') {
-      users = users.filter((u) => u.role === roleFilter)
-    }
-    if (statusFilter !== 'all') {
-      const active = statusFilter === 'active'
-      users = users.filter((u) => u.is_active === active)
-    }
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase()
-      users = users.filter(
-        (u) =>
-          u.full_name.toLowerCase().includes(term) ||
-          u.email.toLowerCase().includes(term) ||
-          (u.tenant_name ?? '').toLowerCase().includes(term)
-      )
-    }
-    return users
-  }, [data, roleFilter, statusFilter, searchTerm])
+  // Role, status, search and paging all run on the server; one extra row tells us a next page exists
+  const { data, isLoading, isFetching } = useAdminUsers(
+    {
+      role: roleFilter === 'all' ? undefined : roleFilter,
+      is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
+      search: debouncedSearch || undefined,
+      limit: pager.pageSize + 1,
+      offset: pager.offset,
+    },
+    isPlatformRole
+  )
+  const { items: filteredUsers, hasNext } = serverPage(data?.users, pager.pageSize)
 
   if (!isPlatformRole) {
     return (
@@ -272,7 +265,7 @@ export default function AdminUsersPage() {
                 All Users
                 {summary && (
                   <Badge variant="outline" className="ml-2">
-                    {filteredUsers.length} of {summary.total}
+                    {roleFilter === 'all' ? summary.total : ((summary.by_role as Record<string, number>)[roleFilter] ?? 0)} users
                   </Badge>
                 )}
               </CardTitle>
@@ -379,6 +372,15 @@ export default function AdminUsersPage() {
                   </p>
                 </div>
               )}
+              <Pager
+                page={pager.page}
+                pageSize={pager.pageSize}
+                count={filteredUsers.length}
+                hasNext={hasNext}
+                onPageChange={pager.setPage}
+                isLoading={isFetching}
+                noun="users"
+              />
             </CardContent>
           </Card>
         </>

@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -60,9 +60,12 @@ async def get_dashboard(
 async def list_tenants(
     current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
+    search: str | None = Query(None, description="Match tenant, clinic or doctor name, or email"),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0),
 ):
     service = AdminService(db)
-    return await service.list_tenants()
+    return await service.list_tenants(search=search, limit=limit, offset=offset)
 
 
 @router.post(
@@ -90,9 +93,11 @@ async def provision_tenant(
 async def list_pending_tenants(
     current_user: RequireAdminOrOperator,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0),
 ):
     service = AdminService(db)
-    return await service.list_pending_tenants()
+    return await service.list_pending_tenants(limit=limit, offset=offset)
 
 
 @router.get(
@@ -182,7 +187,7 @@ async def create_tenant_doctor(
     "/users",
     response_model=AdminUsersResponse,
     summary="List users (role distribution)",
-    description="List all users across the platform with role summary. Filter by role, tenant, or status.",
+    description="List users across the platform with a role summary over the whole filtered set. Filter by role, tenant, status or search; paginated.",
 )
 async def list_users(
     current_user: RequireAdminOrOperator,  # noqa: ARG001
@@ -190,9 +195,19 @@ async def list_users(
     role: str | None = None,
     tenant_id: str | None = None,
     is_active: bool | None = None,
+    search: str | None = Query(None, description="Match name, email or clinic name"),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0),
 ):
     service = AdminService(db)
-    return await service.list_users(role=role, tenant_id=tenant_id, is_active=is_active)
+    return await service.list_users(
+        role=role,
+        tenant_id=tenant_id,
+        is_active=is_active,
+        search=search,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.patch(

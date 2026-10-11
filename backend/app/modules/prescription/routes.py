@@ -60,6 +60,7 @@ async def list_prescriptions(
     patient_id: str | None = Query(None, description="Filter by patient ID"),
     visit_id: str | None = Query(None, description="Filter by visit ID"),
     status: str | None = Query(None, description="Filter by status (draft, issued, voided)"),
+    search: str | None = Query(None, description="Search prescription ID, patient ID or diagnosis"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
 ):
@@ -75,6 +76,7 @@ async def list_prescriptions(
         patient_id=patient_id,
         visit_id=visit_id,
         status=status,
+        search=search,
         limit=limit,
         offset=offset,
     )

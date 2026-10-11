@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import { Pager, clientPage, usePager } from '@/components/shared/Pager'
 import { useRouter } from 'next/navigation'
 import { Calendar as CalendarIcon, Loader2, PlusCircle } from 'lucide-react'
 import { Calendar, dateFnsLocalizer, type View } from 'react-big-calendar'
@@ -60,7 +61,9 @@ function toDateTime(dateText: string, timeText: string): Date {
 
 export default function AppointmentsPage() {
   const router = useRouter()
-  const [limit] = useState(100)
+  // The calendar needs every appointment in view, so load up to the API maximum and page the
+  // list view in the browser (the calendar itself is not paged).
+  const [limit] = useState(500)
   const [statusFilter, setStatusFilter] = useState<AppointmentStatus | 'all'>('all')
   const [patientQuery, setPatientQuery] = useState('')
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar')
@@ -98,6 +101,9 @@ export default function AppointmentsPage() {
       )
     })
   }, [appointments, patientById, patientQuery, statusFilter])
+
+  const pager = usePager(undefined, [statusFilter, patientQuery])
+  const listPage = clientPage(filteredAppointments, pager.page, pager.pageSize)
 
   const events = useMemo<AppointmentEvent[]>(() => {
     return filteredAppointments.map((appointment) => {
@@ -235,7 +241,7 @@ export default function AppointmentsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredAppointments.map((appointment) => {
+              {listPage.items.map((appointment) => {
                 const patient = patientById.get(appointment.patient_id)
                 return (
                   <tr key={appointment.id} className="border-t">
@@ -267,6 +273,17 @@ export default function AppointmentsPage() {
               })}
             </tbody>
           </table>
+          <div className="px-4 pb-4">
+            <Pager
+              page={pager.page}
+              pageSize={pager.pageSize}
+              count={listPage.items.length}
+              hasNext={listPage.hasNext}
+              total={listPage.total}
+              onPageChange={pager.setPage}
+              noun="appointments"
+            />
+          </div>
         </div>
       ) : (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border">

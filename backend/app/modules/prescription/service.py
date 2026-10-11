@@ -6,7 +6,7 @@ from typing import Optional
 from uuid import uuid4
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -136,6 +136,7 @@ class PrescriptionService:
         patient_id: Optional[str] = None,
         visit_id: Optional[str] = None,
         status: Optional[str] = None,
+        search: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
     ) -> list[Prescription]:
@@ -146,6 +147,7 @@ class PrescriptionService:
             patient_id: Filter by patient ID
             visit_id: Filter by visit ID
             status: Filter by status (draft, issued, voided)
+            search: Case-insensitive match on prescription ID, patient ID or diagnosis
             limit: Maximum results to return
             offset: Number of results to skip
 
@@ -163,6 +165,15 @@ class PrescriptionService:
             query = query.where(Prescription.visit_id == visit_id)
         if status:
             query = query.where(Prescription.status == status)
+        if search and search.strip():
+            pattern = f"%{search.strip()}%"
+            query = query.where(
+                or_(
+                    Prescription.id.ilike(pattern),
+                    Prescription.patient_id.ilike(pattern),
+                    Prescription.diagnosis.ilike(pattern),
+                )
+            )
 
         # Order by created date (newest first)
         query = query.order_by(Prescription.created_at.desc())

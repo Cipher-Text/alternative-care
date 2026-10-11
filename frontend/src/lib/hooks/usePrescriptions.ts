@@ -14,6 +14,7 @@ import { toast } from 'react-hot-toast'
 export function usePrescriptions(params?: PrescriptionListParams) {
   return useQuery(['prescriptions', params], () => prescriptionsApi.list(params), {
     staleTime: 30000, // 30 seconds
+    keepPreviousData: true,
   })
 }
 

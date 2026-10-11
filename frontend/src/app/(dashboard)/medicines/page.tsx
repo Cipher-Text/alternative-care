@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMedicines, useDeleteMedicine, useSearchMedicines } from '@/lib/hooks/useMedicines';
+import { Pager, clientPage, serverPage, usePager } from '@/components/shared/Pager';
 import { useCan } from '@/lib/auth/permissions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,6 @@ export default function MedicinesPage() {
   const can = useCan();
   const [filters, setFilters] = useState<MedicineFilters>({
     is_active: true,
-    limit: 100,
   });
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -33,7 +33,15 @@ export default function MedicinesPage() {
   }, [searchTerm]);
   const isSearching = debouncedTerm.length > 0;
 
-  const { data: listed, isLoading: listLoading } = useMedicines(filters);
+  const pager = usePager(undefined, [filters, debouncedTerm]);
+
+  // Browsing pages on the server (one extra row tells us a next page exists)
+  const { data: listedRows, isLoading: listLoading } = useMedicines(
+    { ...filters, limit: pager.pageSize + 1, offset: pager.offset },
+    { keepPreviousData: true }
+  );
+  const { items: listed, hasNext: listHasNext } = serverPage(listedRows, pager.pageSize);
+  // Search returns the top-ranked matches (no offset), so those are paged in the browser
   const { data: searched, isLoading: searchLoading } = useSearchMedicines({
     q: debouncedTerm,
     system: filters.system,
@@ -69,11 +77,14 @@ export default function MedicinesPage() {
 
   // Search results omit is_active/is_global, so default them for display and apply the
   // Source filter client-side; the system filter is already applied by the API.
-  const filteredMedicines = isSearching
-    ? searched
-        ?.map((m) => ({ ...m, is_global: m.is_global ?? false, is_active: true }))
+  const searchMatches = isSearching
+    ? (searched ?? [])
+        .map((m) => ({ ...m, is_global: m.is_global ?? false, is_active: true }))
         .filter((m) => filters.is_global === undefined || m.is_global === filters.is_global)
-    : listed;
+    : [];
+  const searchPage = clientPage(searchMatches, pager.page, pager.pageSize);
+  const filteredMedicines = isSearching ? searchPage.items : listed;
+  const hasNext = isSearching ? searchPage.hasNext : listHasNext;
 
   return (
     <div className="space-y-6">
@@ -279,6 +290,16 @@ export default function MedicinesPage() {
           ))}
         </div>
       )}
+
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={filteredMedicines?.length ?? 0}
+        hasNext={hasNext}
+        onPageChange={pager.setPage}
+        total={isSearching ? searchPage.total : undefined}
+        noun="medicines"
+      />
     </div>
   );
 }

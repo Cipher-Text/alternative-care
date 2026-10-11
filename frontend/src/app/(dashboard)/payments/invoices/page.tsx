@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pager, serverPage, usePager } from "@/components/shared/Pager";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,19 +14,15 @@ import type { InvoiceStatus } from "@/types/payment";
 export default function InvoicesPage() {
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">("all");
 
-  // Fetch invoices
-  const { data: invoices = [], isLoading } = useInvoices({
-    status: statusFilter === "all" ? undefined : statusFilter,
-    limit: 100,
-  });
+  const pager = usePager(undefined, [statusFilter]);
 
-  const statusCounts = {
-    all: invoices.length,
-    draft: invoices.filter((i) => i.status === "draft").length,
-    sent: invoices.filter((i) => i.status === "sent").length,
-    paid: invoices.filter((i) => i.status === "paid").length,
-    overdue: invoices.filter((i) => i.status === "overdue").length,
-  };
+  // Status filter and paging run on the server; one extra row tells us a next page exists
+  const { data, isLoading, isFetching } = useInvoices({
+    status: statusFilter === "all" ? undefined : statusFilter,
+    limit: pager.pageSize + 1,
+    offset: pager.offset,
+  });
+  const { items: invoices, hasNext } = serverPage(data, pager.pageSize);
 
   return (
     <div className="flex-1 space-y-6 p-4 pt-4 sm:p-8 sm:pt-6">
@@ -46,11 +43,11 @@ export default function InvoicesPage() {
       {/* Status Tabs */}
       <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
         <TabsList>
-          <TabsTrigger value="all">All ({statusCounts.all})</TabsTrigger>
-          <TabsTrigger value="draft">Draft ({statusCounts.draft})</TabsTrigger>
-          <TabsTrigger value="sent">Sent ({statusCounts.sent})</TabsTrigger>
-          <TabsTrigger value="paid">Paid ({statusCounts.paid})</TabsTrigger>
-          <TabsTrigger value="overdue">Overdue ({statusCounts.overdue})</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="draft">Draft</TabsTrigger>
+          <TabsTrigger value="sent">Sent</TabsTrigger>
+          <TabsTrigger value="paid">Paid</TabsTrigger>
+          <TabsTrigger value="overdue">Overdue</TabsTrigger>
         </TabsList>
 
         <TabsContent value={statusFilter} className="mt-6">
@@ -133,6 +130,15 @@ export default function InvoicesPage() {
               ))}
             </div>
           )}
+          <Pager
+            page={pager.page}
+            pageSize={pager.pageSize}
+            count={invoices.length}
+            hasNext={hasNext}
+            onPageChange={pager.setPage}
+            isLoading={isFetching}
+            noun="invoices"
+          />
         </TabsContent>
       </Tabs>
     </div>

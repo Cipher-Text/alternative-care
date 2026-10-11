@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Search, Loader2, Pill } from 'lucide-react'
 import { usePublicMedicines, usePublicMedicineSearch } from '@/lib/hooks/usePublicCatalog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Pager, clientPage, serverPage, usePager } from '@/components/shared/Pager'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -14,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { MedicalSystem } from '@/types/medicine'
+import type { MedicalSystem, MedicineListItem, MedicineSearchResult } from '@/types/medicine'
 
 const systems: Array<{ value: MedicalSystem; label: string }> = [
   { value: 'homeopathy', label: 'Homeopathy' },
@@ -42,12 +43,24 @@ function MedicinesDirectory() {
   }, [query])
 
   const systemFilter = system === 'all' ? undefined : (system as MedicalSystem)
-  const searchResults = usePublicMedicineSearch(debouncedQuery, systemFilter)
-  const browseResults = usePublicMedicines({ system: systemFilter, limit: 100 })
-
   const isSearching = debouncedQuery.trim().length > 0
-  const { data, isLoading } = isSearching ? searchResults : browseResults
-  const medicines = useMemo(() => data ?? [], [data])
+  const pager = usePager(12, [debouncedQuery, system])
+  const searchResults = usePublicMedicineSearch(debouncedQuery, systemFilter)
+  // Browsing pages on the server (one extra row tells us a next page exists); search results are
+  // the top-ranked matches and are paged in the browser
+  const browseResults = usePublicMedicines({
+    system: systemFilter,
+    limit: pager.pageSize + 1,
+    offset: pager.offset,
+  })
+  const { isLoading } = isSearching ? searchResults : browseResults
+  const searchPage = clientPage(isSearching ? searchResults.data : [], pager.page, pager.pageSize)
+  const browsePage = serverPage(isSearching ? [] : browseResults.data, pager.pageSize)
+  const medicines = useMemo<Array<MedicineListItem | MedicineSearchResult>>(
+    () => (isSearching ? searchPage.items : browsePage.items),
+    [isSearching, searchPage.items, browsePage.items]
+  )
+  const hasNext = isSearching ? searchPage.hasNext : browsePage.hasNext
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
@@ -129,6 +142,15 @@ function MedicinesDirectory() {
           <p className="text-muted-foreground mt-2">Try a different search term or discipline.</p>
         </div>
       )}
+      <Pager
+        page={pager.page}
+        pageSize={pager.pageSize}
+        count={medicines.length}
+        hasNext={hasNext}
+        total={isSearching ? searchPage.total : undefined}
+        onPageChange={pager.setPage}
+        noun="medicines"
+      />
     </div>
   )
 }

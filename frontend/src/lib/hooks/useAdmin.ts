@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-hot-toast'
 import { AxiosError } from 'axios'
-import { adminApi } from '@/lib/api/admin'
+import { adminApi, type AdminListParams } from '@/lib/api/admin'
 import type {
   AdminProvisionRequest,
   AdminUpdateTenantRequest,
@@ -112,7 +112,7 @@ export function useUpdateTenant() {
 // ============================================================================
 
 export function useAdminUsers(
-  params?: { role?: string; tenant_id?: string; is_active?: boolean },
+  params?: AdminListParams & { role?: string; tenant_id?: string; is_active?: boolean },
   enabled = true
 ) {
   return useQuery(
@@ -121,6 +121,7 @@ export function useAdminUsers(
     {
       enabled,
       staleTime: 30000,
+      keepPreviousData: true,
     }
   )
 }

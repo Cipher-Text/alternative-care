@@ -30,6 +30,7 @@ class Medicine(GlobalCatalogModel):
     # Medicine name (bilingual)
     name_en: Mapped[str] = mapped_column(String(500), nullable=False)
     name_bn: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    botanical_name: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     # Medical system: homeopathy, ayurveda, unani, herbal
     system: Mapped[str] = mapped_column(String(50), nullable=False)

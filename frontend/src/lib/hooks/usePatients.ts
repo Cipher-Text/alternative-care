@@ -10,6 +10,7 @@ import { toast } from 'react-hot-toast'
 export function usePatients(params?: PatientListParams) {
   return useQuery(['patients', params], () => patientsApi.list(params), {
     staleTime: 30000,
+    keepPreviousData: true, // no flash of the full-page spinner while paging or searching
   })
 }
 
