@@ -56,5 +56,6 @@ def test_current_api_route_count_matches_docs():
     # /api/v1/public/institutions (list/get) — 137 -> 144. Plans & entitlements: +1
     # /api/v1/plans, +3 /api/v1/admin/plans (list/audit/update), +3
     # /api/v1/admin/tenants/{id}/entitlements (get/put/delete), +1 /api/v1/entitlements/me
-    # — 144 -> 152.
-    assert api_method_count == 152
+    # — 144 -> 152. Pharmacy directory: +6 (/api/v1/pharmacies list/create/import/get/update/
+    # deactivate) — 152 -> 158.
+    assert api_method_count == 158

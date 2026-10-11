@@ -104,6 +104,8 @@ export interface District {
   name_en: string
   name_bn: string
   code: string
+  latitude?: number | null
+  longitude?: number | null
 }
 
 export interface Upazila {
@@ -112,4 +114,6 @@ export interface Upazila {
   name_en: string
   name_bn: string
   code: string
+  latitude?: number | null
+  longitude?: number | null
 }

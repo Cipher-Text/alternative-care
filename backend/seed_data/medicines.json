@@ -2804,14 +2804,6 @@
     {
       "name_en": "Amla (Amalaki)",
       "name_bn": "আমলকী",
-      "aliases_en": [
-        "Amalaki",
-        "Indian gooseberry"
-      ],
-      "aliases_bn": [
-        "আমলকি",
-        "ধাত্রী"
-      ],
       "system": "ayurveda",
       "category": "Rasayana",
       "botanical_name": "Phyllanthus emblica (syn. Emblica officinalis)",
@@ -2885,14 +2877,6 @@
     {
       "name_en": "Isabgol (Psyllium)",
       "name_bn": "ইসবগুল",
-      "aliases_en": [
-        "Psyllium",
-        "Psyllium husk"
-      ],
-      "aliases_bn": [
-        "ভুসি ইসবগুল",
-        "ইসপগুল"
-      ],
       "system": "unani",
       "category": "Mufrad Dawa / Dietary fiber",
       "botanical_name": "Plantago ovata",
@@ -2910,14 +2894,6 @@
     {
       "name_en": "Moringa (Sajna)",
       "name_bn": "সজিনা",
-      "aliases_en": [
-        "Sajna",
-        "Drumstick tree"
-      ],
-      "aliases_bn": [
-        "সজনে",
-        "সজনে পাতা"
-      ],
       "system": "herbal",
       "category": "Food plant",
       "botanical_name": "Moringa oleifera",

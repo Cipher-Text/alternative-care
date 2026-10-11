@@ -126,6 +126,15 @@ from app.shared.schemas.dashboard import (
     PrescriptionByStatus,
     TopMedicine,
 )
+from app.shared.schemas.pharmacy import (
+    PharmacyBase,
+    PharmacyCreate,
+    PharmacyUpdate,
+    PharmacyResponse,
+    PharmacyListItem,
+    PharmacyImportRowError,
+    PharmacyImportResult,
+)
 from app.shared.schemas.institution import (
     InstitutionBase,
     InstitutionCreate,
@@ -278,6 +287,14 @@ __all__ = [
     "PrescriptionAnalytics",
     "PrescriptionByStatus",
     "TopMedicine",
+    # Pharmacies
+    "PharmacyBase",
+    "PharmacyCreate",
+    "PharmacyUpdate",
+    "PharmacyResponse",
+    "PharmacyListItem",
+    "PharmacyImportRowError",
+    "PharmacyImportResult",
     # Institutions
     "InstitutionBase",
     "InstitutionCreate",

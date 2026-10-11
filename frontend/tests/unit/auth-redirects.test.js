@@ -13,7 +13,10 @@ const dashboardSource = readFileSync(
 )
 
 test('platform admins and operators are routed to the platform dashboard', () => {
-  assert.match(redirectsSource, /tenant_id === null/)
+  // The API omits tenant_id for platform users (undefined, not null), so the check must be
+  // falsy-based; a strict `=== null` sent admins to the tenant dashboard and 403s.
+  assert.match(redirectsSource, /!user\.tenant_id/)
+  assert.doesNotMatch(redirectsSource, /tenant_id === null/)
   assert.match(redirectsSource, /role === 'admin'/)
   assert.match(redirectsSource, /role === 'operator'/)
   assert.match(redirectsSource, /return '\/admin\/dashboard'/)

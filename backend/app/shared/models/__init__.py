@@ -4,6 +4,7 @@ from app.shared.models.base import Base, BaseAuditModel, TenantScopedModel, Glob
 from app.shared.models.tenant import Tenant, User, UserSession
 from app.shared.models.doctor import DoctorDegree, DoctorTraining
 from app.shared.models.institution import Institution
+from app.shared.models.pharmacy import Pharmacy
 from app.shared.models.geographic import Division, District, Upazila
 from app.shared.models.patient import Patient, PatientTag, PatientDiagnosis
 from app.shared.models.prescription import Prescription, PrescriptionItem
@@ -53,6 +54,7 @@ __all__ = [
     "DoctorDegree",
     "DoctorTraining",
     "Institution",
+    "Pharmacy",
     "Division",
     "District",
     "Upazila",

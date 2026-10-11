@@ -16,6 +16,7 @@ import {
   UserCog,
   GraduationCap,
   Stethoscope,
+  Store,
   Tags,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
@@ -28,6 +29,7 @@ const doctorNavigation = [
   { name: 'Prescriptions', href: '/prescriptions', icon: FileText },
   { name: 'Payments', href: '/payments', icon: CreditCard },
   { name: 'Medicines', href: '/medicines', icon: Pill },
+  { name: 'Pharmacies', href: '/pharmacies', icon: Store },
   { name: 'Symptoms', href: '/symptoms', icon: Stethoscope },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
@@ -38,6 +40,7 @@ const adminNavigation = [
   { name: 'Plans & Pricing', href: '/admin/plans', icon: Tags },
   { name: 'Users', href: '/admin/users', icon: UserCog },
   { name: 'Institutions', href: '/admin/institutions', icon: GraduationCap },
+  { name: 'Pharmacies', href: '/admin/pharmacies', icon: Store },
   { name: 'Medicines', href: '/admin/medicines', icon: Pill },
   { name: 'Symptoms', href: '/admin/symptoms', icon: Stethoscope },
 ]

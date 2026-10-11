@@ -12,7 +12,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
 > Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
-> 2026-09-26: `pytest -q` runs **575 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
+> 2026-09-26: `pytest -q` runs **600 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-10). Sentry and structlog
 > are initialised (`app/core/observability.py`).
 > **PostgreSQL RLS on the 8 clinical tables landed 2026-09-26** (Stage 2, D2): migration
 > `273747e56a3f` adds `ENABLE`/`FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy to
@@ -341,6 +341,7 @@ backend/app/
 │   ├── symptom/          # ✅ CRUD, search, aliases (9 endpoints)
 │   ├── geographic/       # ✅ Divisions, districts, upazilas (3 endpoints)
 │   ├── tenant/           # ✅ Clinic profile (2 endpoints)
+│   ├── pharmacy/         # ✅ Admin-curated pharmacy/wholesaler directory: list + near-me search, CSV import (6 endpoints) — admin UI at `/admin/pharmacies`, practitioner list/map/near-me at `/pharmacies`, 50 seeded Hamdard (Unani) outlets in `seed_data/pharmacies.json`
 │   ├── plans/            # ✅ Plan & entitlement configuration, public pricing, per-tenant overrides (8 endpoints; enforcement lives in `app/core/entitlements.py`)
 │   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
 │   └── notification/     # 📋 Placeholder

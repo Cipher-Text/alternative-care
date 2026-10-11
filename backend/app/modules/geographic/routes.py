@@ -31,6 +31,9 @@ class DistrictResponse(BaseModel):
     division_id: int
     name_en: str
     name_bn: str
+    # Approximate centre, used to start a map near the right place
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class UpazilaResponse(BaseModel):
@@ -40,6 +43,8 @@ class UpazilaResponse(BaseModel):
     district_id: int
     name_en: str
     name_bn: str
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────

@@ -37,6 +37,7 @@ from app.shared.models import (
     Division,
     IntegrationProvider,
     Medicine,
+    Pharmacy,
     Symptom,
     Tenant,
     Translation,
@@ -248,6 +249,52 @@ class SeedData:
         await self.session.flush()
         return count
 
+    async def seed_pharmacies(self) -> int:
+        """
+        Seed the pharmacy directory from seed_data/pharmacies.json.
+
+        Every row cites its `source_url`; the current file is the Hamdard (Unani) head office
+        plus branch centres from the company's own website, read 2026-10-11. Nothing is
+        `is_verified` and `last_confirmed_at` is left empty on purpose, so the practitioner UI says
+        "not yet confirmed" until an admin has checked a listing. Districts are matched by English
+        name against the seeded `districts` table; an unknown name fails loudly instead of
+        silently dropping the location. Idempotent: a row whose name already exists in the same
+        district is skipped.
+        """
+        data = self.load_json("pharmacies.json")
+        districts = {
+            name.lower(): district_id
+            for district_id, name in (
+                await self.session.execute(select(District.id, District.name_en))
+            ).all()
+        }
+        existing = {
+            (name.lower(), district_id)
+            for name, district_id in (
+                await self.session.execute(select(Pharmacy.name_en, Pharmacy.district_id))
+            ).all()
+        }
+
+        count = 0
+        print("\n💊 Seeding pharmacies...")
+        for row in data["pharmacies"]:
+            row = dict(row)
+            district_name = row.pop("district", None)
+            district_id = None
+            if district_name:
+                district_id = districts.get(district_name.lower())
+                if district_id is None:
+                    raise ValueError(
+                        f"pharmacies.json: unknown district '{district_name}' for '{row['name_en']}'"
+                    )
+            if (row["name_en"].lower(), district_id) in existing:
+                continue
+            self.session.add(Pharmacy(**row, district_id=district_id))
+            count += 1
+
+        await self.session.flush()
+        return count
+
     async def seed_institutions(self) -> int:
         """
         Seed the institution directory (Track D).
@@ -301,6 +348,7 @@ async def main():
                 medicines_count = await seeder.seed_medicines(default_tenant_id)
                 symptoms_count = await seeder.seed_symptoms(default_tenant_id)
                 institutions_count = await seeder.seed_institutions()
+                pharmacies_count = await seeder.seed_pharmacies()
                 translations_count = await seeder.seed_translations()
 
                 # Commit transaction
@@ -318,6 +366,7 @@ async def main():
         print(f"  • Medicines:     {medicines_count:>3} created")
         print(f"  • Symptoms:      {symptoms_count:>3} created")
         print(f"  • Institutions:  {institutions_count:>3} created")
+        print(f"  • Pharmacies:    {pharmacies_count:>3} created")
         print(f"  • Translations:  {translations_count:>3} created")
         print(f"  • Tenants:       {sample_stats['tenants']:>3} created")
         print(f"  • Users:         {sample_stats['users']:>3} created")

@@ -82,6 +82,7 @@ export function Pager({
         <Button
           variant="outline"
           size="sm"
+          className="h-10 sm:h-8" // thumb-sized on phones
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1 || isLoading}
         >
@@ -92,6 +93,7 @@ export function Pager({
         <Button
           variant="outline"
           size="sm"
+          className="h-10 sm:h-8"
           onClick={() => onPageChange(page + 1)}
           disabled={!hasNext || isLoading}
         >
