@@ -660,3 +660,44 @@ async def test_tenant_isolation_update(
     )
 
     assert response.status_code == 404
+
+
+# ===== Search & pagination =====
+
+
+@pytest.mark.asyncio
+async def test_list_prescriptions_search_and_paging(
+    client, auth_headers, test_patient, db_session
+):
+    """Search matches diagnosis server-side, and limit/offset page without overlap."""
+    from app.shared.models import Prescription
+
+    for i in range(5):
+        db_session.add(
+            Prescription(
+                id=str(uuid4()),
+                tenant_id=test_patient.tenant_id,
+                patient_id=test_patient.id,
+                prescribed_by=str(uuid4()),
+                diagnosis=f"Pgtest fever {i}" if i < 3 else f"Pgtest cough {i}",
+                status="issued",
+            )
+        )
+    await db_session.commit()
+
+    fever = await client.get(
+        "/api/v1/prescriptions", params={"search": "pgtest FEVER"}, headers=auth_headers
+    )
+    assert fever.status_code == 200
+    assert len(fever.json()) == 3
+
+    seen = []
+    for offset in (0, 2, 4):
+        page = await client.get(
+            "/api/v1/prescriptions",
+            params={"search": "Pgtest", "limit": 2, "offset": offset},
+            headers=auth_headers,
+        )
+        assert len(page.json()) <= 2
+        seen.extend(p["id"] for p in page.json())
+    assert len(seen) == 5 and len(set(seen)) == 5
