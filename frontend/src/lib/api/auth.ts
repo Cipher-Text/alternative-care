@@ -63,6 +63,12 @@ export const authApi = {
   },
 
   // Get current user
+  /** Save the signed-in user's UI language to their account */
+  setLanguage: async (language: 'en' | 'bn'): Promise<{ language: 'en' | 'bn' }> => {
+    const response = await apiClient.patch('/auth/me/language', { language })
+    return response.data
+  },
+
   getCurrentUser: async (): Promise<UserProfileResponse> => {
     const response = await apiClient.get('/auth/me')
     return response.data

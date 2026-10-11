@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -11,17 +12,18 @@ import type { InvoiceCreate } from "@/types/payment";
 
 export default function NewInvoicePage() {
   const router = useRouter();
+  const t = useTranslations("payInvoiceUi");
   const createInvoice = useCreateInvoice();
 
   const handleSubmit = async (data: InvoiceCreate) => {
     try {
       const invoice = await createInvoice.mutateAsync(data);
-      toast.success("Invoice created successfully");
+      toast.success(t("createdOk"));
       // Navigate to invoice detail page
       router.push(`/payments/invoices/${invoice.id}`);
     } catch (error: any) {
       console.error("Failed to create invoice:", error);
-      toast.error(error?.response?.data?.detail || "Failed to create invoice");
+      toast.error(error?.response?.data?.detail || t("createdFail"));
     }
   };
 
@@ -30,13 +32,13 @@ export default function NewInvoicePage() {
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-            <Link href="/payments/invoices" aria-label="Back">
+            <Link href="/payments/invoices" aria-label={t("back")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Create Invoice</h1>
-          <p className="text-muted-foreground">Create a new invoice for a patient</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("newTitle")}</h1>
+          <p className="text-muted-foreground">{t("newSubtitle")}</p>
         </div>
       </div>
 

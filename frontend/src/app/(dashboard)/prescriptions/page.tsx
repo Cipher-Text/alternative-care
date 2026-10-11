@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePrescriptions, useViewPrescriptionPdf } from '@/lib/hooks/usePrescriptions'
@@ -25,7 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { PlusCircle, Search, Loader2, FileText, Eye } from 'lucide-react'
-import { format } from 'date-fns'
+import { useDateFormat } from '@/lib/i18n/date'
 import type { PrescriptionStatus } from '@/types/prescription'
 
 const statusColors: Record<PrescriptionStatus, string> = {
@@ -35,6 +36,9 @@ const statusColors: Record<PrescriptionStatus, string> = {
 }
 
 export default function PrescriptionsPage() {
+  const tp = useTranslations('pages')
+  const t = useTranslations('rxUi')
+  const { fmt } = useDateFormat()
   const can = useCan()
   const viewPdf = useViewPrescriptionPdf()
   const [search, setSearch] = useState('')
@@ -64,8 +68,8 @@ export default function PrescriptionsPage() {
   if (error) {
     return (
       <div className="text-center text-red-500 py-8">
-        <p className="text-lg font-semibold">Failed to load prescriptions</p>
-        <p className="text-sm">Please try again later</p>
+        <p className="text-lg font-semibold">{t('failedTitle')}</p>
+        <p className="text-sm">{t('failedBody')}</p>
       </div>
     )
   }
@@ -75,16 +79,16 @@ export default function PrescriptionsPage() {
       {/* Header */}
       <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Prescriptions</h1>
+          <h1 className="text-3xl font-bold">{tp('prescriptionsTitle')}</h1>
           <p className="text-muted-foreground">
-            Manage patient prescriptions and medical advice
+            {tp('prescriptionsSubtitle')}
           </p>
         </div>
         {can.writeClinical && (
         <Link href="/prescriptions/new">
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
-            New Prescription
+            {tp('newPrescription')}
           </Button>
         </Link>
         )}
@@ -95,8 +99,8 @@ export default function PrescriptionsPage() {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            aria-label="Search by prescription ID, patient ID, or diagnosis"
- placeholder="Search by prescription ID, patient ID, or diagnosis..."
+            aria-label={t('searchAria')}
+ placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -106,14 +110,14 @@ export default function PrescriptionsPage() {
           value={status || 'all'}
           onValueChange={(value) => setStatus(value === 'all' ? '' : value)}
         >
-          <SelectTrigger aria-label="All Statuses" className="w-[180px]">
-            <SelectValue placeholder="All Statuses" />
+          <SelectTrigger aria-label={t('allStatuses')} className="w-[180px]">
+            <SelectValue placeholder={t('allStatuses')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="issued">Issued</SelectItem>
-            <SelectItem value="voided">Voided</SelectItem>
+            <SelectItem value="all">{t('allStatuses')}</SelectItem>
+            <SelectItem value="draft">{t('status.draft')}</SelectItem>
+            <SelectItem value="issued">{t('status.issued')}</SelectItem>
+            <SelectItem value="voided">{t('status.voided')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -121,23 +125,23 @@ export default function PrescriptionsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">On this page</p>
+          <p className="text-sm text-muted-foreground">{t('statOnPage')}</p>
           <p className="text-2xl font-bold">{prescriptions.length}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Drafts (this page)</p>
+          <p className="text-sm text-muted-foreground">{t('statDrafts')}</p>
           <p className="text-2xl font-bold">
             {prescriptions.filter((p) => p.status === 'draft').length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Issued (this page)</p>
+          <p className="text-sm text-muted-foreground">{t('statIssued')}</p>
           <p className="text-2xl font-bold">
             {prescriptions.filter((p) => p.status === 'issued').length}
           </p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border">
-          <p className="text-sm text-muted-foreground">Voided (this page)</p>
+          <p className="text-sm text-muted-foreground">{t('statVoided')}</p>
           <p className="text-2xl font-bold">
             {prescriptions.filter((p) => p.status === 'voided').length}
           </p>
@@ -150,13 +154,13 @@ export default function PrescriptionsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Prescription ID</TableHead>
-                <TableHead>Patient ID</TableHead>
-                <TableHead>Diagnosis</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>PDF</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('colId')}</TableHead>
+                <TableHead>{t('colPatientId')}</TableHead>
+                <TableHead>{t('colDiagnosis')}</TableHead>
+                <TableHead>{t('colStatus')}</TableHead>
+                <TableHead>{t('colCreated')}</TableHead>
+                <TableHead>{t('colPdf')}</TableHead>
+                <TableHead className="text-right">{t('colActions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -170,23 +174,23 @@ export default function PrescriptionsPage() {
                   </TableCell>
                   <TableCell>
                     {prescription.diagnosis || (
-                      <span className="text-muted-foreground italic">No diagnosis</span>
+                      <span className="text-muted-foreground italic">{t('noDiagnosis')}</span>
                     )}
                   </TableCell>
                   <TableCell>
                     <Badge className={statusColors[prescription.status]}>
-                      {prescription.status.charAt(0).toUpperCase() + prescription.status.slice(1)}
+                      {t(`status.${prescription.status}`)}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {format(new Date(prescription.created_at), 'MMM d, yyyy')}
+                    {fmt(prescription.created_at, 'MMM d, yyyy')}
                   </TableCell>
                   <TableCell>
                     {prescription.status !== 'draft' ? (
                       <Button
                         variant="ghost"
                         size="sm"
-                        aria-label="View / Print PDF"
+                        aria-label={t('viewPrintPdf')}
                         onClick={() => viewPdf.mutate(prescription.id)}
                         disabled={viewPdf.isLoading}
                         className="text-emerald-600 hover:text-emerald-800"
@@ -201,7 +205,7 @@ export default function PrescriptionsPage() {
                     <Link href={`/prescriptions/${prescription.id}`}>
                       <Button variant="ghost" size="sm">
                         <Eye className="h-4 w-4 mr-1" />
-                        View
+                        {t('view')}
                       </Button>
                     </Link>
                   </TableCell>
@@ -215,14 +219,14 @@ export default function PrescriptionsPage() {
           <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
             {search || status
-              ? 'No prescriptions found matching your filters'
-              : 'No prescriptions yet. Create your first prescription to get started.'}
+              ? t('emptyFiltered')
+              : t('emptyNone')}
           </p>
           {!search && !status && can.writeClinical && (
             <Link href="/prescriptions/new">
               <Button className="mt-4">
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Create First Prescription
+                {t('createFirst')}
               </Button>
             </Link>
           )}

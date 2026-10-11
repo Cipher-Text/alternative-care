@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { useTranslations } from 'next-intl'
 import type { AgeGroupDistribution } from '@/types/dashboard'
 
 interface AgeDistributionChartProps {
@@ -17,12 +18,13 @@ interface AgeDistributionChartProps {
 }
 
 export function AgeDistributionChart({ data }: AgeDistributionChartProps) {
+  const t = useTranslations('chartsUi')
   const chartData = [
-    { ageGroup: '0-18', count: data.age_0_18, label: 'Children' },
-    { ageGroup: '19-35', count: data.age_19_35, label: 'Young Adults' },
-    { ageGroup: '36-50', count: data.age_36_50, label: 'Adults' },
-    { ageGroup: '51-65', count: data.age_51_65, label: 'Middle Age' },
-    { ageGroup: '66+', count: data.age_66_plus, label: 'Seniors' },
+    { ageGroup: '0-18', count: data.age_0_18, label: t('ageChildren') },
+    { ageGroup: '19-35', count: data.age_19_35, label: t('ageYoungAdults') },
+    { ageGroup: '36-50', count: data.age_36_50, label: t('ageAdults') },
+    { ageGroup: '51-65', count: data.age_51_65, label: t('ageMiddle') },
+    { ageGroup: '66+', count: data.age_66_plus, label: t('ageSeniors') },
   ]
 
   const total = chartData.reduce((sum, item) => sum + item.count, 0)
@@ -36,10 +38,10 @@ export function AgeDistributionChart({ data }: AgeDistributionChartProps) {
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-            Age Distribution
+            {t('ageDistribution')}
           </CardTitle>
           <div className="text-right">
-            <p className="text-xs text-gray-600 dark:text-gray-400">Total</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('total')}</p>
             <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
               {total}
             </p>
@@ -65,7 +67,7 @@ export function AgeDistributionChart({ data }: AgeDistributionChartProps) {
             />
             <Tooltip
               formatter={(value, name, props) => [
-                `${value} patients`,
+                t('patientsCount', { count: Number(value) }),
                 props.payload.label
               ]}
               contentStyle={{

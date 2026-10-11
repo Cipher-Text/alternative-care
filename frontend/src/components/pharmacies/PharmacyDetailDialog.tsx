@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Globe, Loader2, Mail, MapPin, Clock, Truck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { usePharmacy } from '@/lib/hooks/usePharmacies'
 import { directionsLink, formatDistance, telLink, whatsappLink } from '@/lib/utils/contact'
-import { ConfirmedNote, typeLabel } from './PharmacyCard'
+import { ConfirmedNote } from './PharmacyCard'
 
 interface PharmacyDetailDialogProps {
   pharmacyId: number | null
@@ -29,6 +30,7 @@ export function PharmacyDetailDialog({
   districtName,
   distanceKm,
 }: PharmacyDetailDialogProps) {
+  const t = useTranslations('pharmUi')
   const { data: p, isLoading, isError } = usePharmacy(pharmacyId, pharmacyId !== null)
 
   const tel = p && telLink(p.phone)
@@ -42,33 +44,33 @@ export function PharmacyDetailDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         {isLoading || (!p && !isError) ? (
           <div className="flex justify-center py-12">
-            <DialogTitle className="sr-only">Loading pharmacy</DialogTitle>
+            <DialogTitle className="sr-only">{t('loadingPharmacy')}</DialogTitle>
             <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
         ) : isError || !p ? (
           <>
             <DialogHeader>
-              <DialogTitle>Pharmacy unavailable</DialogTitle>
-              <DialogDescription>This listing could not be loaded. It may have been removed.</DialogDescription>
+              <DialogTitle>{t('unavailableTitle')}</DialogTitle>
+              <DialogDescription>{t('unavailableDesc')}</DialogDescription>
             </DialogHeader>
           </>
         ) : (
           <>
             <DialogHeader>
               <DialogTitle>{p.name_en}</DialogTitle>
-              <DialogDescription>{p.name_bn ?? typeLabel(p.pharmacy_type)}</DialogDescription>
+              <DialogDescription>{p.name_bn ?? t(`types.${p.pharmacy_type}`)}</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 text-sm">
               <div className="flex flex-wrap gap-1.5">
-                <Badge variant="outline">{typeLabel(p.pharmacy_type)}</Badge>
+                <Badge variant="outline">{t(`types.${p.pharmacy_type}`)}</Badge>
                 {p.disciplines.map((d) => (
                   <Badge key={d} variant="outline" className="capitalize">
-                    {d}
+                    {t(`disciplines.${d}`)}
                   </Badge>
                 ))}
-                {p.is_verified && <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">Verified</Badge>}
-                {distance && <Badge variant="secondary">{distance} away</Badge>}
+                {p.is_verified && <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">{t('verified')}</Badge>}
+                {distance && <Badge variant="secondary">{t('distanceAway', { distance })}</Badge>}
               </div>
 
               <ul className="space-y-2">
@@ -86,7 +88,7 @@ export function PharmacyDetailDialog({
                 )}
                 {p.delivers && (
                   <li className="flex gap-2 text-emerald-700 dark:text-emerald-400">
-                    <Truck className="mt-0.5 h-4 w-4 shrink-0" /> Delivers / sends by courier
+                    <Truck className="mt-0.5 h-4 w-4 shrink-0" /> {t('deliversCourier')}
                   </li>
                 )}
                 {p.email && (
@@ -119,17 +121,17 @@ export function PharmacyDetailDialog({
               <div className="flex flex-wrap gap-2 border-t pt-4">
                 {tel && (
                   <Button asChild className="h-10 flex-1">
-                    <a href={tel}>Call {p.phone}</a>
+                    <a href={tel}>{t('callNumber', { phone: p.phone ?? '' })}</a>
                   </Button>
                 )}
                 {whatsapp && (
                   <Button asChild variant="outline" className="h-10 flex-1">
-                    <a href={whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    <a href={whatsapp} target="_blank" rel="noopener noreferrer">{t('whatsapp')}</a>
                   </Button>
                 )}
                 {directions && (
                   <Button asChild variant="outline" className="h-10 flex-1">
-                    <a href={directions} target="_blank" rel="noopener noreferrer">Directions</a>
+                    <a href={directions} target="_blank" rel="noopener noreferrer">{t('directions')}</a>
                   </Button>
                 )}
               </div>

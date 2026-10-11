@@ -9,6 +9,8 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.dependencies import CurrentUser, get_current_user
 from app.modules.auth.schemas import (
+    UpdateLanguageRequest,
+    UpdateLanguageResponse,
     ChangePasswordRequest,
     Disable2FARequest,
     ForgotPasswordRequest,
@@ -387,6 +389,25 @@ async def get_profile(
     """Get current user profile."""
     service = AuthService(db)
     return await service.get_user_profile(current_user.user_id)
+
+
+@router.patch(
+    "/me/language",
+    response_model=UpdateLanguageResponse,
+    summary="Save preferred language",
+    description="Save the signed-in user's UI language ('en' or 'bn'). Any role, including "
+    "platform staff. It does not sign the user out anywhere else.",
+)
+async def update_language(
+    data: UpdateLanguageRequest,
+    current_user: CurrentUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Save the current user's preferred language."""
+    service = AuthService(db)
+    return UpdateLanguageResponse(
+        language=await service.set_language(current_user.user_id, data.language)
+    )
 
 
 @router.post(

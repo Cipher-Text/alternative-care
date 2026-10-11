@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
@@ -19,6 +20,7 @@ import { usePatients } from '@/lib/hooks/usePatients'
 import { useAuthStore } from '@/store/authStore'
 
 export default function NewAppointmentPage() {
+  const t = useTranslations('apptNewUi')
   const router = useRouter()
   const searchParams = useSearchParams()
   const createAppointment = useCreateAppointment()
@@ -61,26 +63,26 @@ export default function NewAppointmentPage() {
         <Link href="/appointments">
           <Button variant="outline" size="sm">
             <ArrowLeft className="h-4 w-4 mr-1" />
-            Back
+            {t('back')}
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">New Appointment</h1>
-          <p className="text-muted-foreground">Schedule a new appointment</p>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 border rounded-lg p-6 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="patient_id">Patient</Label>
+            <Label htmlFor="patient_id">{t('patient')}</Label>
             <Select
               value={formData.patient_id}
               onValueChange={(value) => setFormData((prev) => ({ ...prev, patient_id: value }))}
               disabled={isLoadingPatients || !patients?.length}
             >
               <SelectTrigger id="patient_id">
-                <SelectValue placeholder="Select a patient" />
+                <SelectValue placeholder={t('selectPatient')} />
               </SelectTrigger>
               <SelectContent>
                 {patients?.map((patient) => (
@@ -92,19 +94,21 @@ export default function NewAppointmentPage() {
             </Select>
             {selectedPatient ? (
               <p className="text-xs text-muted-foreground">
-                Selected: {selectedPatient.full_name}{selectedPatient.phone ? ` | ${selectedPatient.phone}` : ''}
+                {selectedPatient.phone
+                  ? t('selectedWithPhone', { name: selectedPatient.full_name, phone: selectedPatient.phone })
+                  : t('selected', { name: selectedPatient.full_name })}
               </p>
             ) : null}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="doctor_name">Doctor</Label>
+            <Label htmlFor="doctor_name">{t('doctor')}</Label>
             <Input id="doctor_name" value={user?.full_name || ''} readOnly disabled />
-            <p className="text-xs text-muted-foreground">Appointments are assigned to your account automatically.</p>
+            <p className="text-xs text-muted-foreground">{t('doctorHint')}</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="appointment_date">Date</Label>
+            <Label htmlFor="appointment_date">{t('date')}</Label>
             <Input
               id="appointment_date"
               type="date"
@@ -117,7 +121,7 @@ export default function NewAppointmentPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="appointment_time">Time</Label>
+            <Label htmlFor="appointment_time">{t('time')}</Label>
             <Input
               id="appointment_time"
               type="time"
@@ -130,7 +134,7 @@ export default function NewAppointmentPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+            <Label htmlFor="duration_minutes">{t('duration')}</Label>
             <Input
               id="duration_minutes"
               type="number"
@@ -149,22 +153,22 @@ export default function NewAppointmentPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="reason">Reason</Label>
+          <Label htmlFor="reason">{t('reason')}</Label>
           <Input
             id="reason"
             value={formData.reason}
             onChange={(e) => setFormData((prev) => ({ ...prev, reason: e.target.value }))}
-            placeholder="Consultation reason"
+            placeholder={t('reasonPlaceholder')}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t('notes')}</Label>
           <Input
             id="notes"
             value={formData.notes}
             onChange={(e) => setFormData((prev) => ({ ...prev, notes: e.target.value }))}
-            placeholder="Optional notes"
+            placeholder={t('notesPlaceholder')}
           />
         </div>
 
@@ -176,10 +180,10 @@ export default function NewAppointmentPage() {
             {createAppointment.isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Creating...
+                {t('creating')}
               </>
             ) : (
-              'Create Appointment'
+              t('submit')
             )}
           </Button>
         </div>

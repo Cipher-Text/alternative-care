@@ -49,8 +49,9 @@ export function useNearMe() {
   return { status, coords, locate, clear }
 }
 
-export const NEAR_ME_MESSAGES: Partial<Record<NearMeStatus, string>> = {
-  denied: 'Location access was blocked. Allow it in your browser settings to search near you.',
-  unavailable: 'Your location is not available right now. Check that location services are on.',
-  error: 'Finding your location took too long. Please try again.',
+/** Message keys (under `pharmUi.nearMe`) for each failure status. */
+export const NEAR_ME_MESSAGE_KEYS: Partial<Record<NearMeStatus, string>> = {
+  denied: 'denied',
+  unavailable: 'unavailable',
+  error: 'error',
 }

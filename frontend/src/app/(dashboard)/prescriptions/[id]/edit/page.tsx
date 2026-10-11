@@ -1,6 +1,7 @@
 'use client'
 
 import { use } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { usePrescription } from '@/lib/hooks/usePrescriptions'
@@ -15,6 +16,8 @@ export default function EditPrescriptionPage({
 }) {
   const { id } = use(params)
   const router = useRouter()
+  const t = useTranslations('rxEditUi')
+  const ts = useTranslations('rxUi.statusLower')
   const { data: prescription, isLoading, error } = usePrescription(id)
 
   if (isLoading) {
@@ -29,12 +32,12 @@ export default function EditPrescriptionPage({
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Prescription Not Found</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('notFoundTitle')}</h2>
         <p className="text-muted-foreground mb-4">
-          The prescription you're trying to edit doesn't exist or has been removed.
+          {t('notFoundBody')}
         </p>
         <Link href="/prescriptions">
-          <Button>Back to Prescriptions</Button>
+          <Button>{t('backToList')}</Button>
         </Link>
       </div>
     )
@@ -44,12 +47,12 @@ export default function EditPrescriptionPage({
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Cannot Edit Prescription</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('cannotEditTitle')}</h2>
         <p className="text-muted-foreground mb-4">
-          Only draft prescriptions can be edited. This prescription has status: {prescription.status}
+          {t('cannotEditBody', { status: ts(prescription.status) })}
         </p>
         <Link href={`/prescriptions/${id}`}>
-          <Button>View Prescription</Button>
+          <Button>{t('viewPrescription')}</Button>
         </Link>
       </div>
     )
@@ -59,13 +62,13 @@ export default function EditPrescriptionPage({
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href={`/prescriptions/${id}`}>
-          <Button variant="ghost" size="icon" aria-label="Back">
+          <Button variant="ghost" size="icon" aria-label={t('back')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">Edit Prescription</h1>
-          <p className="text-sm text-muted-foreground font-mono">ID: {prescription.id}</p>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground font-mono">{t('idLabel', { id: prescription.id })}</p>
         </div>
       </div>
 

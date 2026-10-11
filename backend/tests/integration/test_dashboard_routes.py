@@ -93,3 +93,54 @@ class TestDashboardRoutes:
         data = response.json()
         assert data["period_start"] == "2026-04-01"
         assert data["period_end"] == "2026-04-30"
+
+
+@pytest.mark.asyncio
+class TestOverdueInvoiceStats:
+    """Regression: due_date is optional, and an unpaid invoice without one used to crash
+    /dashboard/financial with `TypeError: '<' not supported between NoneType and date`."""
+
+    async def _invoice(self, db_session, tenant, payment, due, status="sent", number="INV-DUE"):
+        import uuid
+
+        from app.shared.models import Invoice
+
+        db_session.add(
+            Invoice(
+                id=str(uuid.uuid4()),
+                tenant_id=tenant.id,
+                payment_id=payment.id,
+                invoice_number=number,
+                status=status,
+                due_date=due,
+            )
+        )
+        await db_session.commit()
+
+    async def test_unpaid_invoice_without_a_due_date_does_not_break_the_dashboard(
+        self, client: AsyncClient, doctor_token: str, db_session, test_tenant, test_payment
+    ):
+        await self._invoice(db_session, test_tenant, test_payment, None)
+        response = await client.get(
+            "/api/v1/dashboard/financial", headers={"Authorization": f"Bearer {doctor_token}"}
+        )
+        assert response.status_code == 200, response.text
+
+    async def test_overdue_invoices_are_still_counted(
+        self, client: AsyncClient, doctor_token: str, db_session, test_tenant, test_payment
+    ):
+        from datetime import date, timedelta
+
+        await self._invoice(db_session, test_tenant, test_payment, date.today() - timedelta(days=3), number="INV-LATE")
+        await self._invoice(db_session, test_tenant, test_payment, None, number="INV-NODUE")
+        await self._invoice(db_session, test_tenant, test_payment, date.today() + timedelta(days=3), number="INV-FUTURE")
+        response = await client.get(
+            "/api/v1/dashboard/financial", headers={"Authorization": f"Bearer {doctor_token}"}
+        )
+        assert response.status_code == 200, response.text
+        stats = response.json()
+        # exactly one of the three is overdue: past due and unpaid. No due date, or a future one, is not.
+        assert stats["overdue_invoices"] == 1
+        assert stats["total_invoices"] == 3
+        assert stats["overdue_amount"] > 0
+

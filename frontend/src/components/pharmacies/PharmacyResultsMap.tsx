@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import L from 'leaflet'
+import { useTranslations } from 'next-intl'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import { BANGLADESH_CENTER } from './MapPicker'
@@ -46,6 +47,7 @@ export default function PharmacyResultsMap({
   onOpenDetails,
   height = 520,
 }: PharmacyResultsMapProps) {
+  const t = useTranslations('pharmUi')
   const pinned = pharmacies.filter(
     (p): p is PharmacyListItem & { latitude: number; longitude: number } =>
       p.latitude !== null && p.longitude !== null
@@ -59,7 +61,7 @@ export default function PharmacyResultsMap({
       zoom={points.length ? 12 : 7}
       scrollWheelZoom
       style={{ height, width: '100%', borderRadius: 8 }}
-      aria-label="Map of pharmacies"
+      aria-label={t('mapLabel')}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -80,21 +82,21 @@ export default function PharmacyResultsMap({
               <div className="space-y-1 text-sm">
                 <div className="font-semibold">{p.name_en}</div>
                 {p.name_bn && <div className="text-gray-600">{p.name_bn}</div>}
-                {distance && <div className="text-emerald-700">{distance} away</div>}
+                {distance && <div className="text-emerald-700">{t('distanceAway', { distance })}</div>}
                 {p.address && <div className="text-gray-600">{p.address}</div>}
                 <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1">
                   {tel && (
                     <a href={tel} className="font-medium text-emerald-700 underline">
-                      Call
+                      {t('call')}
                     </a>
                   )}
                   {directions && (
                     <a href={directions} target="_blank" rel="noopener noreferrer" className="font-medium text-emerald-700 underline">
-                      Directions
+                      {t('directions')}
                     </a>
                   )}
                   <button type="button" onClick={() => onOpenDetails(p.id)} className="font-medium text-emerald-700 underline">
-                    Details
+                    {t('details')}
                   </button>
                 </div>
               </div>

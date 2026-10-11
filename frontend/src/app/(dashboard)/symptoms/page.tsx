@@ -4,6 +4,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSymptoms, useSearchSymptoms, useDeleteSymptom } from '@/lib/hooks/useSymptoms';
@@ -19,6 +20,9 @@ import { Loader2, Plus, Search, Trash2, Edit, Eye } from 'lucide-react';
 import type { SymptomCategory, SymptomFilters } from '@/types/symptom';
 
 export default function SymptomsPage() {
+  const tp = useTranslations('pages');
+  const t = useTranslations('symptomsUi');
+  const tc = useTranslations('symptomCategoryUi');
   const router = useRouter();
   const can = useCan();
   const [filters, setFilters] = useState<SymptomFilters>({
@@ -45,14 +49,19 @@ export default function SymptomsPage() {
   const deleteSymptom = useDeleteSymptom();
 
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this symptom?')) {
+    if (confirm(t('confirmDelete'))) {
       try {
         await deleteSymptom.mutateAsync(id);
       } catch (error) {
-        alert('Failed to delete symptom');
+        alert(t('deleteFailed'));
       }
     }
   };
+
+  const catLabel = (c: string) =>
+    tc.has(`badge.${c}`)
+      ? tc(`badge.${c}`)
+      : c.split('_').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   const getCategoryColor = (category: string | null) => {
     if (!category) return 'bg-gray-100 text-gray-800';
@@ -84,15 +93,15 @@ export default function SymptomsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Symptom Library</h1>
+          <h1 className="text-3xl font-bold">{tp('symptomsTitle')}</h1>
           <p className="text-gray-600 mt-2">
-            Manage symptoms catalog
+            {tp('symptomsSubtitle')}
           </p>
         </div>
         {can.writeClinical && (
           <Button onClick={() => router.push('/symptoms/new')}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Symptom
+            {t('addSymptom')}
           </Button>
         )}
       </div>
@@ -101,12 +110,12 @@ export default function SymptomsPage() {
       <Card className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Search</label>
+            <label className="text-sm font-medium mb-2 block">{t('search')}</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
-                aria-label="Search symptoms"
- placeholder="Search symptoms..."
+                aria-label={t('searchAria')}
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -115,36 +124,27 @@ export default function SymptomsPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Category</label>
+            <label className="text-sm font-medium mb-2 block">{t('category')}</label>
             <Select
               value={filters.category || 'all'}
               onValueChange={(value) =>
                 setFilters({ ...filters, category: value === 'all' ? undefined : value as SymptomCategory })
               }
             >
-              <SelectTrigger aria-label="Category">
-                <SelectValue placeholder="All Categories" />
+              <SelectTrigger aria-label={t('category')}>
+                <SelectValue placeholder={t('allCategories')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="neurological">Neurological</SelectItem>
-                <SelectItem value="respiratory">Respiratory</SelectItem>
-                <SelectItem value="digestive">Digestive</SelectItem>
-                <SelectItem value="mental">Mental</SelectItem>
-                <SelectItem value="musculoskeletal">Musculoskeletal</SelectItem>
-                <SelectItem value="skin">Skin</SelectItem>
-                <SelectItem value="immune">Immune</SelectItem>
-                <SelectItem value="cardiovascular">Cardiovascular</SelectItem>
-                <SelectItem value="metabolic">Metabolic</SelectItem>
-                <SelectItem value="reproductive">Reproductive</SelectItem>
-                <SelectItem value="ear_nose_throat">Ear/Nose/Throat</SelectItem>
-                <SelectItem value="urinary">Urinary</SelectItem>
+                <SelectItem value="all">{t('allCategories')}</SelectItem>
+                {['neurological','respiratory','digestive','mental','musculoskeletal','skin','immune','cardiovascular','metabolic','reproductive','ear_nose_throat','urinary'].map((c) => (
+                  <SelectItem key={c} value={c}>{tc(c)}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Source</label>
+            <label className="text-sm font-medium mb-2 block">{t('source')}</label>
             <Select
               value={filters.is_global === undefined ? 'all' : filters.is_global ? 'global' : 'tenant'}
               onValueChange={(value) =>
@@ -154,19 +154,19 @@ export default function SymptomsPage() {
                 })
               }
             >
-              <SelectTrigger aria-label="Source">
-                <SelectValue placeholder="All Sources" />
+              <SelectTrigger aria-label={t('source')}>
+                <SelectValue placeholder={t('allSources')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Sources</SelectItem>
-                <SelectItem value="global">Global</SelectItem>
-                <SelectItem value="tenant">My Symptoms</SelectItem>
+                <SelectItem value="all">{t('allSources')}</SelectItem>
+                <SelectItem value="global">{t('global')}</SelectItem>
+                <SelectItem value="tenant">{t('mySymptoms')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Status</label>
+            <label className="text-sm font-medium mb-2 block">{t('status')}</label>
             <Select
               value={filters.is_active === undefined ? 'all' : filters.is_active ? 'active' : 'inactive'}
               onValueChange={(value) =>
@@ -176,13 +176,13 @@ export default function SymptomsPage() {
                 })
               }
             >
-              <SelectTrigger aria-label="Status">
-                <SelectValue placeholder="All Statuses" />
+              <SelectTrigger aria-label={t('status')}>
+                <SelectValue placeholder={t('allStatuses')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                <SelectItem value="active">{t('active')}</SelectItem>
+                <SelectItem value="inactive">{t('inactive')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -196,11 +196,11 @@ export default function SymptomsPage() {
         </div>
       ) : filteredSymptoms.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-gray-500">No symptoms found</p>
+          <p className="text-gray-500">{t('noneFound')}</p>
           {can.writeClinical && (
           <Button className="mt-4" onClick={() => router.push('/symptoms/new')}>
             <Plus className="w-4 h-4 mr-2" />
-            Add First Symptom
+            {t('addFirst')}
           </Button>
           )}
         </Card>
@@ -217,7 +217,7 @@ export default function SymptomsPage() {
                 </div>
                 {symptom.is_global && (
                   <Badge variant="outline" className="text-xs">
-                    Global
+                    {t('global')}
                   </Badge>
                 )}
               </div>
@@ -225,9 +225,7 @@ export default function SymptomsPage() {
               <div className="space-y-2 mb-4">
                 {symptom.category && (
                   <Badge className={getCategoryColor(symptom.category)}>
-                    {symptom.category.split('_').map(word =>
-                      word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ')}
+                    {catLabel(symptom.category)}
                   </Badge>
                 )}
               </div>
@@ -240,7 +238,7 @@ export default function SymptomsPage() {
                   onClick={() => router.push(`/symptoms/${symptom.id}`)}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  View
+                  {t('view')}
                 </Button>
                 {!symptom.is_global && can.writeClinical && (
                   <>

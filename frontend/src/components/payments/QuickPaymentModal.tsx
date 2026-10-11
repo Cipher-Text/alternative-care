@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +48,8 @@ export function QuickPaymentModal({
   patientId,
   patientName,
 }: QuickPaymentModalProps) {
+  const t = useTranslations("payFormUi");
+  const tb = useTranslations("payBadgeUi");
   const createPayment = useCreatePayment();
   const [selectedPatient, setSelectedPatient] = useState(patientName || "");
 
@@ -75,12 +78,12 @@ export function QuickPaymentModal({
       };
 
       await createPayment.mutateAsync(paymentData);
-      toast.success(`Payment of ৳${data.amount} recorded successfully`);
+      toast.success(t("recordedOk", { amount: data.amount }));
       reset();
       onClose();
     } catch (error: any) {
       console.error("Failed to create payment:", error);
-      toast.error(error?.response?.data?.detail || "Failed to record payment");
+      toast.error(error?.response?.data?.detail || t("recordFail"));
     }
   };
 
@@ -93,9 +96,9 @@ export function QuickPaymentModal({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Record Payment</DialogTitle>
+          <DialogTitle>{t("modalTitle")}</DialogTitle>
           <DialogDescription>
-            Record a cash or manual payment for a patient
+            {t("modalDesc")}
           </DialogDescription>
         </DialogHeader>
 
@@ -103,25 +106,25 @@ export function QuickPaymentModal({
           {/* Patient Selection - Simplified for now */}
           <div className="space-y-2">
             <Label htmlFor="patient_id">
-              Patient ID <span className="text-red-500">*</span>
+              {t("patientId")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="patient_id"
-              {...register("patient_id", { required: "Patient ID is required" })}
-              placeholder="Enter patient ID"
+              {...register("patient_id", { required: t("patientIdRequired") })}
+              placeholder={t("patientIdPlaceholder")}
             />
             {errors.patient_id && (
               <p className="text-sm text-red-500">{errors.patient_id.message}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              Note: Patient search autocomplete coming soon
+              {t("patientSearchNote")}
             </p>
           </div>
 
           {/* Amount */}
           <div className="space-y-2">
             <Label htmlFor="amount">
-              Amount (৳) <span className="text-red-500">*</span>
+              {t("amountLabel")} <span className="text-red-500">*</span>
             </Label>
             <Input
               id="amount"
@@ -129,8 +132,8 @@ export function QuickPaymentModal({
               step="0.01"
               min="0"
               {...register("amount", {
-                required: "Amount is required",
-                min: { value: 0, message: "Amount must be positive" },
+                required: t("amountRequired"),
+                min: { value: 0, message: t("amountPositive") },
               })}
               placeholder="1000"
             />
@@ -141,7 +144,7 @@ export function QuickPaymentModal({
 
           {/* Payment Method */}
           <div className="space-y-2">
-            <Label htmlFor="payment_method">Payment Method</Label>
+            <Label htmlFor="payment_method">{t("paymentMethod")}</Label>
             <Select
               defaultValue="cash"
               onValueChange={(value) =>
@@ -152,18 +155,18 @@ export function QuickPaymentModal({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="bkash">bKash</SelectItem>
-                <SelectItem value="nagad">Nagad</SelectItem>
-                <SelectItem value="rocket">Rocket</SelectItem>
-                <SelectItem value="card">Card</SelectItem>
+                <SelectItem value="cash">{tb("method.cash")}</SelectItem>
+                <SelectItem value="bkash">{tb("method.bkash")}</SelectItem>
+                <SelectItem value="nagad">{tb("method.nagad")}</SelectItem>
+                <SelectItem value="rocket">{tb("method.rocket")}</SelectItem>
+                <SelectItem value="card">{tb("method.card")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Payment Date */}
           <div className="space-y-2">
-            <Label htmlFor="payment_date">Payment Date</Label>
+            <Label htmlFor="payment_date">{t("paymentDate")}</Label>
             <Input
               id="payment_date"
               type="date"
@@ -173,11 +176,11 @@ export function QuickPaymentModal({
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description (Optional)</Label>
+            <Label htmlFor="description">{t("descriptionOptional")}</Label>
             <Textarea
               id="description"
               {...register("description")}
-              placeholder="e.g., Consultation fee, Follow-up visit"
+              placeholder={t("modalDescPlaceholder")}
               rows={2}
             />
           </div>
@@ -189,13 +192,13 @@ export function QuickPaymentModal({
               onClick={handleClose}
               disabled={createPayment.isLoading}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={createPayment.isLoading}>
               {createPayment.isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Record Payment
+              {t("recordPayment")}
             </Button>
           </DialogFooter>
         </form>

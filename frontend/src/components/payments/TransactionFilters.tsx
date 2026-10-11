@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +22,8 @@ interface TransactionFiltersProps {
 }
 
 export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProps) {
+  const t = useTranslations("payTxUi");
+  const tb = useTranslations("payBadgeUi");
   const [filters, setFilters] = useState<PaymentFilters>({});
 
   const handleFilterChange = (key: keyof PaymentFilters, value: any) => {
@@ -47,7 +50,7 @@ export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProp
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Date From */}
           <div className="space-y-2">
-            <Label htmlFor="date_from">From Date</Label>
+            <Label htmlFor="date_from">{t("fromDate")}</Label>
             <Input
               id="date_from"
               type="date"
@@ -58,7 +61,7 @@ export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProp
 
           {/* Date To */}
           <div className="space-y-2">
-            <Label htmlFor="date_to">To Date</Label>
+            <Label htmlFor="date_to">{t("toDate")}</Label>
             <Input
               id="date_to"
               type="date"
@@ -69,7 +72,7 @@ export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProp
 
           {/* Payment Method */}
           <div className="space-y-2">
-            <Label htmlFor="payment_method">Payment Method</Label>
+            <Label htmlFor="payment_method">{t("paymentMethod")}</Label>
             <Select
               value={filters.payment_method || "all"}
               onValueChange={(value) =>
@@ -77,22 +80,22 @@ export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProp
               }
             >
               <SelectTrigger id="payment_method">
-                <SelectValue placeholder="All methods" />
+                <SelectValue placeholder={t("allMethods")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All methods</SelectItem>
-                <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="bkash">bKash</SelectItem>
-                <SelectItem value="nagad">Nagad</SelectItem>
-                <SelectItem value="rocket">Rocket</SelectItem>
-                <SelectItem value="card">Card</SelectItem>
+                <SelectItem value="all">{t("allMethods")}</SelectItem>
+                <SelectItem value="cash">{tb("method.cash")}</SelectItem>
+                <SelectItem value="bkash">{tb("method.bkash")}</SelectItem>
+                <SelectItem value="nagad">{tb("method.nagad")}</SelectItem>
+                <SelectItem value="rocket">{tb("method.rocket")}</SelectItem>
+                <SelectItem value="card">{tb("method.card")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Status */}
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">{t("status")}</Label>
             <Select
               value={filters.status || "all"}
               onValueChange={(value) =>
@@ -100,14 +103,14 @@ export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProp
               }
             >
               <SelectTrigger id="status">
-                <SelectValue placeholder="All statuses" />
+                <SelectValue placeholder={t("allStatuses")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-                <SelectItem value="refunded">Refunded</SelectItem>
+                <SelectItem value="all">{t("allStatuses")}</SelectItem>
+                <SelectItem value="paid">{tb("paymentStatus.paid")}</SelectItem>
+                <SelectItem value="pending">{tb("paymentStatus.pending")}</SelectItem>
+                <SelectItem value="failed">{tb("paymentStatus.failed")}</SelectItem>
+                <SelectItem value="refunded">{tb("paymentStatus.refunded")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -117,17 +120,17 @@ export function TransactionFilters({ onFilter, onReset }: TransactionFiltersProp
         <div className="flex items-center gap-2 mt-4">
           <Button onClick={handleApply} size="sm">
             <Search className="mr-2 h-4 w-4" />
-            Apply Filters
+            {t("applyFilters")}
           </Button>
           {hasActiveFilters && (
             <Button onClick={handleReset} variant="outline" size="sm">
               <X className="mr-2 h-4 w-4" />
-              Clear
+              {t("clear")}
             </Button>
           )}
           {hasActiveFilters && (
             <span className="text-sm text-muted-foreground ml-2">
-              {Object.keys(filters).filter(k => filters[k as keyof PaymentFilters]).length} filter(s) active
+              {t("filtersActive", { count: Object.keys(filters).filter(k => filters[k as keyof PaymentFilters]).length })}
             </span>
           )}
         </div>

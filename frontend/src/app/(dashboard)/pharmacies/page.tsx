@@ -1,11 +1,12 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { List, Loader2, LocateFixed, Map as MapIcon, Search, Store, X } from 'lucide-react'
 import { useDivisions } from '@/lib/hooks/usePatients'
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
-import { NEAR_ME_MESSAGES, useNearMe } from '@/lib/hooks/useNearMe'
+import { NEAR_ME_MESSAGE_KEYS, useNearMe } from '@/lib/hooks/useNearMe'
 import { useAllDistricts, usePharmacies } from '@/lib/hooks/usePharmacies'
 import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { PharmacyCard } from '@/components/pharmacies/PharmacyCard'
@@ -37,6 +38,8 @@ const RADII_KM = [5, 10, 25, 50, 100]
 const MAP_LIMIT = 500
 
 export default function PharmaciesPage() {
+  const tp = useTranslations('pages')
+  const t = useTranslations('pharmUi')
   const [view, setView] = useState<'list' | 'map'>('list')
   const [searchTerm, setSearchTerm] = useState('')
   const [discipline, setDiscipline] = useState('all')
@@ -79,7 +82,8 @@ export default function PharmaciesPage() {
   const hasFilters =
     Boolean(debouncedSearch) || discipline !== 'all' || type !== 'all' || districtId !== 'all' || delivers
 
-  const nearMeMessage = NEAR_ME_MESSAGES[nearMe.status]
+  const nearMeMessageKey = NEAR_ME_MESSAGE_KEYS[nearMe.status]
+  const nearMeMessage = nearMeMessageKey ? t(`nearMe.${nearMeMessageKey}`) : undefined
   const distanceOf = (id: number | null) => items.find((p) => p.id === id)?.distance_km ?? null
 
   const clearFilters = () => {
@@ -101,18 +105,17 @@ export default function PharmaciesPage() {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Pharmacies</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{tp('pharmaciesTitle')}</h1>
           <p className="mt-2 max-w-2xl text-gray-600 dark:text-gray-400">
-            Where to buy homeopathic, ayurvedic, unani and herbal stock. Listings are checked by the
-            AltCare team; call before you go, especially if a listing is marked out of date.
+            {tp('pharmaciesSubtitle')}
           </p>
         </div>
-        <div className="flex gap-2" role="group" aria-label="View">
+        <div className="flex gap-2" role="group" aria-label={t('view')}>
           <Button variant={view === 'list' ? 'default' : 'outline'} className="h-10" onClick={() => setView('list')} aria-pressed={view === 'list'}>
-            <List className="mr-2 h-4 w-4" /> List
+            <List className="mr-2 h-4 w-4" /> {t('list')}
           </Button>
           <Button variant={view === 'map' ? 'default' : 'outline'} className="h-10" onClick={() => setView('map')} aria-pressed={view === 'map'}>
-            <MapIcon className="mr-2 h-4 w-4" /> Map
+            <MapIcon className="mr-2 h-4 w-4" /> {t('map')}
           </Button>
         </div>
       </div>
@@ -124,42 +127,42 @@ export default function PharmaciesPage() {
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search by name or address"
-              placeholder="Search by name or address"
+              aria-label={t('searchPlaceholder')}
+              placeholder={t('searchPlaceholder')}
               className="h-10 pl-9"
             />
           </div>
 
           <Select value={discipline} onValueChange={setDiscipline}>
-            <SelectTrigger aria-label="Discipline" className="h-10">
-              <SelectValue placeholder="Discipline" />
+            <SelectTrigger aria-label={t('discipline')} className="h-10">
+              <SelectValue placeholder={t('discipline')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All disciplines</SelectItem>
+              <SelectItem value="all">{t('allDisciplines')}</SelectItem>
               {PHARMACY_DISCIPLINES.map((d) => (
-                <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                <SelectItem key={d.value} value={d.value}>{t(`disciplines.${d.value}`)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={type} onValueChange={setType}>
-            <SelectTrigger aria-label="Type" className="h-10">
-              <SelectValue placeholder="Type" />
+            <SelectTrigger aria-label={t('type')} className="h-10">
+              <SelectValue placeholder={t('type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All types</SelectItem>
-              {PHARMACY_TYPES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+              <SelectItem value="all">{t('allTypes')}</SelectItem>
+              {PHARMACY_TYPES.map((pt) => (
+                <SelectItem key={pt.value} value={pt.value}>{t(`types.${pt.value}`)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={districtId} onValueChange={setDistrictId}>
-            <SelectTrigger aria-label="District" className="h-10">
-              <SelectValue placeholder="District" />
+            <SelectTrigger aria-label={t('district')} className="h-10">
+              <SelectValue placeholder={t('district')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All districts</SelectItem>
+              <SelectItem value="all">{t('allDistricts')}</SelectItem>
               {districts.map((d) => (
                 <SelectItem key={d.id} value={String(d.id)}>{d.name_en}</SelectItem>
               ))}
@@ -168,7 +171,7 @@ export default function PharmaciesPage() {
 
           <label className="flex h-10 items-center gap-2 rounded-md border px-3 text-sm">
             <input type="checkbox" className="h-4 w-4" checked={delivers} onChange={(e) => setDelivers(e.target.checked)} />
-            Delivers only
+            {t('deliversOnly')}
           </label>
         </div>
 
@@ -176,20 +179,20 @@ export default function PharmaciesPage() {
           {nearMe.coords ? (
             <>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-sm text-blue-800 dark:bg-blue-950 dark:text-blue-200">
-                <LocateFixed className="h-4 w-4" /> Within
+                <LocateFixed className="h-4 w-4" /> {t('within')}
               </span>
               <Select value={String(radiusKm)} onValueChange={(v) => setRadiusKm(Number(v))}>
-                <SelectTrigger aria-label="Search radius" className="h-10 w-28">
+                <SelectTrigger aria-label={t('searchRadius')} className="h-10 w-28">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {RADII_KM.map((r) => (
-                    <SelectItem key={r} value={String(r)}>{r} km</SelectItem>
+                    <SelectItem key={r} value={String(r)}>{t('radiusKm', { km: r })}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Button variant="ghost" className="h-10" onClick={nearMe.clear}>
-                <X className="mr-1.5 h-4 w-4" /> Stop searching near me
+                <X className="mr-1.5 h-4 w-4" /> {t('stopNearMe')}
               </Button>
             </>
           ) : (
@@ -199,12 +202,12 @@ export default function PharmaciesPage() {
               ) : (
                 <LocateFixed className="mr-2 h-4 w-4" />
               )}
-              Near me
+              {t('nearMeButton')}
             </Button>
           )}
           {hasFilters && (
             <Button variant="ghost" className="h-10" onClick={clearFilters}>
-              Clear filters
+              {t('clearFilters')}
             </Button>
           )}
         </div>
@@ -213,8 +216,7 @@ export default function PharmaciesPage() {
         )}
         {nearMe.coords && (
           <p className="text-xs text-muted-foreground">
-            Your position is used only for this search and is not saved. Pharmacies without a map pin
-            are not included in near-me results.
+            {t('privacyNote')}
           </p>
         )}
       </div>
@@ -224,26 +226,26 @@ export default function PharmaciesPage() {
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
         </div>
       ) : pharmacies.isError ? (
-        <p className="py-12 text-center text-red-600">Could not load pharmacies. Please try again.</p>
+        <p className="py-12 text-center text-red-600">{t('loadError')}</p>
       ) : items.length === 0 ? (
         <div className="rounded-lg border bg-card py-14 text-center">
           <Store className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-          <h2 className="text-lg font-semibold">No pharmacies found</h2>
+          <h2 className="text-lg font-semibold">{t('noneFound')}</h2>
           <p className="mx-auto mt-2 max-w-md text-muted-foreground">
             {nearMe.coords
-              ? `Nothing with a map pin within ${radiusKm} km. Try a larger radius or clear the filters.`
+              ? t('emptyNear', { km: radiusKm })
               : hasFilters
-                ? 'Try different filters or a broader search.'
-                : 'The directory is empty for now.'}
+                ? t('emptyFiltered')
+                : t('emptyDirectory')}
           </p>
         </div>
       ) : isMap ? (
         <div className="space-y-2">
           <PharmacyResultsMap pharmacies={items} you={nearMe.coords} onOpenDetails={setDetailId} />
           <p className="text-sm text-muted-foreground" aria-live="polite">
-            {items.length - unpinned} on the map
-            {unpinned > 0 && ` · ${unpinned} without a pin (see the list)`}
-            {items.length >= MAP_LIMIT && ` · showing the first ${MAP_LIMIT} — narrow your search to see the rest`}
+            {t('onTheMap', { count: items.length - unpinned })}
+            {unpinned > 0 && ` · ${t('withoutPin', { count: unpinned })}`}
+            {items.length >= MAP_LIMIT && ` · ${t('showingFirst', { count: MAP_LIMIT })}`}
           </p>
         </div>
       ) : (

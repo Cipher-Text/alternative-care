@@ -4,6 +4,9 @@ import Cookies from 'js-cookie'
 import { Globe } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
+import { authApi } from '@/lib/api/auth'
+import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,10 +19,23 @@ export function LanguageSwitcher() {
   const locale = useLocale()
   const router = useRouter()
   const t = useTranslations('common')
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const updateUser = useAuthStore((state) => state.updateUser)
 
   const setLocale = (next: 'en' | 'bn') => {
+    if (next === locale) return
+    // Apply now (the server reads this cookie to pick the language)...
     Cookies.set('NEXT_LOCALE', next, { expires: 365 })
     router.refresh()
+
+    // ...and remember it on the account, so the next login or other device keeps the choice
+    // instead of reverting to the old one. A failure only costs the cross-device memory.
+    if (isAuthenticated) {
+      updateUser({ language: next })
+      authApi.setLanguage(next).catch(() => {
+        toast.error(t('languageNotSaved'))
+      })
+    }
   }
 
   return (

@@ -5,6 +5,7 @@
 'use client';
 
 import { use, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMedicine, useMedicineAliases, useDeleteMedicine, useCreateMedicineAlias, useDeleteMedicineAlias } from '@/lib/hooks/useMedicines';
 import { useCan } from '@/lib/auth/permissions';
@@ -18,6 +19,8 @@ import type { MedicalSystem, MedicineAliasType } from '@/types/medicine';
 
 export default function MedicineDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const t = useTranslations('libDetailUi');
+  const ts = useTranslations('libSystemUi');
   const can = useCan();
   const { id } = use(params);
   const medicineId = parseInt(id);
@@ -35,12 +38,12 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
   });
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this medicine?')) {
+    if (confirm(t('confirmDelete'))) {
       try {
         await deleteMedicine.mutateAsync(medicineId);
         router.push('/medicines');
       } catch (error) {
-        alert('Failed to delete medicine');
+        alert(t('deleteFailed'));
       }
     }
   };
@@ -64,16 +67,16 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       setAliasForm({ alias_en: '', alias_type: '' as MedicineAliasType });
       setShowAddAlias(false);
     } catch (error) {
-      alert('Failed to add alias');
+      alert(t('addAliasFailed'));
     }
   };
 
   const handleDeleteAlias = async (aliasId: number) => {
-    if (confirm('Remove this alias?')) {
+    if (confirm(t('confirmRemoveAlias'))) {
       try {
         await deleteAlias.mutateAsync(aliasId);
       } catch (error) {
-        alert('Failed to delete alias');
+        alert(t('deleteAliasFailed'));
       }
     }
   };
@@ -104,9 +107,9 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
   if (!medicine) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Medicine not found</p>
+        <p className="text-gray-500">{t('notFound')}</p>
         <Button className="mt-4" onClick={() => router.push('/medicines')}>
-          Back to Medicines
+          {t('backToMedicines')}
         </Button>
       </div>
     );
@@ -118,13 +121,13 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('back')}
           </Button>
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold">{medicine.name_en}</h1>
               {medicine.is_global && (
-                <Badge variant="outline">Global</Badge>
+                <Badge variant="outline">{t('global')}</Badge>
               )}
             </div>
             {medicine.name_bn && (
@@ -140,7 +143,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
               onClick={() => router.push(`/medicines/${medicineId}/edit`)}
             >
               <Edit className="w-4 h-4 mr-2" />
-              Edit
+              {t('edit')}
             </Button>
             <Button
               variant="outline"
@@ -148,7 +151,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
               className="text-red-600 hover:text-red-700"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete
+              {t('delete')}
             </Button>
           </div>
         )}
@@ -156,36 +159,36 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
 
       {/* Basic Information */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('basicInfo')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium text-gray-500">Medical System</label>
+            <label className="text-sm font-medium text-gray-500">{t('medicalSystem')}</label>
             <div className="mt-1">
               <Badge className={getSystemColor(medicine.system)}>
-                {medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
+                {ts.has(medicine.system) ? ts(medicine.system) : medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
               </Badge>
             </div>
           </div>
 
           {medicine.category && (
             <div>
-              <label className="text-sm font-medium text-gray-500">Category</label>
+              <label className="text-sm font-medium text-gray-500">{t('category')}</label>
               <p className="mt-1">{medicine.category}</p>
             </div>
           )}
 
           {medicine.potency && (
             <div>
-              <label className="text-sm font-medium text-gray-500">Potency</label>
+              <label className="text-sm font-medium text-gray-500">{t('potency')}</label>
               <p className="mt-1">{medicine.potency}</p>
             </div>
           )}
 
           <div>
-            <label className="text-sm font-medium text-gray-500">Status</label>
+            <label className="text-sm font-medium text-gray-500">{t('status')}</label>
             <div className="mt-1">
               <Badge variant={medicine.is_active ? 'default' : 'outline'}>
-                {medicine.is_active ? 'Active' : 'Inactive'}
+                {medicine.is_active ? t('active') : t('inactive')}
               </Badge>
             </div>
           </div>
@@ -195,17 +198,17 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       {/* Description */}
       {(medicine.description_en || medicine.description_bn) && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Description</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('description')}</h2>
           <div className="space-y-4">
             {medicine.description_en && (
               <div>
-                <label className="text-sm font-medium text-gray-500">English</label>
+                <label className="text-sm font-medium text-gray-500">{t('english')}</label>
                 <p className="mt-1 text-gray-700">{medicine.description_en}</p>
               </div>
             )}
             {medicine.description_bn && (
               <div>
-                <label className="text-sm font-medium text-gray-500">Bengali</label>
+                <label className="text-sm font-medium text-gray-500">{t('bengali')}</label>
                 <p className="mt-1 text-gray-700">{medicine.description_bn}</p>
               </div>
             )}
@@ -216,17 +219,17 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       {/* Dosage Guidance */}
       {(medicine.dosage_guidance_en || medicine.dosage_guidance_bn) && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Dosage Guidance</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('dosageGuidance')}</h2>
           <div className="space-y-4">
             {medicine.dosage_guidance_en && (
               <div>
-                <label className="text-sm font-medium text-gray-500">English</label>
+                <label className="text-sm font-medium text-gray-500">{t('english')}</label>
                 <p className="mt-1 text-gray-700">{medicine.dosage_guidance_en}</p>
               </div>
             )}
             {medicine.dosage_guidance_bn && (
               <div>
-                <label className="text-sm font-medium text-gray-500">Bengali</label>
+                <label className="text-sm font-medium text-gray-500">{t('bengali')}</label>
                 <p className="mt-1 text-gray-700">{medicine.dosage_guidance_bn}</p>
               </div>
             )}
@@ -237,17 +240,17 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       {/* Indications */}
       {(medicine.indications_en || medicine.indications_bn) && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Indications</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('indications')}</h2>
           <div className="space-y-4">
             {medicine.indications_en && (
               <div>
-                <label className="text-sm font-medium text-gray-500">English</label>
+                <label className="text-sm font-medium text-gray-500">{t('english')}</label>
                 <p className="mt-1 text-gray-700">{medicine.indications_en}</p>
               </div>
             )}
             {medicine.indications_bn && (
               <div>
-                <label className="text-sm font-medium text-gray-500">Bengali</label>
+                <label className="text-sm font-medium text-gray-500">{t('bengali')}</label>
                 <p className="mt-1 text-gray-700">{medicine.indications_bn}</p>
               </div>
             )}
@@ -258,17 +261,17 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       {/* Contraindications */}
       {(medicine.contraindications_en || medicine.contraindications_bn) && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Contraindications</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('contraindications')}</h2>
           <div className="space-y-4">
             {medicine.contraindications_en && (
               <div>
-                <label className="text-sm font-medium text-gray-500">English</label>
+                <label className="text-sm font-medium text-gray-500">{t('english')}</label>
                 <p className="mt-1 text-gray-700">{medicine.contraindications_en}</p>
               </div>
             )}
             {medicine.contraindications_bn && (
               <div>
-                <label className="text-sm font-medium text-gray-500">Bengali</label>
+                <label className="text-sm font-medium text-gray-500">{t('bengali')}</label>
                 <p className="mt-1 text-gray-700">{medicine.contraindications_bn}</p>
               </div>
             )}
@@ -279,11 +282,11 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       {/* Aliases */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Aliases</h2>
+          <h2 className="text-xl font-semibold">{t('aliases')}</h2>
           {(!medicine.is_global && can.writeClinical) && (
             <Button size="sm" onClick={() => setShowAddAlias(!showAddAlias)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Alias
+              {t('addAlias')}
             </Button>
           )}
         </div>
@@ -292,44 +295,44 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
           <form onSubmit={handleAddAlias} className="mb-4 p-4 border rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Alias Name</label>
+                <label className="text-sm font-medium mb-2 block">{t('aliasName')}</label>
                 <Input
                   value={aliasForm.alias_en}
                   onChange={(e) =>
                     setAliasForm({ ...aliasForm, alias_en: e.target.value })
                   }
-                  placeholder="e.g., Arnica, Mountain Daisy"
+                  placeholder={t('aliasPh')}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Type</label>
+                <label className="text-sm font-medium mb-2 block">{t('type')}</label>
                 <Select
                   value={aliasForm.alias_type}
                   onValueChange={(value) =>
                     setAliasForm({ ...aliasForm, alias_type: value as MedicineAliasType })
                   }
                 >
-                  <SelectTrigger aria-label="Type">
-                    <SelectValue placeholder="Select type" />
+                  <SelectTrigger aria-label={t('type')}>
+                    <SelectValue placeholder={t('selectType')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="brand">Brand Name</SelectItem>
-                    <SelectItem value="common">Common Name</SelectItem>
-                    <SelectItem value="transliteration">Transliteration</SelectItem>
-                    <SelectItem value="abbreviation">Abbreviation</SelectItem>
+                    <SelectItem value="brand">{t('typeBrand')}</SelectItem>
+                    <SelectItem value="common">{t('typeCommon')}</SelectItem>
+                    <SelectItem value="transliteration">{t('typeTransliteration')}</SelectItem>
+                    <SelectItem value="abbreviation">{t('typeAbbreviation')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Button type="submit" size="sm">Add</Button>
+              <Button type="submit" size="sm">{t('add')}</Button>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAddAlias(false)}
               >
-                Cancel
+                {t('cancel')}
               </Button>
             </div>
           </form>
@@ -345,7 +348,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
                 <div className="flex items-center gap-3">
                   <span className="font-medium">{alias.alias_en || alias.alias_bn}</span>
                   <Badge variant="outline" className="text-xs">
-                    {alias.alias_type}
+                    {t.has(`badge.${alias.alias_type}`) ? t(`badge.${alias.alias_type}`) : alias.alias_type}
                   </Badge>
                 </div>
                 {(!medicine.is_global && can.writeClinical) && (
@@ -362,7 +365,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">No aliases yet</p>
+          <p className="text-gray-500 text-sm">{t('noAliases')}</p>
         )}
       </Card>
     </div>

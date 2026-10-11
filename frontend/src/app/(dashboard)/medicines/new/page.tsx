@@ -5,6 +5,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCreateMedicine } from '@/lib/hooks/useMedicines';
 import { Card } from '@/components/ui/card';
@@ -17,6 +18,8 @@ import type { MedicalSystem } from '@/types/medicine';
 
 export default function NewMedicinePage() {
   const router = useRouter();
+  const t = useTranslations('libFormUi');
+  const ts = useTranslations('libSystemUi');
   const createMedicine = useCreateMedicine();
 
   const [formData, setFormData] = useState({
@@ -41,10 +44,10 @@ export default function NewMedicinePage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name_en.trim()) {
-      newErrors.name_en = 'English name is required';
+      newErrors.name_en = t('nameRequired');
     }
     if (!formData.system) {
-      newErrors.system = 'Medical system is required';
+      newErrors.system = t('systemRequired');
     }
 
     setErrors(newErrors);
@@ -75,7 +78,7 @@ export default function NewMedicinePage() {
       await createMedicine.mutateAsync(payload as any);
       router.push('/medicines');
     } catch (error) {
-      alert('Failed to create medicine');
+      alert(t('createFailed'));
     }
   };
 
@@ -84,11 +87,11 @@ export default function NewMedicinePage() {
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => router.back()}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('back')}
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Add New Medicine</h1>
-          <p className="text-gray-600 mt-2">Create a new medicine entry</p>
+          <h1 className="text-3xl font-bold">{t('addTitle')}</h1>
+          <p className="text-gray-600 mt-2">{t('addSubtitle')}</p>
         </div>
       </div>
 
@@ -97,16 +100,16 @@ export default function NewMedicinePage() {
           <div className="space-y-6">
             {/* Basic Information */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('basicInfo')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Name (English) <span className="text-red-500">*</span>
+                    {t('nameEn')} <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.name_en}
                     onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
-                    placeholder="e.g., Arnica Montana"
+                    placeholder={t('nameEnPh')}
                   />
                   {errors.name_en && (
                     <p className="text-red-500 text-sm mt-1">{errors.name_en}</p>
@@ -114,17 +117,17 @@ export default function NewMedicinePage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Name (Bengali)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('nameBn')}</label>
                   <Input
                     value={formData.name_bn}
                     onChange={(e) => setFormData({ ...formData, name_bn: e.target.value })}
-                    placeholder="e.g., আর্নিকা মন্টানা"
+                    placeholder={t('nameBnPh')}
                   />
                 </div>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Medical System <span className="text-red-500">*</span>
+                    {t('medicalSystem')} <span className="text-red-500">*</span>
                   </label>
                   <Select
                     value={formData.system}
@@ -132,14 +135,14 @@ export default function NewMedicinePage() {
                       setFormData({ ...formData, system: value as MedicalSystem })
                     }
                   >
-                    <SelectTrigger aria-label="Medical System">
-                      <SelectValue placeholder="Select system" />
+                    <SelectTrigger aria-label={t('medicalSystem')}>
+                      <SelectValue placeholder={t('selectSystem')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="homeopathy">Homeopathy</SelectItem>
-                      <SelectItem value="ayurveda">Ayurveda</SelectItem>
-                      <SelectItem value="unani">Unani</SelectItem>
-                      <SelectItem value="herbal">Herbal</SelectItem>
+                      <SelectItem value="homeopathy">{ts('homeopathy')}</SelectItem>
+                      <SelectItem value="ayurveda">{ts('ayurveda')}</SelectItem>
+                      <SelectItem value="unani">{ts('unani')}</SelectItem>
+                      <SelectItem value="herbal">{ts('herbal')}</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.system && (
@@ -148,25 +151,25 @@ export default function NewMedicinePage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Category</label>
+                  <label className="text-sm font-medium mb-2 block">{t('category')}</label>
                   <Input
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="e.g., Pain Relief, Digestive"
+                    placeholder={t('categoryPh')}
                   />
                 </div>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Potency
+                    {t('potency')}
                     {formData.system === 'homeopathy' && (
-                      <span className="text-gray-500 text-xs ml-2">(e.g., 30C, 200C, 1M)</span>
+                      <span className="text-gray-500 text-xs ml-2">{t('potencyHint')}</span>
                     )}
                   </label>
                   <Input
                     value={formData.potency}
                     onChange={(e) => setFormData({ ...formData, potency: e.target.value })}
-                    placeholder={formData.system === 'homeopathy' ? '30C' : 'Optional'}
+                    placeholder={formData.system === 'homeopathy' ? '30C' : t('optional')}
                   />
                 </div>
               </div>
@@ -174,24 +177,24 @@ export default function NewMedicinePage() {
 
             {/* Description */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Description</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('description')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description (English)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('descriptionEn')}</label>
                   <Textarea
                     value={formData.description_en}
                     onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
-                    placeholder="Describe the medicine..."
+                    placeholder={t('descriptionEnPh')}
                     rows={4}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description (Bengali)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('descriptionBn')}</label>
                   <Textarea
                     value={formData.description_bn}
                     onChange={(e) => setFormData({ ...formData, description_bn: e.target.value })}
-                    placeholder="ওষুধের বর্ণনা..."
+                    placeholder={t('descriptionBnPh')}
                     rows={4}
                   />
                 </div>
@@ -200,28 +203,28 @@ export default function NewMedicinePage() {
 
             {/* Dosage Guidance */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Dosage Guidance</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('dosageGuidance')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Dosage (English)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('dosageEn')}</label>
                   <Textarea
                     value={formData.dosage_guidance_en}
                     onChange={(e) =>
                       setFormData({ ...formData, dosage_guidance_en: e.target.value })
                     }
-                    placeholder="e.g., 3-4 pills twice daily"
+                    placeholder={t('dosageEnPh')}
                     rows={3}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Dosage (Bengali)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('dosageBn')}</label>
                   <Textarea
                     value={formData.dosage_guidance_bn}
                     onChange={(e) =>
                       setFormData({ ...formData, dosage_guidance_bn: e.target.value })
                     }
-                    placeholder="যেমন, ৩-৪টি বড়ি দিনে দুইবার"
+                    placeholder={t('dosageBnPh')}
                     rows={3}
                   />
                 </div>
@@ -230,24 +233,24 @@ export default function NewMedicinePage() {
 
             {/* Indications */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Indications</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('indications')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Indications (English)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('indicationsEn')}</label>
                   <Textarea
                     value={formData.indications_en}
                     onChange={(e) => setFormData({ ...formData, indications_en: e.target.value })}
-                    placeholder="What is this medicine used for?"
+                    placeholder={t('indicationsEnPh')}
                     rows={4}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Indications (Bengali)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('indicationsBn')}</label>
                   <Textarea
                     value={formData.indications_bn}
                     onChange={(e) => setFormData({ ...formData, indications_bn: e.target.value })}
-                    placeholder="এই ওষুধ কিসের জন্য ব্যবহৃত হয়?"
+                    placeholder={t('indicationsBnPh')}
                     rows={4}
                   />
                 </div>
@@ -256,32 +259,32 @@ export default function NewMedicinePage() {
 
             {/* Contraindications */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Contraindications</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('contraindications')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Contraindications (English)
+                    {t('contraindicationsEn')}
                   </label>
                   <Textarea
                     value={formData.contraindications_en}
                     onChange={(e) =>
                       setFormData({ ...formData, contraindications_en: e.target.value })
                     }
-                    placeholder="When should this medicine not be used?"
+                    placeholder={t('contraindicationsEnPh')}
                     rows={4}
                   />
                 </div>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Contraindications (Bengali)
+                    {t('contraindicationsBn')}
                   </label>
                   <Textarea
                     value={formData.contraindications_bn}
                     onChange={(e) =>
                       setFormData({ ...formData, contraindications_bn: e.target.value })
                     }
-                    placeholder="কখন এই ওষুধ ব্যবহার করা উচিত নয়?"
+                    placeholder={t('contraindicationsBnPh')}
                     rows={4}
                   />
                 </div>
@@ -292,16 +295,16 @@ export default function NewMedicinePage() {
             <div className="flex gap-3 pt-4 border-t">
               <Button type="submit" disabled={createMedicine.isLoading}>
                 {createMedicine.isLoading ? (
-                  <>Creating...</>
+                  <>{t('creating')}</>
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-2" />
-                    Create Medicine
+                    {t('createMedicine')}
                   </>
                 )}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.back()}>
-                Cancel
+                {t('cancel')}
               </Button>
             </div>
           </div>

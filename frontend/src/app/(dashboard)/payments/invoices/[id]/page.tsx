@@ -3,6 +3,8 @@
 import { use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useDateFormat } from "@/lib/i18n/date";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +19,8 @@ interface InvoiceDetailPageProps {
 export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const t = useTranslations("payInvoiceUi");
+  const { fmt } = useDateFormat();
 
   const { data: invoice, isLoading } = useInvoice(id);
   const updateInvoice = useUpdateInvoice();
@@ -26,14 +30,14 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
     try {
       await updateInvoice.mutateAsync({ id, data: { status } });
       const statusMessages = {
-        sent: "Invoice sent successfully",
-        paid: "Invoice marked as paid",
-        cancelled: "Invoice cancelled",
+        sent: t("sentOk"),
+        paid: t("paidOk"),
+        cancelled: t("cancelledOk"),
       };
       toast.success(statusMessages[status]);
     } catch (error: any) {
       console.error("Failed to update invoice:", error);
-      toast.error(error?.response?.data?.detail || "Failed to update invoice status");
+      toast.error(error?.response?.data?.detail || t("updateFail"));
     }
   };
 
@@ -63,10 +67,10 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       <div className="flex-1 p-4 pt-4 sm:p-8 sm:pt-6">
         <Card>
           <CardContent className="pt-12 pb-12 text-center">
-            <h3 className="text-lg font-semibold mb-2">Invoice not found</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("notFound")}</h3>
             <Link href="/payments/invoices">
               <Button variant="outline" className="mt-4">
-                Back to Invoices
+                {t("backToInvoices")}
               </Button>
             </Link>
           </CardContent>
@@ -81,7 +85,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/payments/invoices" aria-label="Back">
+            <Link href="/payments/invoices" aria-label={t("back")}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -97,20 +101,20 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={handleViewPdf} disabled={viewPdf.isLoading}>
             <FileText className="mr-2 h-4 w-4" />
-            {viewPdf.isLoading ? "Preparing..." : "View / Print PDF"}
+            {viewPdf.isLoading ? t("preparing") : t("viewPrintPdf")}
           </Button>
 
           {invoice.status === "draft" && (
             <Button onClick={() => handleStatusUpdate("sent")} disabled={updateInvoice.isLoading}>
               <Send className="mr-2 h-4 w-4" />
-              Send Invoice
+              {t("sendInvoice")}
             </Button>
           )}
 
           {invoice.status === "sent" && (
             <Button onClick={() => handleStatusUpdate("paid")} disabled={updateInvoice.isLoading}>
               <CheckCircle className="mr-2 h-4 w-4" />
-              Mark as Paid
+              {t("markPaid")}
             </Button>
           )}
         </div>
@@ -120,25 +124,25 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
         {/* Invoice Details */}
         <Card>
           <CardHeader>
-            <CardTitle>Invoice Details</CardTitle>
+            <CardTitle>{t("detailsTitle")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Patient:</span>
+              <span className="text-muted-foreground">{t("patient")}</span>
               <span className="font-medium">{invoice.patient_name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Issue Date:</span>
-              <span>{new Date(invoice.issue_date).toLocaleDateString()}</span>
+              <span className="text-muted-foreground">{t("issueDate")}</span>
+              <span>{fmt(invoice.issue_date, "P")}</span>
             </div>
             {invoice.due_date && (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Due Date:</span>
-                <span>{new Date(invoice.due_date).toLocaleDateString()}</span>
+                <span className="text-muted-foreground">{t("dueDate")}</span>
+                <span>{fmt(invoice.due_date, "P")}</span>
               </div>
             )}
             <div className="flex justify-between pt-3 border-t">
-              <span className="text-muted-foreground">Status:</span>
+              <span className="text-muted-foreground">{t("status")}</span>
               <InvoiceStatusBadge status={invoice.status} />
             </div>
           </CardContent>
@@ -147,12 +151,12 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
         {/* Amount */}
         <Card>
           <CardHeader>
-            <CardTitle>Amount</CardTitle>
+            <CardTitle>{t("amountTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">৳{invoice.amount.toLocaleString()}</div>
             <p className="text-sm text-muted-foreground mt-1">
-              {invoice.items.length} item{invoice.items.length !== 1 ? "s" : ""}
+              {t("itemCount", { count: invoice.items.length })}
             </p>
           </CardContent>
         </Card>
@@ -161,7 +165,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       {/* Items */}
       <Card>
         <CardHeader>
-          <CardTitle>Invoice Items</CardTitle>
+          <CardTitle>{t("itemsTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -180,7 +184,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
 
           <div className="mt-4 pt-4 border-t">
             <div className="flex justify-between text-lg font-bold">
-              <span>Total:</span>
+              <span>{t("total")}</span>
               <span>৳{invoice.amount.toFixed(2)}</span>
             </div>
           </div>
@@ -191,7 +195,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       {invoice.notes && (
         <Card>
           <CardHeader>
-            <CardTitle>Notes</CardTitle>
+            <CardTitle>{t("notes")}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground whitespace-pre-wrap">{invoice.notes}</p>

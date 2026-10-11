@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Loader2 } from 'lucide-react'
@@ -20,6 +21,7 @@ const STATUS_OPTIONS: AppointmentStatus[] = [
 ]
 
 export default function EditAppointmentPage({ params }: { params: Promise<{ id: string }> }) {
+  const t = useTranslations('apptEditUi')
   const { id } = use(params)
   const router = useRouter()
   const { data: appointment, isLoading } = useAppointment(id)
@@ -67,8 +69,7 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
     } catch (error: any) {
       if (error?.response?.status === 409) {
         setConflictMessage(
-          error?.response?.data?.detail ||
-            'Selected doctor time slot is already booked. Please choose another time.'
+          error?.response?.data?.detail || t('conflict')
         )
       }
     }
@@ -89,9 +90,9 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
   if (!appointment) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Appointment not found</p>
+        <p className="text-muted-foreground">{t('notFound')}</p>
         <Link href="/appointments">
-          <Button className="mt-4">Back to Appointments</Button>
+          <Button className="mt-4">{t('backToList')}</Button>
         </Link>
       </div>
     )
@@ -103,12 +104,12 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
         <Link href={`/appointments/${id}`}>
           <Button variant="outline" size="sm">
             <ArrowLeft className="h-4 w-4 mr-1" />
-            Back
+            {t('back')}
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">Edit Appointment</h1>
-          <p className="text-muted-foreground">Update schedule, status, and notes</p>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
       </div>
 
@@ -121,7 +122,7 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="appointment_date">Date</Label>
+            <Label htmlFor="appointment_date">{t('date')}</Label>
             <Input
               id="appointment_date"
               type="date"
@@ -134,7 +135,7 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="appointment_time">Time</Label>
+            <Label htmlFor="appointment_time">{t('time')}</Label>
             <Input
               id="appointment_time"
               type="time"
@@ -147,7 +148,7 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+            <Label htmlFor="duration_minutes">{t('duration')}</Label>
             <Input
               id="duration_minutes"
               type="number"
@@ -165,7 +166,7 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">{t('status')}</Label>
             <select
               id="status"
               className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -176,7 +177,7 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
             >
               {STATUS_OPTIONS.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {t(`statusLabels.${status}`)}
                 </option>
               ))}
             </select>
@@ -185,36 +186,36 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
 
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={() => applyStatus('confirmed')}>
-            Mark Confirmed
+            {t('markConfirmed')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={() => applyStatus('in_progress')}>
-            Mark In Progress
+            {t('markInProgress')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={() => applyStatus('completed')}>
-            Mark Completed
+            {t('markCompleted')}
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={() => applyStatus('cancelled')}>
-            Mark Cancelled
+            {t('markCancelled')}
           </Button>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="reason">Reason</Label>
+          <Label htmlFor="reason">{t('reason')}</Label>
           <Input
             id="reason"
             value={formData.reason}
             onChange={(event) => setFormData((prev) => ({ ...prev, reason: event.target.value }))}
-            placeholder="Consultation reason"
+            placeholder={t('reasonPlaceholder')}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t('notes')}</Label>
           <Input
             id="notes"
             value={formData.notes}
             onChange={(event) => setFormData((prev) => ({ ...prev, notes: event.target.value }))}
-            placeholder="Optional notes"
+            placeholder={t('notesPlaceholder')}
           />
         </div>
 
@@ -223,10 +224,10 @@ export default function EditAppointmentPage({ params }: { params: Promise<{ id: 
             {updateAppointment.isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Saving...
+                {t('saving')}
               </>
             ) : (
-              'Save Changes'
+              t('save')
             )}
           </Button>
         </div>

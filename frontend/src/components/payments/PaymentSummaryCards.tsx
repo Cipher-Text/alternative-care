@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, CheckCircle, Clock, TrendingUp } from "lucide-react";
 import type { PaymentSummary } from "@/types/payment";
@@ -10,6 +11,7 @@ interface PaymentSummaryCardsProps {
 }
 
 export function PaymentSummaryCards({ summary, isLoading }: PaymentSummaryCardsProps) {
+  const t = useTranslations("payCardUi");
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -31,33 +33,33 @@ export function PaymentSummaryCards({ summary, isLoading }: PaymentSummaryCardsP
 
   const cards = [
     {
-      title: "Total Revenue",
+      title: t("totalRevenue"),
       value: `৳${summary.total_amount.toLocaleString()}`,
-      subtitle: `${summary.total_payments} payments`,
+      subtitle: t("paymentsCount", { count: summary.total_payments }),
       icon: DollarSign,
       color: "text-blue-400",
       bgColor: "bg-blue-500/20 border-blue-500/30",
     },
     {
-      title: "Paid",
+      title: t("paid"),
       value: `৳${summary.paid_amount.toLocaleString()}`,
-      subtitle: `${((summary.paid_amount / summary.total_amount) * 100 || 0).toFixed(0)}% of total`,
+      subtitle: t("percentOfTotal", { pct: ((summary.paid_amount / summary.total_amount) * 100 || 0).toFixed(0) }),
       icon: CheckCircle,
       color: "text-green-400",
       bgColor: "bg-green-500/20 border-green-500/30",
     },
     {
-      title: "Pending",
+      title: t("pending"),
       value: `৳${summary.pending_amount.toLocaleString()}`,
-      subtitle: summary.pending_amount > 0 ? "Awaiting payment" : "All clear",
+      subtitle: summary.pending_amount > 0 ? t("awaiting") : t("allClear"),
       icon: Clock,
       color: summary.pending_amount > 0 ? "text-orange-400" : "text-gray-400",
       bgColor: summary.pending_amount > 0 ? "bg-orange-500/20 border-orange-500/30" : "bg-gray-500/20 border-gray-500/30",
     },
     {
-      title: "Cash Received",
+      title: t("cashReceived"),
       value: `৳${summary.cash_amount.toLocaleString()}`,
-      subtitle: `${((summary.cash_amount / summary.total_amount) * 100 || 0).toFixed(0)}% cash`,
+      subtitle: t("percentCash", { pct: ((summary.cash_amount / summary.total_amount) * 100 || 0).toFixed(0) }),
       icon: TrendingUp,
       color: "text-purple-400",
       bgColor: "bg-purple-500/20 border-purple-500/30",

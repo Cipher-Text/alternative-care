@@ -4,6 +4,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSymptom, useUpdateSymptom } from '@/lib/hooks/useSymptoms';
@@ -17,6 +18,8 @@ import type { SymptomUpdate } from '@/types/symptom';
 
 export default function EditSymptomPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const t = useTranslations('symptomFormUi');
+  const tc = useTranslations('symptomCategoryUi');
   const { id } = use(params);
   const symptomId = parseInt(id);
 
@@ -49,7 +52,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
     const newErrors: Record<string, string> = {};
 
     if (!formData.name_en.trim()) {
-      newErrors.name_en = 'English name is required';
+      newErrors.name_en = t('nameRequired');
     }
 
     setErrors(newErrors);
@@ -73,7 +76,7 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
       await updateSymptom.mutateAsync({ id: symptomId, data: payload as SymptomUpdate });
       router.push(`/symptoms/${symptomId}`);
     } catch (error) {
-      alert('Failed to update symptom');
+      alert(t('updateFailed'));
     }
   };
 
@@ -88,9 +91,9 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
   if (!symptom) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Symptom not found</p>
+        <p className="text-gray-500">{t('notFound')}</p>
         <Button className="mt-4" onClick={() => router.push('/symptoms')}>
-          Back to Symptoms
+          {t('backToSymptoms')}
         </Button>
       </div>
     );
@@ -99,9 +102,9 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
   if (symptom.is_global) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Global symptoms cannot be edited</p>
+        <p className="text-gray-500">{t('globalNoEdit')}</p>
         <Button className="mt-4" onClick={() => router.push(`/symptoms/${symptomId}`)}>
-          Back to Symptom
+          {t('backToSymptom')}
         </Button>
       </div>
     );
@@ -112,10 +115,10 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => router.back()}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('back')}
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Edit Symptom</h1>
+          <h1 className="text-3xl font-bold">{t('editTitle')}</h1>
           <p className="text-gray-600 mt-2">{symptom.name_en}</p>
         </div>
       </div>
@@ -125,16 +128,16 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
           <div className="space-y-6">
             {/* Basic Information */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('basicInfo')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Name (English) <span className="text-red-500">*</span>
+                    {t('nameEn')} <span className="text-red-500">*</span>
                   </label>
                   <Input
                     value={formData.name_en}
                     onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
-                    placeholder="e.g., Headache"
+                    placeholder={t('nameEnPlaceholder')}
                   />
                   {errors.name_en && (
                     <p className="text-red-500 text-sm mt-1">{errors.name_en}</p>
@@ -142,38 +145,29 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Name (Bengali)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('nameBn')}</label>
                   <Input
                     value={formData.name_bn}
                     onChange={(e) => setFormData({ ...formData, name_bn: e.target.value })}
-                    placeholder="e.g., মাথাব্যথা"
+                    placeholder={t('nameBnPlaceholder')}
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="text-sm font-medium mb-2 block">Category</label>
+                  <label className="text-sm font-medium mb-2 block">{t('category')}</label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) =>
                       setFormData({ ...formData, category: value })
                     }
                   >
-                    <SelectTrigger aria-label="Category">
-                      <SelectValue placeholder="Select category (optional)" />
+                    <SelectTrigger aria-label={t('category')}>
+                      <SelectValue placeholder={t('categoryPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="neurological">Neurological</SelectItem>
-                      <SelectItem value="respiratory">Respiratory</SelectItem>
-                      <SelectItem value="digestive">Digestive</SelectItem>
-                      <SelectItem value="mental">Mental</SelectItem>
-                      <SelectItem value="musculoskeletal">Musculoskeletal</SelectItem>
-                      <SelectItem value="skin">Skin</SelectItem>
-                      <SelectItem value="immune">Immune</SelectItem>
-                      <SelectItem value="cardiovascular">Cardiovascular</SelectItem>
-                      <SelectItem value="metabolic">Metabolic</SelectItem>
-                      <SelectItem value="reproductive">Reproductive</SelectItem>
-                      <SelectItem value="ear_nose_throat">Ear/Nose/Throat</SelectItem>
-                      <SelectItem value="urinary">Urinary</SelectItem>
+                      {['neurological','respiratory','digestive','mental','musculoskeletal','skin','immune','cardiovascular','metabolic','reproductive','ear_nose_throat','urinary'].map((c) => (
+                        <SelectItem key={c} value={c}>{tc(c)}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -182,24 +176,24 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
 
             {/* Description */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Description</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('description')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description (English)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('descEn')}</label>
                   <Textarea
                     value={formData.description_en}
                     onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
-                    placeholder="Describe the symptom..."
+                    placeholder={t('descEnPlaceholder')}
                     rows={6}
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description (Bengali)</label>
+                  <label className="text-sm font-medium mb-2 block">{t('descBn')}</label>
                   <Textarea
                     value={formData.description_bn}
                     onChange={(e) => setFormData({ ...formData, description_bn: e.target.value })}
-                    placeholder="লক্ষণের বর্ণনা..."
+                    placeholder={t('descBnPlaceholder')}
                     rows={6}
                   />
                 </div>
@@ -210,16 +204,16 @@ export default function EditSymptomPage({ params }: { params: Promise<{ id: stri
             <div className="flex gap-3 pt-4 border-t">
               <Button type="submit" disabled={updateSymptom.isLoading}>
                 {updateSymptom.isLoading ? (
-                  <>Saving...</>
+                  <>{t('saving')}</>
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-2" />
-                    Save Changes
+                    {t('saveChanges')}
                   </>
                 )}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.back()}>
-                Cancel
+                {t('cancel')}
               </Button>
             </div>
           </div>

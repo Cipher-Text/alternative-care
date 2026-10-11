@@ -13,16 +13,20 @@ import {
   AreaChart,
 } from 'recharts'
 import type { TrendData } from '@/types/dashboard'
-import { format, parseISO } from 'date-fns'
+import { parseISO } from 'date-fns'
+import { useTranslations } from 'next-intl'
+import { useDateFormat } from '@/lib/i18n/date'
 
 interface RevenueChartProps {
   data: TrendData[]
   title?: string
 }
 
-export function RevenueChart({ data, title = 'Revenue Trend' }: RevenueChartProps) {
+export function RevenueChart({ data, title }: RevenueChartProps) {
+  const t = useTranslations('chartsUi')
+  const { fmt } = useDateFormat()
   const chartData = data.map((item) => ({
-    date: format(parseISO(item.date), 'MMM dd'),
+    date: fmt(parseISO(item.date), 'MMM dd'),
     revenue: item.value,
   }))
 
@@ -34,10 +38,10 @@ export function RevenueChart({ data, title = 'Revenue Trend' }: RevenueChartProp
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-            {title}
+            {title ?? t('revenueTrend')}
           </CardTitle>
           <div className="text-right">
-            <p className="text-xs text-gray-600 dark:text-gray-400">Total</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('total')}</p>
             <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
               ৳{totalRevenue.toLocaleString()}
             </p>
@@ -69,7 +73,7 @@ export function RevenueChart({ data, title = 'Revenue Trend' }: RevenueChartProp
               tickFormatter={(value) => `৳${value}`}
             />
             <Tooltip
-              formatter={(value) => [`৳${Number(value).toLocaleString()}`, 'Revenue']}
+              formatter={(value) => [`৳${Number(value).toLocaleString()}`, t('revenue')]}
               contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',

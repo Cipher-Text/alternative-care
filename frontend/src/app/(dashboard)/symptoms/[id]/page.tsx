@@ -4,6 +4,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSymptom, useSymptomAliases, useDeleteSymptom, useCreateSymptomAlias, useDeleteSymptomAlias } from '@/lib/hooks/useSymptoms';
@@ -20,6 +21,8 @@ import type { MedicalSystem } from '@/types/medicine';
 
 export default function SymptomDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const t = useTranslations('symptomDetailUi');
+  const tc = useTranslations('symptomCategoryUi');
   const can = useCan();
   const { id } = use(params);
   const symptomId = parseInt(id);
@@ -42,12 +45,12 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
   });
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this symptom?')) {
+    if (confirm(t('confirmDelete'))) {
       try {
         await deleteSymptom.mutateAsync(symptomId);
         router.push('/symptoms');
       } catch (error) {
-        alert('Failed to delete symptom');
+        alert(t('deleteFailed'));
       }
     }
   };
@@ -71,19 +74,24 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
       setAliasForm({ alias_en: '', alias_type: '' as SymptomAliasType });
       setShowAddAlias(false);
     } catch (error) {
-      alert('Failed to add alias');
+      alert(t('addAliasFailed'));
     }
   };
 
   const handleDeleteAlias = async (aliasId: number) => {
-    if (confirm('Remove this alias?')) {
+    if (confirm(t('confirmRemoveAlias'))) {
       try {
         await deleteAlias.mutateAsync(aliasId);
       } catch (error) {
-        alert('Failed to delete alias');
+        alert(t('deleteAliasFailed'));
       }
     }
   };
+
+  const catLabel = (c: string) =>
+    tc.has(`badge.${c}`)
+      ? tc(`badge.${c}`)
+      : c.split('_').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   const getCategoryColor = (category: string | null) => {
     if (!category) return 'bg-gray-100 text-gray-800';
@@ -117,9 +125,9 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
   if (!symptom) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Symptom not found</p>
+        <p className="text-gray-500">{t('notFound')}</p>
         <Button className="mt-4" onClick={() => router.push('/symptoms')}>
-          Back to Symptoms
+          {t('backToSymptoms')}
         </Button>
       </div>
     );
@@ -131,13 +139,13 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('back')}
           </Button>
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold">{symptom.name_en}</h1>
               {symptom.is_global && (
-                <Badge variant="outline">Global</Badge>
+                <Badge variant="outline">{t('global')}</Badge>
               )}
             </div>
             {symptom.name_bn && (
@@ -153,7 +161,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
               onClick={() => router.push(`/symptoms/${symptomId}/edit`)}
             >
               <Edit className="w-4 h-4 mr-2" />
-              Edit
+              {t('edit')}
             </Button>
             <Button
               variant="outline"
@@ -161,7 +169,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
               className="text-red-600 hover:text-red-700"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete
+              {t('delete')}
             </Button>
           </div>
         )}
@@ -169,26 +177,24 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
 
       {/* Basic Information */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('basicInfo')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {symptom.category && (
             <div>
-              <label className="text-sm font-medium text-gray-500">Category</label>
+              <label className="text-sm font-medium text-gray-500">{t('category')}</label>
               <div className="mt-1">
                 <Badge className={getCategoryColor(symptom.category)}>
-                  {symptom.category.split('_').map(word =>
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
+                  {catLabel(symptom.category)}
                 </Badge>
               </div>
             </div>
           )}
 
           <div>
-            <label className="text-sm font-medium text-gray-500">Status</label>
+            <label className="text-sm font-medium text-gray-500">{t('status')}</label>
             <div className="mt-1">
               <Badge variant={symptom.is_active ? 'default' : 'outline'}>
-                {symptom.is_active ? 'Active' : 'Inactive'}
+                {symptom.is_active ? t('active') : t('inactive')}
               </Badge>
             </div>
           </div>
@@ -198,17 +204,17 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
       {/* Description */}
       {(symptom.description_en || symptom.description_bn) && (
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Description</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('description')}</h2>
           <div className="space-y-4">
             {symptom.description_en && (
               <div>
-                <label className="text-sm font-medium text-gray-500">English</label>
+                <label className="text-sm font-medium text-gray-500">{t('english')}</label>
                 <p className="mt-1 text-gray-700">{symptom.description_en}</p>
               </div>
             )}
             {symptom.description_bn && (
               <div>
-                <label className="text-sm font-medium text-gray-500">Bengali</label>
+                <label className="text-sm font-medium text-gray-500">{t('bengali')}</label>
                 <p className="mt-1 text-gray-700">{symptom.description_bn}</p>
               </div>
             )}
@@ -219,20 +225,19 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
       {/* Medicines for this symptom */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Medicines for this symptom</h2>
+          <h2 className="text-xl font-semibold">{t('medicinesTitle')}</h2>
           <Select
             value={medicineSystem}
             onValueChange={(value) => setMedicineSystem(value as MedicalSystem | 'all')}
           >
-            <SelectTrigger aria-label="Filter medicines by medical system" className="w-44">
-              <SelectValue placeholder="All Systems" />
+            <SelectTrigger aria-label={t('filterSystemAria')} className="w-44">
+              <SelectValue placeholder={t('allSystems')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Systems</SelectItem>
-              <SelectItem value="homeopathy">Homeopathy</SelectItem>
-              <SelectItem value="ayurveda">Ayurveda</SelectItem>
-              <SelectItem value="unani">Unani</SelectItem>
-              <SelectItem value="herbal">Herbal</SelectItem>
+              <SelectItem value="all">{t('allSystems')}</SelectItem>
+              {(['homeopathy', 'ayurveda', 'unani', 'herbal'] as const).map((s) => (
+                <SelectItem key={s} value={s}>{t(`system.${s}`)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -258,24 +263,24 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
                   {medicine.potency && (
                     <Badge variant="outline" className="text-xs">{medicine.potency}</Badge>
                   )}
-                  <Badge variant="outline" className="text-xs capitalize">{medicine.system}</Badge>
+                  <Badge variant="outline" className="text-xs capitalize">{t.has(`system.${medicine.system}`) ? t(`system.${medicine.system}`) : medicine.system}</Badge>
                 </div>
               </button>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">No medicines are linked to this symptom yet</p>
+          <p className="text-gray-500 text-sm">{t('noMedicines')}</p>
         )}
       </Card>
 
       {/* Aliases */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Aliases</h2>
+          <h2 className="text-xl font-semibold">{t('aliases')}</h2>
           {(!symptom.is_global && can.writeClinical) && (
             <Button size="sm" onClick={() => setShowAddAlias(!showAddAlias)}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Alias
+              {t('addAlias')}
             </Button>
           )}
         </div>
@@ -284,44 +289,43 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
           <form onSubmit={handleAddAlias} className="mb-4 p-4 border rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Alias Name</label>
+                <label className="text-sm font-medium mb-2 block">{t('aliasName')}</label>
                 <Input
                   value={aliasForm.alias_en}
                   onChange={(e) =>
                     setAliasForm({ ...aliasForm, alias_en: e.target.value })
                   }
-                  placeholder="e.g., Cephalalgia, Migraine"
+                  placeholder={t('aliasPlaceholder')}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Type</label>
+                <label className="text-sm font-medium mb-2 block">{t('type')}</label>
                 <Select
                   value={aliasForm.alias_type}
                   onValueChange={(value) =>
                     setAliasForm({ ...aliasForm, alias_type: value as SymptomAliasType })
                   }
                 >
-                  <SelectTrigger aria-label="Type">
-                    <SelectValue placeholder="Select type" />
+                  <SelectTrigger aria-label={t('type')}>
+                    <SelectValue placeholder={t('selectType')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="medical">Medical Term</SelectItem>
-                    <SelectItem value="colloquial">Colloquial</SelectItem>
-                    <SelectItem value="regional">Regional Variation</SelectItem>
-                    <SelectItem value="transliteration">Transliteration</SelectItem>
+                    {(['medical', 'colloquial', 'regional', 'transliteration'] as const).map((a) => (
+                      <SelectItem key={a} value={a}>{t(`aliasTypeOption.${a}`)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Button type="submit" size="sm">Add</Button>
+              <Button type="submit" size="sm">{t('add')}</Button>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAddAlias(false)}
               >
-                Cancel
+                {t('cancel')}
               </Button>
             </div>
           </form>
@@ -337,7 +341,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
                 <div className="flex items-center gap-3">
                   <span className="font-medium">{alias.alias_en || alias.alias_bn}</span>
                   <Badge variant="outline" className="text-xs">
-                    {alias.alias_type}
+                    {t.has(`aliasType.${alias.alias_type}`) ? t(`aliasType.${alias.alias_type}`) : alias.alias_type}
                   </Badge>
                 </div>
                 {(!symptom.is_global && can.writeClinical) && (
@@ -354,7 +358,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">No aliases yet</p>
+          <p className="text-gray-500 text-sm">{t('noAliases')}</p>
         )}
       </Card>
     </div>

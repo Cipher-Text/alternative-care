@@ -1,0 +1,99 @@
+{
+  "patientsUi": {
+    "loadFailed": "Failed to load patients",
+    "tryAgain": "Please try again later",
+    "searchPlaceholder": "Search by name, phone, or code...",
+    "searchLabel": "Search by name, phone, or code",
+    "allGenders": "All Genders",
+    "onThisPage": "On this page",
+    "malePage": "Male (this page)",
+    "femalePage": "Female (this page)",
+    "noMatches": "No patients found matching your filters",
+    "noPatients": "No patients yet. Add your first patient to get started.",
+    "addFirst": "Add First Patient",
+    "back": "Back",
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "notSpecified": "Not specified",
+    "unknownPatient": "Unknown Patient"
+  },
+  "patientDetailUi": {
+    "notFoundTitle": "Patient Not Found",
+    "notFoundBody": "The patient you're looking for doesn't exist or has been removed.",
+    "backToPatients": "Back to Patients",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "information": "Patient Information",
+    "name": "Name",
+    "age": "Age",
+    "ageYears": "{age} years",
+    "unknown": "Unknown",
+    "gender": "Gender",
+    "phone": "Phone",
+    "email": "Email",
+    "bloodGroup": "Blood Group",
+    "address": "Address",
+    "tags": "Tags",
+    "diagnosesHistory": "Diagnoses History",
+    "icd": "ICD: {code}",
+    "deleteTitle": "Delete Patient",
+    "deleteConfirm": "Are you sure you want to delete {name}? This action cannot be undone."
+  },
+  "patientEditUi": {
+    "notFound": "Patient not found",
+    "title": "Edit Patient",
+    "subtitle": "Update patient information for {name}"
+  },
+  "patientNewUi": {
+    "title": "Add New Patient",
+    "subtitle": "Create a new patient record with their information"
+  },
+  "patientCardUi": {
+    "ageOld": "{age} years old",
+    "ageUnknown": "Age unknown",
+    "nextVisit": "Next visit: {date}",
+    "viewDetails": "View Details",
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "notSpecified": "Not specified",
+    "unknownPatient": "Unknown Patient"
+  },
+  "patientFormUi": {
+    "fullNameRequired": "Full name is required",
+    "invalidEmail": "Invalid email",
+    "basicInfo": "Basic Information",
+    "fullName": "Full Name *",
+    "fullNamePlaceholder": "Patient's full name",
+    "dob": "Date of Birth",
+    "gender": "Gender",
+    "selectGender": "Select gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "phone": "Phone",
+    "email": "Email",
+    "bloodGroup": "Blood Group",
+    "selectBloodGroup": "Select blood group",
+    "addressInfo": "Address Information",
+    "address": "Address",
+    "addressPlaceholder": "House/Road/Area",
+    "division": "Division",
+    "selectDivision": "Select division",
+    "district": "District",
+    "selectDistrict": "Select district",
+    "upazila": "Upazila",
+    "selectUpazila": "Select upazila",
+    "cancel": "Cancel",
+    "update": "Update Patient",
+    "create": "Create Patient"
+  }
+}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { useDateFormat } from "@/lib/i18n/date";
 import {
   Table,
   TableBody,
@@ -31,18 +33,20 @@ export function TransactionTable({
   onPageChange,
   onExport,
 }: TransactionTableProps) {
+  const t = useTranslations("payTxUi");
+  const { fmt } = useDateFormat();
   if (isLoading) {
     return (
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Patient</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Description</TableHead>
+              <TableHead>{t("colDate")}</TableHead>
+              <TableHead>{t("colPatient")}</TableHead>
+              <TableHead>{t("colAmount")}</TableHead>
+              <TableHead>{t("colMethod")}</TableHead>
+              <TableHead>{t("colStatus")}</TableHead>
+              <TableHead>{t("colDescription")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -77,9 +81,9 @@ export function TransactionTable({
   if (payments.length === 0) {
     return (
       <div className="border rounded-lg p-12 text-center">
-        <p className="text-muted-foreground">No transactions found</p>
+        <p className="text-muted-foreground">{t("emptyTitle")}</p>
         <p className="text-sm text-muted-foreground mt-2">
-          Try adjusting your filters or record a new payment
+          {t("emptyHint")}
         </p>
       </div>
     );
@@ -95,7 +99,7 @@ export function TransactionTable({
         <div className="flex justify-end">
           <Button variant="outline" size="sm" onClick={onExport}>
             <Download className="mr-2 h-4 w-4" />
-            Export to CSV
+            {t("export")}
           </Button>
         </div>
       )}
@@ -105,28 +109,21 @@ export function TransactionTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Patient</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Description</TableHead>
+              <TableHead>{t("colDate")}</TableHead>
+              <TableHead>{t("colPatient")}</TableHead>
+              <TableHead className="text-right">{t("colAmount")}</TableHead>
+              <TableHead>{t("colMethod")}</TableHead>
+              <TableHead>{t("colStatus")}</TableHead>
+              <TableHead>{t("colDescription")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {payments.map((payment) => (
               <TableRow key={payment.id} className="cursor-pointer hover:bg-gray-50">
                 <TableCell className="font-medium">
-                  {new Date(payment.payment_date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {fmt(payment.payment_date, "MMM d, yyyy")}
                   <div className="text-xs text-muted-foreground">
-                    {new Date(payment.created_at).toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {fmt(payment.created_at, "hh:mm a")}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -148,7 +145,7 @@ export function TransactionTable({
                 </TableCell>
                 <TableCell className="max-w-xs truncate">
                   {payment.description || (
-                    <span className="text-muted-foreground italic">No description</span>
+                    <span className="text-muted-foreground italic">{t("noDescription")}</span>
                   )}
                 </TableCell>
               </TableRow>
@@ -161,7 +158,7 @@ export function TransactionTable({
       {onPageChange && (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm text-muted-foreground">
-            Showing page {currentPage} ({payments.length} transactions)
+            {t("showingPage", { page: currentPage, count: payments.length })}
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -171,7 +168,7 @@ export function TransactionTable({
               disabled={!hasPreviousPage}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              {t("previous")}
             </Button>
             <Button
               variant="outline"
@@ -179,7 +176,7 @@ export function TransactionTable({
               onClick={() => onPageChange(currentPage + 1)}
               disabled={!hasNextPage}
             >
-              Next
+              {t("next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

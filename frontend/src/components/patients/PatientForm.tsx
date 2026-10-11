@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -19,12 +20,12 @@ import { useDivisions, useDistricts, useUpazilas } from '@/lib/hooks/usePatients
 import type { Patient, PatientCreateRequest } from '@/types/patient'
 import { Loader2 } from 'lucide-react'
 
-const patientSchema = z.object({
-  full_name: z.string().min(1, 'Full name is required'),
+const buildPatientSchema = (msgs: { fullNameRequired: string; invalidEmail: string }) => z.object({
+  full_name: z.string().min(1, msgs.fullNameRequired),
   date_of_birth: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   phone: z.string().max(20).optional().or(z.literal('')),
-  email: z.string().email('Invalid email').optional().or(z.literal('')),
+  email: z.string().email(msgs.invalidEmail).optional().or(z.literal('')),
   blood_group: z.string().optional(),
   address: z.string().optional(),
   division_id: z.string().optional(),
@@ -32,7 +33,7 @@ const patientSchema = z.object({
   upazila_id: z.string().optional(),
 })
 
-type PatientFormData = z.infer<typeof patientSchema>
+type PatientFormData = z.infer<ReturnType<typeof buildPatientSchema>>
 
 interface PatientFormProps {
   patient?: Patient
@@ -41,6 +42,11 @@ interface PatientFormProps {
 }
 
 export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProps) {
+  const t = useTranslations('patientFormUi')
+  const patientSchema = useMemo(
+    () => buildPatientSchema({ fullNameRequired: t('fullNameRequired'), invalidEmail: t('invalidEmail') }),
+    [t]
+  )
   const [selectedDivision, setSelectedDivision] = useState<string>(
     patient?.division_id?.toString() || ''
   )
@@ -122,15 +128,15 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
       {/* Basic Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle>{t('basicInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="full_name">Full Name *</Label>
+              <Label htmlFor="full_name">{t('fullName')}</Label>
               <Input
                 id="full_name"
-                placeholder="Patient's full name"
+                placeholder={t('fullNamePlaceholder')}
                 {...register('full_name')}
                 disabled={isSubmitting}
               />
@@ -140,7 +146,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="date_of_birth">Date of Birth</Label>
+              <Label htmlFor="date_of_birth">{t('dob')}</Label>
               <Input
                 id="date_of_birth"
                 type="date"
@@ -150,7 +156,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
+              <Label htmlFor="gender">{t('gender')}</Label>
               <Select
                 value={watchedGender || ''}
                 onValueChange={(value) =>
@@ -158,19 +164,19 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
                 }
                 disabled={isSubmitting}
               >
-                <SelectTrigger aria-label="Gender">
-                  <SelectValue placeholder="Select gender" />
+                <SelectTrigger aria-label={t('gender')}>
+                  <SelectValue placeholder={t('selectGender')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="male">{t('male')}</SelectItem>
+                  <SelectItem value="female">{t('female')}</SelectItem>
+                  <SelectItem value="other">{t('other')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t('phone')}</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -184,7 +190,7 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -198,14 +204,14 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="blood_group">Blood Group</Label>
+              <Label htmlFor="blood_group">{t('bloodGroup')}</Label>
               <Select
                 value={watch('blood_group') || ''}
                 onValueChange={(value) => setValue('blood_group', value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger aria-label="Blood Group">
-                  <SelectValue placeholder="Select blood group" />
+                <SelectTrigger aria-label={t('bloodGroup')}>
+                  <SelectValue placeholder={t('selectBloodGroup')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="A+">A+</SelectItem>
@@ -226,14 +232,14 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
       {/* Address Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Address Information</CardTitle>
+          <CardTitle>{t('addressInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{t('address')}</Label>
             <Input
               id="address"
-              placeholder="House/Road/Area"
+              placeholder={t('addressPlaceholder')}
               {...register('address')}
               disabled={isSubmitting}
             />
@@ -241,14 +247,14 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="division_id">Division</Label>
+              <Label htmlFor="division_id">{t('division')}</Label>
               <Select
                 value={watchedDivision || ''}
                 onValueChange={(value) => setValue('division_id', value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger aria-label="Division">
-                  <SelectValue placeholder="Select division" />
+                <SelectTrigger aria-label={t('division')}>
+                  <SelectValue placeholder={t('selectDivision')} />
                 </SelectTrigger>
                 <SelectContent>
                   {divisions?.map((division) => (
@@ -261,14 +267,14 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="district_id">District</Label>
+              <Label htmlFor="district_id">{t('district')}</Label>
               <Select
                 value={watchedDistrict || ''}
                 onValueChange={(value) => setValue('district_id', value)}
                 disabled={!selectedDivision || isSubmitting}
               >
-                <SelectTrigger aria-label="District">
-                  <SelectValue placeholder="Select district" />
+                <SelectTrigger aria-label={t('district')}>
+                  <SelectValue placeholder={t('selectDistrict')} />
                 </SelectTrigger>
                 <SelectContent>
                   {districts?.map((district) => (
@@ -281,14 +287,14 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="upazila_id">Upazila</Label>
+              <Label htmlFor="upazila_id">{t('upazila')}</Label>
               <Select
                 value={watchedUpazila || ''}
                 onValueChange={(value) => setValue('upazila_id', value)}
                 disabled={!selectedDistrict || isSubmitting}
               >
-                <SelectTrigger aria-label="Upazila">
-                  <SelectValue placeholder="Select upazila" />
+                <SelectTrigger aria-label={t('upazila')}>
+                  <SelectValue placeholder={t('selectUpazila')} />
                 </SelectTrigger>
                 <SelectContent>
                   {upazilas?.map((upazila) => (
@@ -306,11 +312,11 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
       {/* Submit */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" disabled={isSubmitting}>
-          Cancel
+          {t('cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {patient ? 'Update Patient' : 'Create Patient'}
+          {patient ? t('update') : t('create')}
         </Button>
       </div>
     </form>

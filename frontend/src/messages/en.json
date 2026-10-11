@@ -9,7 +9,8 @@
     "error": "An error occurred",
     "language": "Language",
     "english": "English",
-    "bengali": "বাংলা"
+    "bengali": "বাংলা",
+    "languageNotSaved": "Language changed here, but could not be saved to your account"
   },
   "auth": {
     "login": "Login",
@@ -87,7 +88,25 @@
   "nav": {
     "profile": "Profile",
     "settings": "Settings",
-    "logoutSuccess": "Logged out successfully"
+    "logoutSuccess": "Logged out successfully",
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "appointments": "Appointments",
+    "prescriptions": "Prescriptions",
+    "payments": "Payments",
+    "medicines": "Medicines",
+    "pharmacies": "Pharmacies",
+    "symptoms": "Symptoms",
+    "platformDashboard": "Platform Dashboard",
+    "clients": "Clients",
+    "plansPricing": "Plans & Pricing",
+    "users": "Users",
+    "institutions": "Institutions",
+    "mainNavigation": "Main",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
   },
   "patients": {
     "title": "Patients",
@@ -99,5 +118,47 @@
     "male": "Male",
     "female": "Female",
     "other": "Other"
+  },
+  "pager": {
+    "navLabel": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page}",
+    "showing": "Showing {from}–{to} {noun}",
+    "showingOf": "Showing {from}–{to} of {total} {noun}",
+    "noMore": "No more {noun}",
+    "nouns": {
+      "patients": "patients",
+      "prescriptions": "prescriptions",
+      "invoices": "invoices",
+      "medicines": "medicines",
+      "symptoms": "symptoms",
+      "appointments": "appointments",
+      "pharmacies": "pharmacies",
+      "clients": "clients",
+      "users": "users",
+      "institutions": "institutions",
+      "pending_tenants": "pending tenants",
+      "results": "results"
+    }
+  },
+  "pages": {
+    "dashboardTitle": "Dashboard",
+    "dashboardWelcome": "Welcome back, {name}!",
+    "patientsSubtitle": "Manage your patient records and information",
+    "appointmentsTitle": "Appointments",
+    "appointmentsSubtitle": "Manage upcoming and past appointments",
+    "newAppointment": "New Appointment",
+    "prescriptionsTitle": "Prescriptions",
+    "prescriptionsSubtitle": "Manage patient prescriptions and medical advice",
+    "newPrescription": "New Prescription",
+    "paymentsTitle": "Payments & Billing",
+    "paymentsSubtitle": "Manage payments, invoices, and financial records",
+    "medicinesTitle": "Medicine Library",
+    "medicinesSubtitle": "Manage medicines for all systems",
+    "symptomsTitle": "Symptom Library",
+    "symptomsSubtitle": "Manage symptoms catalog",
+    "pharmaciesTitle": "Pharmacies",
+    "pharmaciesSubtitle": "Where to buy homeopathic, ayurvedic, unani and herbal stock. Listings are checked by the AltCare team; call before you go, especially if a listing is marked out of date."
   }
 }

@@ -19,30 +19,31 @@ import {
   Store,
   Tags,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
 import { useCan } from '@/lib/auth/permissions'
 
 const doctorNavigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Patients', href: '/patients', icon: Users },
-  { name: 'Appointments', href: '/appointments', icon: Calendar },
-  { name: 'Prescriptions', href: '/prescriptions', icon: FileText },
-  { name: 'Payments', href: '/payments', icon: CreditCard },
-  { name: 'Medicines', href: '/medicines', icon: Pill },
-  { name: 'Pharmacies', href: '/pharmacies', icon: Store },
-  { name: 'Symptoms', href: '/symptoms', icon: Stethoscope },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { key: 'dashboard', href: '/dashboard', icon: Home },
+  { key: 'patients', href: '/patients', icon: Users },
+  { key: 'appointments', href: '/appointments', icon: Calendar },
+  { key: 'prescriptions', href: '/prescriptions', icon: FileText },
+  { key: 'payments', href: '/payments', icon: CreditCard },
+  { key: 'medicines', href: '/medicines', icon: Pill },
+  { key: 'pharmacies', href: '/pharmacies', icon: Store },
+  { key: 'symptoms', href: '/symptoms', icon: Stethoscope },
+  { key: 'settings', href: '/settings', icon: Settings },
 ]
 
 const adminNavigation = [
-  { name: 'Platform Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Clients', href: '/admin/clients', icon: Building2 },
-  { name: 'Plans & Pricing', href: '/admin/plans', icon: Tags },
-  { name: 'Users', href: '/admin/users', icon: UserCog },
-  { name: 'Institutions', href: '/admin/institutions', icon: GraduationCap },
-  { name: 'Pharmacies', href: '/admin/pharmacies', icon: Store },
-  { name: 'Medicines', href: '/admin/medicines', icon: Pill },
-  { name: 'Symptoms', href: '/admin/symptoms', icon: Stethoscope },
+  { key: 'platformDashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { key: 'clients', href: '/admin/clients', icon: Building2 },
+  { key: 'plansPricing', href: '/admin/plans', icon: Tags },
+  { key: 'users', href: '/admin/users', icon: UserCog },
+  { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },
+  { key: 'pharmacies', href: '/admin/pharmacies', icon: Store },
+  { key: 'medicines', href: '/admin/medicines', icon: Pill },
+  { key: 'symptoms', href: '/admin/symptoms', icon: Stethoscope },
 ]
 
 /** The nav items for the signed-in user's role (shared by the sidebar and the phone drawer). */
@@ -63,16 +64,17 @@ export function useNavItems() {
 export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   const items = useNavItems()
+  const t = useTranslations('nav')
 
   return (
-    <nav className="flex-1 px-3 py-6 space-y-1" aria-label="Main">
+    <nav className="flex-1 px-3 py-6 space-y-1" aria-label={t('mainNavigation')}>
       {items.map((item) => {
         const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
         const Icon = item.icon
 
         return (
           <Link
-            key={item.name}
+            key={item.key}
             href={item.href}
             onClick={onNavigate}
             aria-current={isActive ? 'page' : undefined}
@@ -91,7 +93,7 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                   : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white'
               )}
             />
-            {item.name}
+            {t(item.key)}
           </Link>
         )
       })}

@@ -6,10 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'react-hot-toast'
 import { authApi } from '@/lib/api/auth'
 import { getPostLoginPath } from '@/lib/auth/redirects'
+import { navigateAfterLogin } from '@/lib/i18n/locale'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,6 +64,7 @@ type Pending2FA =
 export function LoginForm() {
   const router = useRouter()
   const t = useTranslations('auth')
+  const locale = useLocale()
   const setAuth = useAuthStore((state) => state.setAuth)
   const [loading, setLoading] = useState(false)
   const [pending2FA, setPending2FA] = useState<Pending2FA | null>(null)
@@ -106,7 +108,7 @@ export function LoginForm() {
         // Login successful
         setAuth(response.user, response.tokens.access_token)
         toast.success(t('loginSuccess'))
-        router.push(getPostLoginPath(response.user))
+        navigateAfterLogin(router, getPostLoginPath(response.user), response.user.language, locale)
       }
     } catch (error) {
       handleLoginError(error)
@@ -136,7 +138,7 @@ export function LoginForm() {
 
       setAuth(response.user, response.tokens.access_token)
       toast.success(t('loginSuccess'))
-      router.push(getPostLoginPath(response.user))
+      navigateAfterLogin(router, getPostLoginPath(response.user), response.user.language, locale)
     } catch (error) {
       handleLoginError(error)
     }
@@ -166,7 +168,7 @@ export function LoginForm() {
 
           setAuth(response.user, response.tokens.access_token)
           toast.success(t('loginSuccess'))
-          router.push(getPostLoginPath(response.user))
+          navigateAfterLogin(router, getPostLoginPath(response.user), response.user.language, locale)
         }}
       />
     )

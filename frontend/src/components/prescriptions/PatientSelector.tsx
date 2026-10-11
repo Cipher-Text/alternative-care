@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { usePatient, usePatients } from '@/lib/hooks/usePatients'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -14,6 +15,7 @@ interface PatientSelectorProps {
 }
 
 export function PatientSelector({ value, onChange, disabled = false }: PatientSelectorProps) {
+  const t = useTranslations('rxPatientSelectorUi')
   const [searchQuery, setSearchQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -51,14 +53,17 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
   }
 
   const getAge = (dob: string | null): string => {
-    if (!dob) return 'Unknown age'
+    if (!dob) return t('unknownAge')
     const birthDate = new Date(dob)
     const today = new Date()
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--
-    return `${age} years`
+    return t('years', { age })
   }
+
+  const genderLabel = (g: string): string =>
+    t.has(`gender.${g}`) ? t(`gender.${g}`) : g.charAt(0).toUpperCase() + g.slice(1)
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -75,7 +80,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                   <p>
                     {getAge(selectedPatient.date_of_birth)}
                     {selectedPatient.gender
-                      ? ` • ${selectedPatient.gender.charAt(0).toUpperCase() + selectedPatient.gender.slice(1)}`
+                      ? ` • ${genderLabel(selectedPatient.gender)}`
                       : ''}
                   </p>
                   {selectedPatient.phone && <p>{selectedPatient.phone}</p>}
@@ -88,6 +93,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                 variant="ghost"
                 size="sm"
                 onClick={handleClearSelection}
+                aria-label={t('clearAria')}
                 className="flex-shrink-0"
               >
                 <X className="h-4 w-4" />
@@ -100,8 +106,8 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              aria-label="Search by name or phone"
- placeholder="Search by name or phone..."
+              aria-label={t('searchAria')}
+ placeholder={t('searchPlaceholder')}
               value={searchQuery}
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}
@@ -118,7 +124,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
               {isLoading ? (
                 <div className="p-8 text-center">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mt-2">Searching...</p>
+                  <p className="text-sm text-muted-foreground mt-2">{t('searching')}</p>
                 </div>
               ) : searchResults && searchResults.length > 0 ? (
                 <div className="py-2">
@@ -132,7 +138,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                       <p className="text-sm text-muted-foreground">
                         {getAge(patient.date_of_birth)}
                         {patient.gender
-                          ? ` • ${patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1)}`
+                          ? ` • ${genderLabel(patient.gender)}`
                           : ''}
                         {patient.phone ? ` • ${patient.phone}` : ''}
                       </p>
@@ -143,7 +149,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                 <div className="p-8 text-center">
                   <User className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
                   <p className="text-muted-foreground">
-                    No patients found matching &quot;{searchQuery}&quot;
+                    {t('noneFound', { query: searchQuery })}
                   </p>
                 </div>
               )}

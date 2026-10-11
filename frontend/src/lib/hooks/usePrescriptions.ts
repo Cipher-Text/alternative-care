@@ -9,6 +9,7 @@ import type {
   PrescriptionItemCreate,
 } from '@/types/prescription'
 import { toast } from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 
 // List prescriptions
 export function usePrescriptions(params?: PrescriptionListParams) {
@@ -28,6 +29,7 @@ export function usePrescription(id: string) {
 
 // Create prescription
 export function useCreatePrescription() {
+  const t = useTranslations('rxToastUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -35,10 +37,10 @@ export function useCreatePrescription() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('prescriptions')
-        toast.success('Prescription created successfully')
+        toast.success(t('created'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to create prescription')
+        toast.error(error.response?.data?.detail || t('createFailed'))
       },
     }
   )
@@ -46,6 +48,7 @@ export function useCreatePrescription() {
 
 // Update prescription
 export function useUpdatePrescription() {
+  const t = useTranslations('rxToastUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -55,10 +58,10 @@ export function useUpdatePrescription() {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries('prescriptions')
         queryClient.invalidateQueries(['prescription', variables.id])
-        toast.success('Prescription updated successfully')
+        toast.success(t('updated'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to update prescription')
+        toast.error(error.response?.data?.detail || t('updateFailed'))
       },
     }
   )
@@ -66,6 +69,7 @@ export function useUpdatePrescription() {
 
 // Issue prescription (draft → issued)
 export function useIssuePrescription() {
+  const t = useTranslations('rxToastUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -74,10 +78,10 @@ export function useIssuePrescription() {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries('prescriptions')
         queryClient.invalidateQueries(['prescription', id])
-        toast.success('Prescription issued successfully')
+        toast.success(t('issued'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to issue prescription')
+        toast.error(error.response?.data?.detail || t('issueFailed'))
       },
     }
   )
@@ -85,6 +89,7 @@ export function useIssuePrescription() {
 
 // Void prescription
 export function useVoidPrescription() {
+  const t = useTranslations('rxToastUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -93,10 +98,10 @@ export function useVoidPrescription() {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries('prescriptions')
         queryClient.invalidateQueries(['prescription', id])
-        toast.success('Prescription voided successfully')
+        toast.success(t('voided'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to void prescription')
+        toast.error(error.response?.data?.detail || t('voidFailed'))
       },
     }
   )
@@ -111,6 +116,7 @@ export function useViewPrescriptionPdf() {
 
 // Add prescription item
 export function useAddPrescriptionItem() {
+  const t = useTranslations('rxToastUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -119,10 +125,10 @@ export function useAddPrescriptionItem() {
     {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries(['prescription', variables.prescriptionId])
-        toast.success('Item added to prescription')
+        toast.success(t('itemAdded'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to add item')
+        toast.error(error.response?.data?.detail || t('itemAddFailed'))
       },
     }
   )
@@ -130,6 +136,7 @@ export function useAddPrescriptionItem() {
 
 // Delete prescription item
 export function useDeletePrescriptionItem() {
+  const t = useTranslations('rxToastUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -138,10 +145,10 @@ export function useDeletePrescriptionItem() {
     {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries(['prescription', variables.prescriptionId])
-        toast.success('Item removed from prescription')
+        toast.success(t('itemRemoved'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to remove item')
+        toast.error(error.response?.data?.detail || t('itemRemoveFailed'))
       },
     }
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -59,6 +60,7 @@ export function MedicineItemsBuilder({
   prescriptionId,
   isEdit = false,
 }: MedicineItemsBuilderProps) {
+  const t = useTranslations('rxItemsUi')
   const [showDialog, setShowDialog] = useState(false)
   const [editIndex, setEditIndex] = useState<number | null>(null)
   const [formData, setFormData] = useState<MedicineFormData>(emptyFormData)
@@ -145,13 +147,13 @@ export function MedicineItemsBuilder({
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">#</TableHead>
-                <TableHead>Medicine</TableHead>
-                <TableHead>Dosage</TableHead>
-                <TableHead>Frequency</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Qty</TableHead>
-                <TableHead>Instructions</TableHead>
-                <TableHead className="w-24 text-right">Actions</TableHead>
+                <TableHead>{t('colMedicine')}</TableHead>
+                <TableHead>{t('colDosage')}</TableHead>
+                <TableHead>{t('colFrequency')}</TableHead>
+                <TableHead>{t('colDuration')}</TableHead>
+                <TableHead>{t('colQty')}</TableHead>
+                <TableHead>{t('colInstructions')}</TableHead>
+                <TableHead className="w-24 text-right">{t('colActions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -159,7 +161,7 @@ export function MedicineItemsBuilder({
                 <TableRow key={index}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell className="font-medium">
-                    {item.medicine_name || `Medicine ID: ${item.medicine_id}`}
+                    {item.medicine_name || t('medicineIdFallback', { id: String(item.medicine_id) })}
                   </TableCell>
                   <TableCell>{item.dosage}</TableCell>
                   <TableCell>{item.frequency}</TableCell>
@@ -173,6 +175,7 @@ export function MedicineItemsBuilder({
                       <Button
                         variant="ghost"
                         size="sm"
+                        aria-label={t('editAria')}
                         onClick={() => handleEdit(index)}
                       >
                         <Edit2 className="h-4 w-4" />
@@ -180,6 +183,7 @@ export function MedicineItemsBuilder({
                       <Button
                         variant="ghost"
                         size="sm"
+                        aria-label={t('deleteAria')}
                         onClick={() => handleDelete(index)}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
@@ -194,10 +198,10 @@ export function MedicineItemsBuilder({
       ) : (
         <Card className="p-8 text-center">
           <Pill className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground mb-4">No medicines added yet</p>
+          <p className="text-muted-foreground mb-4">{t('noMedicines')}</p>
           <Button onClick={handleAddNew} variant="outline">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add First Medicine
+            {t('addFirst')}
           </Button>
         </Card>
       )}
@@ -205,7 +209,7 @@ export function MedicineItemsBuilder({
       {items.length > 0 && (
         <Button onClick={handleAddNew} variant="outline" className="w-full">
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add Medicine
+          {t('addMedicine')}
         </Button>
       )}
 
@@ -214,12 +218,12 @@ export function MedicineItemsBuilder({
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editIndex !== null ? 'Edit Medicine' : 'Add Medicine'}
+              {editIndex !== null ? t('editMedicine') : t('addMedicine')}
             </DialogTitle>
             <DialogDescription>
               {editIndex !== null
-                ? 'Update the medicine details below'
-                : 'Enter the medicine details below'}
+                ? t('updateDesc')
+                : t('enterDesc')}
             </DialogDescription>
           </DialogHeader>
 
@@ -228,7 +232,7 @@ export function MedicineItemsBuilder({
             <div className="space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Label htmlFor="medicine_name">
-                  Medicine Name <span className="text-red-500">*</span>
+                  {t('medicineName')} <span className="text-red-500">*</span>
                 </Label>
                 <Button
                   type="button"
@@ -237,7 +241,7 @@ export function MedicineItemsBuilder({
                   onClick={() => setUseAutocomplete(!useAutocomplete)}
                   className="text-xs"
                 >
-                  {useAutocomplete ? 'Use free text' : 'Search database'}
+                  {useAutocomplete ? t('useFreeText') : t('searchDatabase')}
                 </Button>
               </div>
 
@@ -245,18 +249,18 @@ export function MedicineItemsBuilder({
                 <>
                   <MedicineAutocomplete
                     onSelect={handleMedicineSelect}
-                    placeholder="Search medicines by name or alias..."
+                    placeholder={t('autocompletePlaceholder')}
                     defaultValue={formData.medicine_name}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Start typing to search from the medicine database. Select a medicine to auto-fill dosage guidance.
+                    {t('autocompleteHint')}
                   </p>
                 </>
               ) : (
                 <>
                   <Input
                     id="medicine_name"
-                    placeholder="e.g., Arnica Montana 30C"
+                    placeholder={t('namePlaceholder')}
                     value={formData.medicine_name}
                     onChange={(e) =>
                       setFormData({ ...formData, medicine_name: e.target.value })
@@ -264,7 +268,7 @@ export function MedicineItemsBuilder({
                     autoFocus
                   />
                   <p className="text-xs text-muted-foreground">
-                    Enter the full medicine name including potency if applicable
+                    {t('nameHint')}
                   </p>
                 </>
               )}
@@ -285,13 +289,13 @@ export function MedicineItemsBuilder({
                       </div>
                       {selectedMedicine.dosage_guidance_en && (
                         <p className="text-xs text-gray-700">
-                          <span className="font-medium">Suggested dosage: </span>
+                          <span className="font-medium">{t('suggestedDosage')}</span>
                           {selectedMedicine.dosage_guidance_en}
                         </p>
                       )}
                       {selectedMedicine.indications_en && (
                         <p className="text-xs text-gray-600 mt-1">
-                          <span className="font-medium">Used for: </span>
+                          <span className="font-medium">{t('usedFor')}</span>
                           {selectedMedicine.indications_en.slice(0, 150)}
                           {selectedMedicine.indications_en.length > 150 ? '...' : ''}
                         </p>
@@ -306,11 +310,11 @@ export function MedicineItemsBuilder({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="dosage">
-                  Dosage <span className="text-red-500">*</span>
+                  {t('dosage')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="dosage"
-                  placeholder="e.g., 2 drops, 5 pills"
+                  placeholder={t('dosagePlaceholder')}
                   value={formData.dosage}
                   onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
                 />
@@ -318,11 +322,11 @@ export function MedicineItemsBuilder({
 
               <div className="space-y-2">
                 <Label htmlFor="frequency">
-                  Frequency <span className="text-red-500">*</span>
+                  {t('frequency')} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="frequency"
-                  placeholder="e.g., 3 times daily, Every 4 hours"
+                  placeholder={t('frequencyPlaceholder')}
                   value={formData.frequency}
                   onChange={(e) =>
                     setFormData({ ...formData, frequency: e.target.value })
@@ -334,21 +338,21 @@ export function MedicineItemsBuilder({
             {/* Duration and Quantity */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="duration">Duration (Optional)</Label>
+                <Label htmlFor="duration">{t('durationOptional')}</Label>
                 <Input
                   id="duration"
-                  placeholder="e.g., 7 days, 2 weeks"
+                  placeholder={t('durationPlaceholder')}
                   value={formData.duration}
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="quantity">Quantity (Optional)</Label>
+                <Label htmlFor="quantity">{t('quantityOptional')}</Label>
                 <Input
                   id="quantity"
                   type="number"
-                  placeholder="e.g., 30"
+                  placeholder={t('quantityPlaceholder')}
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                 />
@@ -357,10 +361,10 @@ export function MedicineItemsBuilder({
 
             {/* Instructions */}
             <div className="space-y-2">
-              <Label htmlFor="instructions">Instructions (Optional)</Label>
+              <Label htmlFor="instructions">{t('instructionsOptional')}</Label>
               <Textarea
                 id="instructions"
-                placeholder="e.g., Take before meals, Avoid spicy food while taking this medicine"
+                placeholder={t('instructionsPlaceholder')}
                 value={formData.instructions}
                 onChange={(e) =>
                   setFormData({ ...formData, instructions: e.target.value })
@@ -372,10 +376,10 @@ export function MedicineItemsBuilder({
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button onClick={handleSave} disabled={!isFormValid}>
-              {editIndex !== null ? 'Update' : 'Add'} Medicine
+              {editIndex !== null ? t('updateMedicine') : t('addMedicineBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>

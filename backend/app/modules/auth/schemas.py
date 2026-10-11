@@ -360,6 +360,16 @@ class TenantResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class UpdateLanguageRequest(BaseModel):
+    """Payload for PATCH /auth/me/language."""
+
+    language: Literal["en", "bn"]
+
+
+class UpdateLanguageResponse(BaseModel):
+    language: Literal["en", "bn"]
+
+
 class UserProfileResponse(BaseModel):
     """Detailed user profile with tenant info."""
 

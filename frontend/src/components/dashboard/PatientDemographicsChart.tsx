@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { useTranslations } from 'next-intl'
 import type { PatientDemographics } from '@/types/dashboard'
 
 interface PatientDemographicsChartProps {
@@ -15,10 +16,11 @@ const COLORS = {
 }
 
 export function PatientDemographicsChart({ data }: PatientDemographicsChartProps) {
+  const t = useTranslations('chartsUi')
   const chartData = [
-    { name: 'Male', value: data.male, color: COLORS.male },
-    { name: 'Female', value: data.female, color: COLORS.female },
-    { name: 'Other', value: data.other, color: COLORS.other },
+    { name: t('male'), value: data.male, color: COLORS.male },
+    { name: t('female'), value: data.female, color: COLORS.female },
+    { name: t('other'), value: data.other, color: COLORS.other },
   ].filter((item) => item.value > 0)
 
   const total = data.male + data.female + data.other
@@ -32,10 +34,10 @@ export function PatientDemographicsChart({ data }: PatientDemographicsChartProps
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-            Patient Demographics
+            {t('patientDemographics')}
           </CardTitle>
           <div className="text-right">
-            <p className="text-xs text-gray-600 dark:text-gray-400">Total</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">{t('total')}</p>
             <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
               {total}
             </p>
@@ -62,7 +64,7 @@ export function PatientDemographicsChart({ data }: PatientDemographicsChartProps
               ))}
             </Pie>
             <Tooltip
-              formatter={(value) => [`${value} patients`, '']}
+              formatter={(value) => [t('patientsCount', { count: Number(value) }), '']}
               contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',

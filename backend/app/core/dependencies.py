@@ -9,7 +9,7 @@ from jose import ExpiredSignatureError, JWTError
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
+from app.core.database import bind_tenant, get_db
 from app.core.security import decode_token
 from app.shared.models.tenant import Tenant, User
 
@@ -119,19 +119,12 @@ async def get_current_user(
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-        # Row-level security keys off this per-request GUC (see the RLS
-        # migration, 273747e56a3f). set_config(..., true) is transaction-
-        # scoped like SET LOCAL — it can't leak across pooled-connection
-        # reuse between requests, since get_db() wraps exactly one
-        # transaction per request and commits/rolls back at the end. A
-        # platform user (tenant_id=None) simply never sets it, which RLS
-        # treats as "no tenant" — zero rows from the clinical tables, a
-        # safe default since no current admin code path reads them.
-        if tenant_id:
-            await db.execute(
-                text("SELECT set_config('app.tenant_id', :tenant_id, true)"),
-                {"tenant_id": tenant_id},
-            )
+        # Row-level security keys off the `app.tenant_id` GUC. bind_tenant() sets it for this
+        # transaction AND re-applies it to every later transaction on this session, because
+        # services commit mid-request and a transaction-local setting would otherwise vanish
+        # (see app/core/database.py). A platform user (tenant_id=None) clears the binding, which
+        # RLS treats as "no tenant": zero rows from the clinical tables, a safe default.
+        await bind_tenant(db, tenant_id)
 
         return CurrentUser(
             user_id=user_id,

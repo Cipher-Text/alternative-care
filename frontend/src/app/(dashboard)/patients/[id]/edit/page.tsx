@@ -2,6 +2,7 @@
 
 import { use } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePatient, useUpdatePatient } from '@/lib/hooks/usePatients'
 import { PatientForm } from '@/components/patients/PatientForm'
@@ -12,6 +13,9 @@ import type { PatientUpdateRequest } from '@/types/patient'
 export default function EditPatientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
+  const t = useTranslations('patientEditUi')
+  const tu = useTranslations('patientsUi')
+  const td = useTranslations('patientDetailUi')
   const { data: patient, isLoading } = usePatient(id)
   const updatePatient = useUpdatePatient()
 
@@ -35,9 +39,9 @@ export default function EditPatientPage({ params }: { params: Promise<{ id: stri
   if (!patient) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Patient not found</p>
+        <p className="text-muted-foreground">{t('notFound')}</p>
         <Link href="/patients">
-          <Button className="mt-4">Back to Patients</Button>
+          <Button className="mt-4">{td('backToPatients')}</Button>
         </Link>
       </div>
     )
@@ -48,14 +52,14 @@ export default function EditPatientPage({ params }: { params: Promise<{ id: stri
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href={`/patients/${id}`}>
-          <Button variant="ghost" size="icon" aria-label="Back">
+          <Button variant="ghost" size="icon" aria-label={tu('back')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">Edit Patient</h1>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Update patient information for {patient.full_name}
+            {t('subtitle', { name: patient.full_name })}
           </p>
         </div>
       </div>

@@ -451,13 +451,21 @@ class DashboardService:
 
         total = len(invoices)
         paid = sum(1 for i in invoices if i.status == "paid")
-        overdue = sum(
-            1 for i in invoices if i.status != "paid" and i.due_date < date.today()
-        )
+        today = date.today()
+
+        def is_overdue(invoice) -> bool:
+            # due_date is optional: an unpaid invoice with no due date can't be overdue
+            return (
+                invoice.status != "paid"
+                and invoice.due_date is not None
+                and invoice.due_date < today
+            )
+
+        overdue = sum(1 for i in invoices if is_overdue(i))
 
         overdue_amount = 0.0
         for invoice in invoices:
-            if invoice.status != "paid" and invoice.due_date < date.today():
+            if is_overdue(invoice):
                 payment_result = await self.db.execute(
                     select(Payment.amount).where(Payment.id == invoice.payment_id)
                 )

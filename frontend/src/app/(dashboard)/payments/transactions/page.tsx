@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { usePayments } from "@/lib/hooks/usePayments";
@@ -10,6 +11,7 @@ import { QuickPaymentModal } from "@/components/payments/QuickPaymentModal";
 import type { PaymentFilters } from "@/types/payment";
 
 export default function TransactionsPage() {
+  const t = useTranslations("payTxUi");
   const [filters, setFilters] = useState<PaymentFilters>({ limit: 50, offset: 0 });
   const [currentPage, setCurrentPage] = useState(1);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -74,14 +76,14 @@ export default function TransactionsPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Transaction History</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">
-            View and manage all payment transactions
+            {t("subtitle")}
           </p>
         </div>
         <Button onClick={() => setShowPaymentModal(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Record Payment
+          {t("recordPayment")}
         </Button>
       </div>
 

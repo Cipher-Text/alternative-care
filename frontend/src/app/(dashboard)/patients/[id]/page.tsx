@@ -2,6 +2,9 @@
 
 import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { parseISO } from 'date-fns'
+import { useDateFormat } from '@/lib/i18n/date'
 import Link from 'next/link'
 import { usePatient, useDeletePatient, usePatientTags, usePatientDiagnoses } from '@/lib/hooks/usePatients'
 import { useCan } from '@/lib/auth/permissions'
@@ -20,14 +23,7 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react'
-import {
-  formatPatientName,
-  calculateAge,
-  formatPhone,
-  formatGender,
-  formatDate,
-  formatBloodGroup,
-} from '@/lib/utils/format'
+import { calculateAge, formatPhone } from '@/lib/utils/format'
 import {
   Dialog,
   DialogContent,
@@ -40,6 +36,10 @@ import {
 export default function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
+  const t = useTranslations('patientDetailUi')
+  const tu = useTranslations('patientsUi')
+  const { fmt } = useDateFormat()
+  const formatDate = (d: string) => fmt(parseISO(d), 'MMM dd, yyyy')
   const can = useCan()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
@@ -66,19 +66,24 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Patient Not Found</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('notFoundTitle')}</h2>
         <p className="text-muted-foreground mb-4">
-          The patient you're looking for doesn't exist or has been removed.
+          {t('notFoundBody')}
         </p>
         <Link href="/patients">
-          <Button>Back to Patients</Button>
+          <Button>{t('backToPatients')}</Button>
         </Link>
       </div>
     )
   }
 
   const age = calculateAge(patient.date_of_birth)
-  const fullName = formatPatientName(patient.full_name)
+  const fullName = patient.full_name?.trim() || tu('unknownPatient')
+  const genderText = patient.gender
+    ? tu.has(`gender.${patient.gender.toLowerCase()}`)
+      ? tu(`gender.${patient.gender.toLowerCase()}`)
+      : patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1).toLowerCase()
+    : tu('notSpecified')
 
   return (
     <div className="space-y-6">
@@ -86,13 +91,13 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/patients" aria-label="Back">
+            <Link href="/patients" aria-label={tu('back')}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <div>
             <h1 className="text-3xl font-bold">{fullName}</h1>
-            <p className="text-muted-foreground">{patient.is_active ? 'Active' : 'Inactive'}</p>
+            <p className="text-muted-foreground">{patient.is_active ? t('active') : t('inactive')}</p>
           </div>
         </div>
         {can.writeClinical && (
@@ -100,7 +105,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           <Link href={`/patients/${id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              {t('edit')}
             </Button>
           </Link>
           <Button
@@ -108,7 +113,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete
+            {t('delete')}
           </Button>
         </div>
         )}
@@ -117,14 +122,14 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       {/* Patient Profile */}
       <Card>
         <CardHeader>
-          <CardTitle>Patient Information</CardTitle>
+          <CardTitle>{t('information')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-start gap-3">
               <User className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-muted-foreground">Name</p>
+                <p className="text-sm text-muted-foreground">{t('name')}</p>
                 <p className="font-medium">{fullName}</p>
               </div>
             </div>
@@ -132,9 +137,9 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <div className="flex items-start gap-3">
               <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-muted-foreground">Age</p>
+                <p className="text-sm text-muted-foreground">{t('age')}</p>
                 <p className="font-medium">
-                  {age !== null ? `${age} years` : 'Unknown'}
+                  {age !== null ? t('ageYears', { age }) : t('unknown')}
                   {patient.date_of_birth ? ` (${formatDate(patient.date_of_birth)})` : ''}
                 </p>
               </div>
@@ -143,15 +148,15 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <div className="flex items-start gap-3">
               <User className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-muted-foreground">Gender</p>
-                <Badge variant="outline">{formatGender(patient.gender)}</Badge>
+                <p className="text-sm text-muted-foreground">{t('gender')}</p>
+                <Badge variant="outline">{genderText}</Badge>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-muted-foreground">Phone</p>
+                <p className="text-sm text-muted-foreground">{t('phone')}</p>
                 <p className="font-medium">{formatPhone(patient.phone)}</p>
               </div>
             </div>
@@ -160,7 +165,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
+                  <p className="text-sm text-muted-foreground">{t('email')}</p>
                   <p className="font-medium">{patient.email}</p>
                 </div>
               </div>
@@ -169,8 +174,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <div className="flex items-start gap-3">
               <User className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-sm text-muted-foreground">Blood Group</p>
-                <p className="font-medium">{formatBloodGroup(patient.blood_group)}</p>
+                <p className="text-sm text-muted-foreground">{t('bloodGroup')}</p>
+                <p className="font-medium">{patient.blood_group ? patient.blood_group.toUpperCase() : tu('notSpecified')}</p>
               </div>
             </div>
 
@@ -178,7 +183,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex items-start gap-3 md:col-span-2">
                 <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Address</p>
+                  <p className="text-sm text-muted-foreground">{t('address')}</p>
                   <p className="font-medium">{patient.address}</p>
                 </div>
               </div>
@@ -191,7 +196,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       {tags && tags.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Tags</CardTitle>
+            <CardTitle>{t('tags')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -209,7 +214,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       {diagnoses && diagnoses.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Diagnoses History</CardTitle>
+            <CardTitle>{t('diagnosesHistory')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -223,7 +228,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
                     {formatDate(diagnosis.diagnosed_at)}
                   </p>
                   {diagnosis.icd_code && (
-                    <p className="text-sm mt-1 text-muted-foreground">ICD: {diagnosis.icd_code}</p>
+                    <p className="text-sm mt-1 text-muted-foreground">{t('icd', { code: diagnosis.icd_code })}</p>
                   )}
                 </div>
               ))}
@@ -236,10 +241,9 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Patient</DialogTitle>
+            <DialogTitle>{t('deleteTitle')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {fullName}? This action cannot be
-              undone.
+              {t('deleteConfirm', { name: fullName })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -248,7 +252,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               onClick={() => setShowDeleteDialog(false)}
               disabled={deletePatient.isLoading}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -258,7 +262,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               {deletePatient.isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Delete
+              {t('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

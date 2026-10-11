@@ -1,22 +1,24 @@
 'use client'
 
-import { differenceInCalendarDays, format } from 'date-fns'
+import { differenceInCalendarDays } from 'date-fns'
+import { useTranslations } from 'next-intl'
+import { useDateFormat } from '@/lib/i18n/date'
 import { BadgeCheck, Clock, MapPin, MessageCircle, Navigation, Phone, Truck, TriangleAlert } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { directionsLink, formatDistance, telLink, whatsappLink } from '@/lib/utils/contact'
-import { PHARMACY_TYPES, STALE_AFTER_DAYS, type PharmacyListItem } from '@/types/pharmacy'
-
-export const typeLabel = (type: string) => PHARMACY_TYPES.find((t) => t.value === type)?.label ?? type
+import { STALE_AFTER_DAYS, type PharmacyListItem } from '@/types/pharmacy'
 
 /** When this listing was last checked — and a plain warning when that was too long ago. */
 export function ConfirmedNote({ confirmedAt }: { confirmedAt: string | null }) {
+  const t = useTranslations('pharmUi')
+  const { fmt } = useDateFormat()
   if (!confirmedAt) {
     return (
       <p className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400">
         <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
-        Not yet confirmed — please call before you go
+        {t('notConfirmed')}
       </p>
     )
   }
@@ -25,8 +27,8 @@ export function ConfirmedNote({ confirmedAt }: { confirmedAt: string | null }) {
   return (
     <p className={`flex items-center gap-1.5 text-xs ${stale ? 'text-amber-700 dark:text-amber-400' : 'text-muted-foreground'}`}>
       {stale && <TriangleAlert className="h-3.5 w-3.5 shrink-0" />}
-      Confirmed {format(new Date(confirmedAt), 'MMM d, yyyy')}
-      {stale && ' — may be out of date, please call first'}
+      {t('confirmedOn', { date: fmt(confirmedAt, 'MMM d, yyyy') })}
+      {stale && ` — ${t('mayBeStale')}`}
     </p>
   )
 }
@@ -41,6 +43,7 @@ interface PharmacyCardProps {
 const actionClass = 'h-10 flex-1 min-w-[5.5rem]'
 
 export function PharmacyCard({ pharmacy, districtName, onOpenDetails }: PharmacyCardProps) {
+  const t = useTranslations('pharmUi')
   const tel = telLink(pharmacy.phone)
   const whatsapp = whatsappLink(pharmacy.whatsapp ?? pharmacy.phone)
   const directions = directionsLink(pharmacy)
@@ -60,15 +63,15 @@ export function PharmacyCard({ pharmacy, districtName, onOpenDetails }: Pharmacy
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant="outline">{typeLabel(pharmacy.pharmacy_type)}</Badge>
+          <Badge variant="outline">{t(`types.${pharmacy.pharmacy_type}`)}</Badge>
           {pharmacy.disciplines.map((d) => (
             <Badge key={d} variant="outline" className="capitalize">
-              {d}
+              {t(`disciplines.${d}`)}
             </Badge>
           ))}
           {pharmacy.is_verified && (
             <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">
-              <BadgeCheck className="mr-1 h-3.5 w-3.5" /> Verified
+              <BadgeCheck className="mr-1 h-3.5 w-3.5" /> {t('verified')}
             </Badge>
           )}
         </div>
@@ -88,7 +91,7 @@ export function PharmacyCard({ pharmacy, districtName, onOpenDetails }: Pharmacy
           )}
           {pharmacy.delivers && (
             <p className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
-              <Truck className="h-4 w-4 shrink-0" /> Delivers
+              <Truck className="h-4 w-4 shrink-0" /> {t('delivers')}
             </p>
           )}
         </div>
@@ -98,27 +101,27 @@ export function PharmacyCard({ pharmacy, districtName, onOpenDetails }: Pharmacy
         <div className="mt-auto flex flex-wrap gap-2 pt-1">
           {tel && (
             <Button asChild variant="outline" className={actionClass}>
-              <a href={tel} aria-label={`Call ${pharmacy.name_en}`}>
-                <Phone className="mr-1.5 h-4 w-4" /> Call
+              <a href={tel} aria-label={t('callName', { name: pharmacy.name_en })}>
+                <Phone className="mr-1.5 h-4 w-4" /> {t('call')}
               </a>
             </Button>
           )}
           {whatsapp && (
             <Button asChild variant="outline" className={actionClass}>
-              <a href={whatsapp} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${pharmacy.name_en}`}>
+              <a href={whatsapp} target="_blank" rel="noopener noreferrer" aria-label={t('whatsappName', { name: pharmacy.name_en })}>
                 <MessageCircle className="mr-1.5 h-4 w-4" /> WhatsApp
               </a>
             </Button>
           )}
           {directions && (
             <Button asChild variant="outline" className={actionClass}>
-              <a href={directions} target="_blank" rel="noopener noreferrer" aria-label={`Directions to ${pharmacy.name_en}`}>
-                <Navigation className="mr-1.5 h-4 w-4" /> Directions
+              <a href={directions} target="_blank" rel="noopener noreferrer" aria-label={t('directionsTo', { name: pharmacy.name_en })}>
+                <Navigation className="mr-1.5 h-4 w-4" /> {t('directions')}
               </a>
             </Button>
           )}
-          <Button variant="ghost" className={actionClass} onClick={() => onOpenDetails(pharmacy.id)} aria-label={`Details for ${pharmacy.name_en}`}>
-            Details
+          <Button variant="ghost" className={actionClass} onClick={() => onOpenDetails(pharmacy.id)} aria-label={t('detailsFor', { name: pharmacy.name_en })}>
+            {t('details')}
           </Button>
         </div>
       </CardContent>

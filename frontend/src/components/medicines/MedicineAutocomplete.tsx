@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useSearchMedicines } from '@/lib/hooks/useMedicines';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -22,10 +23,12 @@ interface MedicineAutocompleteProps {
 
 export function MedicineAutocomplete({
   onSelect,
-  placeholder = 'Search medicines...',
+  placeholder: placeholderProp,
   defaultValue = '',
   disabled = false,
 }: MedicineAutocompleteProps) {
+  const t = useTranslations('medicineAutocompleteUi');
+  const placeholder = placeholderProp ?? t('defaultPlaceholder');
   const [searchTerm, setSearchTerm] = useState(defaultValue);
   const [debouncedTerm, setDebouncedTerm] = useState(defaultValue);
   const [showResults, setShowResults] = useState(false);
@@ -166,7 +169,7 @@ export function MedicineAutocomplete({
                     <h4 className="font-semibold text-sm truncate">{medicine.name_en}</h4>
                     {medicine.is_global && (
                       <Badge variant="outline" className="text-xs shrink-0">
-                        Global
+                        {t('global')}
                       </Badge>
                     )}
                   </div>
@@ -177,7 +180,9 @@ export function MedicineAutocomplete({
 
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge className={`text-xs ${getSystemColor(medicine.system)}`}>
-                      {medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
+                      {t.has(`system.${medicine.system}`)
+                        ? t(`system.${medicine.system}`)
+                        : medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
                     </Badge>
 
                     {medicine.potency && (
@@ -194,7 +199,7 @@ export function MedicineAutocomplete({
                   {/* Show matched alias if search matched an alias */}
                   {medicine.matched_alias && (
                     <div className="mt-2 text-xs">
-                      <span className="text-gray-500">Also known as: </span>
+                      <span className="text-gray-500">{t('alsoKnownAs')}</span>
                       <span className="font-medium text-blue-600">{medicine.matched_alias}</span>
                     </div>
                   )}
@@ -202,7 +207,7 @@ export function MedicineAutocomplete({
                   {/* Show dosage guidance preview if available */}
                   {medicine.dosage_guidance_en && (
                     <p className="text-xs text-gray-500 mt-2 truncate">
-                      <span className="font-medium">Dosage: </span>
+                      <span className="font-medium">{t('dosage')}</span>
                       {medicine.dosage_guidance_en}
                     </p>
                   )}
@@ -217,7 +222,7 @@ export function MedicineAutocomplete({
       {/* No results message */}
       {showResults && debouncedTerm && !isLoading && results.length === 0 && (
         <Card className="absolute z-50 w-full mt-2 p-4 shadow-lg">
-          <p className="text-sm text-gray-500 text-center">No medicines found</p>
+          <p className="text-sm text-gray-500 text-center">{t('noResults')}</p>
         </Card>
       )}
     </div>

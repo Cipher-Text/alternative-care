@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,7 @@ import { NavLinks } from '@/components/layout/Sidebar'
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const t = useTranslations('nav')
 
   // Close after navigating (the layout persists across route changes).
   useEffect(() => {
@@ -29,7 +31,7 @@ export function MobileNav() {
           variant="ghost"
           size="icon"
           className="md:hidden h-11 w-11"
-          aria-label="Open navigation menu"
+          aria-label={t('openMenu')}
         >
           <Menu className="h-6 w-6" />
         </Button>
@@ -45,7 +47,7 @@ export function MobileNav() {
               AltCare
             </DialogPrimitive.Title>
             <DialogPrimitive.Close asChild>
-              <Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Close navigation menu">
+              <Button variant="ghost" size="icon" className="h-11 w-11" aria-label={t('closeMenu')}>
                 <X className="h-5 w-5" />
               </Button>
             </DialogPrimitive.Close>

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
 import { authApi } from '@/lib/api/auth'
 import { Sidebar } from '@/components/layout/Sidebar'
@@ -10,6 +11,7 @@ import type { ReactNode } from 'react'
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
+  const locale = useLocale()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const hasHydrated = useAuthStore((state) => state.hasHydrated)
   const setAuth = useAuthStore((state) => state.setAuth)
@@ -34,6 +36,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         const profile = await authApi.getCurrentUser()
         if (!cancelled) {
           setAuth(profile.user, access_token)
+          // The account's language (saved on another device, say) can differ from what this page
+          // was just rendered in; setAuth has updated the cookie, so re-render in that language.
+          if ((profile.user.language ?? 'en') !== locale) router.refresh()
         }
       } catch {
         if (!cancelled) {
@@ -46,7 +51,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [hasHydrated, isAuthenticated, setAuth, setAccessToken, logout, router])
+  }, [hasHydrated, isAuthenticated, setAuth, setAccessToken, logout, router, locale])
 
   if (!hasHydrated || !isAuthenticated) {
     return null // Don't render anything while checking/redirecting

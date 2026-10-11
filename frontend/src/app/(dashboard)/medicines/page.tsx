@@ -4,6 +4,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMedicines, useDeleteMedicine, useSearchMedicines } from '@/lib/hooks/useMedicines';
@@ -18,6 +19,9 @@ import { Loader2, Plus, Search, Trash2, Edit, Eye } from 'lucide-react';
 import type { MedicalSystem, MedicineFilters } from '@/types/medicine';
 
 export default function MedicinesPage() {
+  const tp = useTranslations('pages');
+  const t = useTranslations('libUi');
+  const ts = useTranslations('libSystemUi');
   const router = useRouter();
   const can = useCan();
   const [filters, setFilters] = useState<MedicineFilters>({
@@ -51,11 +55,11 @@ export default function MedicinesPage() {
   const deleteMedicine = useDeleteMedicine();
 
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this medicine?')) {
+    if (confirm(t('confirmDelete'))) {
       try {
         await deleteMedicine.mutateAsync(id);
       } catch {
-        alert('Failed to delete medicine');
+        alert(t('deleteFailed'));
       }
     }
   };
@@ -90,9 +94,9 @@ export default function MedicinesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Medicine Library</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{tp('medicinesTitle')}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Manage medicines for all systems
+            {tp('medicinesSubtitle')}
           </p>
         </div>
         {can.writeClinical && (
@@ -101,7 +105,7 @@ export default function MedicinesPage() {
             className="bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white shadow-lg shadow-slate-900/10"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Medicine
+            {t('addMedicine')}
           </Button>
         )}
       </div>
@@ -110,12 +114,12 @@ export default function MedicinesPage() {
       <Card className="p-6 bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Search</label>
+            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{t('search')}</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
               <Input
-                aria-label="Search medicines"
- placeholder="Search medicines..."
+                aria-label={t('searchAria')}
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder:text-gray-500"
@@ -124,28 +128,28 @@ export default function MedicinesPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Medical System</label>
+            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{t('medicalSystem')}</label>
             <Select
               value={filters.system || 'all'}
               onValueChange={(value) =>
                 setFilters({ ...filters, system: value === 'all' ? undefined : value as MedicalSystem })
               }
             >
-              <SelectTrigger aria-label="Medical System" className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
-                <SelectValue placeholder="All Systems" />
+              <SelectTrigger aria-label={t('medicalSystem')} className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+                <SelectValue placeholder={t('allSystems')} />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white">
-                <SelectItem value="all">All Systems</SelectItem>
-                <SelectItem value="homeopathy">Homeopathy</SelectItem>
-                <SelectItem value="ayurveda">Ayurveda</SelectItem>
-                <SelectItem value="unani">Unani</SelectItem>
-                <SelectItem value="herbal">Herbal</SelectItem>
+                <SelectItem value="all">{t('allSystems')}</SelectItem>
+                <SelectItem value="homeopathy">{ts('homeopathy')}</SelectItem>
+                <SelectItem value="ayurveda">{ts('ayurveda')}</SelectItem>
+                <SelectItem value="unani">{ts('unani')}</SelectItem>
+                <SelectItem value="herbal">{ts('herbal')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Source</label>
+            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{t('source')}</label>
             <Select
               value={filters.is_global === undefined ? 'all' : filters.is_global ? 'global' : 'tenant'}
               onValueChange={(value) =>
@@ -155,19 +159,19 @@ export default function MedicinesPage() {
                 })
               }
             >
-              <SelectTrigger aria-label="Source" className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
-                <SelectValue placeholder="All Sources" />
+              <SelectTrigger aria-label={t('source')} className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+                <SelectValue placeholder={t('allSources')} />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white">
-                <SelectItem value="all">All Sources</SelectItem>
-                <SelectItem value="global">Global</SelectItem>
-                <SelectItem value="tenant">My Medicines</SelectItem>
+                <SelectItem value="all">{t('allSources')}</SelectItem>
+                <SelectItem value="global">{t('global')}</SelectItem>
+                <SelectItem value="tenant">{t('myMedicines')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Status</label>
+            <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{t('status')}</label>
             <Select
               value={filters.is_active === undefined ? 'all' : filters.is_active ? 'active' : 'inactive'}
               onValueChange={(value) =>
@@ -177,13 +181,13 @@ export default function MedicinesPage() {
                 })
               }
             >
-              <SelectTrigger aria-label="Status" className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
-                <SelectValue placeholder="All Statuses" />
+              <SelectTrigger aria-label={t('status')} className="bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
+                <SelectValue placeholder={t('allStatuses')} />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white">
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="all">{t('allStatuses')}</SelectItem>
+                <SelectItem value="active">{t('active')}</SelectItem>
+                <SelectItem value="inactive">{t('inactive')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -197,14 +201,14 @@ export default function MedicinesPage() {
         </div>
       ) : !filteredMedicines || filteredMedicines.length === 0 ? (
         <Card className="p-12 text-center bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
-          <p className="text-gray-600 dark:text-gray-400">No medicines found</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('noneFound')}</p>
           {can.writeClinical && (
           <Button
             className="mt-4 bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white"
             onClick={() => router.push('/medicines/new')}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add First Medicine
+            {t('addFirst')}
           </Button>
           )}
         </Card>
@@ -229,7 +233,7 @@ export default function MedicinesPage() {
                     variant="outline"
                     className="text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                   >
-                    Global
+                    {t('global')}
                   </Badge>
                 )}
               </div>
@@ -237,7 +241,7 @@ export default function MedicinesPage() {
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Badge className={getSystemColor(medicine.system)}>
-                    {medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
+                    {ts.has(medicine.system) ? ts(medicine.system) : medicine.system.charAt(0).toUpperCase() + medicine.system.slice(1)}
                   </Badge>
                   {medicine.potency && (
                     <Badge
@@ -263,7 +267,7 @@ export default function MedicinesPage() {
                   onClick={() => router.push(`/medicines/${medicine.id}`)}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  View
+                  {t('view')}
                 </Button>
                 {!medicine.is_global && can.writeClinical && (
                   <>

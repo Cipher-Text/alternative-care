@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-hot-toast'
+import { useTranslations } from 'next-intl'
 import { appointmentsApi } from '@/lib/api/appointments'
 import type {
   AppointmentCreateRequest,
@@ -21,20 +22,22 @@ export function useAppointment(id: string) {
 }
 
 export function useCreateAppointment() {
+  const t = useTranslations('apptHooksUi')
   const queryClient = useQueryClient()
 
   return useMutation((data: AppointmentCreateRequest) => appointmentsApi.create(data), {
     onSuccess: () => {
       queryClient.invalidateQueries('appointments')
-      toast.success('Appointment created successfully')
+      toast.success(t('created'))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.detail || 'Failed to create appointment')
+      toast.error(error.response?.data?.detail || t('createFailed'))
     },
   })
 }
 
 export function useUpdateAppointment() {
+  const t = useTranslations('apptHooksUi')
   const queryClient = useQueryClient()
 
   return useMutation(
@@ -44,10 +47,10 @@ export function useUpdateAppointment() {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries('appointments')
         queryClient.invalidateQueries(['appointment', variables.id])
-        toast.success('Appointment updated successfully')
+        toast.success(t('updated'))
       },
       onError: (error: any) => {
-        toast.error(error.response?.data?.detail || 'Failed to update appointment')
+        toast.error(error.response?.data?.detail || t('updateFailed'))
       },
     }
   )

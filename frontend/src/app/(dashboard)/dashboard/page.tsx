@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCan } from '@/lib/auth/permissions'
@@ -47,6 +48,8 @@ export default function DashboardPage() {
 }
 
 function TenantDashboardContent({ userName }: { userName?: string }) {
+  const tp = useTranslations('pages')
+  const t = useTranslations('homeUi')
   const router = useRouter()
   const can = useCan()
   const [dateRange, setDateRange] = useState<{
@@ -82,10 +85,10 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Dashboard
+            {tp('dashboardTitle')}
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Welcome back, {userName}!
+            {tp('dashboardWelcome', { name: userName ?? '' })}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -96,7 +99,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       {/* Quick Actions */}
       <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950 dark:to-slate-900">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-gray-900 dark:text-white">Quick Actions</CardTitle>
+          <CardTitle className="text-lg text-gray-900 dark:text-white">{t('quickActions')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -107,7 +110,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               onClick={() => router.push('/patients/new')}
             >
               <UserPlus className="h-5 w-5 mb-2 text-emerald-600 dark:text-emerald-400" />
-              <span className="font-medium text-sm">New Patient</span>
+              <span className="font-medium text-sm">{t('newPatient')}</span>
             </Button>
             )}
             <Button
@@ -116,7 +119,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               onClick={() => router.push('/appointments/new')}
             >
               <Calendar className="h-5 w-5 mb-2 text-green-600 dark:text-green-400" />
-              <span className="font-medium text-sm">Schedule</span>
+              <span className="font-medium text-sm">{t('schedule')}</span>
             </Button>
             {can.writeClinical && (
             <Button
@@ -125,7 +128,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               onClick={() => router.push('/prescriptions/new')}
             >
               <FilePlus className="h-5 w-5 mb-2 text-purple-600 dark:text-purple-400" />
-              <span className="font-medium text-sm">Prescription</span>
+              <span className="font-medium text-sm">{t('prescription')}</span>
             </Button>
             )}
             <Button
@@ -134,7 +137,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               onClick={() => router.push('/payments')}
             >
               <DollarSign className="h-5 w-5 mb-2 text-blue-600 dark:text-blue-400" />
-              <span className="font-medium text-sm">Payment</span>
+              <span className="font-medium text-sm">{t('payment')}</span>
             </Button>
           </div>
         </CardContent>
@@ -143,43 +146,43 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       {/* Key Metrics */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Key Metrics
+          {t('keyMetrics')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatsCard
-            title="Total Patients"
+            title={t('totalPatients')}
             value={overview?.total_patients || 0}
-            description={`${overview?.new_patients_this_month || 0} new this month`}
+            description={t('newThisMonth', { count: overview?.new_patients_this_month || 0 })}
             icon={Users}
           />
           <StatsCard
-            title="Today's Appointments"
+            title={t('todaysAppointments')}
             value={overview?.appointments_today || 0}
-            description={`${overview?.upcoming_appointments || 0} upcoming`}
+            description={t('upcoming', { count: overview?.upcoming_appointments || 0 })}
             icon={Calendar}
           />
           <StatsCard
-            title="Monthly Revenue"
+            title={t('monthlyRevenue')}
             value={`৳${(overview?.revenue_this_month || 0).toLocaleString()}`}
-            description="Collected this month"
+            description={t('collectedThisMonth')}
             icon={DollarSign}
           />
           <StatsCard
-            title="Active Patients"
+            title={t('activePatients')}
             value={overview?.active_patients || 0}
-            description="Visited in last 30 days"
+            description={t('visitedLast30')}
             icon={Activity}
           />
           <StatsCard
-            title="Prescriptions"
+            title={t('prescriptions')}
             value={overview?.prescriptions_this_month || 0}
-            description="Issued this month"
+            description={t('issuedThisMonth')}
             icon={FileText}
           />
           <StatsCard
-            title="Pending Payments"
+            title={t('pendingPayments')}
             value={`৳${(overview?.pending_payments || 0).toLocaleString()}`}
-            description="Outstanding amount"
+            description={t('outstandingAmount')}
             icon={TrendingUp}
             className="border-orange-200 bg-orange-50 dark:bg-orange-950 dark:border-orange-800"
           />
@@ -189,7 +192,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       {/* Analytics */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Analytics
+          {t('analytics')}
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {financial?.daily_revenue && financial.daily_revenue.length > 0 ? (
@@ -197,13 +200,13 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           ) : (
             <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
               <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Revenue Trend</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">{t('revenueTrend')}</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
                 <div className="text-center text-gray-500 dark:text-gray-400">
                   <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                  <p>No revenue data available</p>
-                  <p className="text-xs mt-1">Start accepting payments to see trends</p>
+                  <p>{t('noRevenueData')}</p>
+                  <p className="text-xs mt-1">{t('noRevenueHint')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -214,12 +217,12 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           ) : (
             <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
               <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Revenue by Payment Method</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">{t('revenueByMethod')}</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
                 <div className="text-center text-gray-500 dark:text-gray-400">
                   <DollarSign className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                  <p>No payment data available</p>
+                  <p>{t('noPaymentData')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -230,7 +233,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       {/* Patient Insights */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Patient Insights
+          {t('patientInsights')}
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {patients?.demographics ? (
@@ -238,12 +241,12 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           ) : (
             <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
               <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Patient Demographics</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">{t('patientDemographics')}</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
                 <div className="text-center text-gray-500 dark:text-gray-400">
                   <Users className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                  <p>No patient data available</p>
+                  <p>{t('noPatientData')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -254,12 +257,12 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           ) : (
             <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
               <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Age Distribution</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">{t('ageDistribution')}</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px] flex items-center justify-center">
                 <div className="text-center text-gray-500 dark:text-gray-400">
                   <Activity className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                  <p>No age data available</p>
+                  <p>{t('noAgeData')}</p>
                 </div>
               </CardContent>
             </Card>

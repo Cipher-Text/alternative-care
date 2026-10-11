@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useDateFormat } from "@/lib/i18n/date";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -19,12 +21,14 @@ export function RecentTransactionsList({
   isLoading,
   limit = 10,
 }: RecentTransactionsListProps) {
+  const t = useTranslations("payTxUi");
+  const { fmt } = useDateFormat();
   if (isLoading) {
     return (
       <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
         <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">Loading...</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">{t("recentTitle")}</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">{t("loading")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -49,12 +53,12 @@ export function RecentTransactionsList({
     return (
       <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
         <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">No transactions yet</CardDescription>
+          <CardTitle className="text-gray-900 dark:text-white">{t("recentTitle")}</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-400">{t("recentEmpty")}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Transactions will appear here once you start recording payments.
+            {t("recentEmptyHint")}
           </p>
         </CardContent>
       </Card>
@@ -66,9 +70,9 @@ export function RecentTransactionsList({
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-gray-900 dark:text-white">Recent Transactions</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">{t("recentTitle")}</CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-400">
-              Latest {recentPayments.length} payments
+              {t("latestN", { count: recentPayments.length })}
             </CardDescription>
           </div>
           <Link href="/payments/transactions">
@@ -77,7 +81,7 @@ export function RecentTransactionsList({
               size="sm"
               className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700"
             >
-              View All
+              {t("viewAll")}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
@@ -99,7 +103,7 @@ export function RecentTransactionsList({
                 </div>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {new Date(payment.payment_date).toLocaleDateString()}
+                    {fmt(payment.payment_date, "P")}
                   </p>
                   <PaymentMethodBadge method={payment.payment_method} />
                   {payment.description && (

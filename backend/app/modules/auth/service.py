@@ -989,6 +989,20 @@ class AuthService:
     # User Profile
     # ========================================================================
 
+    async def set_language(self, user_id: str, language: str) -> str:
+        """
+        Save the user's preferred UI language ('en' or 'bn').
+
+        This is a preference, not a security-relevant change, so it deliberately does NOT bump
+        `token_version` (that would sign the user out of every device just for switching language).
+        """
+        user = (await self.db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        user.language = language
+        await self.db.commit()
+        return user.language
+
     async def get_user_profile(self, user_id: str) -> UserProfileResponse:
         """
         Get user profile with tenant info.

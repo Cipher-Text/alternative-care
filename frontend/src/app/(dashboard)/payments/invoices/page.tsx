@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useDateFormat } from "@/lib/i18n/date";
 import { Pager, serverPage, usePager } from "@/components/shared/Pager";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,9 @@ import { InvoiceStatusBadge } from "@/components/payments/InvoiceStatusBadge";
 import type { InvoiceStatus } from "@/types/payment";
 
 export default function InvoicesPage() {
+  const t = useTranslations("payInvoiceUi");
+  const tb = useTranslations("payBadgeUi");
+  const { fmt } = useDateFormat();
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">("all");
 
   const pager = usePager(undefined, [statusFilter]);
@@ -29,13 +34,13 @@ export default function InvoicesPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Invoices</h1>
-          <p className="text-muted-foreground">Create and manage patient invoices</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <Link href="/payments/invoices/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Create Invoice
+            {t("createInvoice")}
           </Button>
         </Link>
       </div>
@@ -43,11 +48,11 @@ export default function InvoicesPage() {
       {/* Status Tabs */}
       <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="draft">Draft</TabsTrigger>
-          <TabsTrigger value="sent">Sent</TabsTrigger>
-          <TabsTrigger value="paid">Paid</TabsTrigger>
-          <TabsTrigger value="overdue">Overdue</TabsTrigger>
+          <TabsTrigger value="all">{t("tabAll")}</TabsTrigger>
+          <TabsTrigger value="draft">{tb("invoiceStatus.draft")}</TabsTrigger>
+          <TabsTrigger value="sent">{tb("invoiceStatus.sent")}</TabsTrigger>
+          <TabsTrigger value="paid">{tb("invoiceStatus.paid")}</TabsTrigger>
+          <TabsTrigger value="overdue">{tb("invoiceStatus.overdue")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value={statusFilter} className="mt-6">
@@ -69,16 +74,16 @@ export default function InvoicesPage() {
             <Card>
               <CardContent className="pt-12 pb-12 text-center">
                 <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No invoices found</h3>
+                <h3 className="text-lg font-semibold mb-2">{t("emptyTitle")}</h3>
                 <p className="text-muted-foreground mb-4">
                   {statusFilter === "all"
-                    ? "Create your first invoice to get started"
-                    : `No ${statusFilter} invoices`}
+                    ? t("emptyAll")
+                    : t(`emptyByStatus.${statusFilter}`)}
                 </p>
                 <Link href="/payments/invoices/new">
                   <Button>
                     <Plus className="mr-2 h-4 w-4" />
-                    Create Invoice
+                    {t("createInvoice")}
                   </Button>
                 </Link>
               </CardContent>
@@ -100,20 +105,20 @@ export default function InvoicesPage() {
 
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Amount:</span>
+                        <span className="text-muted-foreground">{t("amountLabel")}</span>
                         <span className="font-semibold">৳{invoice.amount.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Issue Date:</span>
+                        <span className="text-muted-foreground">{t("issueDate")}</span>
                         <span>
-                          {new Date(invoice.issue_date).toLocaleDateString()}
+                          {fmt(invoice.issue_date, "P")}
                         </span>
                       </div>
                       {invoice.due_date && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Due Date:</span>
+                          <span className="text-muted-foreground">{t("dueDate")}</span>
                           <span>
-                            {new Date(invoice.due_date).toLocaleDateString()}
+                            {fmt(invoice.due_date, "P")}
                           </span>
                         </div>
                       )}
@@ -122,7 +127,7 @@ export default function InvoicesPage() {
                     <Link href={`/payments/invoices/${invoice.id}`}>
                       <Button variant="outline" size="sm" className="w-full">
                         <Eye className="mr-2 h-4 w-4" />
-                        View Details
+                        {t("viewDetails")}
                       </Button>
                     </Link>
                   </CardContent>

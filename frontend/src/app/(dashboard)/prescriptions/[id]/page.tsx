@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -42,25 +43,22 @@ import {
   AlertCircle,
   Trash2,
 } from 'lucide-react'
-import { format } from 'date-fns'
+import { useDateFormat } from '@/lib/i18n/date'
 import type { PrescriptionStatus } from '@/types/prescription'
 
 const statusConfig: Record<
   PrescriptionStatus,
-  { label: string; icon: any; color: string }
+  { icon: any; color: string }
 > = {
   draft: {
-    label: 'Draft',
     icon: Edit,
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
   },
   issued: {
-    label: 'Issued',
     icon: CheckCircle,
     color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   },
   voided: {
-    label: 'Voided',
     icon: XCircle,
     color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   },
@@ -73,6 +71,9 @@ export default function PrescriptionDetailPage({
 }) {
   const { id } = use(params)
   const router = useRouter()
+  const t = useTranslations('rxDetailUi')
+  const ts = useTranslations('rxUi.status')
+  const { fmt } = useDateFormat()
   const can = useCan()
   const [showIssueDialog, setShowIssueDialog] = useState(false)
   const [showVoidDialog, setShowVoidDialog] = useState(false)
@@ -98,7 +99,7 @@ export default function PrescriptionDetailPage({
   }
 
   const handleDeleteItem = async (itemId: number) => {
-    if (confirm('Are you sure you want to delete this item?')) {
+    if (confirm(t('confirmDeleteItem'))) {
       await deleteItem.mutateAsync({ prescriptionId: id, itemId })
     }
   }
@@ -115,12 +116,12 @@ export default function PrescriptionDetailPage({
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Prescription Not Found</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('notFoundTitle')}</h2>
         <p className="text-muted-foreground mb-4">
-          The prescription you're looking for doesn't exist or has been removed.
+          {t('notFoundBody')}
         </p>
         <Link href="/prescriptions">
-          <Button>Back to Prescriptions</Button>
+          <Button>{t('backToList')}</Button>
         </Link>
       </div>
     )
@@ -140,24 +141,24 @@ export default function PrescriptionDetailPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/prescriptions" aria-label="Back">
+            <Link href="/prescriptions" aria-label={t('back')}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold">Prescription</h1>
+              <h1 className="text-3xl font-bold">{t('title')}</h1>
               <Badge className={statusInfo.color}>
                 <StatusIcon className="h-3 w-3 mr-1" />
-                {statusInfo.label}
+                {ts(prescription.status)}
               </Badge>
               {isIssued && (
-                <span title="Immutable">
+                <span title={t('immutableTitle')}>
                   <Lock className="h-5 w-5 text-muted-foreground" />
                 </span>
               )}
             </div>
-            <p className="text-sm text-muted-foreground font-mono">ID: {prescription.id}</p>
+            <p className="text-sm text-muted-foreground font-mono">{t('idLabel', { id: prescription.id })}</p>
           </div>
         </div>
 
@@ -167,12 +168,12 @@ export default function PrescriptionDetailPage({
               <Link href={`/prescriptions/${id}/edit`}>
                 <Button variant="outline">
                   <Edit className="h-4 w-4 mr-2" />
-                  Edit
+                  {t('edit')}
                 </Button>
               </Link>
               <Button onClick={() => setShowIssueDialog(true)}>
                 <CheckCircle className="h-4 w-4 mr-2" />
-                Issue
+                {t('issue')}
               </Button>
             </>
           )}
@@ -188,12 +189,12 @@ export default function PrescriptionDetailPage({
                 ) : (
                   <Download className="h-4 w-4 mr-2" />
                 )}
-                View / Print PDF
+                {t('viewPrintPdf')}
               </Button>
               {can.writeClinical && (
                 <Button variant="destructive" onClick={() => setShowVoidDialog(true)}>
                   <XCircle className="h-4 w-4 mr-2" />
-                  Void
+                  {t('void')}
                 </Button>
               )}
             </>
@@ -207,10 +208,10 @@ export default function PrescriptionDetailPage({
           <Lock className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-medium text-blue-900 dark:text-blue-100">
-              This prescription is immutable
+              {t('immutableBannerTitle')}
             </p>
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              Issued prescriptions cannot be edited. You can only void them if needed.
+              {t('immutableBannerBody')}
             </p>
           </div>
         </div>
@@ -220,16 +221,16 @@ export default function PrescriptionDetailPage({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Patient Information</CardTitle>
+            <CardTitle>{t('patientInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div>
-              <p className="text-sm text-muted-foreground">Patient ID</p>
+              <p className="text-sm text-muted-foreground">{t('patientId')}</p>
               <p className="font-mono">{prescription.patient_id}</p>
             </div>
             {prescription.visit_id && (
               <div>
-                <p className="text-sm text-muted-foreground">Visit ID</p>
+                <p className="text-sm text-muted-foreground">{t('visitId')}</p>
                 <p className="font-mono">{prescription.visit_id}</p>
               </div>
             )}
@@ -238,21 +239,21 @@ export default function PrescriptionDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Prescription Details</CardTitle>
+            <CardTitle>{t('details')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div>
-              <p className="text-sm text-muted-foreground">Prescribed By</p>
+              <p className="text-sm text-muted-foreground">{t('prescribedBy')}</p>
               <p className="font-mono">{prescription.prescribed_by}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Created</p>
-              <p>{format(new Date(prescription.created_at), 'PPP p')}</p>
+              <p className="text-sm text-muted-foreground">{t('created')}</p>
+              <p>{fmt(prescription.created_at, 'PPP p')}</p>
             </div>
             {prescription.pdf_generated_at && (
               <div>
-                <p className="text-sm text-muted-foreground">PDF Generated</p>
-                <p>{format(new Date(prescription.pdf_generated_at), 'PPP p')}</p>
+                <p className="text-sm text-muted-foreground">{t('pdfGenerated')}</p>
+                <p>{fmt(prescription.pdf_generated_at, 'PPP p')}</p>
               </div>
             )}
           </CardContent>
@@ -262,24 +263,24 @@ export default function PrescriptionDetailPage({
       {/* Clinical Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Clinical Information</CardTitle>
+          <CardTitle>{t('clinicalInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {prescription.diagnosis && (
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Diagnosis</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('diagnosis')}</p>
               <p className="mt-1">{prescription.diagnosis}</p>
             </div>
           )}
           {prescription.doctors_notes && (
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Doctor's Notes</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('doctorsNotes')}</p>
               <p className="mt-1 whitespace-pre-wrap">{prescription.doctors_notes}</p>
             </div>
           )}
           {prescription.advice && (
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Advice</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('advice')}</p>
               <p className="mt-1 whitespace-pre-wrap">{prescription.advice}</p>
             </div>
           )}
@@ -290,11 +291,11 @@ export default function PrescriptionDetailPage({
       <Card>
         <CardHeader>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle>Medicines ({prescription.items.length})</CardTitle>
+            <CardTitle>{t('medicinesCount', { count: prescription.items.length })}</CardTitle>
             {canEditRx && (
               <Link href={`/prescriptions/${id}/edit`}>
                 <Button variant="outline" size="sm">
-                  Add Medicine
+                  {t('addMedicine')}
                 </Button>
               </Link>
             )}
@@ -306,13 +307,13 @@ export default function PrescriptionDetailPage({
               <TableHeader>
                 <TableRow>
                   <TableHead>#</TableHead>
-                  <TableHead>Medicine</TableHead>
-                  <TableHead>Dosage</TableHead>
-                  <TableHead>Frequency</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Instructions</TableHead>
-                  {canEditRx && <TableHead className="text-right">Actions</TableHead>}
+                  <TableHead>{t('colMedicine')}</TableHead>
+                  <TableHead>{t('colDosage')}</TableHead>
+                  <TableHead>{t('colFrequency')}</TableHead>
+                  <TableHead>{t('colDuration')}</TableHead>
+                  <TableHead>{t('colQuantity')}</TableHead>
+                  <TableHead>{t('colInstructions')}</TableHead>
+                  {canEditRx && <TableHead className="text-right">{t('colActions')}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -320,7 +321,7 @@ export default function PrescriptionDetailPage({
                   <TableRow key={item.id}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell className="font-medium">
-                      {item.medicine_name || `Medicine ID: ${item.medicine_id}`}
+                      {item.medicine_name || t('medicineIdFallback', { id: String(item.medicine_id) })}
                     </TableCell>
                     <TableCell>{item.dosage}</TableCell>
                     <TableCell>{item.frequency}</TableCell>
@@ -345,11 +346,11 @@ export default function PrescriptionDetailPage({
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No medicines added yet</p>
+              <p>{t('noMedicines')}</p>
               {canEditRx && (
                 <Link href={`/prescriptions/${id}/edit`}>
                   <Button variant="outline" className="mt-4" size="sm">
-                    Add Medicines
+                    {t('addMedicines')}
                   </Button>
                 </Link>
               )}
@@ -362,25 +363,25 @@ export default function PrescriptionDetailPage({
       <Dialog open={showIssueDialog} onOpenChange={setShowIssueDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Issue Prescription</DialogTitle>
+            <DialogTitle>{t('issueDialogTitle')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to issue this prescription? Once issued, it cannot be edited.
+              {t('issueDialogBody')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowIssueDialog(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button onClick={handleIssue} disabled={issuePrescription.isLoading}>
               {issuePrescription.isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Issuing...
+                  {t('issuing')}
                 </>
               ) : (
                 <>
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Issue Prescription
+                  {t('issueDialogTitle')}
                 </>
               )}
             </Button>
@@ -392,14 +393,14 @@ export default function PrescriptionDetailPage({
       <Dialog open={showVoidDialog} onOpenChange={setShowVoidDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Void Prescription</DialogTitle>
+            <DialogTitle>{t('voidDialogTitle')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to void this prescription? This action cannot be undone.
+              {t('voidDialogBody')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowVoidDialog(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -409,12 +410,12 @@ export default function PrescriptionDetailPage({
               {voidPrescription.isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Voiding...
+                  {t('voiding')}
                 </>
               ) : (
                 <>
                   <XCircle className="mr-2 h-4 w-4" />
-                  Void Prescription
+                  {t('voidDialogTitle')}
                 </>
               )}
             </Button>

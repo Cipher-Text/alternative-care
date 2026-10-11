@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { useTranslations } from 'next-intl'
 import type { RevenueByMethod } from '@/types/dashboard'
 
 interface RevenueByMethodChartProps {
@@ -15,10 +16,11 @@ const COLORS = {
 }
 
 export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
+  const t = useTranslations('chartsUi')
   const chartData = [
-    { name: 'Cash', value: data.cash, color: COLORS.cash },
+    { name: t('cash'), value: data.cash, color: COLORS.cash },
     { name: 'bKash', value: data.bkash, color: COLORS.bkash },
-    { name: 'Other', value: data.other, color: COLORS.other },
+    { name: t('other'), value: data.other, color: COLORS.other },
   ].filter((item) => item.value > 0)
 
   const total = data.cash + data.bkash + data.other
@@ -31,7 +33,7 @@ export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
     <Card className="hover:shadow-md transition-shadow duration-200">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-          Revenue by Payment Method
+          {t('revenueByMethod')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -70,7 +72,7 @@ export function RevenueByMethodChart({ data }: RevenueByMethodChartProps) {
           </PieChart>
         </ResponsiveContainer>
         <div className="text-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('totalRevenue')}</p>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
             ৳{total.toLocaleString()}
           </p>

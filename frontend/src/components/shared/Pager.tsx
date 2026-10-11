@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 export const DEFAULT_PAGE_SIZE = 20
@@ -63,20 +64,27 @@ export function Pager({
   isLoading,
   noun = 'results',
 }: PagerProps) {
+  const t = useTranslations('pager')
   if (page === 1 && !hasNext) return null
+
+  // `noun` is an English plural ("patients", "pending tenants"); translate it when there is a key
+  const nounKey = noun.replace(/\s+/g, '_')
+  const nounText = t.has(`nouns.${nounKey}`) ? t(`nouns.${nounKey}`) : noun
 
   const from = count === 0 ? 0 : (page - 1) * pageSize + 1
   const to = (page - 1) * pageSize + count
 
   return (
     <nav
-      aria-label="Pagination"
+      aria-label={t('navLabel')}
       className="flex flex-wrap items-center justify-between gap-3 pt-4"
     >
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {count === 0
-          ? `No more ${noun}`
-          : `Showing ${from}–${to}${total !== undefined ? ` of ${total}` : ''} ${noun}`}
+          ? t('noMore', { noun: nounText })
+          : total !== undefined
+            ? t('showingOf', { from, to, total, noun: nounText })
+            : t('showing', { from, to, noun: nounText })}
       </p>
       <div className="flex items-center gap-2">
         <Button
@@ -87,9 +95,9 @@ export function Pager({
           disabled={page <= 1 || isLoading}
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          Previous
+          {t('previous')}
         </Button>
-        <span className="px-1 text-sm text-muted-foreground">Page {page}</span>
+        <span className="px-1 text-sm text-muted-foreground">{t('page', { page })}</span>
         <Button
           variant="outline"
           size="sm"
@@ -97,7 +105,7 @@ export function Pager({
           onClick={() => onPageChange(page + 1)}
           disabled={!hasNext || isLoading}
         >
-          Next
+          {t('next')}
           <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </div>

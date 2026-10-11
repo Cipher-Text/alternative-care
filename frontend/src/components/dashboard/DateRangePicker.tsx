@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Select,
   SelectContent,
@@ -17,6 +18,7 @@ interface DateRangePickerProps {
 }
 
 export function DateRangePicker({ onRangeChange }: DateRangePickerProps) {
+  const t = useTranslations('chartsUi')
   const [preset, setPreset] = useState<DateRangePreset>('month')
 
   const handlePresetChange = (value: DateRangePreset) => {
@@ -49,16 +51,16 @@ export function DateRangePicker({ onRangeChange }: DateRangePickerProps) {
 
   return (
     <Select value={preset} onValueChange={handlePresetChange}>
-      <SelectTrigger aria-label="Date range" className="w-[180px]">
-        <SelectValue placeholder="Select period" />
+      <SelectTrigger aria-label={t('dateRange')} className="w-[180px]">
+        <SelectValue placeholder={t('selectPeriod')} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="today">Today</SelectItem>
-        <SelectItem value="week">Last 7 Days</SelectItem>
-        <SelectItem value="month">Last 30 Days</SelectItem>
-        <SelectItem value="3months">Last 3 Months</SelectItem>
-        <SelectItem value="year">Last Year</SelectItem>
-        <SelectItem value="all">All Time</SelectItem>
+        <SelectItem value="today">{t('today')}</SelectItem>
+        <SelectItem value="week">{t('last7')}</SelectItem>
+        <SelectItem value="month">{t('last30')}</SelectItem>
+        <SelectItem value="3months">{t('last3m')}</SelectItem>
+        <SelectItem value="year">{t('lastYear')}</SelectItem>
+        <SelectItem value="all">{t('allTime')}</SelectItem>
       </SelectContent>
     </Select>
   )

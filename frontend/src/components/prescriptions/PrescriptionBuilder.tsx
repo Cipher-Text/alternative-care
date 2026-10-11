@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useCreatePrescription, useUpdatePrescription } from '@/lib/hooks/usePrescriptions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -20,6 +21,7 @@ interface PrescriptionBuilderProps {
 
 export function PrescriptionBuilder({ prescription, isEdit = false }: PrescriptionBuilderProps) {
   const router = useRouter()
+  const t = useTranslations('rxBuilderUi')
   const createPrescription = useCreatePrescription()
   const updatePrescription = useUpdatePrescription()
 
@@ -115,12 +117,12 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       {/* Patient & Visit Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Patient Information</CardTitle>
+          <CardTitle>{t('patientInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="patient">
-              Patient <span className="text-red-500">*</span>
+              {t('patient')} <span className="text-red-500">*</span>
             </Label>
             <PatientSelector
               value={patientId}
@@ -129,16 +131,16 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             />
             {isEdit && (
               <p className="text-xs text-muted-foreground">
-                Patient cannot be changed when editing
+                {t('patientLocked')}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="visit_id">Visit ID (Optional)</Label>
+            <Label htmlFor="visit_id">{t('visitId')}</Label>
             <Input
               id="visit_id"
-              placeholder="Enter visit ID if applicable"
+              placeholder={t('visitIdPlaceholder')}
               value={visitId}
               onChange={(e) => setVisitId(e.target.value)}
               disabled={isEdit}
@@ -150,24 +152,24 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       {/* Clinical Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Clinical Information</CardTitle>
+          <CardTitle>{t('clinicalInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="diagnosis">Diagnosis</Label>
+            <Label htmlFor="diagnosis">{t('diagnosis')}</Label>
             <Input
               id="diagnosis"
-              placeholder="Enter diagnosis"
+              placeholder={t('diagnosisPlaceholder')}
               value={diagnosis}
               onChange={(e) => setDiagnosis(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="doctors_notes">Doctor's Notes</Label>
+            <Label htmlFor="doctors_notes">{t('doctorsNotes')}</Label>
             <Textarea
               id="doctors_notes"
-              placeholder="Enter clinical notes, observations, etc."
+              placeholder={t('doctorsNotesPlaceholder')}
               value={doctorsNotes}
               onChange={(e) => setDoctorsNotes(e.target.value)}
               rows={4}
@@ -175,10 +177,10 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="advice">Advice</Label>
+            <Label htmlFor="advice">{t('advice')}</Label>
             <Textarea
               id="advice"
-              placeholder="Enter advice for the patient (dietary, lifestyle, etc.)"
+              placeholder={t('advicePlaceholder')}
               value={advice}
               onChange={(e) => setAdvice(e.target.value)}
               rows={3}
@@ -191,7 +193,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       <Card>
         <CardHeader>
           <CardTitle>
-            Medicines <span className="text-red-500">*</span>
+            {t('medicines')} <span className="text-red-500">*</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -209,7 +211,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
         <div className="text-sm text-muted-foreground">
           {!isValid && (
             <p className="text-amber-600">
-              Please select a patient and add at least one medicine
+              {t('validationHint')}
             </p>
           )}
         </div>
@@ -224,7 +226,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            Save as Draft
+            {t('saveDraft')}
           </Button>
           <Button onClick={handleIssue} disabled={!isValid || isLoading}>
             {isLoading ? (
@@ -232,7 +234,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             ) : (
               <CheckCircle className="mr-2 h-4 w-4" />
             )}
-            Issue Prescription
+            {t('issue')}
           </Button>
         </div>
       </div>

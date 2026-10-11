@@ -1,0 +1,99 @@
+{
+  "patientsUi": {
+    "loadFailed": "রোগীদের তালিকা লোড করা যায়নি",
+    "tryAgain": "অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন",
+    "searchPlaceholder": "নাম, ফোন বা কোড দিয়ে অনুসন্ধান করুন...",
+    "searchLabel": "নাম, ফোন বা কোড দিয়ে অনুসন্ধান করুন",
+    "allGenders": "সব লিঙ্গ",
+    "onThisPage": "এই পাতায়",
+    "malePage": "পুরুষ (এই পাতায়)",
+    "femalePage": "মহিলা (এই পাতায়)",
+    "noMatches": "আপনার ফিল্টারের সাথে মিলে এমন কোনো রোগী পাওয়া যায়নি",
+    "noPatients": "এখনো কোনো রোগী নেই। শুরু করতে আপনার প্রথম রোগী যোগ করুন।",
+    "addFirst": "প্রথম রোগী যোগ করুন",
+    "back": "ফিরে যান",
+    "gender": {
+      "male": "পুরুষ",
+      "female": "মহিলা",
+      "other": "অন্যান্য"
+    },
+    "notSpecified": "উল্লেখ করা নেই",
+    "unknownPatient": "অজানা রোগী"
+  },
+  "patientDetailUi": {
+    "notFoundTitle": "রোগী পাওয়া যায়নি",
+    "notFoundBody": "আপনি যে রোগীকে খুঁজছেন তিনি নেই অথবা তাঁকে সরিয়ে ফেলা হয়েছে।",
+    "backToPatients": "রোগীদের তালিকায় ফিরে যান",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "edit": "সম্পাদনা করুন",
+    "delete": "মুছে ফেলুন",
+    "cancel": "বাতিল করুন",
+    "information": "রোগীর তথ্য",
+    "name": "নাম",
+    "age": "বয়স",
+    "ageYears": "{age} বছর",
+    "unknown": "অজানা",
+    "gender": "লিঙ্গ",
+    "phone": "ফোন",
+    "email": "ইমেইল",
+    "bloodGroup": "রক্তের গ্রুপ",
+    "address": "ঠিকানা",
+    "tags": "ট্যাগ",
+    "diagnosesHistory": "রোগ নির্ণয়ের ইতিহাস",
+    "icd": "ICD: {code}",
+    "deleteTitle": "রোগী মুছে ফেলুন",
+    "deleteConfirm": "আপনি কি নিশ্চিত যে {name}-কে মুছে ফেলতে চান? এই কাজটি আর ফিরিয়ে নেওয়া যাবে না।"
+  },
+  "patientEditUi": {
+    "notFound": "রোগী পাওয়া যায়নি",
+    "title": "রোগীর তথ্য সম্পাদনা",
+    "subtitle": "{name}-এর তথ্য হালনাগাদ করুন"
+  },
+  "patientNewUi": {
+    "title": "নতুন রোগী যোগ করুন",
+    "subtitle": "রোগীর তথ্য দিয়ে একটি নতুন রেকর্ড তৈরি করুন"
+  },
+  "patientCardUi": {
+    "ageOld": "{age} বছর বয়স",
+    "ageUnknown": "বয়স অজানা",
+    "nextVisit": "পরবর্তী ভিজিট: {date}",
+    "viewDetails": "বিস্তারিত দেখুন",
+    "gender": {
+      "male": "পুরুষ",
+      "female": "মহিলা",
+      "other": "অন্যান্য"
+    },
+    "notSpecified": "উল্লেখ করা নেই",
+    "unknownPatient": "অজানা রোগী"
+  },
+  "patientFormUi": {
+    "fullNameRequired": "পূর্ণ নাম আবশ্যক",
+    "invalidEmail": "ইমেইল সঠিক নয়",
+    "basicInfo": "মৌলিক তথ্য",
+    "fullName": "পূর্ণ নাম *",
+    "fullNamePlaceholder": "রোগীর পূর্ণ নাম",
+    "dob": "জন্ম তারিখ",
+    "gender": "লিঙ্গ",
+    "selectGender": "লিঙ্গ নির্বাচন করুন",
+    "male": "পুরুষ",
+    "female": "মহিলা",
+    "other": "অন্যান্য",
+    "phone": "ফোন",
+    "email": "ইমেইল",
+    "bloodGroup": "রক্তের গ্রুপ",
+    "selectBloodGroup": "রক্তের গ্রুপ নির্বাচন করুন",
+    "addressInfo": "ঠিকানার তথ্য",
+    "address": "ঠিকানা",
+    "addressPlaceholder": "বাড়ি/রোড/এলাকা",
+    "division": "বিভাগ",
+    "selectDivision": "বিভাগ নির্বাচন করুন",
+    "district": "জেলা",
+    "selectDistrict": "জেলা নির্বাচন করুন",
+    "upazila": "উপজেলা",
+    "selectUpazila": "উপজেলা নির্বাচন করুন",
+    "cancel": "বাতিল করুন",
+    "update": "রোগীর তথ্য হালনাগাদ করুন",
+    "create": "রোগী তৈরি করুন"
+  }
+}

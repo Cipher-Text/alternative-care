@@ -1,5 +1,6 @@
 'use client'
 
+import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { Pager, clientPage, usePager } from '@/components/shared/Pager'
@@ -15,7 +16,7 @@ import {
   setHours,
   setMinutes,
 } from 'date-fns'
-import { enUS } from 'date-fns/locale'
+import { bn, enUS } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,24 +26,17 @@ import type { Appointment, AppointmentStatus } from '@/types/appointment'
 
 const locales = {
   'en-US': enUS,
+  bn,
 }
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-})
-
-const STATUS_OPTIONS: Array<{ label: string; value: AppointmentStatus | 'all' }> = [
-  { label: 'All', value: 'all' },
-  { label: 'Scheduled', value: 'scheduled' },
-  { label: 'Confirmed', value: 'confirmed' },
-  { label: 'In Progress', value: 'in_progress' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Cancelled', value: 'cancelled' },
-  { label: 'No Show', value: 'no_show' },
+const STATUS_VALUES: Array<AppointmentStatus | 'all'> = [
+  'all',
+  'scheduled',
+  'confirmed',
+  'in_progress',
+  'completed',
+  'cancelled',
+  'no_show',
 ]
 
 type AppointmentEvent = {
@@ -60,6 +54,32 @@ function toDateTime(dateText: string, timeText: string): Date {
 }
 
 export default function AppointmentsPage() {
+  const tp = useTranslations('pages')
+  const t = useTranslations('apptUi')
+  const locale = useLocale()
+  const culture = locale === 'bn' ? 'bn' : 'en-US'
+  const localizer = useMemo(
+    () => dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales }),
+    []
+  )
+  const calendarMessages = useMemo(
+    () => ({
+      allDay: t('cal.allDay'),
+      previous: t('cal.previous'),
+      next: t('cal.next'),
+      today: t('cal.today'),
+      month: t('cal.month'),
+      week: t('cal.week'),
+      day: t('cal.day'),
+      agenda: t('cal.agenda'),
+      date: t('cal.date'),
+      time: t('cal.time'),
+      event: t('cal.event'),
+      noEventsInRange: t('cal.noEventsInRange'),
+      showMore: (total: number) => t('cal.showMore', { count: total }),
+    }),
+    [t]
+  )
   const router = useRouter()
   // The calendar needs every appointment in view, so load up to the API maximum and page the
   // list view in the browser (the calendar itself is not paged).
@@ -132,8 +152,8 @@ export default function AppointmentsPage() {
   if (error) {
     return (
       <div className="text-center text-red-500 py-8">
-        <p className="text-lg font-semibold">Failed to load appointments</p>
-        <p className="text-sm">Please try again later</p>
+        <p className="text-lg font-semibold">{t('loadFailedTitle')}</p>
+        <p className="text-sm">{t('loadFailedHint')}</p>
       </div>
     )
   }
@@ -142,13 +162,13 @@ export default function AppointmentsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Appointments</h1>
-          <p className="text-muted-foreground">Manage upcoming and past appointments</p>
+          <h1 className="text-3xl font-bold">{tp('appointmentsTitle')}</h1>
+          <p className="text-muted-foreground">{tp('appointmentsSubtitle')}</p>
         </div>
         <Link href="/appointments/new">
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
-            New Appointment
+            {tp('newAppointment')}
           </Button>
         </Link>
       </div>
@@ -156,18 +176,18 @@ export default function AppointmentsPage() {
       <div className="bg-white dark:bg-gray-800 border rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="patient-filter">
-            Search patient
+            {t('searchPatient')}
           </label>
           <Input
             id="patient-filter"
-            placeholder="Name or patient code"
+            placeholder={t('searchPlaceholder')}
             value={patientQuery}
             onChange={(event) => setPatientQuery(event.target.value)}
           />
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="status-filter">
-            Status
+            {t('status')}
           </label>
           <select
             id="status-filter"
@@ -175,29 +195,29 @@ export default function AppointmentsPage() {
             onChange={(event) => setStatusFilter(event.target.value as AppointmentStatus | 'all')}
             className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            {STATUS_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {t(`statusOptions.${value}`)}
               </option>
             ))}
           </select>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">View</label>
+          <label className="text-sm font-medium">{t('view')}</label>
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant={viewMode === 'calendar' ? 'default' : 'outline'}
               onClick={() => setViewMode('calendar')}
             >
-              Calendar
+              {t('calendar')}
             </Button>
             <Button
               type="button"
               variant={viewMode === 'list' ? 'default' : 'outline'}
               onClick={() => setViewMode('list')}
             >
-              List
+              {t('list')}
             </Button>
           </div>
         </div>
@@ -207,6 +227,7 @@ export default function AppointmentsPage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg border p-4">
           <Calendar
             localizer={localizer}
+            culture={culture}
             events={events}
             startAccessor="start"
             endAccessor="end"
@@ -222,9 +243,7 @@ export default function AppointmentsPage() {
               const timeParam = format(slotInfo.start, 'HH:mm')
               router.push(`/appointments/new?date=${dateParam}&time=${timeParam}`)
             }}
-            messages={{
-              showMore: (total) => `+${total} more`,
-            }}
+            messages={calendarMessages}
           />
         </div>
       ) : filteredAppointments.length > 0 ? (
@@ -232,12 +251,12 @@ export default function AppointmentsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 dark:bg-gray-900/40">
               <tr>
-                <th className="text-left px-4 py-3">Date</th>
-                <th className="text-left px-4 py-3">Time</th>
-                <th className="text-left px-4 py-3">Patient</th>
-                <th className="text-left px-4 py-3">Doctor</th>
-                <th className="text-left px-4 py-3">Status</th>
-                <th className="text-left px-4 py-3">Reason</th>
+                <th className="text-left px-4 py-3">{t('cols.date')}</th>
+                <th className="text-left px-4 py-3">{t('cols.time')}</th>
+                <th className="text-left px-4 py-3">{t('cols.patient')}</th>
+                <th className="text-left px-4 py-3">{t('cols.doctor')}</th>
+                <th className="text-left px-4 py-3">{t('cols.status')}</th>
+                <th className="text-left px-4 py-3">{t('cols.reason')}</th>
               </tr>
             </thead>
             <tbody>
@@ -248,7 +267,7 @@ export default function AppointmentsPage() {
                     <td className="px-4 py-3">{appointment.appointment_date}</td>
                     <td className="px-4 py-3">{appointment.appointment_time}</td>
                     <td className="px-4 py-3">
-                      <div className="font-medium">{patient?.name || 'Unknown patient'}</div>
+                      <div className="font-medium">{patient?.name || t('unknownPatient')}</div>
                       <div className="text-xs text-muted-foreground">
                         {appointment.patient_id}
                       </div>
@@ -256,7 +275,7 @@ export default function AppointmentsPage() {
                     <td className="px-4 py-3 font-mono text-xs">{appointment.doctor_id}</td>
                     <td className="px-4 py-3">
                       <span className="inline-block rounded-md bg-emerald-50 text-emerald-700 px-2 py-1 text-xs">
-                        {appointment.status}
+                        {t(`statusOptions.${appointment.status}`)}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -265,7 +284,7 @@ export default function AppointmentsPage() {
                         href={`/appointments/${appointment.id}`}
                         className="text-xs text-emerald-600 hover:underline"
                       >
-                        View details
+                        {t('viewDetails')}
                       </Link>
                     </td>
                   </tr>
@@ -288,11 +307,11 @@ export default function AppointmentsPage() {
       ) : (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border">
           <CalendarIcon className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
-          <p className="text-muted-foreground">No appointments found.</p>
+          <p className="text-muted-foreground">{t('empty')}</p>
           <Link href="/appointments/new">
             <Button className="mt-4">
               <PlusCircle className="mr-2 h-4 w-4" />
-              Create Appointment
+              {t('create')}
             </Button>
           </Link>
         </div>

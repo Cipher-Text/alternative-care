@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,7 @@ interface InvoiceFormData {
 }
 
 export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormProps) {
+  const t = useTranslations("payFormUi");
   const {
     register,
     control,
@@ -81,38 +83,38 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
       {/* Basic Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Invoice Information</CardTitle>
+          <CardTitle>{t("invoiceInfo")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             {/* Patient ID */}
             <div className="space-y-2">
               <Label htmlFor="patient_id">
-                Patient ID <span className="text-red-500">*</span>
+                {t("patientId")} <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="patient_id"
-                {...register("patient_id", { required: "Patient ID is required" })}
-                placeholder="Enter patient ID"
+                {...register("patient_id", { required: t("patientIdRequired") })}
+                placeholder={t("patientIdPlaceholder")}
               />
               {errors.patient_id && (
                 <p className="text-sm text-red-500">{errors.patient_id.message}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Patient search autocomplete coming soon
+                {t("patientSearchSoon")}
               </p>
             </div>
 
             {/* Issue Date */}
             <div className="space-y-2">
-              <Label htmlFor="issue_date">Issue Date</Label>
+              <Label htmlFor="issue_date">{t("issueDate")}</Label>
               <Input id="issue_date" type="date" {...register("issue_date")} />
             </div>
           </div>
 
           {/* Due Date */}
           <div className="space-y-2">
-            <Label htmlFor="due_date">Due Date (Optional)</Label>
+            <Label htmlFor="due_date">{t("dueDateOptional")}</Label>
             <Input id="due_date" type="date" {...register("due_date")} />
           </div>
         </CardContent>
@@ -122,7 +124,7 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
       <Card>
         <CardHeader>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle>Invoice Items</CardTitle>
+            <CardTitle>{t("itemsTitle")}</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -132,7 +134,7 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
               }
             >
               <Plus className="mr-2 h-4 w-4" />
-              Add Item
+              {t("addItem")}
             </Button>
           </div>
         </CardHeader>
@@ -146,7 +148,7 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
               return (
                 <div key={field.id} className="border rounded-lg p-4 space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-sm font-medium">Item {index + 1}</span>
+                    <span className="text-sm font-medium">{t("itemN", { n: index + 1 })}</span>
                     {fields.length > 1 && (
                       <Button
                         type="button"
@@ -162,12 +164,12 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
                   <div className="grid gap-3 md:grid-cols-4">
                     {/* Description */}
                     <div className="md:col-span-2 space-y-2">
-                      <Label htmlFor={`items.${index}.description`}>Description *</Label>
+                      <Label htmlFor={`items.${index}.description`}>{t("description")}</Label>
                       <Input
                         {...register(`items.${index}.description`, {
-                          required: "Description is required",
+                          required: t("descriptionRequired"),
                         })}
-                        placeholder="e.g., Consultation fee"
+                        placeholder={t("descriptionPlaceholder")}
                       />
                       {errors.items?.[index]?.description && (
                         <p className="text-sm text-red-500">
@@ -178,13 +180,13 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
 
                     {/* Quantity */}
                     <div className="space-y-2">
-                      <Label htmlFor={`items.${index}.quantity`}>Qty *</Label>
+                      <Label htmlFor={`items.${index}.quantity`}>{t("qty")}</Label>
                       <Input
                         type="number"
                         min="1"
                         step="1"
                         {...register(`items.${index}.quantity`, {
-                          required: "Quantity is required",
+                          required: t("quantityRequired"),
                           min: 1,
                         })}
                       />
@@ -192,13 +194,13 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
 
                     {/* Unit Price */}
                     <div className="space-y-2">
-                      <Label htmlFor={`items.${index}.unit_price`}>Price *</Label>
+                      <Label htmlFor={`items.${index}.unit_price`}>{t("price")}</Label>
                       <Input
                         type="number"
                         min="0"
                         step="0.01"
                         {...register(`items.${index}.unit_price`, {
-                          required: "Price is required",
+                          required: t("priceRequired"),
                           min: 0,
                         })}
                       />
@@ -208,7 +210,7 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
                   {/* Item Total */}
                   <div className="flex justify-end">
                     <span className="text-sm font-medium">
-                      Total: ৳{itemTotal.toFixed(2)}
+                      {t("itemTotal", { amount: itemTotal.toFixed(2) })}
                     </span>
                   </div>
                 </div>
@@ -221,11 +223,11 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
             <div className="flex justify-end space-y-2">
               <div className="w-64 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
+                  <span>{t("subtotal")}</span>
                   <span className="font-medium">৳{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                  <span>Total:</span>
+                  <span>{t("total")}</span>
                   <span>৳{subtotal.toFixed(2)}</span>
                 </div>
               </div>
@@ -237,12 +239,12 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
       {/* Notes */}
       <Card>
         <CardHeader>
-          <CardTitle>Additional Notes</CardTitle>
+          <CardTitle>{t("notesTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea
             {...register("notes")}
-            placeholder="Add any additional notes or payment terms..."
+            placeholder={t("notesPlaceholder")}
             rows={3}
           />
         </CardContent>
@@ -251,11 +253,11 @@ export function InvoiceForm({ onSubmit, isLoading, defaultValues }: InvoiceFormP
       {/* Actions */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" disabled={isLoading}>
-          Cancel
+          {t("cancel")}
         </Button>
         <Button type="submit" disabled={isLoading || subtotal === 0}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Invoice
+          {t("createInvoice")}
         </Button>
       </div>
     </form>
