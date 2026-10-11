@@ -293,3 +293,30 @@ decision, not a side effect.
   `EMAIL_PROVIDER` is set, so the full signup email path was not exercised.
 - `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_SITE_URL`, analytics domain: set per deployment.
 - Not exercised: a stranger-eyes end-to-end signup walkthrough on a deployed environment.
+
+---
+
+## 13. Phase 1 progress (2026-10-11)
+
+**Built**
+- `articles` table and `app/modules/content` (migration `e7b2a9c4d1f3`): kind (article / video), discipline,
+  evidence label (general info / traditional use / limited evidence / studied), English and Bengali
+  title, summary and Markdown body, YouTube id, author, reviewer credit, review and re-review dates.
+- Workflow: draft → in review → published. Doctors and admins write; doctors see only their own and can
+  edit only drafts; **only an admin can publish** (records the reviewer's public credit), return with a note,
+  or unpublish. Submit requires a title, summary and body (or a video link). Receptionists and operators
+  have no access. 10 tests in `tests/integration/test_content_routes.py`.
+- Public: `/articles` (server-rendered list, filters, paging) and `/articles/[slug]` (Markdown without raw
+  HTML, evidence label with plain explanation, reviewer and next-review date, overdue notice, medical
+  disclaimer, "when to see a doctor", JSON-LD, click-to-load `youtube-nocookie` embed); sitemap includes
+  published articles. Authoring UI at `/content` (list, editor with preview, review actions), "Articles"
+  in the doctor and admin nav.
+
+**Not done / needs you**
+- **No articles are published.** The first batch (~10) must be written and reviewed by people you trust;
+  nothing here writes or reviews medical content.
+- **Who reviews** is still undecided. Today any platform admin can publish, including their own article;
+  a second-reviewer rule is not enforced (decide whether to require it).
+- Bengali strings written by us have had no native-speaker review.
+- Not exercised: the editor dialogs and read-only states beyond a smoke check; video playback.
+- Doctors authoring is not tied to a plan; decide whether it is a Plus benefit (strategy §6.3).
