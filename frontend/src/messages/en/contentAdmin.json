@@ -1,0 +1,140 @@
+{
+  "contentAdminUi": {
+    "title": "Articles",
+    "subtitleDoctor": "Write articles and share videos for patients. An admin reviews each one before it goes public.",
+    "subtitleAdmin": "Review and publish articles and videos written by practitioners.",
+    "newArticle": "New article",
+    "untitled": "Untitled",
+    "articlesNoun": "articles",
+    "filter": {
+      "all": "All",
+      "draft": "Draft",
+      "in_review": "In review",
+      "published": "Published"
+    },
+    "status": {
+      "draft": "Draft",
+      "in_review": "In review",
+      "published": "Published"
+    },
+    "reviewOverdue": "Review overdue",
+    "loadFailed": "Could not load articles. Please try again.",
+    "emptyAll": "You have not written anything yet.",
+    "emptyFiltered": "No articles with this status.",
+    "col": {
+      "title": "Title",
+      "author": "Author",
+      "discipline": "Discipline",
+      "status": "Status",
+      "updated": "Updated"
+    },
+    "kind": {
+      "article": "Article",
+      "video": "Video"
+    },
+    "discipline": {
+      "general": "General",
+      "homeopathy": "Homeopathy",
+      "ayurveda": "Ayurveda",
+      "unani": "Unani",
+      "herbal": "Herbal"
+    },
+    "notFound": "This article was not found.",
+    "backToList": "Back to articles",
+    "editTitle": "Article",
+    "newTitle": "New article",
+    "byAuthor": "By {name}",
+    "publishedOn": "Published {date}",
+    "guidance": {
+      "title": "Before you submit",
+      "noDosing": "Do not give doses or promise cures. Describe, do not prescribe.",
+      "evidence": "Choose an evidence label that honestly matches what you wrote.",
+      "review": "A reviewer will check it before it is published, and may send it back with a note."
+    },
+    "returnedTitle": "Returned to you for changes",
+    "reviewedBy": "Reviewed by",
+    "reviewDue": "Next review due",
+    "readOnlyInReview": "This article is waiting for review and cannot be edited. An admin can return it to you.",
+    "readOnlyPublished": "This article is published and cannot be edited.",
+    "fields": {
+      "kind": "Type",
+      "discipline": "Discipline",
+      "evidence": "Evidence label",
+      "title": "Title",
+      "summary": "Summary",
+      "summaryHint": "One or two sentences shown in lists and search results.",
+      "body": "Text",
+      "bodyHint": "Markdown is supported: # headings, **bold**, - lists, [links](https://example.com).",
+      "preview": "Preview",
+      "edit": "Edit",
+      "previewEmpty": "Nothing to preview yet.",
+      "youtube": "YouTube link",
+      "youtubeHint": "Paste a link from YouTube. Only YouTube videos are supported.",
+      "youtubeInvalid": "This does not look like a YouTube link.",
+      "videoPreview": "Video preview",
+      "slug": "Web address (optional)",
+      "slugHint": "Lowercase letters, numbers and hyphens, like my-article-title. Left empty, it is made from the title."
+    },
+    "evidence": {
+      "general_info": "General information",
+      "traditional_use": "Traditional use",
+      "limited_evidence": "Limited evidence",
+      "studied": "Studied"
+    },
+    "evidenceMeaning": {
+      "general_info": "General health information; it does not make claims about treating any condition.",
+      "traditional_use": "Based on traditional practice; not tested to the standard of conventional medicine.",
+      "limited_evidence": "Some early research exists, but it is limited and not conclusive.",
+      "studied": "Has been studied in clinical research; the article links to or names that research."
+    },
+    "tabEn": "English",
+    "tabBn": "বাংলা",
+    "oneLanguageEnough": "Write in at least one language. Add the other when you can.",
+    "actions": {
+      "saveDraft": "Save draft",
+      "submit": "Submit for review",
+      "publish": "Publish",
+      "returnToAuthor": "Return to author",
+      "unpublish": "Unpublish",
+      "delete": "Delete draft",
+      "cancel": "Cancel"
+    },
+    "missing": {
+      "title": "a title",
+      "summary": "a summary",
+      "body": "body text",
+      "video": "a valid YouTube link",
+      "prefix": "To submit, add: {items}."
+    },
+    "confirmDelete": "Delete this draft? This cannot be undone.",
+    "publishDialog": {
+      "title": "Publish article",
+      "description": "The reviewer credit is shown publicly with the article.",
+      "reviewer": "Reviewer credit",
+      "reviewerHint": "Name and qualification, for example Dr. A. Rahman, BHMS.",
+      "dueAt": "Re-review date (optional)",
+      "dueAtHint": "If empty, it is set to one year from today."
+    },
+    "returnDialog": {
+      "title": "Return to author",
+      "description": "The article goes back to draft and the author sees your note.",
+      "note": "Note to the author"
+    },
+    "toast": {
+      "created": "Draft created",
+      "createFailed": "Could not create the article",
+      "saved": "Saved",
+      "saveFailed": "Could not save the article",
+      "deleted": "Draft deleted",
+      "deleteFailed": "Could not delete the article",
+      "submitted": "Submitted for review",
+      "submitFailed": "Could not submit the article",
+      "published": "Article published",
+      "publishFailed": "Could not publish the article",
+      "returned": "Returned to the author",
+      "returnFailed": "Could not return the article",
+      "unpublished": "Article unpublished",
+      "unpublishFailed": "Could not unpublish the article"
+    }
+  }
+}

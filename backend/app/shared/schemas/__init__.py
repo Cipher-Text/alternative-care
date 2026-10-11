@@ -135,6 +135,16 @@ from app.shared.schemas.pharmacy import (
     PharmacyImportRowError,
     PharmacyImportResult,
 )
+from app.shared.schemas.article import (
+    ArticleCreate,
+    ArticleListItem,
+    ArticlePublish,
+    ArticleResponse,
+    ArticleReturn,
+    ArticleUpdate,
+    PublicArticle,
+    PublicArticleItem,
+)
 from app.shared.schemas.institution import (
     InstitutionBase,
     InstitutionCreate,

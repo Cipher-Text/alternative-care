@@ -17,7 +17,8 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Use",
     "disclaimer": "Medical Disclaimer",
-    "contact": "Contact"
+    "contact": "Contact",
+    "navArticles": "Articles"
   },
   "publicMetaUi": {
     "default": {
@@ -51,6 +52,10 @@
     "disclaimer": {
       "title": "Medical Disclaimer",
       "description": "AltCare provides software and information, not medical advice."
+    },
+    "articles": {
+      "title": "Articles and videos",
+      "description": "Reviewed articles and videos about Homeopathy, Ayurveda, Unani and Herbal medicine, with a clear evidence label on each."
     }
   }
 }

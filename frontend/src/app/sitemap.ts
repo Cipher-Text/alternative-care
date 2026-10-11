@@ -1,8 +1,24 @@
 import type { MetadataRoute } from 'next'
+import { fetchPublicArticles } from '@/lib/api/publicArticles'
 
-const PUBLIC_PATHS = ['/', '/about', '/for-practitioners', '/pricing', '/institutions', '/privacy', '/terms', '/disclaimer']
+const PUBLIC_PATHS = ['/', '/about', '/for-practitioners', '/pricing', '/institutions', '/articles', '/privacy', '/terms', '/disclaimer']
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
-  return PUBLIC_PATHS.map((path) => ({ url: `${base}${path === '/' ? '' : path}` }))
+  const routes: MetadataRoute.Sitemap = PUBLIC_PATHS.map((path) => ({ url: `${base}${path === '/' ? '' : path}` }))
+
+  // fetchPublicArticles swallows API failures and returns [], leaving only the static routes.
+  const articles: Awaited<ReturnType<typeof fetchPublicArticles>> = []
+  for (let offset = 0; offset < 5000; offset += 200) {
+    const batch = await fetchPublicArticles({ limit: 200, offset })
+    articles.push(...batch)
+    if (batch.length < 200) break
+  }
+  return [
+    ...routes,
+    ...articles.map((a) => ({
+      url: `${base}/articles/${a.slug}`,
+      lastModified: a.published_at ? new Date(a.published_at) : undefined,
+    })),
+  ]
 }

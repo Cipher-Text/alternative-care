@@ -17,7 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.modules.institution.service import InstitutionService
 from app.shared.models import Institution, Medicine, Symptom, Tenant, User
-from app.shared.schemas import InstitutionListItem
+from app.modules.content.service import PublicContentService
+from app.shared.schemas import InstitutionListItem, PublicArticle, PublicArticleItem
 
 router = APIRouter()
 
@@ -115,3 +116,30 @@ async def list_public_institutions(
 async def get_public_institution(institution_id: int, service: InstitutionServiceDep):
     """Get an institution's public detail."""
     return await service.get_institution(institution_id)
+
+
+# ===== Published articles and videos =====
+#
+# Only content an admin has reviewed and published (see app/modules/content). Drafts and
+# in-review items are never exposed.
+
+
+@router.get("/articles", response_model=list[PublicArticleItem])
+async def list_public_articles(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    response: Response,
+    kind: str | None = Query(None, pattern="^(article|video)$"),
+    discipline: str | None = Query(None, pattern="^(general|homeopathy|ayurveda|unani|herbal)$"),
+    limit: int = Query(12, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
+    response.headers["Cache-Control"] = "public, max-age=300"
+    return await PublicContentService(db).list_items(kind, discipline, limit, offset)
+
+
+@router.get("/articles/{slug}", response_model=PublicArticle)
+async def get_public_article(
+    slug: str, db: Annotated[AsyncSession, Depends(get_db)], response: Response
+):
+    response.headers["Cache-Control"] = "public, max-age=300"
+    return await PublicContentService(db).get(slug)

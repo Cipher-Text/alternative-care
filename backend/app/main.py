@@ -117,6 +117,7 @@ from app.modules.admin import router as admin_router
 from app.modules.public import router as public_router
 from app.modules.institution import router as institution_router
 from app.modules.pharmacy import router as pharmacy_router
+from app.modules.content import router as content_router
 from app.modules.plans.routes import (
     admin_router as plans_admin_router,
     me_router as entitlements_me_router,
@@ -140,6 +141,7 @@ app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", 
 app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])
 app.include_router(public_router, prefix=f"{settings.API_V1_PREFIX}/public", tags=["Public"])
 app.include_router(institution_router, prefix=f"{settings.API_V1_PREFIX}/institutions", tags=["Institutions"])
+app.include_router(content_router, prefix=f"{settings.API_V1_PREFIX}/articles", tags=["Content"])
 app.include_router(pharmacy_router, prefix=f"{settings.API_V1_PREFIX}/pharmacies", tags=["Pharmacies"])
 app.include_router(plans_public_router, prefix=f"{settings.API_V1_PREFIX}/plans", tags=["Plans"])
 app.include_router(plans_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/plans", tags=["Platform Admin"])

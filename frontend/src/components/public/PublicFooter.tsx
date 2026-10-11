@@ -5,6 +5,7 @@ const columns = [
   {
     title: 'colDirectory',
     links: [
+      { key: 'navArticles', href: '/articles' },
       { key: 'navInstitutions', href: '/institutions' },
     ],
   },
