@@ -359,3 +359,14 @@ async def test_portal_sign_in_has_its_own_ceiling_and_limits(client, sent, monke
     monkeypatch.setattr(settings, "OTP_COOLDOWN_SECONDS", 60)
     again = await client.post("/api/v1/patient/auth/request", json={"phone": PHONE})
     assert again.status_code == 429 and again.json()["detail"]["code"] == "otp_cooldown"
+
+
+@pytest.mark.asyncio
+async def test_demo_phones_get_a_fixed_code_only_in_development(client, sent, monkeypatch):
+    from app.modules.identity.otp import DEMO_OTP_CODE
+
+    for environment, expect_fixed in (("development", True), ("production", False)):
+        monkeypatch.setattr(settings, "ENVIRONMENT", environment)
+        r = await client.post("/api/v1/patient/auth/request", json={"phone": "01700000001"})
+        assert r.status_code == 200, r.text
+        assert (sent[-1]["code"] == DEMO_OTP_CODE) is expect_fixed

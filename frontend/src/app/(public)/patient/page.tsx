@@ -57,6 +57,12 @@ export default function PatientPortalPage() {
   )
 }
 
+/** Seeded by backend/scripts/demo_patients.py; the code is always 123456 in development. */
+const DEMO_PATIENTS = [
+  { label: 'Nasrin Akter (2 clinics)', phone: '01700000001' },
+  { label: 'Rahim Uddin (1 clinic)', phone: '01700000002' },
+]
+
 function SignIn({ expired, onSignedIn }: { expired: boolean; onSignedIn: () => void }) {
   const t = useTranslations('patientPortalUi.signIn')
   const [phone, setPhone] = useState('')
@@ -150,6 +156,19 @@ function SignIn({ expired, onSignedIn }: { expired: boolean; onSignedIn: () => v
           </div>
           {errorBox}
           <button type="submit" className={portalButton} disabled={busy}>{busy ? t('sending') : t('sendCode')}</button>
+          {process.env.NODE_ENV !== 'production' && (
+            <div className="space-y-2 rounded-md border border-dashed p-3 text-sm">
+              <p className="font-medium">{t('devDemo.title')}</p>
+              <div className="flex flex-wrap gap-2">
+                {DEMO_PATIENTS.map((d) => (
+                  <button key={d.phone} type="button" className={portalButtonOutline} disabled={busy} onClick={() => setPhone(d.phone)}>
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-muted-foreground">{t('devDemo.hint')}</p>
+            </div>
+          )}
         </form>
       ) : (
         <form onSubmit={confirm} noValidate className="mt-4 space-y-5">

@@ -21,6 +21,11 @@ from app.shared.models import OtpChallenge, Tenant
 
 ENTITLEMENT = "monthly_patient_verifications"
 
+# Development only: the seeded demo patients (scripts/demo_patients.py) always get this code, so the patient
+# portal can be signed in to without an SMS provider. Never applies outside ENVIRONMENT=development.
+DEMO_PHONES = {"+8801700000001", "+8801700000002"}
+DEMO_OTP_CODE = "123456"
+
 
 def hash_secret(value: str, salt: str = "") -> str:
     """Keyed hash for codes and tokens: only this is ever stored."""
@@ -86,7 +91,10 @@ class OtpService:
             if portal_count >= settings.OTP_MAX_PORTAL_PER_DAY:
                 raise _refuse("otp_portal_daily_cap", "Sign-in codes are unavailable right now. Try again later.", retry_after=3600)
 
-        code = f"{secrets.randbelow(1_000_000):06d}"
+        if settings.ENVIRONMENT == "development" and phone in DEMO_PHONES:
+            code = DEMO_OTP_CODE
+        else:
+            code = f"{secrets.randbelow(1_000_000):06d}"
         challenge_id = str(uuid4())
         challenge = OtpChallenge(
             id=challenge_id,

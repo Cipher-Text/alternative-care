@@ -2,6 +2,7 @@
   "patientPortalUi": {
     "metaTitle": "Patient login",
     "signIn": {
+      "devDemo": { "title": "Development demo patients", "hint": "Pick one, press Send code, then enter 123456." },
       "title": "Your AltCare account",
       "intro": "Sign in with your mobile number to see your visits, prescriptions and receipts from clinics that use AltCare. We will send you a code by SMS. It is free.",
       "sessionEnded": "Your session ended. Please sign in again.",

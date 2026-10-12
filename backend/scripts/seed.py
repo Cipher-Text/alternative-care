@@ -29,8 +29,10 @@ sys.path.append(str(Path(__file__).parent.parent))
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.core.security import get_password_hash
+from scripts.demo_patients import seed_demo_patients
 from app.shared.models import (
     Institution,
     District,
@@ -348,6 +350,7 @@ async def main():
                 medicines_count = await seeder.seed_medicines(default_tenant_id)
                 symptoms_count = await seeder.seed_symptoms(default_tenant_id)
                 institutions_count = await seeder.seed_institutions()
+                demo_stats = await seed_demo_patients(session) if settings.ENVIRONMENT == "development" else None
                 pharmacies_count = await seeder.seed_pharmacies()
                 translations_count = await seeder.seed_translations()
 
@@ -370,10 +373,13 @@ async def main():
         print(f"  • Translations:  {translations_count:>3} created")
         print(f"  • Tenants:       {sample_stats['tenants']:>3} created")
         print(f"  • Users:         {sample_stats['users']:>3} created")
+        if demo_stats:
+            print(f"  • Demo patients: {demo_stats['patients']:>3} created, {demo_stats['accounts']} portal accounts, {demo_stats['links']} links")
         print("\n💡 Test credentials:")
         print("  • Doctor:     dr.rahman@example.com / Test@1234")
         print("  • Admin:      admin@altcare.com / Admin@1234")
         print("  • Operator:   operator@altcare.com / Operator@1234")
+        print("  • Patient:    01700000001 or 01700000002, code 123456 (development only)")
         print("\n📚 Geographic data:")
         print("  • 8 divisions, 64 districts, 495 upazilas")
         print("\n🔌 Integration providers:")
