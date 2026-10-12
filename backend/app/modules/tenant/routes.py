@@ -2,11 +2,13 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import CurrentUser, get_current_user
+from app.core.images import MAX_UPLOAD_BYTES
+from app.core.storage import Storage, get_storage
 from app.modules.tenant.service import TenantService
 from app.shared.schemas import (
     TenantResponse,
@@ -86,7 +88,7 @@ async def update_clinic_profile(
     - Address: `address_line_1`, `address_line_2`, `postal_code`, `landmark`
     - Location: `division_id`, `district_id`, `upazila_id`, `latitude`, `longitude`
     - Professional: `registration_body`, `registration_number`, `years_of_experience`
-    - Branding: `logo_url`, `description_en`, `description_bn`
+    - Branding: `description_en`, `description_bn` (the logo has its own upload endpoint, `POST /tenant/logo`)
     - Fees: `consultation_fee`, `follow_up_fee` (in paisa)
 
     **Example Request:**
@@ -117,3 +119,31 @@ async def update_clinic_profile(
 
     return await service.update_tenant_profile(data, updated_by=current_user.user_id)
 
+
+@router.post("/logo", response_model=TenantResponse)
+async def upload_clinic_logo(
+    file: Annotated[UploadFile, File(description="PNG, JPEG or WebP, up to 2 MB")],
+    service: Annotated[TenantService, Depends(get_tenant_service)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    storage: Annotated[Storage, Depends(get_storage)],
+):
+    """Set the clinic logo. The image is checked by content, resized (max 512 px) and re-encoded as PNG.
+
+    **Requires:** Doctor role
+    """
+    if current_user.role != "doctor":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Only doctors can change the clinic logo")
+    raw = await file.read(MAX_UPLOAD_BYTES + 1)  # never read more than the limit plus one byte
+    return await service.set_logo(raw, storage, updated_by=current_user.user_id)
+
+
+@router.delete("/logo", response_model=TenantResponse)
+async def remove_clinic_logo(
+    service: Annotated[TenantService, Depends(get_tenant_service)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    storage: Annotated[Storage, Depends(get_storage)],
+):
+    """Remove the clinic logo. **Requires:** Doctor role"""
+    if current_user.role != "doctor":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Only doctors can change the clinic logo")
+    return await service.remove_logo(storage, updated_by=current_user.user_id)

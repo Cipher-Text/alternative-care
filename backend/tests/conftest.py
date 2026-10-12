@@ -60,6 +60,16 @@ def _no_real_payment_gateways_by_default(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def memory_storage(monkeypatch):
+    """Tests never touch R2 or MinIO: file storage is an in-process fake. Tests can ask for it by name."""
+    from app.core import storage
+
+    fake = storage.MemoryStorage()
+    monkeypatch.setattr(storage, "_storage", fake)
+    return fake
+
+
+@pytest.fixture(autouse=True)
 async def _flush_rate_limit_redis():
     """Clear any rate-limit counters left over from a previous test run."""
     from app.core.rate_limit import get_redis_client

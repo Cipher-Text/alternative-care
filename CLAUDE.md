@@ -167,7 +167,7 @@ cd frontend && npx playwright test --ui
 
 **Backend:**
 - FastAPI (async/await), SQLAlchemy 2.0 (AsyncSession)
-- PostgreSQL 16 + pgvector, Redis 7, MinIO
+- PostgreSQL 16 + pgvector, Redis 7, S3-compatible file storage (Cloudflare R2 in production, MinIO locally — `app/core/storage.py`; clinic logo upload at `POST /tenant/logo`)
 - JWT (python-jose), Bcrypt (passlib), TOTP 2FA (pyotp)
 - Fernet encryption (cryptography), Celery (background tasks)
 - pytest, Alembic, Pydantic

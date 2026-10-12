@@ -1,0 +1,19 @@
+{
+  "clinicLogoUi": {
+    "title": "Clinic logo",
+    "description": "Shown on your public profile and in link previews. PNG, JPEG or WebP, up to 2 MB. We resize it and remove any hidden photo information.",
+    "none": "No logo yet",
+    "alt": "Your clinic logo",
+    "choose": "Choose an image",
+    "replace": "Replace logo",
+    "remove": "Remove logo",
+    "working": "Uploading...",
+    "removing": "Removing...",
+    "tooLarge": "The image is larger than 2 MB. Choose a smaller one.",
+    "wrongType": "Choose a PNG, JPEG or WebP image.",
+    "uploaded": "Logo updated",
+    "removed": "Logo removed",
+    "failed": "Could not save the logo. Please try again.",
+    "readOnly": "Only the doctor can change the clinic logo."
+  }
+}

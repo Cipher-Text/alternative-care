@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ProfileForm } from '@/components/doctor/ProfileForm'
+import { ClinicLogoCard } from '@/components/doctor/ClinicLogoCard'
+import { useAuthStore } from '@/store/authStore'
 import { DegreesSection } from '@/components/doctor/DegreesSection'
 import { TrainingsSection } from '@/components/doctor/TrainingsSection'
 import {
@@ -25,6 +27,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const { data: profile, isLoading, error } = useDoctorProfile()
+  const role = useAuthStore((state) => state.user?.role)
 
   if (isLoading) {
     return (
@@ -134,6 +137,8 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab Content */}
+      {activeTab === 'profile' && <ClinicLogoCard canEdit={role === 'doctor'} />}
+
       {activeTab === 'profile' && (
         <ProfileForm
           profile={profile}

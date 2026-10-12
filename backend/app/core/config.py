@@ -36,12 +36,17 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    # MinIO / S3
-    MINIO_ENDPOINT: str = "localhost:9000"
-    MINIO_ACCESS_KEY: str = "minioadmin"
-    MINIO_SECRET_KEY: str = "minioadmin"
-    MINIO_BUCKET_NAME: str = "altcare"
-    MINIO_USE_SSL: bool = False
+    # File storage: any S3-compatible service. Production uses Cloudflare R2
+    # (endpoint https://<account-id>.r2.cloudflarestorage.com, region "auto"); local development
+    # uses MinIO. See app/core/storage.py.
+    STORAGE_ENDPOINT_URL: str = "http://localhost:9000"
+    STORAGE_ACCESS_KEY_ID: str = "minioadmin"
+    STORAGE_SECRET_ACCESS_KEY: str = "minioadmin"
+    STORAGE_BUCKET: str = "altcare"
+    STORAGE_REGION: str = "auto"
+    # Where objects under "public/" are served from: the bucket's public custom domain (or r2.dev URL)
+    # in production, the MinIO bucket URL in development. No trailing slash.
+    STORAGE_PUBLIC_BASE_URL: str = "http://localhost:9000/altcare"
 
     # JWT Authentication
     SECRET_KEY: str
@@ -101,11 +106,18 @@ class Settings(BaseSettings):
                     "PAYMENT_FAKE_GATEWAY_ENABLED must be false in production: it allows "
                     "completing checkout without paying."
                 )
-            if self.MINIO_ACCESS_KEY == "minioadmin" or self.MINIO_SECRET_KEY == "minioadmin":
+            if self.STORAGE_ACCESS_KEY_ID == "minioadmin" or self.STORAGE_SECRET_ACCESS_KEY == "minioadmin":
                 errors.append(
-                    "SECURITY WARNING: Using default MinIO credentials in production! "
-                    "Change MINIO_ACCESS_KEY and MINIO_SECRET_KEY immediately."
+                    "STORAGE_ACCESS_KEY_ID / STORAGE_SECRET_ACCESS_KEY are still the local MinIO defaults: "
+                    "set the Cloudflare R2 credentials."
                 )
+            if "localhost" in self.STORAGE_ENDPOINT_URL or "localhost" in self.STORAGE_PUBLIC_BASE_URL:
+                errors.append(
+                    "STORAGE_ENDPOINT_URL and STORAGE_PUBLIC_BASE_URL must point at Cloudflare R2 in production, "
+                    "not localhost."
+                )
+            if not self.STORAGE_PUBLIC_BASE_URL.startswith("https://"):
+                errors.append("STORAGE_PUBLIC_BASE_URL must be an https URL in production.")
 
             # Warn about weak rate limits in production
             if self.RATE_LIMIT_LOGIN_PER_MINUTE > 10:

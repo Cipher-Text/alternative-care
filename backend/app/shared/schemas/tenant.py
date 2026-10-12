@@ -49,7 +49,7 @@ class TenantProfileUpdate(BaseModel):
     specializations: list[str] | None = Field(None, min_length=1, max_length=4)
 
     # Branding
-    logo_url: str | None = Field(None, max_length=500)
+    # logo_url is set only through POST /tenant/logo, never as a free-form URL
     description_en: str | None = None
     description_bn: str | None = None
 
