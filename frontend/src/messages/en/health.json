@@ -1,0 +1,191 @@
+{
+  "healthUi": {
+    "chronic": {
+      "diabetes": "Diabetes",
+      "hypertension": "High blood pressure",
+      "asthma_copd": "Asthma / COPD",
+      "heart_disease": "Heart disease",
+      "kidney_disease": "Kidney disease",
+      "liver_disease": "Liver disease",
+      "thyroid_disorder": "Thyroid disorder",
+      "tuberculosis": "Tuberculosis (TB)",
+      "epilepsy": "Epilepsy",
+      "cancer": "Cancer",
+      "skin_disease": "Skin disease",
+      "arthritis": "Arthritis",
+      "mental_health": "Mental health condition",
+      "anaemia": "Anaemia"
+    },
+    "family": {
+      "diabetes": "Diabetes",
+      "hypertension": "High blood pressure",
+      "heart_disease": "Heart disease",
+      "tuberculosis": "Tuberculosis (TB)",
+      "cancer": "Cancer",
+      "asthma": "Asthma",
+      "mental_illness": "Mental illness",
+      "epilepsy": "Epilepsy",
+      "thyroid_disorder": "Thyroid disorder"
+    },
+    "allergyType": {
+      "drug": "Drug",
+      "food": "Food",
+      "herb": "Herb",
+      "dust_pollen": "Dust or pollen",
+      "skin_contact": "Skin contact",
+      "insect": "Insect",
+      "other": "Other"
+    },
+    "severity": {
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe"
+    },
+    "habit": {
+      "never": "Never",
+      "former": "Former",
+      "current": "Current"
+    },
+    "diet": {
+      "vegetarian": "Vegetarian",
+      "non_vegetarian": "Non-vegetarian",
+      "mixed": "Mixed"
+    },
+    "redFlag": {
+      "chest_pain": "Chest pain",
+      "breathlessness": "Breathlessness",
+      "severe_bleeding": "Severe bleeding",
+      "infant_high_fever": "High fever in an infant",
+      "loss_of_consciousness": "Loss of consciousness",
+      "sudden_severe_headache": "Sudden severe headache",
+      "sudden_weakness": "Sudden weakness",
+      "persistent_vomiting": "Persistent vomiting"
+    },
+    "referral": {
+      "none": "No referral",
+      "routine": "Routine referral",
+      "urgent": "Urgent referral",
+      "emergency": "Emergency: send to hospital now"
+    },
+    "sugarType": {
+      "fasting": "Fasting",
+      "random": "Random",
+      "postprandial": "After a meal"
+    },
+    "visitType": {
+      "consultation": "Consultation",
+      "follow_up": "Follow-up",
+      "emergency": "Emergency",
+      "routine_checkup": "Routine checkup"
+    },
+    "flag": {
+      "allergy": "Allergy",
+      "pregnant": "Pregnant",
+      "breastfeeding": "Breastfeeding",
+      "child_under_5": "Child under 5",
+      "elderly_65_plus": "Elderly (65+)",
+      "on_allopathic_medicines": "Taking allopathic medicines",
+      "on_blood_thinners": "On blood thinners",
+      "recent_surgery": "Recent surgery"
+    },
+    "banner": {
+      "title": "Check before prescribing",
+      "allergies": "Allergic to:",
+      "conditions": "Conditions:",
+      "noProfile": "No health background saved yet.",
+      "open": "Add health background"
+    },
+    "profile": {
+      "title": "Health background",
+      "description": "What stays true between visits. Everything here is optional; fill what you ask every patient.",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "saved": "Health background saved",
+      "saveFailed": "Could not save the health background.",
+      "empty": "Nothing recorded yet.",
+      "lastUpdated": "Updated {date}",
+      "sections": {
+        "conditions": "Long-term conditions",
+        "allergies": "Allergies",
+        "family": "Family history",
+        "habits": "Habits and diet",
+        "pregnancy": "Pregnancy",
+        "medicines": "Medicines and surgery"
+      },
+      "smoking": "Smoking",
+      "alcohol": "Alcohol",
+      "betel": "Paan, jorda or gul",
+      "diet": "Diet",
+      "choose": "Not recorded",
+      "addAllergy": "Add allergy",
+      "allergyType": "Type",
+      "allergySubstance": "Allergic to",
+      "allergySubstancePlaceholder": "For example: penicillin, prawns",
+      "allergySeverity": "Severity",
+      "removeAllergy": "Remove allergy",
+      "allergyNeedsName": "Name what the patient is allergic to.",
+      "pregnant": "Pregnant",
+      "lmp": "Last menstrual period",
+      "lmpInvalid": "The date cannot be in the future.",
+      "breastfeeding": "Breastfeeding",
+      "allopathic": "Taking allopathic medicines now",
+      "bloodThinners": "On blood thinners (for example warfarin, aspirin)",
+      "recentSurgery": "Had surgery recently",
+      "medicinesNote": "Current medicines",
+      "surgeriesNote": "Past surgeries",
+      "readOnly": "Only the doctor can change the health background."
+    },
+    "visits": {
+      "title": "Visits and vitals",
+      "description": "Each visit with the measurements taken. Newest first.",
+      "add": "Record a visit",
+      "empty": "No visits recorded yet.",
+      "saved": "Visit saved",
+      "saveFailed": "Could not save the visit.",
+      "save": "Save visit",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "dialogTitle": "Record a visit",
+      "visitDate": "Visit date",
+      "visitType": "Visit type",
+      "complaint": "Complaint",
+      "examination": "Examination notes",
+      "vitals": "Vitals",
+      "temperature": "Temperature (°C)",
+      "pulse": "Pulse (per min)",
+      "bpSystolic": "BP upper (systolic)",
+      "bpDiastolic": "BP lower (diastolic)",
+      "respiratoryRate": "Breathing rate (per min)",
+      "spo2": "Oxygen saturation (%)",
+      "weight": "Weight (kg)",
+      "height": "Height (cm)",
+      "bmi": "BMI",
+      "sugar": "Blood sugar (mmol/L)",
+      "sugarType": "When taken",
+      "pain": "Pain (0–10)",
+      "redFlags": "Warning signs seen",
+      "referral": "Referral",
+      "diagnosis": "Provisional diagnosis",
+      "plan": "Treatment plan",
+      "numberInvalid": "Enter a number between {min} and {max}.",
+      "bpPair": "Enter both blood pressure values, or neither.",
+      "bpOrder": "The lower value must be below the upper value.",
+      "sugarPair": "Enter the blood sugar value too.",
+      "short": {
+        "temperature": "Temp",
+        "pulse": "Pulse",
+        "bp": "BP",
+        "spo2": "SpO₂",
+        "weight": "Weight",
+        "height": "Height",
+        "bmi": "BMI",
+        "sugar": "Sugar",
+        "pain": "Pain",
+        "respiratoryRate": "Resp"
+      },
+      "readOnly": "Only the doctor can record visits."
+    }
+  }
+}

@@ -1,8 +1,9 @@
 """Appointment and Visit models."""
 
 from datetime import datetime, date, time
+from decimal import Decimal
 
-from sqlalchemy import Boolean, Date, Integer, String, Text, Time, ForeignKey
+from sqlalchemy import JSON, Boolean, Date, Integer, Numeric, String, Text, Time, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.models.base import TenantScopedModel
@@ -104,11 +105,23 @@ class Visit(TenantScopedModel):
     history_of_present_illness: Mapped[str | None] = mapped_column(Text, nullable=True)
     examination_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    # Vitals
-    temperature: Mapped[str | None] = mapped_column(String(10), nullable=True)
-    blood_pressure: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    pulse_rate: Mapped[str | None] = mapped_column(String(10), nullable=True)
-    weight: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    # Vitals (numbers, in the units named by the column; BMI is computed, not stored)
+    temperature_c: Mapped[Decimal | None] = mapped_column(Numeric(4, 1), nullable=True)
+    pulse_bpm: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    bp_systolic: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    bp_diastolic: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    respiratory_rate: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    spo2_percent: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    weight_kg: Mapped[Decimal | None] = mapped_column(Numeric(5, 1), nullable=True)
+    height_cm: Mapped[Decimal | None] = mapped_column(Numeric(4, 1), nullable=True)
+    # Blood glucose in mmol/L (how Bangladeshi labs report it), with when it was taken
+    blood_sugar_mmol: Mapped[Decimal | None] = mapped_column(Numeric(4, 1), nullable=True)
+    blood_sugar_type: Mapped[str | None] = mapped_column(String(15), nullable=True)
+    pain_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+    # Warning signs seen at this visit (codes from app/shared/health_options.py) and any referral
+    red_flags: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
+    referral_urgency: Mapped[str | None] = mapped_column(String(10), nullable=True)
 
     # Diagnosis and plan
     provisional_diagnosis: Mapped[str | None] = mapped_column(Text, nullable=True)

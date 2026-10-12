@@ -1,5 +1,11 @@
 """Pydantic schemas for API requests and responses."""
 
+from app.shared.schemas.health import (
+    AllergyEntry,
+    HealthOptionsResponse,
+    HealthProfileResponse,
+    HealthProfileUpdate,
+)
 from app.shared.schemas.tenant import (
     TenantProfileUpdate,
     TenantResponse,
@@ -169,6 +175,10 @@ from app.shared.schemas.integration import (
 )
 
 __all__ = [
+    "AllergyEntry",
+    "HealthOptionsResponse",
+    "HealthProfileResponse",
+    "HealthProfileUpdate",
     # Tenant/Clinic
     "TenantProfileUpdate",
     "TenantResponse",

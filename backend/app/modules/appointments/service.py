@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.base_service import BaseTenantService
 from app.shared.models import Appointment, Visit
+from app.shared.schemas.appointment import VitalsFields
 from app.shared.schemas import (
     AppointmentCreate,
     AppointmentUpdate,
@@ -290,10 +291,9 @@ class AppointmentService(BaseTenantService[Appointment, AppointmentCreate, Appoi
             chief_complaint=data.chief_complaint,
             history_of_present_illness=data.history_of_present_illness,
             examination_notes=data.examination_notes,
-            temperature=data.temperature,
-            blood_pressure=data.blood_pressure,
-            pulse_rate=data.pulse_rate,
-            weight=data.weight,
+            **data.model_dump(include=set(VitalsFields.model_fields)),
+            red_flags=data.red_flags,
+            referral_urgency=data.referral_urgency,
             provisional_diagnosis=data.provisional_diagnosis,
             treatment_plan=data.treatment_plan,
             follow_up_date=data.follow_up_date,

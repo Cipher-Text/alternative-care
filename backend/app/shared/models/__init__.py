@@ -23,7 +23,7 @@ from app.shared.models.billing import BillingOrder, CreditPack
 from app.shared.models.credits import CreditBalance, CreditLedger
 from app.shared.models.directory import ContactRequest, ListingEvent, PractitionerListing
 from app.shared.models.geographic import Division, District, Upazila
-from app.shared.models.patient import Patient, PatientTag, PatientDiagnosis
+from app.shared.models.patient import Patient, PatientTag, PatientDiagnosis, PatientHealthProfile
 from app.shared.models.prescription import Prescription, PrescriptionItem
 from app.shared.models.payment import Payment, Invoice
 from app.shared.models.medicine import Medicine, MedicineAlias
@@ -97,6 +97,7 @@ __all__ = [
     "Patient",
     "PatientTag",
     "PatientDiagnosis",
+    "PatientHealthProfile",
     "Prescription",
     "PrescriptionItem",
     "Payment",

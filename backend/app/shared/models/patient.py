@@ -3,7 +3,7 @@
 from datetime import date, datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Date, Integer, String, Text, ForeignKey
+from sqlalchemy import JSON, Boolean, Date, Integer, String, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.shared.models.base import TenantScopedModel
@@ -118,3 +118,39 @@ class PatientDiagnosis(TenantScopedModel):
 
     # Relationships
     patient: Mapped["Patient"] = relationship("Patient", back_populates="diagnoses")
+
+
+class PatientHealthProfile(TenantScopedModel):
+    """Long-lived health background and safety flags for one patient (one row per patient).
+
+    Closed lists are stored as codes from `app/shared/health_options.py`. Visit-time findings (vitals, red
+    flags) live on the visit instead; this is what stays true between visits."""
+
+    __tablename__ = "patient_health_profiles"
+    __table_args__ = (UniqueConstraint("patient_id", name="uq_patient_health_profile_patient"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    patient_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("patients.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+
+    chronic_conditions: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    # [{"type": "drug", "substance": "Penicillin", "severity": "severe"}]
+    allergies: Mapped[list[dict]] = mapped_column(JSON, nullable=False, default=list)
+    family_history: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+    smoking: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    alcohol: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    # Paan, jorda or gul
+    betel_tobacco: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    diet_type: Mapped[str | None] = mapped_column(String(20), nullable=True)
+
+    pregnant: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    lmp_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    breastfeeding: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    on_allopathic_medicines: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    on_blood_thinners: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    recent_surgery: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    current_medicines_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    past_surgeries_note: Mapped[str | None] = mapped_column(Text, nullable=True)

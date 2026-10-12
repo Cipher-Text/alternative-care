@@ -24,6 +24,9 @@ import {
   Loader2,
 } from 'lucide-react'
 import { PatientIdentityCard } from '@/components/identity/PatientIdentityCard'
+import { SafetyBanner } from '@/components/health/SafetyBanner'
+import { HealthProfileCard } from '@/components/health/HealthProfileCard'
+import { VisitsCard } from '@/components/health/VisitsCard'
 import { calculateAge, formatPhone } from '@/lib/utils/format'
 import {
   Dialog,
@@ -121,6 +124,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       {/* Patient Profile */}
+      <SafetyBanner patientId={id} />
+
       <Card>
         <CardHeader>
           <CardTitle>{t('information')}</CardTitle>
@@ -194,6 +199,10 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       </Card>
 
       <PatientIdentityCard patient={patient} />
+
+      <HealthProfileCard patientId={id} canEdit={can.writeClinical} />
+
+      <VisitsCard patientId={id} canEdit={can.writeClinical} />
 
       {/* Tags */}
       {tags && tags.length > 0 && (

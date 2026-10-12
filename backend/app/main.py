@@ -105,7 +105,7 @@ from app.modules.ai import router as ai_router
 from app.modules.appointments import router as appointments_router
 from app.modules.dashboard import router as dashboard_router
 from app.modules.doctor import router as doctor_router
-from app.modules.patient import router as patient_router
+from app.modules.patient import options_router as health_options_router, router as patient_router
 from app.modules.prescription import router as prescription_router
 from app.modules.payment import router as payment_router
 from app.modules.integration import router as integration_router
@@ -144,6 +144,7 @@ app.include_router(appointments_router, prefix=f"{settings.API_V1_PREFIX}/appoin
 app.include_router(dashboard_router, prefix=f"{settings.API_V1_PREFIX}/dashboard", tags=["Dashboard"])
 app.include_router(doctor_router, prefix=f"{settings.API_V1_PREFIX}/doctor", tags=["Doctor"], dependencies=[Depends(deny_receptionist)])
 app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", tags=["Patients"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(health_options_router, prefix=f"{settings.API_V1_PREFIX}/health-options", tags=["Patients"])
 app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"], dependencies=[Depends(deny_receptionist_writes)])
 app.include_router(payment_router, prefix=f"{settings.API_V1_PREFIX}/payments", tags=["Payments"])
 app.include_router(integration_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"], dependencies=[Depends(deny_receptionist)])

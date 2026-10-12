@@ -22,11 +22,13 @@ from app.shared.models import (
     ConsentEvent,
     Patient,
     PatientDiagnosis,
+    PatientHealthProfile,
     PatientLink,
     PersonAccount,
     PersonProfile,
     Prescription,
     PrescriptionItem,
+    Visit,
 )
 
 RAHMAN_TENANT = "550e8400-e29b-41d4-a716-446655440001"
@@ -57,6 +59,36 @@ CLINICAL = {
     "nasrin-r": ("Migraine without aura", "G43.0", [("Belladonna 30C", "4 pills", "Twice a day", "7 days"), ("Natrum Mur 200C", "4 pills", "Once a day", "14 days")], "Avoid long exposure to sun. Drink plenty of water."),
     "rahim-r": ("Knee osteoarthritis", "M17.9", [("Rhus Tox 30C", "4 pills", "Three times a day", "10 days")], "Gentle walking every morning. Keep the diabetes diet."),
     "nasrin-k": ("Chronic gastritis", "K29.5", [("Triphala churna", "1 teaspoon", "At bedtime", "30 days")], "Eat small meals. Avoid spicy food."),
+}
+
+# patient key -> health background (codes from app/shared/health_options.py)
+HEALTH_PROFILES = {
+    "nasrin-r": dict(
+        chronic_conditions=["thyroid_disorder"],
+        allergies=[{"type": "drug", "substance": "Penicillin", "severity": "severe"}],
+        family_history=["diabetes", "hypertension"],
+        smoking="never", alcohol="never", betel_tobacco="never", diet_type="mixed",
+    ),
+    "rahim-r": dict(
+        chronic_conditions=["diabetes", "hypertension", "arthritis"],
+        allergies=[{"type": "food", "substance": "Prawn", "severity": "moderate"}],
+        family_history=["diabetes", "heart_disease"],
+        smoking="former", alcohol="never", betel_tobacco="current", diet_type="non_vegetarian",
+        on_allopathic_medicines=True, on_blood_thinners=True,
+        current_medicines_note="Metformin 500 mg twice a day; aspirin 75 mg",
+    ),
+    "sufia-r": dict(
+        chronic_conditions=["hypertension"], allergies=[], family_history=["hypertension"],
+        smoking="never", alcohol="never", betel_tobacco="current", diet_type="vegetarian",
+        on_allopathic_medicines=True, current_medicines_note="Amlodipine 5 mg",
+    ),
+}
+
+# patient key -> a recent visit with vitals
+VISITS = {
+    "nasrin-r": dict(complaint="Recurring headache", temperature_c=36.8, pulse_bpm=78, bp_systolic=118, bp_diastolic=76, respiratory_rate=16, spo2_percent=99, weight_kg=58.0, height_cm=160.0, pain_score=5),
+    "rahim-r": dict(complaint="Knee pain on climbing stairs", temperature_c=36.9, pulse_bpm=84, bp_systolic=142, bp_diastolic=90, respiratory_rate=18, spo2_percent=97, weight_kg=82.0, height_cm=171.0, blood_sugar_mmol=8.4, blood_sugar_type="fasting", pain_score=6),
+    "sufia-r": dict(complaint="Poor sleep for a month", temperature_c=36.7, pulse_bpm=72, bp_systolic=150, bp_diastolic=92, spo2_percent=98, weight_kg=64.0, height_cm=152.0, pain_score=2),
 }
 
 # phone -> (profiles: key, display, relationship, years old, dependent, patient keys to link)
@@ -104,6 +136,25 @@ async def seed_demo_patients(session: AsyncSession) -> dict[str, int]:
             await session.flush()
             for order, (medicine, dosage, frequency, duration) in enumerate(items):
                 session.add(PrescriptionItem(prescription_id=rx.id, tenant_id=tenant, medicine_name=medicine, dosage=dosage, frequency=frequency, duration=duration, display_order=order))
+    await session.flush()
+
+    for key, values in HEALTH_PROFILES.items():
+        tenant = by_key[key][1]
+        await session.execute(text("select set_config('app.tenant_id', :t, true)"), {"t": tenant})
+        if (await session.get(PatientHealthProfile, _id("health", key))) is None:
+            session.add(PatientHealthProfile(id=_id("health", key), tenant_id=tenant, patient_id=_id("patient", key), **values))
+    for key, values in VISITS.items():
+        tenant = by_key[key][1]
+        await session.execute(text("select set_config('app.tenant_id', :t, true)"), {"t": tenant})
+        if (await session.get(Visit, _id("visit", key))) is None:
+            complaint = values.pop("complaint") if "complaint" in values else None
+            session.add(
+                Visit(
+                    id=_id("visit", key), tenant_id=tenant, patient_id=_id("patient", key), doctor_id=doctors[tenant],
+                    visit_date=date.today() - timedelta(days=3), visit_type="consultation", chief_complaint=complaint,
+                    status="completed", **values,
+                )
+            )
     await session.flush()
 
     for phone, profiles in ACCOUNTS.items():

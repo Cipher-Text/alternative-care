@@ -71,4 +71,5 @@ def test_current_api_route_count_matches_docs():
     # Appointment requests (ADR 009 phase 3): +4 /patient, +3 /appointment-requests — 223 -> 230.
     # Record sharing (ADR 009 phase 4): +3 /patient/shares, +2 /identity sharing — 230 -> 235.
     # Manual plan grant (+1 /admin/billing/tenants/{id}/plan) and clinic logo (+2 /tenant/logo) — 235 -> 238.
-    assert api_method_count == 238
+    # Health history step 1: +1 /health-options, +2 /patients/{id}/health-profile — 238 -> 241.
+    assert api_method_count == 241

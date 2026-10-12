@@ -471,8 +471,9 @@ async def test_create_visit_success(
         visit_date=date.today(),
         visit_type="consultation",
         chief_complaint="Headache",
-        temperature="98.6°F",
-        blood_pressure="120/80",
+        temperature_c=37.0,
+        bp_systolic=120,
+        bp_diastolic=80,
     )
 
     visit = await appointment_service.create_visit(data, created_by=user_id)

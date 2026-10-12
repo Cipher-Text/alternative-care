@@ -1,0 +1,191 @@
+{
+  "healthUi": {
+    "chronic": {
+      "diabetes": "ডায়াবেটিস",
+      "hypertension": "উচ্চ রক্তচাপ",
+      "asthma_copd": "হাঁপানি / সিওপিডি",
+      "heart_disease": "হৃদরোগ",
+      "kidney_disease": "কিডনি রোগ",
+      "liver_disease": "লিভার রোগ",
+      "thyroid_disorder": "থাইরয়েডের সমস্যা",
+      "tuberculosis": "যক্ষ্মা (টিবি)",
+      "epilepsy": "মৃগীরোগ",
+      "cancer": "ক্যান্সার",
+      "skin_disease": "চর্মরোগ",
+      "arthritis": "বাত / আর্থ্রাইটিস",
+      "mental_health": "মানসিক স্বাস্থ্যের সমস্যা",
+      "anaemia": "রক্তাল্পতা"
+    },
+    "family": {
+      "diabetes": "ডায়াবেটিস",
+      "hypertension": "উচ্চ রক্তচাপ",
+      "heart_disease": "হৃদরোগ",
+      "tuberculosis": "যক্ষ্মা (টিবি)",
+      "cancer": "ক্যান্সার",
+      "asthma": "হাঁপানি",
+      "mental_illness": "মানসিক রোগ",
+      "epilepsy": "মৃগীরোগ",
+      "thyroid_disorder": "থাইরয়েডের সমস্যা"
+    },
+    "allergyType": {
+      "drug": "ওষুধ",
+      "food": "খাবার",
+      "herb": "ভেষজ",
+      "dust_pollen": "ধুলাবালি বা পরাগ",
+      "skin_contact": "ত্বকের সংস্পর্শ",
+      "insect": "পোকামাকড়",
+      "other": "অন্যান্য"
+    },
+    "severity": {
+      "mild": "হালকা",
+      "moderate": "মাঝারি",
+      "severe": "তীব্র"
+    },
+    "habit": {
+      "never": "কখনো না",
+      "former": "আগে করতেন",
+      "current": "এখন করেন"
+    },
+    "diet": {
+      "vegetarian": "নিরামিষ",
+      "non_vegetarian": "আমিষ",
+      "mixed": "মিশ্র"
+    },
+    "redFlag": {
+      "chest_pain": "বুকে ব্যথা",
+      "breathlessness": "শ্বাসকষ্ট",
+      "severe_bleeding": "তীব্র রক্তপাত",
+      "infant_high_fever": "শিশুর উচ্চ জ্বর",
+      "loss_of_consciousness": "জ্ঞান হারানো",
+      "sudden_severe_headache": "হঠাৎ তীব্র মাথাব্যথা",
+      "sudden_weakness": "হঠাৎ দুর্বলতা",
+      "persistent_vomiting": "একটানা বমি"
+    },
+    "referral": {
+      "none": "রেফার নয়",
+      "routine": "সাধারণ রেফার",
+      "urgent": "জরুরি রেফার",
+      "emergency": "জরুরি অবস্থা: এখনই হাসপাতালে পাঠান"
+    },
+    "sugarType": {
+      "fasting": "খালি পেটে",
+      "random": "যেকোনো সময়",
+      "postprandial": "খাওয়ার পর"
+    },
+    "visitType": {
+      "consultation": "পরামর্শ",
+      "follow_up": "ফলো-আপ",
+      "emergency": "জরুরি",
+      "routine_checkup": "নিয়মিত চেকআপ"
+    },
+    "flag": {
+      "allergy": "অ্যালার্জি",
+      "pregnant": "গর্ভবতী",
+      "breastfeeding": "বুকের দুধ খাওয়াচ্ছেন",
+      "child_under_5": "৫ বছরের কম বয়সী শিশু",
+      "elderly_65_plus": "বয়স্ক (৬৫+)",
+      "on_allopathic_medicines": "অ্যালোপ্যাথিক ওষুধ খাচ্ছেন",
+      "on_blood_thinners": "রক্ত পাতলা করার ওষুধ খাচ্ছেন",
+      "recent_surgery": "সম্প্রতি অস্ত্রোপচার হয়েছে"
+    },
+    "banner": {
+      "title": "ওষুধ দেওয়ার আগে দেখুন",
+      "allergies": "অ্যালার্জি:",
+      "conditions": "রোগ:",
+      "noProfile": "এখনো স্বাস্থ্যের পটভূমি সংরক্ষণ করা হয়নি।",
+      "open": "স্বাস্থ্যের পটভূমি যোগ করুন"
+    },
+    "profile": {
+      "title": "স্বাস্থ্যের পটভূমি",
+      "description": "দুই ভিজিটের মাঝেও যা সত্য থাকে। সবকিছুই ঐচ্ছিক; যা প্রতিটি রোগীকে জিজ্ঞেস করেন তাই লিখুন।",
+      "edit": "সম্পাদনা",
+      "save": "সংরক্ষণ",
+      "saving": "সংরক্ষণ হচ্ছে...",
+      "cancel": "বাতিল",
+      "saved": "স্বাস্থ্যের পটভূমি সংরক্ষণ হয়েছে",
+      "saveFailed": "স্বাস্থ্যের পটভূমি সংরক্ষণ করা যায়নি।",
+      "empty": "এখনো কিছু লেখা হয়নি।",
+      "lastUpdated": "হালনাগাদ {date}",
+      "sections": {
+        "conditions": "দীর্ঘমেয়াদি রোগ",
+        "allergies": "অ্যালার্জি",
+        "family": "পারিবারিক ইতিহাস",
+        "habits": "অভ্যাস ও খাদ্য",
+        "pregnancy": "গর্ভাবস্থা",
+        "medicines": "ওষুধ ও অস্ত্রোপচার"
+      },
+      "smoking": "ধূমপান",
+      "alcohol": "মদ্যপান",
+      "betel": "পান, জর্দা বা গুল",
+      "diet": "খাদ্যাভ্যাস",
+      "choose": "লেখা নেই",
+      "addAllergy": "অ্যালার্জি যোগ করুন",
+      "allergyType": "ধরন",
+      "allergySubstance": "কীসে অ্যালার্জি",
+      "allergySubstancePlaceholder": "যেমন: পেনিসিলিন, চিংড়ি",
+      "allergySeverity": "তীব্রতা",
+      "removeAllergy": "অ্যালার্জি সরান",
+      "allergyNeedsName": "কীসে অ্যালার্জি তা লিখুন।",
+      "pregnant": "গর্ভবতী",
+      "lmp": "শেষ মাসিকের তারিখ",
+      "lmpInvalid": "তারিখ ভবিষ্যতের হতে পারে না।",
+      "breastfeeding": "বুকের দুধ খাওয়াচ্ছেন",
+      "allopathic": "এখন অ্যালোপ্যাথিক ওষুধ খাচ্ছেন",
+      "bloodThinners": "রক্ত পাতলা করার ওষুধ খাচ্ছেন (যেমন ওয়ারফারিন, অ্যাসপিরিন)",
+      "recentSurgery": "সম্প্রতি অস্ত্রোপচার হয়েছে",
+      "medicinesNote": "বর্তমান ওষুধ",
+      "surgeriesNote": "আগের অস্ত্রোপচার",
+      "readOnly": "শুধু ডাক্তার স্বাস্থ্যের পটভূমি পাল্টাতে পারেন।"
+    },
+    "visits": {
+      "title": "ভিজিট ও ভাইটাল",
+      "description": "প্রতিটি ভিজিট এবং তখন নেওয়া মাপজোখ। নতুনটি আগে।",
+      "add": "ভিজিট লিখুন",
+      "empty": "এখনো কোনো ভিজিট লেখা হয়নি।",
+      "saved": "ভিজিট সংরক্ষণ হয়েছে",
+      "saveFailed": "ভিজিট সংরক্ষণ করা যায়নি।",
+      "save": "ভিজিট সংরক্ষণ",
+      "saving": "সংরক্ষণ হচ্ছে...",
+      "cancel": "বাতিল",
+      "dialogTitle": "ভিজিট লিখুন",
+      "visitDate": "ভিজিটের তারিখ",
+      "visitType": "ভিজিটের ধরন",
+      "complaint": "অভিযোগ",
+      "examination": "পরীক্ষার নোট",
+      "vitals": "ভাইটাল",
+      "temperature": "তাপমাত্রা (°C)",
+      "pulse": "নাড়ি (প্রতি মিনিটে)",
+      "bpSystolic": "রক্তচাপ উপরের মান (সিস্টোলিক)",
+      "bpDiastolic": "রক্তচাপ নিচের মান (ডায়াস্টোলিক)",
+      "respiratoryRate": "শ্বাসের হার (প্রতি মিনিটে)",
+      "spo2": "অক্সিজেন সম্পৃক্ততা (%)",
+      "weight": "ওজন (কেজি)",
+      "height": "উচ্চতা (সেমি)",
+      "bmi": "বিএমআই",
+      "sugar": "রক্তের শর্করা (mmol/L)",
+      "sugarType": "কখন নেওয়া",
+      "pain": "ব্যথা (০–১০)",
+      "redFlags": "দেখা সতর্ক লক্ষণ",
+      "referral": "রেফার",
+      "diagnosis": "সম্ভাব্য রোগনির্ণয়",
+      "plan": "চিকিৎসা পরিকল্পনা",
+      "numberInvalid": "{min} থেকে {max}-এর মধ্যে একটি সংখ্যা লিখুন।",
+      "bpPair": "রক্তচাপের দুটি মানই লিখুন, অথবা কোনোটিই নয়।",
+      "bpOrder": "নিচের মান উপরের মানের চেয়ে কম হতে হবে।",
+      "sugarPair": "রক্তের শর্করার মানও লিখুন।",
+      "short": {
+        "temperature": "তাপ",
+        "pulse": "নাড়ি",
+        "bp": "রক্তচাপ",
+        "spo2": "SpO₂",
+        "weight": "ওজন",
+        "height": "উচ্চতা",
+        "bmi": "বিএমআই",
+        "sugar": "শর্করা",
+        "pain": "ব্যথা",
+        "respiratoryRate": "শ্বাস"
+      },
+      "readOnly": "শুধু ডাক্তার ভিজিট লিখতে পারেন।"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 """Patient service layer with business logic."""
 
-from datetime import datetime
+from datetime import date, datetime, timezone
 from typing import List, Optional
 from uuid import uuid4
 
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.base_service import BaseTenantService
 from app.core.entitlements import EntitlementService
-from app.shared.models import Patient, PatientTag, PatientDiagnosis
+from app.shared.models import Patient, PatientHealthProfile, PatientTag, PatientDiagnosis
 from app.shared.schemas import (
     PatientCreate,
     PatientUpdate,
@@ -18,7 +18,41 @@ from app.shared.schemas import (
     PatientTagUpdate,
     PatientDiagnosisCreate,
     PatientDiagnosisUpdate,
+    HealthProfileResponse,
+    HealthProfileUpdate,
 )
+
+
+def age_in_years(born: date | None, today: date | None = None) -> int | None:
+    if born is None:
+        return None
+    today = today or date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+
+def safety_flags(profile: PatientHealthProfile | None, born: date | None) -> list[str]:
+    """Warnings for the patient and prescription screens. Age counts even without a saved profile."""
+    flags: list[str] = []
+    if profile is not None:
+        if profile.allergies:
+            flags.append("allergy")
+        if profile.pregnant:
+            flags.append("pregnant")
+        if profile.breastfeeding:
+            flags.append("breastfeeding")
+    age = age_in_years(born)
+    if age is not None and age < 5:
+        flags.append("child_under_5")
+    if age is not None and age >= 65:
+        flags.append("elderly_65_plus")
+    if profile is not None:
+        if profile.on_allopathic_medicines:
+            flags.append("on_allopathic_medicines")
+        if profile.on_blood_thinners:
+            flags.append("on_blood_thinners")
+        if profile.recent_surgery:
+            flags.append("recent_surgery")
+    return flags
 
 
 class PatientService(BaseTenantService[Patient, PatientCreate, PatientUpdate]):
@@ -316,3 +350,64 @@ class PatientService(BaseTenantService[Patient, PatientCreate, PatientUpdate]):
         await self.db.refresh(diagnosis)
 
         return diagnosis
+
+    # ===== Health profile =====
+
+    async def get_health_profile(self, patient_id: str) -> HealthProfileResponse:
+        """The patient's saved profile, or an all-empty one (exists=False) if none was saved yet."""
+        patient = await self.get_patient(patient_id)
+        profile = (
+            await self.db.execute(
+                select(PatientHealthProfile).where(
+                    PatientHealthProfile.tenant_id == self.tenant_id,
+                    PatientHealthProfile.patient_id == patient_id,
+                )
+            )
+        ).scalar_one_or_none()
+        return self._profile_response(patient, profile)
+
+    async def save_health_profile(
+        self, patient_id: str, data: HealthProfileUpdate, updated_by: str
+    ) -> HealthProfileResponse:
+        patient = await self.get_patient(patient_id)
+        profile = (
+            await self.db.execute(
+                select(PatientHealthProfile).where(
+                    PatientHealthProfile.tenant_id == self.tenant_id,
+                    PatientHealthProfile.patient_id == patient_id,
+                )
+            )
+        ).scalar_one_or_none()
+        values = data.model_dump(mode="json")
+        values["lmp_date"] = data.lmp_date
+        if profile is None:
+            profile = PatientHealthProfile(
+                id=str(uuid4()), tenant_id=self.tenant_id, patient_id=patient_id, created_by=updated_by, **values
+            )
+            self.db.add(profile)
+        else:
+            for field, value in values.items():
+                setattr(profile, field, value)
+        profile.updated_by = updated_by
+        profile.updated_at = datetime.now(timezone.utc)  # also on the first save, so "updated" is never blank
+        await self.db.commit()
+        await self.db.refresh(profile)
+        return self._profile_response(patient, profile)
+
+    @staticmethod
+    def _profile_response(patient: Patient, profile: PatientHealthProfile | None) -> HealthProfileResponse:
+        base = HealthProfileUpdate.model_validate(
+            {
+                name: getattr(profile, name)
+                for name in HealthProfileUpdate.model_fields
+            }
+            if profile is not None
+            else {}
+        )
+        return HealthProfileResponse(
+            **base.model_dump(),
+            patient_id=patient.id,
+            exists=profile is not None,
+            updated_at=profile.updated_at if profile is not None else None,
+            safety_flags=safety_flags(profile, patient.date_of_birth),
+        )

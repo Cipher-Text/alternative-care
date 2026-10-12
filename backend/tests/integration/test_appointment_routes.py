@@ -208,8 +208,8 @@ async def test_create_visit(authenticated_client, test_user, test_patient):
             "visit_date": str(date.today()),
             "visit_type": "consultation",
             "chief_complaint": "Headache",
-            "temperature": "98.6F",
-            "blood_pressure": "120/80",
+            "temperature_c": 37.0,
+            "bp_systolic": 120, "bp_diastolic": 80,
         },
     )
 

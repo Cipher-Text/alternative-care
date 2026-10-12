@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { SafetyBanner } from '@/components/health/SafetyBanner'
 import { PatientSelector } from './PatientSelector'
 import { MedicineItemsBuilder } from './MedicineItemsBuilder'
 import type { Prescription, PrescriptionItemCreate } from '@/types/prescription'
@@ -135,6 +136,8 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
               </p>
             )}
           </div>
+
+          {patientId && <SafetyBanner patientId={patientId} linkToPatient />}
 
           <div className="space-y-2">
             <Label htmlFor="visit_id">{t('visitId')}</Label>

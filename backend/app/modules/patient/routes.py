@@ -19,9 +19,13 @@ from app.shared.schemas import (
     PatientDiagnosisCreate,
     PatientDiagnosisUpdate,
     PatientDiagnosisResponse,
+    HealthOptionsResponse,
+    HealthProfileResponse,
+    HealthProfileUpdate,
 )
 
 router = APIRouter()
+options_router = APIRouter()
 
 
 def get_patient_service(
@@ -35,6 +39,14 @@ def get_patient_service(
             detail="Platform users cannot manage patient records. Use a tenant account.",
         )
     return PatientService(db=db, tenant_id=current_user.tenant_id)
+
+
+@options_router.get("", response_model=HealthOptionsResponse)
+async def health_options(current_user: Annotated[CurrentUser, Depends(get_current_user)]):  # noqa: ARG001
+    """Every closed option list for the health history forms (codes only; labels are the frontend's)."""
+    from app.shared.health_options import OPTIONS
+
+    return {name: list(codes) for name, codes in OPTIONS.items()}
 
 
 # ===== Patient Endpoints =====
@@ -283,3 +295,26 @@ async def delete_patient_diagnosis(
     return await service.delete_patient_diagnosis(
         diagnosis_id, updated_by=current_user.user_id
     )
+
+
+# ===== Health profile =====
+
+
+@router.get("/{patient_id}/health-profile", response_model=HealthProfileResponse)
+async def get_health_profile(
+    patient_id: str,
+    service: Annotated[PatientService, Depends(get_patient_service)],
+):
+    """Health background and safety flags. Empty defaults (exists=false) until one is saved."""
+    return await service.get_health_profile(patient_id)
+
+
+@router.put("/{patient_id}/health-profile", response_model=HealthProfileResponse)
+async def save_health_profile(
+    patient_id: str,
+    data: HealthProfileUpdate,
+    service: Annotated[PatientService, Depends(get_patient_service)],
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+):
+    """Replace the patient's health profile. The whole profile is sent each time. Doctors only."""
+    return await service.save_health_profile(patient_id, data, updated_by=current_user.user_id)
