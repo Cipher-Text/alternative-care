@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,13 +35,20 @@ const buildPatientSchema = (msgs: { fullNameRequired: string; invalidEmail: stri
 
 type PatientFormData = z.infer<ReturnType<typeof buildPatientSchema>>
 
+/** Values to merge into the form (e.g. from a verified profile). Only the fields present are set; a new `version` re-applies. */
+export interface PatientFormPrefill {
+  version: number
+  values: Partial<Pick<PatientCreateRequest, 'full_name' | 'date_of_birth' | 'gender' | 'phone' | 'division_id' | 'district_id' | 'upazila_id'>>
+}
+
 interface PatientFormProps {
   patient?: Patient
+  prefill?: PatientFormPrefill
   onSubmit: (data: PatientCreateRequest) => void
   isSubmitting?: boolean
 }
 
-export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProps) {
+export function PatientForm({ patient, prefill, onSubmit, isSubmitting }: PatientFormProps) {
   const t = useTranslations('patientFormUi')
   const patientSchema = useMemo(
     () => buildPatientSchema({ fullNameRequired: t('fullNameRequired'), invalidEmail: t('invalidEmail') }),
@@ -104,6 +111,26 @@ export function PatientForm({ patient, onSubmit, isSubmitting }: PatientFormProp
       setValue('upazila_id', '')
     }
   }, [watchedDistrict, selectedDistrict, setValue])
+
+  // Merge prefilled values without touching anything they do not cover
+  const appliedPrefill = useRef(0)
+  useEffect(() => {
+    if (!prefill || prefill.version === appliedPrefill.current) return
+    appliedPrefill.current = prefill.version
+    const v = prefill.values
+    if (v.full_name) setValue('full_name', v.full_name)
+    if (v.date_of_birth) setValue('date_of_birth', v.date_of_birth)
+    if (v.gender) setValue('gender', v.gender)
+    if (v.phone) setValue('phone', v.phone)
+    if (v.division_id) {
+      // set the local selection too, so the reset-on-change effects below do not clear the area
+      setSelectedDivision(String(v.division_id))
+      setSelectedDistrict(v.district_id ? String(v.district_id) : '')
+      setValue('division_id', String(v.division_id))
+      setValue('district_id', v.district_id ? String(v.district_id) : '')
+      setValue('upazila_id', v.district_id && v.upazila_id ? String(v.upazila_id) : '')
+    }
+  }, [prefill, setValue])
 
   const handleFormSubmit = async (data: PatientFormData) => {
     const payload: PatientCreateRequest = {

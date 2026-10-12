@@ -6,6 +6,14 @@ from app.shared.models.doctor import DoctorDegree, DoctorTraining
 from app.shared.models.institution import Institution
 from app.shared.models.pharmacy import Pharmacy
 from app.shared.models.article import Article
+from app.shared.models.identity import (
+    ClaimCode,
+    ConsentEvent,
+    OtpChallenge,
+    PatientLink,
+    PersonAccount,
+    PersonProfile,
+)
 from app.shared.models.contact import ContactMessage
 from app.shared.models.marketing import FacebookFeatureRequest
 from app.shared.models.billing import BillingOrder, CreditPack
@@ -62,6 +70,12 @@ __all__ = [
     "Institution",
     "Pharmacy",
     "Article",
+    "ClaimCode",
+    "ConsentEvent",
+    "OtpChallenge",
+    "PatientLink",
+    "PersonAccount",
+    "PersonProfile",
     "ContactMessage",
     "FacebookFeatureRequest",
     "BillingOrder",

@@ -1,6 +1,7 @@
 # ADR 009: Patient identity across clinics: an optional, phone-verified identity that clinics link to by consent, never by automatic matching
 
-- Status: **Proposed.** Needs owner sign-off and a privacy/legal review before any code (see "Before building").
+- Status: **Accepted by the product owner on 2026-10-13; Phase 1 may be built.** The privacy/legal review and the
+  other open items below must still be completed **before this goes live with real patients** (see "Before building").
 - Date: 2026-10-13
 - Related: ADR 002 (platform vs tenant data), `docs/architecture/multi-tenancy.md`,
   `docs/planning/future-scope-2026-09.md` (the 2026-09-28 addendum rejected public booking until this exists),
@@ -166,3 +167,33 @@ another patient's.
 6. **SMS delivery reliability** and a fallback (for example a voice call) when codes do not arrive; SIM-swap risk.
 7. **Who may revoke** for a child and for an adult on someone else's phone.
 8. Confirm that national ID is deliberately **not** used.
+
+## Phase 1 implementation notes (built 2026-10-13)
+
+What exists: tables `person_accounts`, `person_profiles`, `otp_challenges`, `patient_links`,
+`identity_consent_events`, `identity_claim_codes` (migration `b9d5f2a8c1e6`); clinic API under `/identity/*` and the
+public claim flow under `/public/identity/claim/*`; the entitlement `monthly_patient_verifications` (Free 20,
+Plus 300, Pro 1,000, Enterprise 5,000; counts every code sent that month, a failed send is not counted).
+
+Decisions made while building (all adjustable):
+- **Phone numbers:** only Bangladesh mobiles (`01[3-9]XXXXXXXX`), stored as `+8801XXXXXXXXX`.
+- **OTP limits (settings):** code valid 300 s, 3 attempts, 60 s cooldown per phone, 3 codes per phone per hour,
+  200 codes per clinic per day, plus the monthly plan cap. The code is a keyed hash, never stored or logged
+  (in development with no SMS provider the code is written to the server log so the flow can be tried).
+- **Verification token:** 15 minutes, tied to the clinic and the staff member, at most 10 name searches and 5 links.
+- **No enumeration:** after a verified code staff learn only whether the phone has any profile; names appear only
+  for profiles matching the name they type (at most 5).
+- **One active link per clinic record and per profile per clinic** (partial unique indexes); revoking keeps the
+  clinic's record, writes a revoke event, and allows linking again after a fresh verification.
+- **Claim codes:** 8 characters (no look-alike letters), hashed, valid 30 days, single use, one live code per
+  record. The patient needs no login: phone code plus claim code plus consent. The clinic's plan is not revealed to
+  the patient (a capped clinic shows "this clinic cannot verify right now").
+- **Consent log** records the wording version (`2026-10-v1`), the staff member and that they confirmed telling the
+  patient (clinic route) or none (claim route, where the patient consents on screen).
+- **Not in Phase 1:** a patient login or self-registration screen, family management by the holder, sharing between
+  clinics, provider fallback (voice) for undelivered codes, per-clinic admin reports of verification usage.
+
+Known limits: only the clinic that verified can see a profile, but a **recycled phone number** still lets its new
+holder pass a clinic OTP and find profiles by typing a name (only basic details are exposed, and the clinic
+confirms the person in front of them); the profile name search is a simple contains match; dates of birth are
+stored as given.

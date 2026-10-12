@@ -68,6 +68,15 @@ CATALOG: dict[str, EntitlementDef] = {
             "monthly_email", "limit", "Emails per month", "মাসিক ইমেইল", "emails / month", "ইমেইল / মাস", "monthly"
         ),
         EntitlementDef(
+            "monthly_patient_verifications",
+            "limit",
+            "Patient phone verifications per month",
+            "মাসিক রোগীর ফোন যাচাই",
+            "verifications / month",
+            "যাচাই / মাস",
+            "monthly",
+        ),
+        EntitlementDef(
             "quarterly_facebook_features",
             "limit",
             "Facebook profile features per quarter",
@@ -119,6 +128,7 @@ def _plan_values(
     directory: bool,
     ai_queries: int = 0,
     facebook: int = 0,
+    verifications: int | None = 0,
 ) -> dict[str, tuple[bool, int | None]]:
     """One plan's entitlements. `sms`/`email` are monthly allowances (0 = none included);
     `ai_queries` > 0 turns the AI assistant on with that monthly quota; `facebook` > 0 includes that many
@@ -129,6 +139,7 @@ def _plan_values(
         "monthly_sms": (True, sms),
         "monthly_email": (True, email),
         "quarterly_facebook_features": (facebook > 0, facebook),
+        "monthly_patient_verifications": (True, verifications),
         "monthly_ai_queries": (True, ai_queries),
         "feature_invoicing": (invoicing, None),
         "feature_ai_assistant": (ai_queries > 0, None),
@@ -140,7 +151,7 @@ def _plan_values(
 # docs/planning/billing-credits-spec-2026-10.md §9. They are hypotheses to validate with practitioners,
 # not measured willingness to pay; everything here is editable in the admin plan editor.
 #
-#   Free        trial-sized: 200 patients, 1 doctor, no SMS, 50 emails, no invoicing/listing/AI
+#   Free        trial-sized: 200 patients, 1 doctor, no SMS, 50 emails, 20 phone verifications, no invoicing/listing/AI
 #   Plus        ৳1,000/mo  (৳10,000/yr = 2 months free): working chamber, 2 doctors, 300 SMS, listing
 #   Pro         ৳3,000/mo  (৳30,000/yr): clinic, 5 doctors, 1,000 SMS, AI assistant (200 queries),
 #               1 Facebook profile feature per quarter
@@ -151,14 +162,16 @@ DEFAULT_PLANS: dict[str, PlanDefaults] = {
         "Free", "ফ্রি",
         "Try AltCare in your own chamber", "নিজের চেম্বারে AltCare ব্যবহার করে দেখুন",
         1,
-        _plan_values(patients=200, seats=1, sms=0, email=50, invoicing=False, directory=False),
+        _plan_values(patients=200, seats=1, sms=0, email=50, invoicing=False, directory=False, verifications=20),
         Decimal("0"), Decimal("0"),
     ),
     "plus": PlanDefaults(
         "Plus", "প্লাস",
         "For a working chamber or small clinic", "চালু চেম্বার বা ছোট ক্লিনিকের জন্য",
         2,
-        _plan_values(patients=None, seats=2, sms=300, email=1000, invoicing=True, directory=True),
+        _plan_values(
+            patients=None, seats=2, sms=300, email=1000, invoicing=True, directory=True, verifications=300
+        ),
         Decimal("1000"), Decimal("10000"),
     ),
     "pro": PlanDefaults(
@@ -167,7 +180,7 @@ DEFAULT_PLANS: dict[str, PlanDefaults] = {
         3,
         _plan_values(
             patients=None, seats=5, sms=1000, email=5000, invoicing=True, directory=True, ai_queries=200,
-            facebook=1,
+            facebook=1, verifications=1000,
         ),
         Decimal("3000"), Decimal("30000"),
     ),
@@ -178,7 +191,7 @@ DEFAULT_PLANS: dict[str, PlanDefaults] = {
         4,
         _plan_values(
             patients=None, seats=None, sms=5000, email=20000, invoicing=True, directory=True,
-            ai_queries=1000, facebook=3,
+            ai_queries=1000, facebook=3, verifications=5000,
         ),
         None, None,
     ),
@@ -294,6 +307,22 @@ class EntitlementService:
                     FacebookFeatureRequest.status.in_(FB_COUNTED),
                     FacebookFeatureRequest.created_at >= start,
                     FacebookFeatureRequest.created_at < end,
+                )
+            )
+            return int(result.scalar_one())
+        if key == "monthly_patient_verifications":
+            # Every code the platform sent for this clinic this month (a failed send is not counted)
+            from app.shared.models import OtpChallenge
+
+            now = datetime.now(timezone.utc)
+            month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            result = await self.db.execute(
+                select(func.count())
+                .select_from(OtpChallenge)
+                .where(
+                    OtpChallenge.tenant_id == tenant_id,
+                    OtpChallenge.status != "send_failed",
+                    OtpChallenge.created_at >= month_start,
                 )
             )
             return int(result.scalar_one())

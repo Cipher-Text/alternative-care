@@ -160,6 +160,7 @@ pay**, and every one is editable in the admin plan editor.
 | Public directory listing | no | yes | yes | yes |
 | AI assistant (when built) | no | no | 200 queries | 1,000 queries |
 | Facebook profile feature (AltCare page) | no | no | 1 per quarter | 3 per quarter (about 1 a month) |
+| Patient phone verifications (OTP, AltCare pays the SMS) | 20 / month | 300 / month | 1,000 / month | 5,000 / month |
 
 ### What the market data says (and does not)
 Searches on 2026-10-12 found **no published taka price list for clinic or chamber software in Bangladesh**,

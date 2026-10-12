@@ -385,3 +385,23 @@ from app.shared.schemas.contact import (  # noqa: E402
     ContactMessageResponse,
     ContactMessageUpdate,
 )
+
+from app.shared.schemas.identity import (  # noqa: E402
+    BasicDetails,
+    ClaimCodeResponse,
+    ClaimConfirm,
+    ClaimRequest,
+    ClaimResult,
+    LinkRequest,
+    LinkResponse,
+    NewProfile,
+    PatientIdentityStatus,
+    ProfilePrefillRequest,
+    ProfileSearch,
+    ProfileSummary,
+    RevokeRequest,
+    VerifyConfirm,
+    VerifyConfirmResponse,
+    VerifyRequest,
+    VerifyRequestResponse,
+)

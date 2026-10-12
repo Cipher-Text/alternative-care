@@ -1,0 +1,182 @@
+{
+  "identityUi": {
+    "dialog": {
+      "title": "Verify phone",
+      "intro": "Optional. Confirms the patient's phone with a code so their basic details can be linked to an AltCare profile. Treatment never depends on it.",
+      "skip": "Skip — register without verification",
+      "close": "Close"
+    },
+    "phone": {
+      "label": "Patient's mobile number",
+      "hint": "A Bangladesh mobile, like 01XXXXXXXXX. AltCare pays for the SMS.",
+      "invalid": "Enter a Bangladesh mobile number, like 01XXXXXXXXX.",
+      "send": "Send code"
+    },
+    "consent": {
+      "title": "Read this aloud to the patient",
+      "language": "Language of the script",
+      "langBn": "বাংলা",
+      "langEn": "English",
+      "scriptBn": "আমরা আপনার ফোনে একটি কোড পাঠাচ্ছি। কোডটি বললে আপনি রাজি হচ্ছেন যে {clinic}-এর সঙ্গে আপনার মূল তথ্য (নাম, বয়স, লিঙ্গ, এলাকা) AltCare প্রোফাইলে যুক্ত হবে। আপনার চিকিৎসার তথ্য আপনার অনুমতি ছাড়া অন্য কোনো ডাক্তারের কাছে যাবে না। রাজি না হলে কোড দেবেন না, তবুও চিকিৎসা পাবেন।",
+      "scriptEn": "We are sending a code to your phone. By telling us the code, you agree that your basic details (name, age, gender, area) will be linked to your AltCare profile with {clinic}. Your medical information will not go to any other doctor without your permission. If you do not agree, do not give the code. You will still get treatment.",
+      "clinicFallbackBn": "আপনার ক্লিনিক",
+      "clinicFallbackEn": "your clinic"
+    },
+    "code": {
+      "scriptRead": "I read this to the patient",
+      "label": "Code the patient reads out",
+      "sentTo": "A 6-digit code was sent to {phone}.",
+      "needBoth": "Tick the box and enter the 6-digit code to continue.",
+      "resend": "Send again",
+      "resendIn": "Send again in {seconds}s",
+      "changePhone": "Use a different number",
+      "verify": "Verify"
+    },
+    "person": {
+      "verified": "Phone verified.",
+      "findHeading": "Find the person",
+      "findHelp": "Type the visitor's name. Only matching profiles are shown.",
+      "nameLabel": "Visitor's name",
+      "search": "Search",
+      "noResults": "No matching profile. You can add this person as new below.",
+      "age": "{age} years",
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "dependent": "Dependent",
+      "linkedHere": "Already has a record at this clinic.",
+      "choose": "This is the person",
+      "noProfiles": "No profile exists for this phone yet. Add this person as new.",
+      "newPerson": "This is a new person",
+      "newPersonHelp": "Creates a profile from the details saved in this clinic's record. Nothing medical is shared.",
+      "relationshipLabel": "Who is this for the phone holder?",
+      "birthYearLabel": "Approximate birth year (optional)",
+      "birthYearHelp": "Use it if there is no date of birth, like 1985.",
+      "birthYearInvalid": "Enter a four-digit year, like 1985.",
+      "linkAsNew": "Link as a new person",
+      "useAsNew": "Continue as a new person"
+    },
+    "relationship": {
+      "self": "Self",
+      "child": "Child",
+      "spouse": "Spouse",
+      "parent": "Parent",
+      "other": "Other"
+    },
+    "done": {
+      "title": "Phone verified and linked",
+      "body": "This record is now linked to the AltCare profile of {name}."
+    },
+    "errors": {
+      "otpInvalid": "That code is not correct. Check it with the patient and try again.",
+      "otpExpired": "That code has expired. Send a new one.",
+      "otpLocked": "Too many wrong tries. Send a new code.",
+      "otpCooldown": "A code was just sent. Please wait a little before asking for another.",
+      "otpCooldownSeconds": "A code was just sent. Please wait {seconds} seconds before asking for another.",
+      "otpPhoneLimit": "Too many codes were sent to this number. Try again in an hour. You can still register the patient without verification.",
+      "otpClinicDailyCap": "Your clinic has reached today's limit for verification codes. Try again tomorrow. You can still register the patient without verification.",
+      "plan": "Your clinic's monthly verification allowance is used up or not included in your plan. You can still register and treat the patient without verification.",
+      "verificationExpired": "This verification has expired. Verify the phone again to continue.",
+      "alreadyLinked": "This patient record is already linked to a profile.",
+      "profileAlreadyLinkedHere": "This person already has a record at your clinic.",
+      "profileLimit": "This phone already has the maximum number of profiles.",
+      "smsUnavailable": "SMS is not available right now. Carry on without verification and try later.",
+      "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+      "generic": "Something went wrong. Please try again.",
+      "sendNew": "Send a new code",
+      "verifyAgain": "Verify again",
+      "openBilling": "Open billing",
+      "openExisting": "Open that record"
+    },
+    "card": {
+      "title": "Identity",
+      "loading": "Loading",
+      "loadFailed": "Could not load the identity status.",
+      "retry": "Try again",
+      "level1Title": "Phone verified",
+      "level1Body": "Linked to an AltCare profile.",
+      "linkedProfile": "Profile: {name}.",
+      "verifiedOn": "Verified on {date}",
+      "methodClinic": "At the clinic, with a code",
+      "methodClaim": "By the patient, with a claim code",
+      "level0Title": "Not verified",
+      "level0Body": "Details entered by the clinic. This works as usual; verifying the phone is optional.",
+      "verifyPhone": "Verify phone",
+      "giveClaimCode": "Give a claim code"
+    },
+    "claimCode": {
+      "failed": "Could not create a claim code.",
+      "heading": "Claim code",
+      "expires": "Valid until {date}.",
+      "explain": "The patient can enter this code with their phone number at {origin}/claim to link their record later. It works once and expires.",
+      "print": "Print",
+      "hide": "Hide",
+      "slipTitle": "AltCare claim code"
+    },
+    "revoke": {
+      "button": "Remove link",
+      "title": "Remove the link?",
+      "body": "The record will no longer be linked to the patient's AltCare profile. The clinic keeps its own record of the patient.",
+      "noteLabel": "Note (optional)",
+      "cancel": "Cancel",
+      "confirm": "Remove link",
+      "success": "Link removed",
+      "failed": "Could not remove the link."
+    },
+    "prefill": {
+      "button": "Verify phone first",
+      "hint": "Optional. Fills in details if the patient already has an AltCare profile.",
+      "verifiedNote": "Phone verified — will be linked when saved.",
+      "approxYear": "Approximate birth year: {year}.",
+      "linked": "Phone verified and linked.",
+      "linkFailed": "The patient was saved, but linking failed: {reason} You can verify from the patient's page."
+    },
+    "claim": {
+      "metaTitle": "Link your record",
+      "title": "Link your record",
+      "intro": "Enter your phone number and the claim code your clinic gave you.",
+      "phoneLabel": "Your mobile number",
+      "claimCodeLabel": "Claim code",
+      "claimCodeHint": "Like ABCD-EFGH. It works once.",
+      "sendCode": "Send me a code",
+      "sending": "Sending...",
+      "codeSent": "We sent a 6-digit code to {phone}.",
+      "smsCodeLabel": "Code from the SMS",
+      "relationshipLabel": "Who is this record for?",
+      "relationship": {
+        "self": "Myself",
+        "child": "My child",
+        "spouse": "My spouse",
+        "parent": "My parent",
+        "other": "Someone else"
+      },
+      "consent": "I agree to link my basic details (name, age, gender, area) to my AltCare profile for this clinic. My medical information is not shared with any other doctor without my permission.",
+      "confirm": "Link my record",
+      "confirming": "Linking...",
+      "resend": "Send the code again",
+      "resendIn": "Send again in {seconds}s",
+      "success": "Your record at {clinic} is now linked",
+      "successBody": "Linked to the profile of {name}. You can close this page.",
+      "errors": {
+        "invalidClaimCode": "That claim code is not valid. Check it, or ask your clinic for a new one.",
+        "otpInvalid": "That code is not correct. Check the SMS and try again.",
+        "otpExpired": "That code has expired. Tap Send the code again.",
+        "otpLocked": "Too many wrong tries. Tap Send the code again.",
+        "otpCooldown": "A code was just sent. Please wait a minute before asking for another.",
+        "tooMany": "Too many requests. Please try again later.",
+        "clinicUnavailable": "This clinic cannot link records right now. Please ask the clinic.",
+        "alreadyLinked": "This record is already linked.",
+        "profileAlreadyLinkedHere": "This person is already linked at this clinic.",
+        "profileLimit": "This phone already has the maximum number of profiles.",
+        "smsUnavailable": "We cannot send SMS right now. Please try again later.",
+        "generic": "Something went wrong. Please try again.",
+        "phone": "Enter a Bangladesh mobile number, like 01XXXXXXXXX.",
+        "claimCodeRequired": "Enter the claim code from your clinic.",
+        "codeLength": "Enter the 6-digit code from the SMS.",
+        "consentRequired": "Please tick the box to agree."
+      }
+    }
+  }
+}

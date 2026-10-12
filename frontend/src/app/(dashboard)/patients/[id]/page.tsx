@@ -23,6 +23,7 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react'
+import { PatientIdentityCard } from '@/components/identity/PatientIdentityCard'
 import { calculateAge, formatPhone } from '@/lib/utils/format'
 import {
   Dialog,
@@ -191,6 +192,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </CardContent>
       </Card>
+
+      <PatientIdentityCard patient={patient} />
 
       {/* Tags */}
       {tags && tags.length > 0 && (

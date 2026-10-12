@@ -65,4 +65,5 @@ def test_current_api_route_count_matches_docs():
     # Checkout: +6 /billing (subscription, packs, checkout, orders x2, fake-gateway), +4 /admin/billing — 180 -> 190.
     # Facebook promotion: +5 /marketing, +4 /admin/marketing — 190 -> 199.
     # Contact form: +1 /public/contact, +2 /admin/contact — 199 -> 202.
-    assert api_method_count == 202
+    # Patient identity (ADR 009 phase 1): +8 /identity, +2 /public/identity — 202 -> 212.
+    assert api_method_count == 212

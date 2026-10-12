@@ -210,6 +210,15 @@ class Settings(BaseSettings):
     RATE_LIMIT_CONTACT_REQUEST_PER_HOUR: int = 5
     # Public contact form: messages per IP per hour
     RATE_LIMIT_CONTACT_MESSAGE_PER_HOUR: int = 5
+    # Patient phone verification (ADR 009). AltCare pays for these SMS, so abuse limits matter.
+    OTP_TTL_SECONDS: int = 300
+    OTP_MAX_ATTEMPTS: int = 3
+    OTP_COOLDOWN_SECONDS: int = 60
+    OTP_MAX_PER_PHONE_PER_HOUR: int = 3
+    OTP_MAX_PER_CLINIC_PER_DAY: int = 200
+    IDENTITY_TOKEN_TTL_SECONDS: int = 900
+    # Public claim flow, per IP per hour
+    RATE_LIMIT_CLAIM_PER_HOUR: int = 10
     RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600
 
     # Security headers

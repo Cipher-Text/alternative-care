@@ -74,20 +74,24 @@ class TestAdminPlanEditor:
         assert free["feature_directory_listing"]["enabled"] is False
         assert free["feature_ai_assistant"]["enabled"] is False
         assert free["quarterly_facebook_features"]["enabled"] is False
+        assert free["monthly_patient_verifications"]["limit"] == 20
 
         assert plus["max_patients"]["limit"] is None and plus["max_seats"]["limit"] == 2
         assert plus["monthly_sms"]["limit"] == 300 and plus["feature_invoicing"]["enabled"] is True
         assert plus["feature_directory_listing"]["enabled"] is True
         assert plus["feature_ai_assistant"]["enabled"] is False
         assert plus["quarterly_facebook_features"]["enabled"] is False  # Pro and Enterprise only
+        assert plus["monthly_patient_verifications"]["limit"] == 300
 
         assert pro["max_seats"]["limit"] == 5 and pro["monthly_sms"]["limit"] == 1000
         assert pro["feature_ai_assistant"]["enabled"] is True and pro["monthly_ai_queries"]["limit"] == 200
         assert pro["quarterly_facebook_features"] == {**pro["quarterly_facebook_features"], "enabled": True, "limit": 1}
+        assert pro["monthly_patient_verifications"]["limit"] == 1000
 
         assert ent["max_seats"]["limit"] is None and ent["max_patients"]["limit"] is None
         assert ent["monthly_sms"]["limit"] == 5000 and ent["monthly_ai_queries"]["limit"] == 1000
         assert ent["quarterly_facebook_features"]["enabled"] is True and ent["quarterly_facebook_features"]["limit"] == 3
+        assert ent["monthly_patient_verifications"]["limit"] == 5000
 
     async def test_each_plan_offers_at_least_the_one_below(self, admin_client: AsyncClient):
         """The seed values must never put a paid plan below a cheaper one (the editor enforces this too)."""
