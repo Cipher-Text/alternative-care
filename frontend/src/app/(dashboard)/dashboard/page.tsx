@@ -14,6 +14,7 @@ import { PatientDemographicsChart } from '@/components/dashboard/PatientDemograp
 import { AgeDistributionChart } from '@/components/dashboard/AgeDistributionChart'
 import { RevenueByMethodChart } from '@/components/dashboard/RevenueByMethodChart'
 import { DateRangePicker } from '@/components/dashboard/DateRangePicker'
+import { TodayPanel } from '@/components/dashboard/TodayPanel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -70,16 +71,8 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
     })
   }
 
-  if (overviewLoading || financialLoading || patientsLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-      </div>
-    )
-  }
-
-  // Note: Trend calculations would come from backend in production
-  // For now, we show static metrics without trends
+  // Only the analytics wait for their data: the day's work (TodayPanel) loads on its own and shows first
+  const analyticsLoading = overviewLoading || financialLoading || patientsLoading
 
   return (
     <div className="space-y-8">
@@ -93,9 +86,6 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
             {tp('dashboardWelcome', { name: userName ?? '' })}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <DateRangePicker onRangeChange={handleDateRangeChange} />
-        </div>
       </div>
 
       {/* First-run guide: only on the unfiltered, all-time view and only for roles that write records */}
@@ -106,6 +96,9 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           totalPrescriptions={overview.total_prescriptions}
         />
       )}
+
+      {/* What to act on now */}
+      <TodayPanel />
 
       {/* Quick Actions */}
       <Card className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950 dark:to-slate-900">
@@ -157,7 +150,20 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       {/* Directory summary: doctors only; hides itself if stats are unavailable */}
       <DirectorySummaryCard />
 
+      {/* Overview: the numbers and charts, with the date range that applies to them */}
+      <div className="flex flex-col gap-3 border-t pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('today.overviewTitle')}</h2>
+        <DateRangePicker onRangeChange={handleDateRangeChange} />
+      </div>
+
+      {analyticsLoading && (
+        <div className="flex h-40 items-center justify-center" aria-busy="true">
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-600" aria-hidden="true" />
+        </div>
+      )}
+
       {/* Key Metrics */}
+      {!analyticsLoading && (
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {t('keyMetrics')}
@@ -203,7 +209,10 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
         </div>
       </div>
 
+      )}
+
       {/* Analytics */}
+      {!analyticsLoading && (
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {t('analytics')}
@@ -244,7 +253,10 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
         </div>
       </div>
 
+      )}
+
       {/* Patient Insights */}
+      {!analyticsLoading && (
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {t('patientInsights')}
@@ -283,6 +295,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           )}
         </div>
       </div>
+      )}
     </div>
   )
 }

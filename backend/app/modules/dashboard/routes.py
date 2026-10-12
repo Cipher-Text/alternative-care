@@ -16,6 +16,7 @@ from app.shared.schemas import (
     AppointmentAnalytics,
     VisitAnalytics,
     PrescriptionAnalytics,
+    TodayOverview,
 )
 
 router = APIRouter()
@@ -35,6 +36,15 @@ def get_dashboard_service(
 
 
 # ===== Dashboard Endpoints =====
+
+
+@router.get("/today", response_model=TodayOverview)
+async def get_today(service: Annotated[DashboardService, Depends(get_dashboard_service)]):
+    """
+    What to act on now: today's appointments, patient requests waiting for a reply, follow-ups that are due,
+    recent visits with warning signs or an urgent referral, and the plan's expiry.
+    """
+    return await service.get_today()
 
 
 @router.get("/overview", response_model=OverviewStats)

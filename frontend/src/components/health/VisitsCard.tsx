@@ -201,6 +201,8 @@ function VisitDialog({ patientId, systems, onClose }: { patientId: string; syste
       examination_notes: draft.examination_notes?.trim() || undefined,
       provisional_diagnosis: draft.provisional_diagnosis?.trim() || undefined,
       treatment_plan: draft.treatment_plan?.trim() || undefined,
+      follow_up_date: draft.follow_up_date || undefined,
+      follow_up_notes: draft.follow_up_notes?.trim() || undefined,
       red_flags: flags.length > 0 ? flags : undefined,
       referral_urgency: draft.referral_urgency !== NONE ? draft.referral_urgency : undefined,
     }
@@ -326,6 +328,16 @@ function VisitDialog({ patientId, systems, onClose }: { patientId: string; syste
           <div className="space-y-1.5">
             <Label htmlFor="v-plan">{t('plan')}</Label>
             <Textarea id="v-plan" rows={2} value={draft.treatment_plan ?? ''} onChange={(e) => set('treatment_plan', e.target.value)} />
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="v-follow-date">{t('followUpDate')}</Label>
+              <Input id="v-follow-date" type="date" min={draft.visit_date} value={draft.follow_up_date ?? ''} onChange={(e) => set('follow_up_date', e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="v-follow-notes">{t('followUpNote')}</Label>
+              <Input id="v-follow-notes" maxLength={300} value={draft.follow_up_notes ?? ''} onChange={(e) => set('follow_up_notes', e.target.value)} />
+            </div>
           </div>
 
           <DialogFooter className="gap-2">

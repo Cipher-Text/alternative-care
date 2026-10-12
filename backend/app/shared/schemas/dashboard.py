@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import Optional
 from pydantic import BaseModel, Field
 
@@ -316,3 +316,54 @@ class PrescriptionAnalytics(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ===== Today view (what the practitioner needs to do now) =====
+
+
+class TodayAppointment(BaseModel):
+    id: str
+    patient_id: str
+    patient_name: str
+    appointment_time: time
+    duration_minutes: int
+    status: str
+    reason: Optional[str] = None
+
+
+class FollowUpDue(BaseModel):
+    """A patient whose last visit asked for a follow-up that has not happened yet."""
+
+    patient_id: str
+    patient_name: str
+    visit_id: str
+    follow_up_date: date
+    follow_up_notes: Optional[str] = None
+    days_overdue: int = Field(..., description="Positive when the date has passed, negative when it is still ahead")
+
+
+class VisitAlert(BaseModel):
+    """A recent visit with warning signs or an urgent referral."""
+
+    patient_id: str
+    patient_name: str
+    visit_id: str
+    visit_date: date
+    red_flags: list[str] = Field(default_factory=list)
+    referral_urgency: Optional[str] = None
+
+
+class PlanStatus(BaseModel):
+    plan: str
+    expires_at: Optional[datetime] = None
+    days_left: Optional[int] = None
+    expired: bool
+
+
+class TodayOverview(BaseModel):
+    today: date
+    appointments: list[TodayAppointment]
+    requests_waiting: int = Field(..., description="Patient appointment requests waiting for a reply")
+    follow_ups_due: list[FollowUpDue]
+    alerts: list[VisitAlert]
+    plan: PlanStatus

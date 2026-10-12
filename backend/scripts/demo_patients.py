@@ -11,7 +11,7 @@ Everything has a fixed id, so running the seed again changes nothing. In develop
 these two numbers is always DEMO_OTP_CODE (see app/modules/identity/otp.py); the demo phones are not real.
 """
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from uuid import NAMESPACE_URL, uuid5
 
 from sqlalchemy import select, text
@@ -31,6 +31,7 @@ from app.shared.models import (
     PrescriptionItem,
     Visit,
     VisitAssessment,
+    Appointment,
 )
 
 RAHMAN_TENANT = "550e8400-e29b-41d4-a716-446655440001"
@@ -93,8 +94,8 @@ VISITS = {
     "farhana-a": dict(complaint="Burning in the stomach and constipation", temperature_c=37.1, pulse_bpm=82, bp_systolic=122, bp_diastolic=80, weight_kg=61.0, height_cm=156.0, pain_score=4),
     "nasrin-k": dict(complaint="Burning pain after meals", temperature_c=36.9, pulse_bpm=80, bp_systolic=116, bp_diastolic=74, weight_kg=58.0, height_cm=160.0, pain_score=4),
     "nasrin-r": dict(complaint="Recurring headache", temperature_c=36.8, pulse_bpm=78, bp_systolic=118, bp_diastolic=76, respiratory_rate=16, spo2_percent=99, weight_kg=58.0, height_cm=160.0, pain_score=5),
-    "rahim-r": dict(complaint="Knee pain on climbing stairs", temperature_c=36.9, pulse_bpm=84, bp_systolic=142, bp_diastolic=90, respiratory_rate=18, spo2_percent=97, weight_kg=82.0, height_cm=171.0, blood_sugar_mmol=8.4, blood_sugar_type="fasting", pain_score=6),
-    "sufia-r": dict(complaint="Poor sleep for a month", temperature_c=36.7, pulse_bpm=72, bp_systolic=150, bp_diastolic=92, spo2_percent=98, weight_kg=64.0, height_cm=152.0, pain_score=2),
+    "rahim-r": dict(follow_up_date=date.today() - timedelta(days=2), follow_up_notes="Check knee pain and fasting sugar", complaint="Knee pain on climbing stairs", temperature_c=36.9, pulse_bpm=84, bp_systolic=142, bp_diastolic=90, respiratory_rate=18, spo2_percent=97, weight_kg=82.0, height_cm=171.0, blood_sugar_mmol=8.4, blood_sugar_type="fasting", pain_score=6),
+    "sufia-r": dict(red_flags=["sudden_severe_headache"], referral_urgency="urgent", complaint="Poor sleep for a month", temperature_c=36.7, pulse_bpm=72, bp_systolic=150, bp_diastolic=92, spo2_percent=98, weight_kg=64.0, height_cm=152.0, pain_score=2),
 }
 
 # Case-taking for the demo patients, by (patient key, system); codes from app/shared/case_taking/
@@ -197,6 +198,14 @@ async def seed_demo_patients(session: AsyncSession) -> dict[str, int]:
                     status="completed", **values,
                 )
             )
+    await session.flush()
+
+    # Today's schedule at Dr. Rahman's clinic (fixed ids; the date is the day the seed was run)
+    for key, at, status_, reason in (("kamal-r", time(9, 30), "confirmed", "Acidity follow-up"), ("sufia-r", time(11, 0), "scheduled", "Sleep and blood pressure"), ("nasrin-r", time(16, 0), "scheduled", "Headache review")):
+        tenant = by_key[key][1]
+        await session.execute(text("select set_config('app.tenant_id', :t, true)"), {"t": tenant})
+        if (await session.get(Appointment, _id("appointment", key))) is None:
+            session.add(Appointment(id=_id("appointment", key), tenant_id=tenant, patient_id=_id("patient", key), doctor_id=doctors[tenant], appointment_date=date.today(), appointment_time=at, duration_minutes=30, status=status_, reason=reason))
     await session.flush()
 
     for (key, system), data in CASE_PROFILES.items():

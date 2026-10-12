@@ -113,6 +113,11 @@ from app.shared.schemas.medicine import (
     MedicineWithSymptoms,
 )
 from app.shared.schemas.dashboard import (
+    FollowUpDue,
+    PlanStatus,
+    TodayAppointment,
+    TodayOverview,
+    VisitAlert,
     DateRangeFilter,
     TrendData,
     OverviewStats,
@@ -175,6 +180,11 @@ from app.shared.schemas.integration import (
 )
 
 __all__ = [
+    "FollowUpDue",
+    "PlanStatus",
+    "TodayAppointment",
+    "TodayOverview",
+    "VisitAlert",
     "AllergyEntry",
     "HealthOptionsResponse",
     "HealthProfileResponse",

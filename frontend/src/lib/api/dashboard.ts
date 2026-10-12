@@ -8,8 +8,12 @@ import type {
   VisitAnalytics,
   PrescriptionAnalytics,
 } from '@/types/dashboard'
+import type { TodayOverview } from '@/types/dashboardToday'
 
 export const dashboardApi = {
+  // What to act on now
+  getToday: async (): Promise<TodayOverview> => (await apiClient.get('/dashboard/today')).data,
+
   // Overview stats
   getOverview: async (params?: DateRangeFilter): Promise<OverviewStats> => {
     const response = await apiClient.get('/dashboard/overview', { params })

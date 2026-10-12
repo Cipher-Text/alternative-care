@@ -1,6 +1,6 @@
 """Dashboard and analytics service layer."""
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,8 +14,16 @@ from app.shared.models import (
     Prescription,
     PrescriptionItem,
     PatientDiagnosis,
+    AppointmentRequest,
+    Tenant,
 )
+from app.core.entitlements import effective_plan_key
 from app.shared.schemas import (
+    FollowUpDue,
+    PlanStatus,
+    TodayAppointment,
+    TodayOverview,
+    VisitAlert,
     OverviewStats,
     FinancialAnalytics,
     RevenueByMethod,
@@ -750,3 +758,144 @@ class DashboardService:
         result = await self.db.execute(query)
         rows = result.all()
         return [TrendData(trend_date=row.trend_date, value=float(row.value or 0)) for row in rows]
+
+    # ===== Today view =====
+
+    async def get_today(self) -> TodayOverview:
+        """What the practitioner needs to act on now: today's list, waiting requests, follow-ups, warnings, plan."""
+        today = date.today()
+        return TodayOverview(
+            today=today,
+            appointments=await self._today_appointments(today),
+            requests_waiting=await self._requests_waiting(),
+            follow_ups_due=await self._follow_ups_due(today),
+            alerts=await self._visit_alerts(today),
+            plan=await self._plan_status(),
+        )
+
+    async def _today_appointments(self, today: date) -> list[TodayAppointment]:
+        rows = await self.db.execute(
+            select(Appointment, Patient.full_name)
+            .join(Patient, Patient.id == Appointment.patient_id)
+            .where(
+                Appointment.tenant_id == self.tenant_id,
+                Patient.tenant_id == self.tenant_id,
+                Appointment.appointment_date == today,
+                Appointment.status != "cancelled",
+            )
+            .order_by(Appointment.appointment_time)
+            .limit(50)
+        )
+        return [
+            TodayAppointment(
+                id=a.id, patient_id=a.patient_id, patient_name=name, appointment_time=a.appointment_time,
+                duration_minutes=a.duration_minutes, status=a.status, reason=a.reason,
+            )
+            for a, name in rows.all()
+        ]
+
+    async def _requests_waiting(self) -> int:
+        return (
+            await self.db.execute(
+                select(func.count()).select_from(AppointmentRequest).where(
+                    AppointmentRequest.tenant_id == self.tenant_id, AppointmentRequest.status == "requested"
+                )
+            )
+        ).scalar_one()
+
+    async def _follow_ups_due(self, today: date, limit: int = 8) -> list[FollowUpDue]:
+        """Visits that asked for a follow-up within the last 30 days or the next 7, where the patient has had no
+        later visit and has no upcoming appointment. Most overdue first."""
+        rows = (
+            await self.db.execute(
+                select(Visit, Patient.full_name)
+                .join(Patient, Patient.id == Visit.patient_id)
+                .where(
+                    Visit.tenant_id == self.tenant_id,
+                    Patient.tenant_id == self.tenant_id,
+                    Patient.is_active.is_(True),
+                    Visit.follow_up_date.is_not(None),
+                    Visit.follow_up_date >= today - timedelta(days=30),
+                    Visit.follow_up_date <= today + timedelta(days=7),
+                )
+                .order_by(Visit.follow_up_date)
+                .limit(60)
+            )
+        ).all()
+        out: list[FollowUpDue] = []
+        seen: set[str] = set()
+        for visit, name in rows:
+            if visit.patient_id in seen:
+                continue
+            had_later_visit = (
+                await self.db.execute(
+                    select(func.count()).select_from(Visit).where(
+                        Visit.tenant_id == self.tenant_id, Visit.patient_id == visit.patient_id, Visit.visit_date > visit.visit_date
+                    )
+                )
+            ).scalar_one()
+            has_upcoming = (
+                await self.db.execute(
+                    select(func.count()).select_from(Appointment).where(
+                        Appointment.tenant_id == self.tenant_id, Appointment.patient_id == visit.patient_id,
+                        Appointment.appointment_date >= today, Appointment.status.in_(("scheduled", "confirmed")),
+                    )
+                )
+            ).scalar_one()
+            if had_later_visit or has_upcoming:
+                continue
+            seen.add(visit.patient_id)
+            out.append(
+                FollowUpDue(
+                    patient_id=visit.patient_id, patient_name=name, visit_id=visit.id, follow_up_date=visit.follow_up_date,
+                    follow_up_notes=visit.follow_up_notes, days_overdue=(today - visit.follow_up_date).days,
+                )
+            )
+            if len(out) >= limit:
+                break
+        return out
+
+    async def _visit_alerts(self, today: date, limit: int = 8) -> list[VisitAlert]:
+        """The latest visit per patient in the last 14 days that recorded warning signs or an urgent referral."""
+        rows = (
+            await self.db.execute(
+                select(Visit, Patient.full_name)
+                .join(Patient, Patient.id == Visit.patient_id)
+                .where(
+                    Visit.tenant_id == self.tenant_id,
+                    Patient.tenant_id == self.tenant_id,
+                    Visit.visit_date >= today - timedelta(days=14),
+                )
+                .order_by(Visit.visit_date.desc(), Visit.created_at.desc())
+                .limit(300)
+            )
+        ).all()
+        out: list[VisitAlert] = []
+        seen: set[str] = set()
+        for visit, name in rows:
+            if visit.patient_id in seen:
+                continue
+            seen.add(visit.patient_id)  # only a patient's latest visit counts: an older warning may be resolved
+            urgent = visit.referral_urgency in ("urgent", "emergency")
+            if not (visit.red_flags or urgent):
+                continue
+            out.append(
+                VisitAlert(
+                    patient_id=visit.patient_id, patient_name=name, visit_id=visit.id, visit_date=visit.visit_date,
+                    red_flags=list(visit.red_flags or []), referral_urgency=visit.referral_urgency,
+                )
+            )
+            if len(out) >= limit:
+                break
+        # emergencies first, then urgent, then by date
+        rank = {"emergency": 0, "urgent": 1}
+        out.sort(key=lambda a: (rank.get(a.referral_urgency or "", 2), -a.visit_date.toordinal()))
+        return out
+
+    async def _plan_status(self) -> PlanStatus:
+        tenant = (await self.db.execute(select(Tenant).where(Tenant.id == self.tenant_id))).scalar_one()
+        _, expired = effective_plan_key(tenant)
+        days_left = None
+        if tenant.plan_expires_at is not None and not expired:
+            days_left = max(0, (tenant.plan_expires_at - datetime.now(timezone.utc)).days)
+        return PlanStatus(plan=tenant.plan, expires_at=tenant.plan_expires_at, days_left=days_left, expired=expired)

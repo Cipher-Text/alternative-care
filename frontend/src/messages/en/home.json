@@ -28,7 +28,41 @@
     "patientDemographics": "Patient Demographics",
     "noPatientData": "No patient data available",
     "ageDistribution": "Age Distribution",
-    "noAgeData": "No age data available"
+    "noAgeData": "No age data available",
+    "today": {
+      "title": "Today",
+      "subtitle": "Your schedule and what needs your attention.",
+      "dateLabel": "{date}",
+      "scheduleTitle": "Today's appointments",
+      "noAppointments": "No appointments today.",
+      "scheduleOne": "Schedule an appointment",
+      "viewAll": "All appointments",
+      "minutes": "{count} min",
+      "status": {
+        "scheduled": "Scheduled",
+        "confirmed": "Confirmed",
+        "in_progress": "In progress",
+        "completed": "Completed",
+        "no_show": "No show"
+      },
+      "attentionTitle": "Needs your attention",
+      "allClear": "Nothing needs your attention right now.",
+      "requestsWaiting": "{count, plural, one {# patient request is waiting for your reply} other {# patient requests are waiting for your reply}}",
+      "openRequests": "Open requests",
+      "alertsTitle": "Warning signs in recent visits",
+      "referral": {
+        "urgent": "Urgent referral",
+        "emergency": "Emergency referral"
+      },
+      "followUpsTitle": "Follow-ups due",
+      "overdue": "{days, plural, one {# day overdue} other {# days overdue}}",
+      "dueToday": "Due today",
+      "dueIn": "{days, plural, one {# day left} other {# days left}}",
+      "planExpired": "Your plan has ended. You are back on the Free plan.",
+      "planEnding": "{days, plural, one {# day left on your {plan} plan.} other {# days left on your {plan} plan.}}",
+      "renew": "Renew",
+      "overviewTitle": "Overview"
+    }
   },
   "chartsUi": {
     "ageChildren": "Children",

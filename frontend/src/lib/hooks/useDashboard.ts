@@ -2,6 +2,11 @@ import { useQuery } from 'react-query'
 import { dashboardApi } from '@/lib/api/dashboard'
 import type { DateRangeFilter } from '@/types/dashboard'
 
+/** Refreshes every minute and when the window regains focus: this is the page left open all day. */
+export function useTodayOverview() {
+  return useQuery(['dashboard', 'today'], () => dashboardApi.getToday(), { refetchInterval: 60000, staleTime: 30000 })
+}
+
 export function useOverviewStats(params?: DateRangeFilter) {
   return useQuery(['dashboard', 'overview', params], () =>
     dashboardApi.getOverview(params)

@@ -185,7 +185,9 @@
         "pain": "Pain",
         "respiratoryRate": "Resp"
       },
-      "readOnly": "Only the doctor can record visits."
+      "readOnly": "Only the doctor can record visits.",
+      "followUpDate": "Follow-up date",
+      "followUpNote": "What to check at the follow-up"
     }
   }
 }

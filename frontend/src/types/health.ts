@@ -83,4 +83,6 @@ export type VisitInput = Partial<Vitals> & {
   referral_urgency?: string
   provisional_diagnosis?: string
   treatment_plan?: string
+  follow_up_date?: string
+  follow_up_notes?: string
 }

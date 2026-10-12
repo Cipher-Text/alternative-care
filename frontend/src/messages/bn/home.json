@@ -28,7 +28,41 @@
     "patientDemographics": "রোগীদের জনতাত্ত্বিক তথ্য",
     "noPatientData": "রোগীর কোনো তথ্য নেই",
     "ageDistribution": "বয়স অনুযায়ী বিন্যাস",
-    "noAgeData": "বয়সের কোনো তথ্য নেই"
+    "noAgeData": "বয়সের কোনো তথ্য নেই",
+    "today": {
+      "title": "আজ",
+      "subtitle": "আপনার সময়সূচি এবং যা এখন দেখা দরকার।",
+      "dateLabel": "{date}",
+      "scheduleTitle": "আজকের অ্যাপয়েন্টমেন্ট",
+      "noAppointments": "আজ কোনো অ্যাপয়েন্টমেন্ট নেই।",
+      "scheduleOne": "অ্যাপয়েন্টমেন্ট দিন",
+      "viewAll": "সব অ্যাপয়েন্টমেন্ট",
+      "minutes": "{count} মিনিট",
+      "status": {
+        "scheduled": "নির্ধারিত",
+        "confirmed": "নিশ্চিত",
+        "in_progress": "চলছে",
+        "completed": "সম্পন্ন",
+        "no_show": "আসেননি"
+      },
+      "attentionTitle": "আপনার নজর দরকার",
+      "allClear": "এখন কিছুতেই আপনার নজর দেওয়ার দরকার নেই।",
+      "requestsWaiting": "{count, plural, one {# জন রোগীর অনুরোধ আপনার উত্তরের অপেক্ষায়} other {# জন রোগীর অনুরোধ আপনার উত্তরের অপেক্ষায়}}",
+      "openRequests": "অনুরোধগুলো দেখুন",
+      "alertsTitle": "সাম্প্রতিক ভিজিটে সতর্ক লক্ষণ",
+      "referral": {
+        "urgent": "জরুরি রেফার",
+        "emergency": "জরুরি অবস্থায় রেফার"
+      },
+      "followUpsTitle": "ফলো-আপের সময় হয়েছে",
+      "overdue": "{days, plural, one {# দিন পেরিয়ে গেছে} other {# দিন পেরিয়ে গেছে}}",
+      "dueToday": "আজই",
+      "dueIn": "{days, plural, one {# দিন বাকি} other {# দিন বাকি}}",
+      "planExpired": "আপনার প্ল্যানের মেয়াদ শেষ। আপনি এখন ফ্রি প্ল্যানে আছেন।",
+      "planEnding": "{days, plural, one {আপনার {plan} প্ল্যানের # দিন বাকি।} other {আপনার {plan} প্ল্যানের # দিন বাকি।}}",
+      "renew": "নবায়ন করুন",
+      "overviewTitle": "সারসংক্ষেপ"
+    }
   },
   "chartsUi": {
     "ageChildren": "শিশু",
