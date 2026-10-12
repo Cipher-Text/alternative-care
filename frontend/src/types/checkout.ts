@@ -85,6 +85,19 @@ export interface AdminOrder extends Order {
   gateway_txn_id: string | null
 }
 
+export type ManualPaymentMethod = 'cash' | 'bank_transfer' | 'bkash' | 'nagad' | 'rocket' | 'cheque' | 'other'
+export type ManualPlanTerm = 'monthly' | 'yearly' | 'until_date' | 'no_expiry'
+
+/** An admin sets a clinic's plan after a payment taken outside the gateways. */
+export interface ManualPlanGrantInput {
+  plan_key: string
+  term: ManualPlanTerm
+  until_date?: string | null
+  amount: number
+  payment_method: ManualPaymentMethod
+  reference: string
+}
+
 export type CheckoutRequest =
   | { kind: 'subscription'; gateway: string; plan_key: string; period: BillingPeriod }
   | { kind: 'credit_pack'; gateway: string; pack_id: number }

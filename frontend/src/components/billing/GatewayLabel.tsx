@@ -22,6 +22,7 @@ function gatewayText(gateway: string, t: (key: string) => string): string {
   if (gateway === 'sslcommerz') return t('sslcommerz')
   if (gateway === 'bkash') return t('bkash')
   if (gateway === 'fake') return t('fake')
+  if (gateway === 'manual') return t('manual')
   return gateway
 }
 

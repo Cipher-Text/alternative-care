@@ -6,6 +6,7 @@ import type {
   CreditPack,
   CreditPackInput,
   CreditPackUpdate,
+  ManualPlanGrantInput,
   Order,
   OrderStatus,
   SubscriptionInfo,
@@ -28,6 +29,8 @@ export const checkoutApi = {
 
 /** Admin-only. */
 export const adminBillingApi = {
+  grantPlan: async (tenantId: string, data: ManualPlanGrantInput): Promise<AdminOrder> =>
+    (await apiClient.post(`/admin/billing/tenants/${tenantId}/plan`, data)).data,
   packs: async (): Promise<CreditPack[]> => (await apiClient.get('/admin/billing/packs')).data,
   createPack: async (data: CreditPackInput): Promise<CreditPack> =>
     (await apiClient.post('/admin/billing/packs', data)).data,

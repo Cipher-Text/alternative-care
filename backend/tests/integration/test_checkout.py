@@ -360,3 +360,59 @@ async def test_abandoned_orders_expire_but_recent_ones_do_not(
     assert await expire_stale_orders(db_session) == 1
     statuses = {o["id"]: o["status"] for o in (await client.get("/api/v1/billing/orders", headers=H(doctor_token))).json()}
     assert statuses == {old["id"]: "expired", fresh["id"]: "pending"}
+
+
+MANUAL = {"plan_key": "pro", "term": "monthly", "amount": 3000, "payment_method": "bkash", "reference": "TRX123ABC"}
+
+
+@pytest.mark.asyncio
+async def test_admin_can_move_a_clinic_to_a_plan_after_a_manual_payment(
+    client, doctor_token, admin_access_token, db_session, test_tenant
+):
+    url = f"/api/v1/admin/billing/tenants/{test_tenant.id}/plan"
+    assert (await client.post(url, json=MANUAL, headers=H(doctor_token))).status_code == 403  # admins only
+
+    r = await client.post(url, json=MANUAL, headers=H(admin_access_token))
+    assert r.status_code == 201, r.text
+    order = r.json()
+    assert (order["gateway"], order["status"], order["plan_key"], order["period"]) == ("manual", "paid", "pro", "monthly")
+    await db_session.refresh(test_tenant)
+    assert test_tenant.plan == "pro"
+    first_expiry = test_tenant.plan_expires_at
+    assert first_expiry is not None and first_expiry > datetime.now(timezone.utc) + timedelta(days=27)
+
+    # it is a receipt the clinic sees, and paying again for the same plan extends it
+    mine = (await client.get("/api/v1/billing/orders", headers=H(doctor_token))).json()
+    assert [(o["gateway"], o["receipt_no"]) for o in mine] == [("manual", order["receipt_no"])]
+    await client.post(url, json=MANUAL, headers=H(admin_access_token))
+    await db_session.refresh(test_tenant)
+    assert test_tenant.plan_expires_at == first_expiry + relativedelta(months=1)
+
+    row = (await db_session.execute(select(BillingOrder).where(BillingOrder.id == order["id"]))).scalar_one()
+    assert row.gateway_data["reference"] == "TRX123ABC" and row.gateway_data["payment_method"] == "bkash"
+
+
+@pytest.mark.asyncio
+async def test_manual_plan_terms_and_validation(client, admin_access_token, db_session, test_tenant):
+    url = f"/api/v1/admin/billing/tenants/{test_tenant.id}/plan"
+    post = lambda body: client.post(url, json={**MANUAL, **body}, headers=H(admin_access_token))  # noqa: E731
+
+    assert (await post({"plan_key": "nope"})).status_code == 404
+    assert (await post({"term": "until_date"})).status_code == 422  # needs a date
+    assert (await post({"term": "until_date", "until_date": "2020-01-01"})).status_code == 422  # in the past
+    assert (await post({"reference": "x"})).status_code == 422  # a reference is required
+    assert (await post({"plan_key": "free", "term": "monthly"})).status_code == 422  # free has no end date
+    assert (await client.post("/api/v1/admin/billing/tenants/missing/plan", json=MANUAL, headers=H(admin_access_token))).status_code == 404
+
+    end = (datetime.now(timezone.utc) + timedelta(days=90)).date()
+    assert (await post({"plan_key": "enterprise", "term": "until_date", "until_date": end.isoformat()})).status_code == 201
+    await db_session.refresh(test_tenant)
+    assert test_tenant.plan == "enterprise" and test_tenant.plan_expires_at.date() == end
+
+    assert (await post({"plan_key": "plus", "term": "no_expiry", "amount": 0})).status_code == 201
+    await db_session.refresh(test_tenant)
+    assert test_tenant.plan == "plus" and test_tenant.plan_expires_at is None
+
+    assert (await post({"plan_key": "free", "term": "no_expiry", "amount": 0})).status_code == 201
+    await db_session.refresh(test_tenant)
+    assert test_tenant.plan == "free"

@@ -8,12 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import RequireAdmin
+from app.modules.billing.orders import OrderService
 from app.shared.models import BillingOrder, CreditPack, Tenant
 from app.shared.schemas import (
     AdminOrderItem,
     CreditPackCreate,
     CreditPackResponse,
     CreditPackUpdate,
+    ManualPlanGrant,
 )
 
 router = APIRouter()
@@ -53,6 +55,20 @@ async def update_pack(
     await db.commit()
     await db.refresh(pack)
     return pack
+
+
+@router.post("/tenants/{tenant_id}/plan", response_model=AdminOrderItem, status_code=status.HTTP_201_CREATED)
+async def grant_plan(
+    tenant_id: str,
+    data: ManualPlanGrant,
+    admin: RequireAdmin,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Move a clinic to a plan after a manual payment (cash, bank or mobile transfer). Recorded as a paid
+    order with the method and reference, so it shows in the clinic's receipts and in revenue."""
+    order = await OrderService(db).grant_manual(tenant_id, admin.user_id, data)
+    tenant = (await db.execute(select(Tenant).where(Tenant.id == tenant_id))).scalar_one()
+    return AdminOrderItem(**_order_dict(order), tenant_name=tenant.clinic_name or tenant.name)
 
 
 @router.get("/orders", response_model=list[AdminOrderItem])

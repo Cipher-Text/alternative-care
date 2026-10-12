@@ -358,6 +358,7 @@ from app.shared.schemas.credits import (  # noqa: E402
 from app.shared.schemas.checkout import (  # noqa: E402
     AdminOrderItem,
     CheckoutRequest,
+    ManualPlanGrant,
     CheckoutResponse,
     CreditPackCreate,
     CreditPackResponse,

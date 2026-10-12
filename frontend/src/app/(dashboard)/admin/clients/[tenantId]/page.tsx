@@ -19,6 +19,7 @@ import {
 import { useAuthStore } from '@/store/authStore'
 import { TenantVerificationCard } from '@/components/admin/TenantVerificationCard'
 import { TenantCreditsCard } from '@/components/admin/TenantCreditsCard'
+import { TenantPlanCard } from '@/components/admin/TenantPlanCard'
 import { TenantEntitlementsCard } from '@/components/admin/TenantEntitlementsCard'
 import { useAdminClient, useCreateTenantDoctor } from '@/lib/hooks/useAdminClients'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -204,6 +205,9 @@ export default function AdminClientDetailPage({
             <div>
               <p className="text-sm text-muted-foreground">Plan</p>
               <Badge variant="outline" className="capitalize">{tenant.plan}</Badge>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {tenant.plan_expires_at ? `Ends ${formatDate(tenant.plan_expires_at)}` : 'No end date'}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Approval</p>
@@ -353,7 +357,10 @@ export default function AdminClientDetailPage({
 
       <TenantEntitlementsCard tenantId={tenantId} canEdit={canEdit} />
 
-      {/* Admin-only write; operators do not see it */}
+      {/* Admin-only writes; operators do not see them */}
+      {canEdit && (
+        <TenantPlanCard tenantId={tenantId} currentPlan={tenant.plan} currentExpiresAt={tenant.plan_expires_at} />
+      )}
       {canEdit && <TenantCreditsCard tenantId={tenantId} />}
 
       <Dialog open={isDoctorDialogOpen} onOpenChange={setIsDoctorDialogOpen}>

@@ -1,6 +1,6 @@
 """Schemas for checkout: subscriptions, credit packs, orders."""
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Literal
 
@@ -116,6 +116,18 @@ class CreditPackUpdate(BaseModel):
     name_bn: str | None = Field(None, max_length=100)
     is_active: bool | None = None
     sort_order: int | None = None
+
+
+class ManualPlanGrant(BaseModel):
+    """An admin sets a clinic's plan after taking payment outside the gateways (cash, bank, mobile transfer)."""
+
+    plan_key: str = Field(..., min_length=2, max_length=20, pattern="^[a-z][a-z0-9_]*$")
+    term: Literal["monthly", "yearly", "until_date", "no_expiry"]
+    # Only for term == "until_date": the last day the plan is active
+    until_date: date | None = None
+    amount: Decimal = Field(..., ge=0, max_digits=10, decimal_places=2)
+    payment_method: Literal["cash", "bank_transfer", "bkash", "nagad", "rocket", "cheque", "other"]
+    reference: str = Field(..., min_length=3, max_length=200, description="Transaction id, receipt or note")
 
 
 class AdminOrderItem(OrderResponse):

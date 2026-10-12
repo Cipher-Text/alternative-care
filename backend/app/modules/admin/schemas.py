@@ -36,6 +36,7 @@ class AdminTenantItem(BaseModel):
     clinic_name: str | None
     specializations: list[str]
     plan: str
+    plan_expires_at: datetime | None = None
     is_verified: bool
     is_approved: bool
     is_active: bool

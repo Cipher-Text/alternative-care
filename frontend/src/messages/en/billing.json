@@ -79,6 +79,48 @@
         "configured": "Configured",
         "notConfigured": "Not configured",
         "hint": "Provider credentials are set in the server environment and are never shown here."
+      },
+      "plan": {
+        "title": "Plan (manual payment)",
+        "description": "Use this when a clinic paid outside the website (cash, bank or mobile transfer). It sets the plan, records a receipt the clinic can see, and keeps the payment reference. You can also move a clinic down, for example back to Free.",
+        "current": "Current plan:",
+        "expires": "ends {date}",
+        "noExpiry": "no end date",
+        "plan": "New plan",
+        "planPlaceholder": "Choose a plan",
+        "planRequired": "Choose a plan.",
+        "term": "For how long",
+        "terms": {
+          "monthly": "1 month",
+          "yearly": "1 year",
+          "until_date": "Until a date",
+          "no_expiry": "No end date"
+        },
+        "freeHint": "The Free plan has no end date.",
+        "untilDate": "Last day of the plan",
+        "dateRequired": "Choose the last day.",
+        "amount": "Amount received (BDT)",
+        "amountHint": "Enter 0 for a gift or a trial.",
+        "amountInvalid": "Enter the amount received, or 0.",
+        "method": "Payment method",
+        "methods": {
+          "cash": "Cash",
+          "bank_transfer": "Bank transfer",
+          "bkash": "bKash",
+          "nagad": "Nagad",
+          "rocket": "Rocket",
+          "cheque": "Cheque",
+          "other": "Other"
+        },
+        "reference": "Transaction id or note",
+        "referencePlaceholder": "For example: bKash TrxID 9XK2L or bank slip no. 4471",
+        "referenceRequired": "Enter a reference of at least 3 characters.",
+        "confirm": "I confirm the payment was received",
+        "confirmRequired": "Please confirm the payment.",
+        "submit": "Set plan",
+        "working": "Saving...",
+        "done": "Plan updated",
+        "failed": "Could not update the plan."
       }
     },
     "settingsIndex": {
@@ -98,7 +140,8 @@
       "fake": "Test payment (no real money)",
       "testBadge": "TEST",
       "sslcommerz": "Card, bKash and mobile banking (SSLCommerz)",
-      "bkash": "bKash"
+      "bkash": "bKash",
+      "manual": "Manual payment (recorded by AltCare)"
     },
     "confirm": {
       "title": "Confirm your purchase",

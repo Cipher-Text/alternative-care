@@ -6,7 +6,7 @@ refuses to fulfil when the gateway's amount or currency does not match what we a
 """
 
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 from decimal import Decimal
 from uuid import uuid4
 
@@ -22,7 +22,7 @@ from app.modules.billing.gateways import available_gateways, get_gateway, is_tes
 from app.modules.billing.gateways.base import Customer, GatewayResult
 from app.modules.plans.service import PlansService
 from app.shared.models import BillingOrder, CreditPack, Plan, Tenant, User
-from app.shared.schemas import CheckoutRequest, PlanOption, SubscriptionInfo
+from app.shared.schemas import CheckoutRequest, ManualPlanGrant, PlanOption, SubscriptionInfo
 
 logger = structlog.get_logger()
 
@@ -177,6 +177,81 @@ class OrderService:
         await self.db.commit()
         await self.db.refresh(order)
         return order, session.redirect_url
+
+    # ----- manual (admin) -------------------------------------------------------------------
+
+    async def grant_manual(self, tenant_id: str, admin_id: str, data: ManualPlanGrant) -> BillingOrder:
+        """Set a clinic's plan after a payment taken outside the gateways. Recorded as a paid order
+        (gateway 'manual', with the method and reference) so it appears in receipts and revenue."""
+        plan = (await PlansService(self.db).plan_rows()).get(data.plan_key)  # any plan, public or not
+        if plan is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Plan not found")
+        admin = (await self.db.execute(select(User).where(User.id == admin_id))).scalar_one()
+        now = datetime.now(timezone.utc)
+
+        until = None
+        if data.term == "until_date":
+            if data.until_date is None:
+                raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Choose the last day of the plan.")
+            until = datetime.combine(data.until_date, time(23, 59, 59), tzinfo=timezone.utc)
+            if until <= now:
+                raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "The end date must be in the future.")
+        if plan.key == FALLBACK_PLAN and data.term != "no_expiry":
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "The free plan has no end date.")
+
+        tenant = (
+            await self.db.execute(select(Tenant).where(Tenant.id == tenant_id).with_for_update())
+        ).scalar_one_or_none()
+        if tenant is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Tenant not found")
+        applied, expired = effective_plan_key(tenant)
+
+        if data.term in PERIOD_DELTA:
+            extending = tenant.plan == plan.key and not expired and tenant.plan_expires_at is not None
+            new_expiry = (tenant.plan_expires_at if extending else now) + PERIOD_DELTA[data.term]
+            label = PERIOD_LABEL[data.term]
+        else:
+            extending = False
+            new_expiry = until  # None for no_expiry
+            label = "until " + until.strftime("%d %B %Y") if until else "no expiry"
+        if tenant.plan != plan.key or expired:
+            tenant.plan_started_at = now
+        tenant.plan = plan.key
+        tenant.plan_expires_at = new_expiry
+        tenant.plan_reminder_stage = 0
+        tenant.updated_by = admin_id
+
+        order = BillingOrder(
+            id=str(uuid4()),
+            receipt_no=f"AC-{now:%Y%m}-{secrets.token_hex(3).upper()}",
+            tenant_id=tenant_id,
+            payer_user_id=admin_id,
+            payer_name=admin.full_name,
+            kind="subscription",
+            plan_key=plan.key,
+            period=data.term,
+            description=f"{plan.name_en} plan, {label} (manual)",
+            amount=data.amount,
+            currency=plan.currency,
+            status="paid",
+            gateway="manual",
+            gateway_txn_id=data.reference[:100],
+            gateway_data={"payment_method": data.payment_method, "reference": data.reference, "granted_by": admin_id},
+            paid_at=now,
+            fulfilled_at=now,
+            fulfilment={
+                "plan": plan.key,
+                "plan_expires_at": new_expiry.isoformat() if new_expiry else None,
+                "extended": extending,
+                "previous_plan": applied,
+            },
+            created_by=admin_id,
+        )
+        self.db.add(order)
+        await self.db.commit()
+        await self.db.refresh(order)
+        logger.info("billing_manual_plan_granted", order_id=order.id, tenant_id=tenant_id, plan=plan.key, by=admin_id)
+        return order
 
     # ----- read -----------------------------------------------------------------------------
 

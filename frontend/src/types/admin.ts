@@ -30,6 +30,7 @@ export interface AdminTenantItem {
   clinic_name: string | null
   specializations: string[]
   plan: string
+  plan_expires_at?: string | null
   is_verified: boolean
   is_approved: boolean
   is_active: boolean
