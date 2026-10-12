@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { getContactInfo } from '@/lib/contactInfo'
 
 const columns = [
   {
@@ -19,7 +20,12 @@ const columns = [
   },
   {
     title: 'colCompany',
-    links: [{ key: 'navAbout', href: '/about' }],
+    links: [
+      { key: 'navAbout', href: '/about' },
+      { key: 'navContact', href: '/contact' },
+      { key: 'navFaq', href: '/faq' },
+      { key: 'navRefundPolicy', href: '/refund-policy' },
+    ],
   },
   {
     title: 'colLegal',
@@ -33,6 +39,7 @@ const columns = [
 
 export function PublicFooter({ directoryLaunched = false }: { directoryLaunched?: boolean }) {
   const t = useTranslations('publicShellUi')
+  const facebook = getContactInfo().facebook
   const directoryLinks = directoryLaunched
     ? [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...columns[0].links]
     : columns[0].links
@@ -72,7 +79,14 @@ export function PublicFooter({ directoryLaunched = false }: { directoryLaunched?
         </div>
 
         <div className="mt-10 pt-6 border-t border-gray-200 dark:border-slate-800 text-sm text-gray-500 dark:text-gray-400">
-          {t('rights', { year: new Date().getFullYear() })}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span>{t('rights', { year: new Date().getFullYear() })}</span>
+            {facebook && (
+              <a href={facebook} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-white">
+                Facebook
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </footer>

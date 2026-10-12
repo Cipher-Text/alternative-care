@@ -208,6 +208,8 @@ class Settings(BaseSettings):
     PAYMENT_FAKE_GATEWAY_ENABLED: bool = False
     # Contact-request form: submissions per IP per hour
     RATE_LIMIT_CONTACT_REQUEST_PER_HOUR: int = 5
+    # Public contact form: messages per IP per hour
+    RATE_LIMIT_CONTACT_MESSAGE_PER_HOUR: int = 5
     RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600
 
     # Security headers

@@ -22,6 +22,7 @@ from app.core.config import settings
 from app.core.rate_limit import enforce_rate_limit
 from app.modules.directory.service import PublicDirectoryService
 from app.shared.schemas import (
+    ContactMessageCreate,
     ContactRequestCreate,
     InstitutionListItem,
     ListingEventCreate,
@@ -227,3 +228,21 @@ async def record_listing_event(
     await _limit(request, "directory_event", 60, 3600)
     await PublicDirectoryService(db).record_event(slug, data.event_type)
     return Response(status_code=204)
+
+
+# ===== Contact form =====
+
+
+@router.post("/contact", status_code=201)
+async def send_contact_message(
+    data: ContactMessageCreate,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """General questions, Enterprise enquiries, billing help, or a report about a profile.
+    Consent is mandatory; a hidden honeypot field and an IP rate limit keep bots out."""
+    from app.modules.contact.service import ContactService
+
+    await _limit(request, "contact_message", settings.RATE_LIMIT_CONTACT_MESSAGE_PER_HOUR, 3600)
+    await ContactService(db).create(data)
+    return {"ok": True}

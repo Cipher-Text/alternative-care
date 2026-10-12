@@ -19,7 +19,10 @@
     "disclaimer": "Medical Disclaimer",
     "contact": "Contact",
     "navArticles": "Articles",
-    "navFindPractitioner": "Find a practitioner"
+    "navFindPractitioner": "Find a practitioner",
+    "navContact": "Contact",
+    "navFaq": "FAQ & billing",
+    "navRefundPolicy": "Refund policy"
   },
   "publicMetaUi": {
     "default": {
@@ -65,6 +68,18 @@
     "directory": {
       "title": "Find a practitioner",
       "description": "Verified Homeopathy, Ayurveda, Unani and Herbal practitioners in Bangladesh. Call the clinic or ask for a call back."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Send AltCare a question, ask about an Enterprise plan, get billing help, or report a practitioner profile."
+    },
+    "faq": {
+      "title": "FAQ and billing",
+      "description": "How plans, payments, renewal and messaging credits work, and what happens when a plan ends."
+    },
+    "refundPolicy": {
+      "title": "Refund and cancellation policy",
+      "description": "When payments for AltCare plans and credit packs can be refunded, and how to cancel."
     }
   }
 }

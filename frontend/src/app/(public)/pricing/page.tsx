@@ -112,6 +112,7 @@ export default function PricingPage() {
         price: priceText(plan, period, t),
         features: featureLines(plan, data.catalog, t, locale),
         highlighted: index === 1,
+        contactOnly: plan.price_monthly === null,
       }))
     : fallbackPlans.map((plan, index) => ({
         key: plan.key,
@@ -120,6 +121,7 @@ export default function PricingPage() {
         price: { main: t('contactUs') } as { main: string; sub?: string },
         features: plan.features,
         highlighted: index === 1,
+        contactOnly: plan.key === 'enterprise',
       }))
 
   return (
@@ -192,12 +194,23 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Button asChild className="w-full mt-6" variant={plan.highlighted ? 'default' : 'outline'}>
-                <Link href={`/register?plan=${plan.key}`}>{t('getStarted')}</Link>
+                {plan.contactOnly ? (
+                  <Link href="/contact?topic=enterprise">{t('talkToUs')}</Link>
+                ) : (
+                  <Link href={`/register?plan=${plan.key}`}>{t('getStarted')}</Link>
+                )}
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+        {t.rich('billingHelp', {
+          faq: () => <Link href="/faq" className="text-emerald-700 underline dark:text-emerald-400">{t('billingHelpFaq')}</Link>,
+          refund: () => <Link href="/refund-policy" className="text-emerald-700 underline dark:text-emerald-400">{t('billingHelpRefund')}</Link>,
+        })}
+      </p>
     </div>
   )
 }

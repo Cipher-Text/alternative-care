@@ -66,7 +66,11 @@
       "saveUpTo": "Save up to {percent}%",
       "savePercent": "Save {percent}%",
       "perMonthEquivalent": "about {currency} {amount}/month",
-      "noYearlyPrice": "Yearly price not available"
+      "noYearlyPrice": "Yearly price not available",
+      "talkToUs": "Talk to us",
+      "billingHelp": "Questions about billing, renewal or refunds? See the {faq} and {refund}.",
+      "billingHelpFaq": "FAQ",
+      "billingHelpRefund": "refund policy"
     }
   }
 }

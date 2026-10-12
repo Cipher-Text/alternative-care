@@ -33,8 +33,11 @@
       "s4Body": "What is included depends on your plan. Plan contents and limits may change; we will give notice of material changes.",
       "s5Title": "Acceptable use",
       "s5Body": "Do not misuse the service, attempt to access other clinics' data, or use AltCare for anything unlawful.",
-      "s6Title": "Liability",
-      "s6Body": "AltCare is provided as is. To the extent the law allows, we are not liable for indirect loss arising from its use."
+      "s6Title": "Paid plans and credits",
+      "s6Body": "A paid plan is prepaid for a period and ends on the stated date. When a plan ends, your clinic moves to the Free plan's limits and keeps its data. Messaging credits are for communicating with your own patients; spam or misuse may lead to suspension. A price change applies to future periods only, never to a period you have already paid for. Refunds are governed by our Refund and cancellation policy.",
+      "s6LinkText": "Read the Refund and cancellation policy",
+      "s7Title": "Liability",
+      "s7Body": "AltCare is provided as is. To the extent the law allows, we are not liable for indirect loss arising from its use."
     },
     "disclaimer": {
       "title": "Medical Disclaimer",

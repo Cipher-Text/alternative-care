@@ -18,6 +18,7 @@ const navigation = [
   { key: 'navPractitioners', href: '/for-practitioners' },
   { key: 'navPricing', href: '/pricing' },
   { key: 'navAbout', href: '/about' },
+  { key: 'navContact', href: '/contact' },
 ] as const
 
 export function PublicHeader({ directoryLaunched = false }: { directoryLaunched?: boolean }) {

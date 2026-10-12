@@ -1,6 +1,7 @@
+import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
-const SECTION_COUNTS = { privacy: 7, terms: 6, disclaimer: 4 } as const
+const SECTION_COUNTS = { privacy: 7, terms: 7, disclaimer: 4 } as const
 
 export type LegalKind = keyof typeof SECTION_COUNTS
 
@@ -20,6 +21,13 @@ export async function LegalPage({ kind }: { kind: LegalKind }) {
         <section key={n} className="mt-8">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t(`s${n}Title`)}</h2>
           <p className="mt-2 text-gray-700 dark:text-gray-300">{t(`s${n}Body`)}</p>
+          {kind === 'terms' && n === 6 && (
+            <p className="mt-2">
+              <Link className="underline" href="/refund-policy">
+                {t('s6LinkText')}
+              </Link>
+            </p>
+          )}
         </section>
       ))}
 

@@ -379,3 +379,9 @@ from app.shared.schemas.marketing import (  # noqa: E402
     FacebookRequestResponse,
     FacebookSummary,
 )
+
+from app.shared.schemas.contact import (  # noqa: E402
+    ContactMessageCreate,
+    ContactMessageResponse,
+    ContactMessageUpdate,
+)

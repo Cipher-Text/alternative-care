@@ -1,9 +1,5 @@
-'use client'
-
-import { useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import {
   Pill,
   Stethoscope,
@@ -16,12 +12,25 @@ import {
   CalendarClock,
   HeartHandshake,
 } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
-import { getPostLoginPath } from '@/lib/auth/redirects'
-import { usePublicStats } from '@/lib/hooks/usePublicCatalog'
+import { SignedInRedirect } from '@/components/public/home/SignedInRedirect'
+import { getContactInfo } from '@/lib/contactInfo'
+import type { PublicStats } from '@/lib/api/public'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+
+/** Live headline counts, fetched on the server so the numbers are in the HTML. null on any failure. */
+async function fetchStats(): Promise<PublicStats | null> {
+  try {
+    const res = await fetch(`${API_BASE}/public/stats`, { next: { revalidate: 300 } })
+    if (!res.ok) return null
+    return (await res.json()) as PublicStats
+  } catch {
+    return null
+  }
+}
 
 const disciplines = [
   { value: 'homeopathy', icon: FlaskConical },
@@ -48,25 +57,9 @@ const STAT_LABEL_KEYS = {
   institutions: 'statInstitutions',
 } as const
 
-export default function HomePage() {
-  const t = useTranslations('publicHomeUi')
-  const router = useRouter()
-  const user = useAuthStore((state) => state.user)
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  const hasHydrated = useAuthStore((state) => state.hasHydrated)
-  const { data: stats } = usePublicStats()
-
-  useEffect(() => {
-    if (hasHydrated && isAuthenticated && user) {
-      router.replace(getPostLoginPath(user))
-    }
-  }, [hasHydrated, isAuthenticated, user, router])
-
-  // Authenticated users are redirected above — avoid flashing marketing
-  // content before that effect runs.
-  if (!hasHydrated || (isAuthenticated && user)) {
-    return null
-  }
+export default async function HomePage() {
+  const t = await getTranslations('publicHomeUi')
+  const stats = await fetchStats()
 
   const shownStats = stats
     ? (Object.keys(STAT_MINIMUMS) as Array<keyof typeof STAT_MINIMUMS>).filter(
@@ -74,8 +67,27 @@ export default function HomePage() {
       )
     : []
 
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
+  const facebook = getContactInfo().facebook
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'AltCare',
+      url: siteUrl,
+      ...(facebook ? { sameAs: [facebook] } : {}),
+    },
+    { '@context': 'https://schema.org', '@type': 'WebSite', name: 'AltCare', url: siteUrl },
+  ]
+
   return (
     <div>
+      <SignedInRedirect />
+      <script
+        type="application/ld+json"
+        // Escape "<" so the data can never terminate the script tag.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-50 to-transparent dark:from-emerald-950/20 dark:to-transparent" />

@@ -48,7 +48,7 @@ export default async function PractitionerPage({ params }: { params: Params }) {
   const p = await fetchPractitioner(slug)
   if (!p) notFound()
 
-  const [locale, t] = await Promise.all([getLocale(), getTranslations('publicPractitionersUi')])
+  const [locale, t, tc] = await Promise.all([getLocale(), getTranslations('publicPractitionersUi'), getTranslations('publicContactUi')])
   const headline = pickLocalized(locale, p.headline_en, p.headline_bn)
   const bio = pickLocalized(locale, p.bio_en, p.bio_bn)
   const district = pickLocalized(locale, p.district_en, p.district_bn)
@@ -188,6 +188,11 @@ export default async function PractitionerPage({ params }: { params: Params }) {
               <Link href="/disclaimer" className="text-emerald-700 underline dark:text-emerald-400">{t('disclaimerLink')}</Link>
             </p>
           </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            <Link href={`/contact?topic=report_profile&practitioner=${encodeURIComponent(p.slug)}`} className="underline hover:text-gray-700 dark:hover:text-gray-200">
+              {tc('reportProfile')}
+            </Link>
+          </p>
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">

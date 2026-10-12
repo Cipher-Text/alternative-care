@@ -16,7 +16,7 @@ export default async function VerificationPage() {
           <p className="mt-2 text-gray-700 dark:text-gray-300">{t(`s${n}Body`)}</p>
           {n === 6 && (
             <p className="mt-2">
-              <Link href="/about" className="text-emerald-700 underline dark:text-emerald-400">{t('contactLink')}</Link>
+              <Link href="/contact?topic=report_profile" className="text-emerald-700 underline dark:text-emerald-400">{t('contactLink')}</Link>
             </p>
           )}
         </section>

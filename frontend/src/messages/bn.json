@@ -116,7 +116,8 @@
     "messaging": "মেসেজিং",
     "billing": "বিলিং",
     "adminBilling": "বিলিং",
-    "facebookPromotion": "Facebook প্রমোশন"
+    "facebookPromotion": "Facebook প্রমোশন",
+    "contactMessages": "যোগাযোগের বার্তা"
   },
   "patients": {
     "title": "রোগীরা",

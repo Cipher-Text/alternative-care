@@ -1,0 +1,112 @@
+{
+  "publicHelpUi": {
+    "faq": {
+      "title": "FAQ and billing",
+      "subtitle": "Straight answers about plans, payments, renewal and messaging credits.",
+      "groups": {
+        "start": {
+          "title": "Getting started",
+          "startQ": "How do I get started?",
+          "startA": "Create an account and tell us about your clinic. New accounts start on the Free plan while our team reviews them. You keep using the same account once it is approved.",
+          "freeQ": "What does the Free plan include?",
+          "freeA": "Free is for trying AltCare. It has limits on patients and doctors, and some features are only in paid plans. The current limits are always on the pricing page.",
+          "pricingLink": "See pricing"
+        },
+        "plans": {
+          "title": "Plans and prices",
+          "listQ": "Which plans are there?",
+          "listA": "Four: Free, Plus, Pro and Enterprise. Free costs nothing. Plus and Pro have a fixed price. Enterprise is for hospitals, chains and institutions.",
+          "pricesQ": "How much do the plans cost?",
+          "pricesA": "{lines}.",
+          "pricesLine": "{name} is {monthly} a month",
+          "pricesLineYearly": "{name} is {monthly} a month or {yearly} a year",
+          "pricesFallback": "Prices could not be loaded just now. Please see the pricing page for the current prices.",
+          "savingQ": "Is it cheaper to pay for a year?",
+          "savingA": "Yes. Paying for a year at once gives you {months} months free compared with paying monthly.",
+          "enterpriseQ": "How much is Enterprise?",
+          "enterpriseA": "Enterprise is priced for each organisation. Talk to us and we will agree a price that fits your size."
+        },
+        "paying": {
+          "title": "Paying",
+          "howQ": "How do I pay?",
+          "howA": "You pay online at checkout, in advance, for 1 month or 1 year. Your plan starts as soon as the payment is confirmed. You can use the payment methods shown at checkout.",
+          "renewQ": "Does my plan renew by itself?",
+          "renewA": "No. There is no automatic renewal and no surprise charges. You renew when you choose to.",
+          "remindQ": "Will you remind me before my plan ends?",
+          "remindA": "Yes. We email a reminder 7 days and 1 day before your plan ends.",
+          "receiptQ": "Where is my receipt?",
+          "receiptA": "After you pay, the receipt is available on the Billing page in your account.",
+          "whoQ": "Who can buy or renew a plan?",
+          "whoA": "Doctors in the clinic can buy or renew. Receptionists cannot."
+        },
+        "ends": {
+          "title": "When a plan ends",
+          "endQ": "What happens when my plan ends?",
+          "endA": "Your clinic moves to the limits of the Free plan. Paid features and allowances stop until you renew.",
+          "deleteQ": "Will I lose my data?",
+          "deleteA": "No. Nothing is deleted when a plan ends. Your patients, prescriptions and records stay.",
+          "renewQ": "Can I renew or upgrade at any time?",
+          "renewA": "Yes. Renewing the same plan before it ends adds the new period after your current end date. If you upgrade to a higher plan, the new plan starts at once, and the unused time on your old plan is not credited.",
+          "lowerQ": "Can I move to a lower plan?",
+          "lowerA": "Yes, after your current period ends.",
+          "clinicQ": "Who holds the plan, the clinic or the doctor?",
+          "clinicA": "The clinic. The plan, the messaging credits and the receipts belong to the clinic, not to one doctor."
+        },
+        "credits": {
+          "title": "Messaging credits",
+          "allowanceQ": "What is the monthly SMS and email allowance?",
+          "allowanceA": "Each plan includes a number of SMS and emails every month. The allowance does not roll over to the next month.",
+          "packsQ": "What if I use it all up?",
+          "packsA": "You can buy a credit pack for SMS or email. Purchased credits are used after your monthly allowance.",
+          "expireQ": "Do purchased credits expire?",
+          "expireA": "Currently they do not expire.",
+          "providerQ": "Do I need my own SMS or email service?",
+          "providerA": "No. AltCare sends SMS and email for you. You never set up a provider."
+        },
+        "facebook": {
+          "title": "Facebook promotion",
+          "whatQ": "What is the Facebook promotion?",
+          "whatA": "On the Pro and Enterprise plans, AltCare can feature your public profile on the AltCare Facebook page.",
+          "howManyQ": "How many times can I be featured?",
+          "howManyA": "Pro includes one feature each quarter. Enterprise includes three each quarter.",
+          "approveQ": "Who writes the post?",
+          "approveA": "Our staff write the post. You see the exact text first and approve it. Nothing is posted without your approval."
+        },
+        "safety": {
+          "title": "Privacy and safety",
+          "privacyQ": "How is my data handled?",
+          "privacyA": "Read how we handle information in our Privacy Policy.",
+          "privacyLink": "Privacy Policy",
+          "medQ": "Does AltCare give medical advice?",
+          "medA": "No. AltCare is a tool for record keeping, not a substitute for professional judgement. Read the medical disclaimer.",
+          "medLink": "Medical disclaimer",
+          "reportQ": "How do I report a problem with a profile?",
+          "reportA": "Send us a message through the contact page and tell us which profile and what is wrong.",
+          "reportLink": "Contact us"
+        }
+      },
+      "helpTitle": "Still need help?",
+      "helpBody": "Ask us about billing, or read the refund and cancellation policy.",
+      "helpContact": "Contact us about billing",
+      "helpRefund": "Refund and cancellation policy"
+    },
+    "refund": {
+      "title": "Refund and cancellation policy",
+      "updated": "Last updated: {date}",
+      "intro": "This page explains how to cancel and when a payment to AltCare can be refunded.",
+      "s1Title": "Cancelling",
+      "s1Body": "Plans do not renew automatically. To cancel, simply do not renew. Nothing is charged after your plan ends.",
+      "s2Title": "Charged but nothing added",
+      "s2Body": "If you were charged but the plan or the credits were not added to your clinic, contact us with your receipt number. We will fix it or refund you.",
+      "s3Title": "Duplicate or wrong charges",
+      "s3Body": "If you were charged twice, or charged the wrong amount, we will refund the difference.",
+      "s4Title": "Other payments",
+      "s4Body": "Otherwise, a payment for a plan period or a credit pack is not refunded once the plan is active or the credits have been added.",
+      "s5Title": "How refunds are paid",
+      "s5Body": "Refunds go back to the payment method that was used. How long it takes depends on the payment provider.",
+      "s6Title": "How to ask",
+      "s6Body": "Send us a message with the receipt number from your Billing page. ",
+      "s6Link": "Contact us about billing"
+    }
+  }
+}

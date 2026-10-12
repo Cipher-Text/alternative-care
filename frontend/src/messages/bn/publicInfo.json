@@ -66,7 +66,11 @@
       "saveUpTo": "সর্বোচ্চ {percent}% সাশ্রয়",
       "savePercent": "{percent}% সাশ্রয়",
       "perMonthEquivalent": "প্রায় {currency} {amount}/মাস",
-      "noYearlyPrice": "বার্ষিক মূল্য এখনো নেই"
+      "noYearlyPrice": "বার্ষিক মূল্য এখনো নেই",
+      "talkToUs": "আমাদের সঙ্গে কথা বলুন",
+      "billingHelp": "বিলিং, নবায়ন বা ফেরত নিয়ে প্রশ্ন আছে? দেখুন {faq} ও {refund}।",
+      "billingHelpFaq": "সাধারণ প্রশ্ন",
+      "billingHelpRefund": "ফেরত নীতি"
     }
   }
 }

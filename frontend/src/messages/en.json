@@ -116,7 +116,8 @@
     "messaging": "Messaging",
     "billing": "Billing",
     "adminBilling": "Billing",
-    "facebookPromotion": "Facebook promotion"
+    "facebookPromotion": "Facebook promotion",
+    "contactMessages": "Contact messages"
   },
   "patients": {
     "title": "Patients",

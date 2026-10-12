@@ -276,3 +276,28 @@ Email is priced low and kept simple because its cost is tiny; the main aim is to
 
 Also check before launch: whether pack purchases are subject to VAT, whether unused credits may expire (open
 decision 7 above; today they never expire), and the real provider cost per SMS once an account exists.
+
+## 12. Public site additions (built 2026-10-13)
+
+- **Contact:** public `/contact` page and form (topics: general, enterprise, billing, report a profile; consent
+  required, hidden honeypot, 5 per hour per IP; at least an email or a phone). Messages are stored
+  (`contact_messages`, migration `a7c4e1f9d2b8`), admins are emailed best-effort, and admins read and mark them
+  handled at `/admin/contact`. Direct channels (email, WhatsApp, Facebook page) come from
+  `NEXT_PUBLIC_CONTACT_EMAIL`, `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_FACEBOOK_URL` and are shown only when set.
+  Wired into the header, footer, the verification page, practitioner profiles ("Report this profile") and
+  Enterprise on the pricing page ("Talk to us").
+- **Home page** is now server-rendered (real `h1` and sections in the HTML, Organization and WebSite structured
+  data); the signed-in redirect is a small client component.
+- **FAQ and billing** (`/faq`, with FAQPage structured data) and **Refund and cancellation policy**
+  (`/refund-policy`), plus a "Paid plans and credits" section in the Terms.
+- **Needs the owner before launch:** the refund terms are defaults, not decisions (no refund once a plan is
+  active or credits are added, refund for duplicate or wrong charges, "we will fix it or refund you" when a
+  charge does not add the plan, no refund timeline); the refund page shows a visible "working draft, pending
+  legal review" line to remove once reviewed; the Terms wording (prepaid periods, price changes apply to future
+  periods only, suspension for spam) needs review; all Bengali text needs a native reader; VAT is not mentioned
+  anywhere; the FAQ says plans are paid for online at checkout, which is **not true until a real payment gateway
+  exists** (only the fake test gateway is built), and promises expiry reminders, which need the Celery beat
+  process running. Do not publish the FAQ and refund pages before those are real.
+- **Still missing:** a contact email, WhatsApp number and Facebook page URL (set the three variables above); a
+  separate Enterprise lead form (the contact form's Enterprise topic is the interim); canonical URLs and an
+  indexable-404 fix; product screenshots; a patient-facing home door.

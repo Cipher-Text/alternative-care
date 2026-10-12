@@ -23,6 +23,7 @@ import {
   MessageSquare,
   Receipt,
   Megaphone,
+  Inbox,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -53,6 +54,7 @@ const adminNavigation = [
   { key: 'adminBilling', href: '/admin/billing', icon: Receipt },
   { key: 'facebookPromotion', href: '/admin/marketing', icon: Megaphone },
   { key: 'users', href: '/admin/users', icon: UserCog },
+  { key: 'contactMessages', href: '/admin/contact', icon: Inbox },
   { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },
   { key: 'pharmacies', href: '/admin/pharmacies', icon: Store },
@@ -72,7 +74,7 @@ export function useNavItems() {
   // rather than a separate, currently-empty menu.
   return user?.role === 'admin' || user?.role === 'operator'
     ? // the content and billing APIs are admin only, so operators don't get those links
-      adminNavigation.filter((item) => user.role === 'admin' || (item.href !== '/content' && item.href !== '/admin/billing' && item.href !== '/admin/marketing'))
+      adminNavigation.filter((item) => user.role === 'admin' || (item.href !== '/content' && item.href !== '/admin/billing' && item.href !== '/admin/marketing' && item.href !== '/admin/contact'))
     : doctorNavigation.filter(
         (item) =>
           (can.manageClinicSettings ? item.href !== '/settings/messaging' : item.href !== '/settings' && item.href !== '/billing') && // billing: doctors only

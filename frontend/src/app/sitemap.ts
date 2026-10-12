@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { fetchPublicArticles } from '@/lib/api/publicArticles'
 import { fetchPractitionerSlugs } from '@/lib/api/publicDirectory'
 
-const PUBLIC_PATHS = ['/', '/about', '/for-practitioners', '/pricing', '/institutions', '/articles', '/verification', '/privacy', '/terms', '/disclaimer']
+const PUBLIC_PATHS = ['/', '/about', '/for-practitioners', '/pricing', '/institutions', '/articles', '/verification', '/contact', '/faq', '/refund-policy', '/privacy', '/terms', '/disclaimer']
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '')
