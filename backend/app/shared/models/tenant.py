@@ -107,6 +107,8 @@ class Tenant(BaseAuditModel):
         DateTime(timezone=True),
         nullable=True,
     )
+    # Expiry reminders already sent for the current period: 0 none, 1 = 7-day, 2 = 1-day. Reset on renewal.
+    plan_reminder_stage: Mapped[int] = mapped_column(nullable=False, default=0, server_default="0")
 
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

@@ -21,6 +21,7 @@ import {
   Newspaper,
   BadgeCheck,
   MessageSquare,
+  Receipt,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -37,6 +38,7 @@ const doctorNavigation = [
   { key: 'symptoms', href: '/symptoms', icon: Stethoscope },
   { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'directory', href: '/directory', icon: BadgeCheck },
+  { key: 'billing', href: '/billing', icon: Receipt },
   { key: 'settings', href: '/settings', icon: Settings },
   // Doctors reach Messaging through Settings; receptionists have no Settings, so they get a direct link
   { key: 'messaging', href: '/settings/messaging', icon: MessageSquare },
@@ -46,6 +48,7 @@ const adminNavigation = [
   { key: 'platformDashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { key: 'clients', href: '/admin/clients', icon: Building2 },
   { key: 'plansPricing', href: '/admin/plans', icon: Tags },
+  { key: 'adminBilling', href: '/admin/billing', icon: Receipt },
   { key: 'users', href: '/admin/users', icon: UserCog },
   { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },
@@ -65,11 +68,12 @@ export function useNavItems() {
   // docs/architecture/roles-access.md), so it sees the same nav as admin
   // rather than a separate, currently-empty menu.
   return user?.role === 'admin' || user?.role === 'operator'
-    ? // the content API is doctor/admin only, so operators don't get the Articles link
-      adminNavigation.filter((item) => user.role === 'admin' || item.href !== '/content')
+    ? // the content and billing APIs are admin only, so operators don't get those links
+      adminNavigation.filter((item) => user.role === 'admin' || (item.href !== '/content' && item.href !== '/admin/billing'))
     : doctorNavigation.filter(
         (item) =>
-          (can.manageClinicSettings ? item.href !== '/settings/messaging' : item.href !== '/settings') &&
+          (can.manageClinicSettings ? item.href !== '/settings/messaging' : item.href !== '/settings' && item.href !== '/billing') && // billing: doctors only
+          
           (!can.isReceptionist || (item.href !== '/content' && item.href !== '/directory')) // articles and directory: no receptionists
       )
 }
@@ -116,7 +120,7 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col">
+    <div className="hidden md:flex md:w-64 md:flex-col print:hidden">
       <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-700 transition-colors">
         {/* Logo (a div, not an h1: each page has exactly one h1 — its title) */}
         <div className="flex items-center h-16 flex-shrink-0 px-6 border-b border-gray-200 dark:border-slate-700">

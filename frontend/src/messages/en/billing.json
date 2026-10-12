@@ -39,7 +39,8 @@
         "use": "Used",
         "refund": "Refund",
         "adjustment": "Adjustment"
-      }
+      },
+      "buyOnline": "Choose a credit pack and pay online."
     },
     "exhausted": {
       "title": "No {channel} credits left",
@@ -85,6 +86,194 @@
       "subtitle": "Manage your clinic's messaging and integrations.",
       "messagingText": "SMS and email credits: your monthly allowance, purchased credits and history.",
       "integrationsText": "Payment providers and other connections."
+    },
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "gateway": {
+      "fake": "Test payment (no real money)",
+      "testBadge": "TEST"
+    },
+    "confirm": {
+      "title": "Confirm your purchase",
+      "description": "Please check the details. You will be taken to a payment page next.",
+      "youAreBuying": "You are buying",
+      "amount": "Amount to pay",
+      "payWith": "Pay {amount}",
+      "cancel": "Cancel",
+      "failed": "Could not start the payment. Please try again.",
+      "planSummary": "{plan} plan, {period}",
+      "packSummary": "{name}: {quantity} {channel} credits"
+    },
+    "current": {
+      "title": "Your plan",
+      "statusActive": "Active",
+      "statusExpired": "Expired",
+      "statusNoExpiry": "No expiry",
+      "expiresOn": "Active until {date}",
+      "expiredOn": "Expired on {date}",
+      "expiresToday": "expires today",
+      "daysLeft": "{days} days left",
+      "noExpiryText": "Your plan does not expire.",
+      "soonTitle": "Your plan is ending soon",
+      "soonText": "Renew before it ends to keep your plan's limits. If it expires, your clinic moves to the Free plan's limits. No data is deleted.",
+      "expiredTitle": "Your plan has expired",
+      "expiredText": "Your clinic is now on the Free plan's limits. No data has been deleted. Renew to get your plan's limits back."
+    },
+    "plans": {
+      "title": "Plans",
+      "yourPlan": "Your plan",
+      "period": "Billing period",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "perMonth": "for 1 month",
+      "perYear": "for 1 year",
+      "oneMonth": "1 month",
+      "oneYear": "1 year",
+      "noPrice": "No online price yet.",
+      "saving": "Save {amount} ({percent}%) with yearly",
+      "action": {
+        "subscribe": "Subscribe",
+        "renew": "Renew",
+        "upgrade": "Upgrade",
+        "current": "Your plan does not expire",
+        "blocked": "Not available",
+        "unavailable": "Not available online yet — contact AltCare"
+      }
+    },
+    "page": {
+      "title": "Billing",
+      "subtitle": "Your clinic's plan, messaging credits and receipts. Payments are made by the clinic and are prepaid: renew when you are ready.",
+      "loadFailed": "Could not load your billing details. Please refresh the page.",
+      "noGatewayTitle": "Online payment is not available yet",
+      "noGatewayText": "You can still see your plan and past receipts. Please contact AltCare to change your plan."
+    },
+    "packs": {
+      "title": "Messaging credits",
+      "note": "Purchased credits are used after your plan's monthly allowance.",
+      "noteLink": "See Messaging",
+      "loadFailed": "Could not load credit packs.",
+      "empty": "No credit packs are available right now.",
+      "channelHint": "Buy {channel} credits",
+      "quantity": "{quantity} credits",
+      "buy": "Buy"
+    },
+    "orders": {
+      "title": "Payment history",
+      "loadFailed": "Could not load your payment history.",
+      "empty": "No payments yet.",
+      "clickHint": "Select an order to see its receipt.",
+      "col": {
+        "receipt": "Receipt no",
+        "date": "Date",
+        "description": "Description",
+        "amount": "Amount",
+        "status": "Status",
+        "payer": "Paid by"
+      }
+    },
+    "receipt": {
+      "back": "Back to billing",
+      "print": "Print",
+      "loadFailed": "Could not load this receipt.",
+      "title": "Payment receipt",
+      "receiptNo": "Receipt no",
+      "clinic": "Clinic",
+      "payer": "Paid by",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "ordered": "Ordered",
+      "paidOn": "Paid on",
+      "method": "Payment method",
+      "testNotice": "TEST payment: no real money was charged.",
+      "notPaidNote": "This payment has not been completed, so this is not a proof of payment."
+    },
+    "fake": {
+      "banner": "Test payment — no real money is charged",
+      "title": "Choose a test result",
+      "description": "This page only exists for testing. Pick the outcome you want to try.",
+      "missingOrder": "No order was given.",
+      "loadFailed": "Could not load this order.",
+      "completeFailed": "Could not record the result.",
+      "paySuccess": "Pay successfully",
+      "payFailed": "Payment failed",
+      "cancel": "Cancel"
+    },
+    "return": {
+      "title": "Payment result",
+      "missingOrder": "No order was given.",
+      "loadFailed": "Could not check this payment. Please open your billing page to see its status.",
+      "checking": "Checking your payment…",
+      "stillProcessing": "Your payment is still being processed",
+      "stillProcessingText": "This can take a few minutes. Your plan or credits will be updated as soon as it is confirmed. You can check the status in your payment history.",
+      "successTitle": "Payment received",
+      "title_failed": "Payment failed",
+      "title_cancelled": "Payment cancelled",
+      "title_expired": "Payment expired",
+      "notCharged": "No money was taken for this order.",
+      "receiptNo": "Receipt no",
+      "viewReceipt": "View receipt",
+      "tryAgain": "Try again",
+      "backToBilling": "Back to billing",
+      "planActiveUntil": "{plan} plan active until {date}.",
+      "planActive": "{plan} plan is active.",
+      "creditsAddedSms": "{count} SMS added.",
+      "creditsAddedEmail": "{count} emails added.",
+      "balance": "Your purchased {channel} balance is now {balance}."
+    },
+    "adminBilling": {
+      "adminOnly": "Platform admin access required.",
+      "title": "Billing",
+      "subtitle": "Messaging credit packs and every clinic's orders.",
+      "packs": {
+        "title": "Credit packs",
+        "description": "What clinics can buy. Channel and quantity cannot be changed after a pack is created; make a new pack instead.",
+        "loadFailed": "Could not load credit packs.",
+        "empty": "No credit packs yet.",
+        "channel": "Channel",
+        "quantity": "Quantity",
+        "price": "Price (BDT)",
+        "nameEn": "Name (English)",
+        "nameBn": "Name (Bengali, optional)",
+        "sortOrder": "Sort order",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "edit": "Edit",
+        "createTitle": "New pack",
+        "create": "Create pack",
+        "invalid": "Check the fields: quantity must be a whole number above 0, price 0 or more, and an English name is required.",
+        "fixedNote": "Channel and quantity are fixed once the pack is created.",
+        "editTitle": "Edit pack",
+        "readOnlyInfo": "{channel}, {quantity} credits (cannot be changed)",
+        "activeHelp": "Active: clinics can buy this pack",
+        "save": "Save",
+        "cancel": "Cancel",
+        "created": "Pack created",
+        "updated": "Pack updated",
+        "saveFailed": "Could not save the pack."
+      },
+      "orders": {
+        "title": "Orders",
+        "all": "All",
+        "loadFailed": "Could not load orders.",
+        "empty": "No orders found.",
+        "col": {
+          "clinic": "Clinic",
+          "receipt": "Receipt no",
+          "description": "Description",
+          "amount": "Amount",
+          "status": "Status",
+          "gateway": "Gateway",
+          "payer": "Payer",
+          "date": "Date"
+        }
+      }
     }
   }
 }

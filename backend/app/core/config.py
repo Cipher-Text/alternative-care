@@ -90,6 +90,11 @@ class Settings(BaseSettings):
 
         # Warn about default MinIO credentials in production
         if self.ENVIRONMENT == "production":
+            if self.PAYMENT_FAKE_GATEWAY_ENABLED:
+                errors.append(
+                    "PAYMENT_FAKE_GATEWAY_ENABLED must be false in production: it allows "
+                    "completing checkout without paying."
+                )
             if self.MINIO_ACCESS_KEY == "minioadmin" or self.MINIO_SECRET_KEY == "minioadmin":
                 errors.append(
                     "SECURITY WARNING: Using default MinIO credentials in production! "
@@ -198,6 +203,9 @@ class Settings(BaseSettings):
     BULKSMSBD_API_KEY: str = ""
     BULKSMSBD_SENDER_ID: str = ""
     BULKSMSBD_API_URL: str = ""  # optional override of the provider's default endpoint
+    # Test-only payment gateway (fake hosted page where a tester picks the outcome). Must be off in
+    # production: it lets a signed-in user "pay" without paying.
+    PAYMENT_FAKE_GATEWAY_ENABLED: bool = False
     # Contact-request form: submissions per IP per hour
     RATE_LIMIT_CONTACT_REQUEST_PER_HOUR: int = 5
     RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600

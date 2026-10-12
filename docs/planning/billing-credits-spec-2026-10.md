@@ -1,7 +1,8 @@
 # Billing, platform integrations and messaging credits — spec (draft)
 
 Status: **decisions recorded 2026-10-12; plan values and several details still open.** Step 2 of §5
-(platform providers from env + credit ledger + charged send routes) is built; checkout is not. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
+(platform providers from env + credit ledger + charged send routes) is built. Step 3 is built
+against a **fake gateway only** (§8); SSLCommerz and bKash are not. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
 and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
 
 ## 1. Decided
@@ -109,3 +110,32 @@ SMS: `SMS_PROVIDER`, provider keys. SSLCommerz: store id, store password, sandbo
   credits are added by an admin until Step 3; clinics' own provider integrations are not migrated or retired;
   the allowance check and its increment are not one atomic step (a burst of concurrent sends can overshoot
   the allowance by a few).
+
+## 8. Checkout (built 2026-10-12 against a fake gateway, branch `feat/checkout-fake-gateway`)
+
+- **Tables:** `billing_orders` (AltCare's own revenue; separate from the clinic-to-patient `payments`),
+  `credit_packs` (admin-priced top-ups), `tenants.plan_reminder_stage` (migrations `b8e3f1a6c2d5`,
+  `c5f2a7d9e1b3`).
+- **Gateway interface** (`app/modules/billing/gateways/`): `create_checkout(order)` returns a redirect;
+  `verify(order)` asks the gateway what happened. Only `FakeGateway` exists. SSLCommerz and bKash are
+  two more classes behind the same interface plus their notification endpoints.
+- **Fake gateway** is a test page where a tester picks success/failed/cancelled. It exists only when
+  `PAYMENT_FAKE_GATEWAY_ENABLED=true`; **the app refuses to start in production with it on.**
+- **Settling is the only place money becomes entitlement.** It runs under a row lock on the order, is
+  idempotent (a repeated or racing notification cannot grant twice), and refuses to fulfil if the
+  gateway's amount or currency differs from the order. The browser's return page is never trusted: it
+  polls the order, and a pending order is re-checked with the gateway on every read.
+- **Fulfilment:** subscription sets `tenants.plan` and `plan_expires_at` (renewing the same plan extends
+  from the current expiry; a lapsed or new plan starts now; no proration when upgrading mid-period);
+  a credit pack grants credits atomically with the order and records the receipt number in the ledger.
+- **Rules computed by the server** (`assess`): subscribe / renew / upgrade allowed; a lower plan while a
+  higher one is active, a plan that never expires, and a plan with no online price are refused.
+  Only doctors can buy or see orders; orders are private to their clinic.
+- **Housekeeping** (`app/modules/billing/maintenance.py`, Celery beat daily): expiry reminders at 7 and 1
+  days (once per stage, reset on renewal) and expiry of pending orders older than 24h after a last
+  gateway check. Needs a Celery worker **and beat** process in deployment.
+- **Known gaps:** no real gateway; no gateway notification (IPN) endpoint yet (the fake needs none);
+  no refunds or cancellation; no PDF receipt (a printable page only); no invoices with tax details; no
+  proration; no admin manual "mark paid" for bank transfers; plan prices are still unset (the pricing
+  and checkout pages show "contact us" until an admin saves prices in the plan editor); the order
+  list does not filter by date.

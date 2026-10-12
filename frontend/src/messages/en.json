@@ -113,7 +113,9 @@
     "closeMenu": "Close navigation menu",
     "switchToDark": "Switch to dark mode",
     "switchToLight": "Switch to light mode",
-    "messaging": "Messaging"
+    "messaging": "Messaging",
+    "billing": "Billing",
+    "adminBilling": "Billing"
   },
   "patients": {
     "title": "Patients",
@@ -147,7 +149,8 @@
       "institutions": "institutions",
       "pending_tenants": "pending tenants",
       "results": "results",
-      "entries": "entries"
+      "entries": "entries",
+      "orders": "orders"
     }
   },
   "pages": {

@@ -142,11 +142,17 @@ class CreditService:
         reference: str | None = None,
         note: str | None = None,
         created_by: str | None = None,
+        commit: bool = True,
     ) -> int:
-        """Add (or, for an admin adjustment, remove) purchased credits. Returns the new balance."""
-        return await self._add_purchased(channel, n, kind, reference, note, created_by)
+        """Add (or, for an admin adjustment, remove) purchased credits. Returns the new balance.
 
-    async def _add_purchased(self, channel, n, kind, reference, note, created_by) -> int:
+        `commit=False` leaves the transaction open so the caller (order fulfilment) can make the
+        credit and its own bookkeeping atomic."""
+        return await self._add_purchased(channel, n, kind, reference, note, created_by, commit)
+
+    async def _add_purchased(
+        self, channel, n, kind, reference, note, created_by, commit: bool = True
+    ) -> int:
         # Upsert so the first purchase creates the row; the CHECK (balance >= 0) rejects over-removal
         try:
             new_balance = (
@@ -179,7 +185,10 @@ class CreditService:
                 created_by=created_by,
             )
         )
-        await self.db.commit()
+        if commit:
+            await self.db.commit()
+        else:
+            await self.db.flush()
         return int(new_balance)
 
     async def ledger(self, limit: int = 50, offset: int = 0) -> list[CreditLedger]:

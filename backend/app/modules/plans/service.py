@@ -89,6 +89,10 @@ class PlansService:
             await self.db.commit()
         return plans
 
+    async def plan_rows(self) -> dict[str, Plan]:
+        """All plan rows by key, creating any missing ones from the code defaults."""
+        return await self._ensure_plan_rows()
+
     async def _plan_config(self, plan: Plan, tenant_count: int = 0) -> PlanConfig:
         values = await load_plan_values(self.db, plan.key)
         return PlanConfig(

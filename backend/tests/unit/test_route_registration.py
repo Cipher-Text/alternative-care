@@ -62,4 +62,5 @@ def test_current_api_route_count_matches_docs():
     # Editorial content (Phase 1): +9 /api/v1/articles authoring, +2 /public/articles — 154 -> 165.
     # Directory (Phase 2): +5 /directory, +1 admin verification, +5 /public/practitioners — 165 -> 176.
     # Billing (platform messaging credits): +2 /billing, +2 admin (credits adjust, messaging status) — 176 -> 180.
-    assert api_method_count == 180
+    # Checkout: +6 /billing (subscription, packs, checkout, orders x2, fake-gateway), +4 /admin/billing — 180 -> 190.
+    assert api_method_count == 190

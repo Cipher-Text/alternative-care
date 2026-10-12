@@ -32,7 +32,15 @@ celery_app.conf.update(
     imports=[
         "app.modules.integration.tasks",
         "app.core.system_email",
+        "app.modules.billing.tasks",
     ],
+    # Run with `celery -A app.core.celery:celery_app beat` (a separate process in deployment)
+    beat_schedule={
+        "billing-daily-maintenance": {
+            "task": "app.modules.billing.tasks.billing_daily_maintenance",
+            "schedule": 24 * 60 * 60,
+        },
+    },
 )
 
 # Task routes (optional - for prioritization)

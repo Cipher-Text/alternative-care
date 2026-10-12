@@ -2,7 +2,10 @@
 
 import { useTranslations } from 'next-intl'
 import { AlertTriangle, Loader2, Mail, MessageSquare } from 'lucide-react'
+import Link from 'next/link'
+import { useAuthStore } from '@/store/authStore'
 import { useCredits, useCreditLedger } from '@/lib/hooks/useBilling'
+import { usePacks, useSubscription } from '@/lib/hooks/useCheckout'
 import { useDateFormat } from '@/lib/i18n/date'
 import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { Badge } from '@/components/ui/badge'
@@ -95,6 +98,11 @@ export default function MessagingPage() {
   const tc = useTranslations('billingUi.channel')
   const { fmt } = useDateFormat()
   const credits = useCredits()
+  // Online purchase is doctors-only, and only offered once packs exist and a payment method is on
+  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const packs = usePacks(isDoctor)
+  const subscription = useSubscription(isDoctor)
+  const canBuyOnline = isDoctor && (packs.data?.some((p) => p.is_active) ?? false) && (subscription.data?.gateways.length ?? 0) > 0
   const pager = usePager(PAGE_SIZE)
   const ledger = useCreditLedger({ limit: PAGE_SIZE + 1, offset: pager.offset })
   const { items, hasNext } = serverPage(ledger.data, PAGE_SIZE)
@@ -129,11 +137,19 @@ export default function MessagingPage() {
       <Card>
         <CardHeader>
           <CardTitle>{t('buyTitle')}</CardTitle>
-          <CardDescription>{t('buySoon')}</CardDescription>
+          <CardDescription>{canBuyOnline ? t('buyOnline') : t('buySoon')}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-3">
-          <Button disabled className="h-10">{t('buyButton')}</Button>
-          <p className="text-sm text-muted-foreground">{t('buyContact')}</p>
+          {canBuyOnline ? (
+            <Button asChild className="h-10">
+              <Link href="/billing#packs">{t('buyButton')}</Link>
+            </Button>
+          ) : (
+            <>
+              <Button disabled className="h-10">{t('buyButton')}</Button>
+              <p className="text-sm text-muted-foreground">{t('buyContact')}</p>
+            </>
+          )}
         </CardContent>
       </Card>
 
