@@ -1,1 +1,90 @@
-{"billingUi": {}}
+{
+  "billingUi": {
+    "channel": {
+      "sms": "SMS",
+      "email": "Email"
+    },
+    "messaging": {
+      "title": "Messaging",
+      "subtitle": "SMS and email are provided by AltCare and included in your plan.",
+      "loadFailed": "Could not load your messaging balance. Please refresh the page.",
+      "order": "Your plan's monthly allowance is used first, then credits you bought.",
+      "unavailableTitle": "Sending is not available yet",
+      "unavailableText": "AltCare has not finished setting up {channel} sending. Nothing can be sent until it is ready.",
+      "allowance": "Monthly allowance",
+      "usedOf": "{used} of {limit} used this month",
+      "usedUnlimited": "{used} used this month",
+      "unlimited": "Unlimited",
+      "remaining": "Remaining this month",
+      "purchased": "Purchased credits",
+      "purchasedHint": "Used after the monthly allowance runs out.",
+      "plan": "Plan: {plan}",
+      "buyTitle": "Buy credits",
+      "buySoon": "Buying credits online is coming soon.",
+      "buyContact": "To add credits now, please contact AltCare.",
+      "buyButton": "Buy credits",
+      "historyTitle": "Credit history",
+      "historyEmpty": "No credit activity yet.",
+      "historyFailed": "Could not load the credit history.",
+      "col": {
+        "date": "Date",
+        "channel": "Channel",
+        "type": "Type",
+        "quantity": "Quantity",
+        "balance": "Balance after",
+        "note": "Note"
+      },
+      "kind": {
+        "purchase": "Purchase",
+        "use": "Used",
+        "refund": "Refund",
+        "adjustment": "Adjustment"
+      }
+    },
+    "exhausted": {
+      "title": "No {channel} credits left",
+      "text": "Your plan's monthly allowance is used up and you have no purchased credits. The message was not sent.",
+      "link": "See Messaging",
+      "sendFailed": "Could not send the message."
+    },
+    "integrations": {
+      "bannerTitle": "SMS and email are provided by AltCare and included in your plan",
+      "bannerText": "You do not need to set up your own SMS or email provider.",
+      "bannerLink": "See Messaging",
+      "hiddenNote": "Payment providers are shown below."
+    },
+    "admin": {
+      "credits": {
+        "title": "Messaging credits",
+        "description": "Add or remove purchased SMS and email credits for this clinic. Every change is recorded in the clinic's credit history.",
+        "channel": "Channel",
+        "quantity": "Quantity",
+        "quantityHint": "A positive number adds credits; a negative number removes them.",
+        "quantityInvalid": "Enter a whole number that is not zero.",
+        "note": "Reason",
+        "notePlaceholder": "For example: bought 500 SMS by bank transfer",
+        "noteRequired": "Enter a reason of at least 3 characters.",
+        "confirm": "I confirm this change",
+        "confirmRequired": "Please confirm the change.",
+        "submit": "Apply change",
+        "working": "Applying...",
+        "result": "New purchased balance ({channel}): {balance}",
+        "done": "Credits updated",
+        "failed": "Could not change the credits.",
+        "readOnly": "Only platform admins can change credits."
+      },
+      "providers": {
+        "title": "Messaging providers",
+        "configured": "Configured",
+        "notConfigured": "Not configured",
+        "hint": "Provider credentials are set in the server environment and are never shown here."
+      }
+    },
+    "settingsIndex": {
+      "title": "Settings",
+      "subtitle": "Manage your clinic's messaging and integrations.",
+      "messagingText": "SMS and email credits: your monthly allowance, purchased credits and history.",
+      "integrationsText": "Payment providers and other connections."
+    }
+  }
+}

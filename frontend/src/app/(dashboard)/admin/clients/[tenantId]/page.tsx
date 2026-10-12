@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { TenantVerificationCard } from '@/components/admin/TenantVerificationCard'
+import { TenantCreditsCard } from '@/components/admin/TenantCreditsCard'
 import { TenantEntitlementsCard } from '@/components/admin/TenantEntitlementsCard'
 import { useAdminClient, useCreateTenantDoctor } from '@/lib/hooks/useAdminClients'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -351,6 +352,9 @@ export default function AdminClientDetailPage({
       <TenantVerificationCard tenantId={tenantId} isVerified={tenant.is_verified} canEdit={canEdit} />
 
       <TenantEntitlementsCard tenantId={tenantId} canEdit={canEdit} />
+
+      {/* Admin-only write; operators do not see it */}
+      {canEdit && <TenantCreditsCard tenantId={tenantId} />}
 
       <Dialog open={isDoctorDialogOpen} onOpenChange={setIsDoctorDialogOpen}>
         <DialogContent>

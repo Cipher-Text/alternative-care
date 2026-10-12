@@ -112,7 +112,8 @@
     "openMenu": "নেভিগেশন মেনু খুলুন",
     "closeMenu": "নেভিগেশন মেনু বন্ধ করুন",
     "switchToDark": "ডার্ক মোডে যান",
-    "switchToLight": "লাইট মোডে যান"
+    "switchToLight": "লাইট মোডে যান",
+    "messaging": "মেসেজিং"
   },
   "patients": {
     "title": "রোগীরা",
@@ -145,7 +146,8 @@
       "users": "ব্যবহারকারী",
       "institutions": "প্রতিষ্ঠান",
       "pending_tenants": "অপেক্ষমান ক্লিনিক",
-      "results": "ফলাফল"
+      "results": "ফলাফল",
+      "entries": "এন্ট্রি"
     }
   },
   "pages": {

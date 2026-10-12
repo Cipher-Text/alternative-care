@@ -15,14 +15,19 @@ import type { ProviderType } from '@/types/integration';
 interface ProviderListProps {
   onSetup: (providerId: number) => void;
   onManage?: (providerId: number) => void;
+  /** Provider types not to show (SMS/email while AltCare's own platform provider is available) */
+  hideTypes?: ProviderType[];
 }
 
-export function ProviderList({ onSetup, onManage }: ProviderListProps) {
-  const [activeTab, setActiveTab] = useState<'all' | ProviderType>('all');
+export function ProviderList({ onSetup, onManage, hideTypes = [] }: ProviderListProps) {
+  const [selectedTab, setActiveTab] = useState<'all' | ProviderType>('all');
+  // a tab can be hidden after it was selected (platform provider became known)
+  const activeTab: 'all' | ProviderType = selectedTab !== 'all' && hideTypes.includes(selectedTab) ? 'all' : selectedTab;
 
-  const { data: providers, isLoading: loadingProviders } = useProviders({
+  const { data: allProviders, isLoading: loadingProviders } = useProviders({
     is_active: true,
   });
+  const providers = allProviders?.filter((p) => !hideTypes.includes(p.provider_type));
 
   const { data: integrations } = useIntegrations();
 
@@ -63,8 +68,8 @@ export function ProviderList({ onSetup, onManage }: ProviderListProps) {
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
         <TabsList className="mb-6">
           <TabsTrigger value="all">All ({providers.length})</TabsTrigger>
-          <TabsTrigger value="sms">SMS ({smsCount})</TabsTrigger>
-          <TabsTrigger value="email">Email ({emailCount})</TabsTrigger>
+          {!hideTypes.includes('sms') && <TabsTrigger value="sms">SMS ({smsCount})</TabsTrigger>}
+          {!hideTypes.includes('email') && <TabsTrigger value="email">Email ({emailCount})</TabsTrigger>}
           <TabsTrigger value="payment">Payment ({paymentCount})</TabsTrigger>
         </TabsList>
 

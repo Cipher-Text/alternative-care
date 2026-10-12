@@ -20,6 +20,7 @@ import {
   Tags,
   Newspaper,
   BadgeCheck,
+  MessageSquare,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -37,6 +38,8 @@ const doctorNavigation = [
   { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'directory', href: '/directory', icon: BadgeCheck },
   { key: 'settings', href: '/settings', icon: Settings },
+  // Doctors reach Messaging through Settings; receptionists have no Settings, so they get a direct link
+  { key: 'messaging', href: '/settings/messaging', icon: MessageSquare },
 ]
 
 const adminNavigation = [
@@ -66,7 +69,7 @@ export function useNavItems() {
       adminNavigation.filter((item) => user.role === 'admin' || item.href !== '/content')
     : doctorNavigation.filter(
         (item) =>
-          (can.manageClinicSettings || item.href !== '/settings') &&
+          (can.manageClinicSettings ? item.href !== '/settings/messaging' : item.href !== '/settings') &&
           (!can.isReceptionist || (item.href !== '/content' && item.href !== '/directory')) // articles and directory: no receptionists
       )
 }

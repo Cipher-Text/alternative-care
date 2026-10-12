@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useAdminDashboard } from '@/lib/hooks/useAdmin'
+import { MessagingProvidersCard } from '@/components/admin/MessagingProvidersCard'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -167,6 +168,8 @@ export default function AdminDashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      <MessagingProvidersCard enabled={isPlatformRole} />
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
