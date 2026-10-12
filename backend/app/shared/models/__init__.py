@@ -7,6 +7,7 @@ from app.shared.models.institution import Institution
 from app.shared.models.pharmacy import Pharmacy
 from app.shared.models.article import Article
 from app.shared.models.identity import (
+    AppointmentRequest,
     ClaimCode,
     ConsentEvent,
     OtpChallenge,
@@ -69,6 +70,7 @@ __all__ = [
     "DoctorTraining",
     "Institution",
     "Pharmacy",
+    "AppointmentRequest",
     "Article",
     "ClaimCode",
     "ConsentEvent",

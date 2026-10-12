@@ -24,6 +24,7 @@ import {
   Receipt,
   Megaphone,
   Inbox,
+  CalendarClock,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -33,6 +34,7 @@ const doctorNavigation = [
   { key: 'dashboard', href: '/dashboard', icon: Home },
   { key: 'patients', href: '/patients', icon: Users },
   { key: 'appointments', href: '/appointments', icon: Calendar },
+  { key: 'appointmentRequests', href: '/appointment-requests', icon: CalendarClock },
   { key: 'prescriptions', href: '/prescriptions', icon: FileText },
   { key: 'payments', href: '/payments', icon: CreditCard },
   { key: 'medicines', href: '/medicines', icon: Pill },

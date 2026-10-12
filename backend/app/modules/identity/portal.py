@@ -179,8 +179,9 @@ class PortalService:
                 )
                 for p in profiles
                 # A profile with no record the holder has been given access to is not shown at all: a
-                # recycled number must not learn an earlier owner's name (activate a record to see it)
-                if by_profile[p.id]
+                # recycled number must not learn an earlier owner's name (activate a record to see it).
+                # A profile the holder added themselves in the portal is always theirs to see.
+                if by_profile[p.id] or p.source == "portal"
             ],
         )
 

@@ -24,3 +24,34 @@ export function formatAmount(amount: number): string {
 export function localDate(date: string, time?: string): Date {
   return new Date(`${date}T${time && /^\d{2}:\d{2}/.test(time) ? time.slice(0, 5) : '00:00'}:00`)
 }
+
+/** A local date as YYYY-MM-DD (toISOString would shift it to UTC). */
+export function isoDate(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
+}
+
+/** Today plus `days`, as YYYY-MM-DD in the visitor's own time zone. */
+export function isoDateFromToday(days = 0): string {
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  return isoDate(d)
+}
+
+/**
+ * A `?next=` return path, or null. Only a same-origin relative path is accepted: it must start with a single "/",
+ * so "//host", "/\host", "https://host", "javascript:..." and anything with control characters are rejected.
+ */
+export function safeNextPath(raw: string | null | undefined): string | null {
+  if (!raw || raw.length > 300) return null
+  if (!raw.startsWith('/') || raw.startsWith('//') || raw.startsWith('/\\')) return null
+  if (/[\u0000-\u001f\u007f\\]/.test(raw)) return null
+  try {
+    const base = 'http://same-origin.invalid'
+    const url = new URL(raw, base)
+    if (url.origin !== base) return null
+    return `${url.pathname}${url.search}${url.hash}`
+  } catch {
+    return null
+  }
+}

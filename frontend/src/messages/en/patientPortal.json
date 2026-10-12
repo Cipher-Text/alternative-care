@@ -108,6 +108,130 @@
         "tooMany": "Too many tries. Please try again later.",
         "generic": "Something went wrong. Please try again."
       }
+    },
+    "requestAppointment": {
+      "title": "Request an appointment with your mobile number",
+      "signInBody": "To ask {name} for an appointment, sign in with your mobile number. We will send you a code by SMS. It is free.",
+      "signInButton": "Sign in with a code",
+      "loadFailed": "We could not load your account. Please try again.",
+      "retry": "Try again",
+      "addYourselfTitle": "Add yourself",
+      "addYourselfBody": "Tell us who the appointment is for. You can add a child too.",
+      "addChildTitle": "Add a child",
+      "intro": "Choose a day and time of day that suits you. {name} or the clinic will confirm the exact time.",
+      "person": "Who is the appointment for?",
+      "addChild": "Add a child",
+      "addPerson": "Add a person",
+      "date": "Preferred date",
+      "dateHint": "From today up to 60 days ahead.",
+      "window": "Preferred time of day",
+      "windows": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "any": "Any time"
+      },
+      "reason": "Reason for the visit (optional)",
+      "reasonNote": "Keep this short. Do not include details you do not want the clinic to read before you meet.",
+      "reasonCount": "{count} of {max} characters",
+      "consent": "I agree that {clinic} receives my basic details (name, age, gender, area and verified phone) and links its record to my AltCare profile. My medical information is not shared with any other doctor without my permission.",
+      "privacy": "Privacy policy",
+      "sending": "Sending...",
+      "submit": "Send request",
+      "sent": "Request sent. The clinic will reply here and by SMS if they can.",
+      "seeRequests": "See my requests",
+      "callBackTitle": "Or ask the clinic to call you back (no sign-in)",
+      "errors": {
+        "requestInProgress": "You already have a request waiting with this clinic for this person. Wait for the reply or cancel it first.",
+        "tooManyOpen": "You have 5 requests waiting. Wait for a reply or cancel one first.",
+        "dateOutOfRange": "Choose a date from today up to 60 days ahead.",
+        "notAccepting": "This practitioner is not taking requests right now.",
+        "notAvailable": "This practitioner is not available.",
+        "tooMany": "Too many requests. Please try again later.",
+        "consent": "Please tick the box to agree before sending.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "addProfile": {
+      "whoLabel": "Who are you adding?",
+      "who": {
+        "self": "Myself",
+        "child": "My child (under 18)"
+      },
+      "childNote": "You can add a child under 18. Another adult signs in with their own phone.",
+      "childName": "Child's name",
+      "yourName": "Your name",
+      "ageLabel": "Age",
+      "ageMode": {
+        "dob": "Date of birth",
+        "year": "Approximate birth year"
+      },
+      "yearPlaceholder": "For example 1990",
+      "genderLabel": "Gender",
+      "genderChoose": "Choose",
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "saving": "Saving...",
+      "save": "Save",
+      "cancel": "Cancel",
+      "errors": {
+        "name": "Enter a name (at least 2 letters).",
+        "dob": "Enter the date of birth.",
+        "dobFuture": "The date of birth cannot be in the future.",
+        "childUnder18": "A child must be under 18.",
+        "year": "Enter a 4-digit birth year.",
+        "gender": "Choose a gender.",
+        "selfExists": "You have already added yourself.",
+        "profileLimit": "You cannot add more people to this account.",
+        "invalid": "Please check the details and try again.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "myRequests": {
+      "title": "My appointment requests",
+      "loading": "Loading",
+      "loadFailed": "We could not load your requests.",
+      "retry": "Try again",
+      "empty": "You have not asked for an appointment yet.",
+      "status": {
+        "requested": "Waiting for the clinic",
+        "confirmed": "Confirmed",
+        "declined": "Declined",
+        "cancelled": "Cancelled"
+      },
+      "windows": {
+        "morning": "morning",
+        "afternoon": "afternoon",
+        "evening": "evening",
+        "any": "any time"
+      },
+      "person": "For: {name}",
+      "bookedFor": "Confirmed for {date} at {time}",
+      "preferred": "You asked for {date}, {window}",
+      "declineReason": "Reason from the clinic: {reason}",
+      "cancelledByYou": "You cancelled this.",
+      "cancelledByClinic": "The clinic cancelled this.",
+      "cancelRequest": "Cancel request",
+      "cancelAppointment": "Cancel appointment",
+      "cancelRequestTitle": "Cancel this request?",
+      "cancelAppointmentTitle": "Cancel this appointment?",
+      "cancelBody": "{clinic} will be told that you cancelled.",
+      "keep": "Keep it",
+      "confirmCancel": "Yes, cancel",
+      "errors": {
+        "notCancellable": "This can no longer be cancelled. It may already have been answered or the time has passed. Please refresh.",
+        "generic": "We could not cancel it. Please try again."
+      }
+    },
+    "addPerson": {
+      "title": "Add a person and find a doctor",
+      "body": "Add yourself or your child, then ask a practitioner from our directory for an appointment.",
+      "addChild": "Add a child",
+      "addPerson": "Add a person",
+      "findPractitioner": "Find a practitioner"
     }
   }
 }

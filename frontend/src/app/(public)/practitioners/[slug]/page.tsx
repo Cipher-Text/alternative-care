@@ -9,6 +9,7 @@ import { formatFee, isDirectoryDiscipline, telHref, whatsappDigits } from '@/lib
 import { VerifiedBadge } from '@/components/public/directory/VerifiedBadge'
 import { ContactButtons } from '@/components/public/directory/ContactButtons'
 import { RequestForm } from '@/components/public/directory/RequestForm'
+import { RequestAppointmentCard } from '@/components/public/directory/RequestAppointmentCard'
 
 type Params = Promise<{ slug: string }>
 
@@ -49,6 +50,7 @@ export default async function PractitionerPage({ params }: { params: Params }) {
   if (!p) notFound()
 
   const [locale, t, tc] = await Promise.all([getLocale(), getTranslations('publicPractitionersUi'), getTranslations('publicContactUi')])
+  const tr = await getTranslations('patientPortalUi.requestAppointment')
   const headline = pickLocalized(locale, p.headline_en, p.headline_bn)
   const bio = pickLocalized(locale, p.bio_en, p.bio_bn)
   const district = pickLocalized(locale, p.district_en, p.district_bn)
@@ -202,9 +204,12 @@ export default async function PractitionerPage({ params }: { params: Params }) {
             <p className="text-xs text-gray-600 dark:text-gray-400">{t('urgentNote')}</p>
           </div>
           {p.accepts_requests && (
-            <div className="rounded-lg border border-gray-200 bg-card p-5 dark:border-slate-800">
-              <RequestForm slug={p.slug} clinicName={clinic} />
-            </div>
+            <>
+              <RequestAppointmentCard slug={p.slug} clinicName={clinic} practitionerName={p.display_name} />
+              <div className="rounded-lg border border-gray-200 bg-card p-5 dark:border-slate-800">
+                <RequestForm slug={p.slug} clinicName={clinic} title={tr('callBackTitle')} />
+              </div>
+            </>
           )}
         </aside>
       </div>

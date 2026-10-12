@@ -1,0 +1,93 @@
+{
+  "appointmentRequestsUi": {
+    "title": "Appointment requests",
+    "subtitle": "Patients who signed in with a verified phone number ask for an appointment here. Confirming books the visit and links their record to their AltCare profile.",
+    "loadFailed": "We could not load the requests.",
+    "retry": "Try again",
+    "tabs": {
+      "requested": "Waiting",
+      "confirmed": "Confirmed",
+      "declined": "Declined",
+      "cancelled": "Cancelled"
+    },
+    "empty": {
+      "requested": "No requests are waiting.",
+      "confirmed": "No confirmed requests yet.",
+      "declined": "No declined requests.",
+      "cancelled": "No cancelled requests."
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "dependent": "Child / dependent",
+    "age": "{count} years",
+    "callPatient": "Call {name}",
+    "received": "Received {date}",
+    "preferred": "Preferred:",
+    "windows": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "any": "Any time"
+    },
+    "askedFor": "Asked for:",
+    "existingRecord": "Already has a record here.",
+    "newRecord": "A new patient record will be created when you confirm.",
+    "openRecord": "Open the record",
+    "bookedFor": "Booked for {date} at {time} ({minutes} min).",
+    "declineReason": "Reason given: {reason}",
+    "cancelledByPatient": "Cancelled by the patient.",
+    "cancelledByClinic": "Cancelled by the clinic.",
+    "confirmAction": "Confirm",
+    "declineAction": "Decline",
+    "waiting": "{count} requests waiting",
+    "waitingMany": "50+ requests waiting",
+    "confirm": {
+      "title": "Confirm the appointment",
+      "description": "Choose the exact time for {name}. This books the appointment.",
+      "date": "Date",
+      "time": "Time",
+      "duration": "Duration",
+      "minutes": "{count} minutes",
+      "doctor": "Doctor",
+      "noDoctorKnown": "No doctor was named on this request. Ask a doctor of your clinic to confirm it.",
+      "notify": "Text the patient the details",
+      "notifyNote": "Uses your clinic's SMS allowance; skipped if none is left.",
+      "summary": "{name}: {date} at {time}, {duration} minutes, with {doctor}.",
+      "existingRecord": "This person already has a record here; it will be used.",
+      "newRecord": "A new patient record will be created and linked to their AltCare profile.",
+      "seePlans": "See plans",
+      "back": "Back",
+      "submit": "Confirm appointment",
+      "done": "Appointment booked.",
+      "errors": {
+        "required": "Choose a date and a time.",
+        "slotTaken": "That time is not free for this doctor. Choose another time.",
+        "dateInPast": "That date has already passed. Choose today or a later date.",
+        "doctorNotFound": "Choose a doctor of this clinic.",
+        "planLimit": "Your plan's patient limit is reached, so a new patient record cannot be created.",
+        "notFound": "This request was not found.",
+        "notOpen": "This request was already answered. The list has been refreshed.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "decline": {
+      "title": "Decline the request",
+      "description": "{name} will be told why. Be brief and polite.",
+      "reason": "Reason (shown to the patient)",
+      "reasonHint": "At least {min} characters.",
+      "notify": "Text the patient",
+      "notifyNote": "Uses your clinic's SMS allowance; skipped if none is left.",
+      "back": "Back",
+      "submit": "Decline request",
+      "done": "Request declined.",
+      "errors": {
+        "reason": "Write a reason of at least {min} characters.",
+        "notOpen": "This request was already answered. The list has been refreshed.",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
+  }
+}

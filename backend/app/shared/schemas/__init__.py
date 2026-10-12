@@ -420,3 +420,14 @@ from app.shared.schemas.identity import (  # noqa: E402
     PortalRecords,
     PortalToken,
 )
+
+from app.shared.schemas.appointment_request import (  # noqa: E402
+    AppointmentRequestCreate,
+    ClinicRequestItem,
+    ConfirmRequest,
+    DeclineRequest,
+    PatientRequestResponse,
+    PortalProfileCreate,
+    RequestedAppointment,
+    Requester,
+)

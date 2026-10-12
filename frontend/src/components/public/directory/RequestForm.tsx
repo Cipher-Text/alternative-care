@@ -8,7 +8,7 @@ import { submitContactRequest } from '@/lib/api/publicDirectory'
 type Errors = Partial<Record<'name' | 'phone' | 'consent', string>>
 
 /** "Request a call back" form. Not a booking; the clinic calls the patient. */
-export function RequestForm({ slug, clinicName }: { slug: string; clinicName: string }) {
+export function RequestForm({ slug, clinicName, title }: { slug: string; clinicName: string; title?: string }) {
   const t = useTranslations('publicPractitionersUi')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -67,7 +67,7 @@ export function RequestForm({ slug, clinicName }: { slug: string; clinicName: st
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('requestTitle')}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title ?? t('requestTitle')}</h2>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('requestIntro')}</p>
       </div>
 

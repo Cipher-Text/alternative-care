@@ -10,12 +10,17 @@ from app.core.database import get_db
 from app.core.phone import mask_phone
 from app.core.rate_limit import enforce_rate_limit
 from app.modules.identity.portal import PatientContext, PortalAuthService, PortalService, get_current_patient
+from app.modules.identity.requests import PortalRequestService
 from app.shared.schemas import (
+    AppointmentRequestCreate,
+    PatientRequestResponse,
     PortalActivate,
     PortalAuthRequest,
     PortalAuthVerify,
     PortalClinic,
     PortalMe,
+    PortalProfile,
+    PortalProfileCreate,
     PortalRecords,
     PortalToken,
     VerifyRequestResponse,
@@ -81,3 +86,31 @@ async def prescription_pdf(link_id: str, prescription_id: str, patient: Patient,
     return Response(
         content=pdf, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{filename}"'}
     )
+
+
+# ===== Appointment requests (phase 3) =====
+
+
+@router.post("/profiles", response_model=PortalProfile, status_code=status.HTTP_201_CREATED)
+async def add_profile(data: PortalProfileCreate, patient: Patient, db: Db):
+    """Add yourself or a child (under 18). Another adult signs in with their own phone."""
+    return await PortalRequestService(db, patient).create_profile(data)
+
+
+@router.post("/appointment-requests", response_model=PatientRequestResponse, status_code=status.HTTP_201_CREATED)
+async def create_request(data: AppointmentRequestCreate, request: Request, patient: Patient, db: Db):
+    """Ask a practitioner from the public directory for an appointment. Asking is the consent to share
+    your basic details with that clinic and to link its record to your profile."""
+    await _limit(request, "portal_appointment_request", 10)
+    return await PortalRequestService(db, patient).create(data)
+
+
+@router.get("/appointment-requests", response_model=list[PatientRequestResponse])
+async def list_requests(patient: Patient, db: Db):
+    return await PortalRequestService(db, patient).list()
+
+
+@router.post("/appointment-requests/{request_id}/cancel", response_model=PatientRequestResponse)
+async def cancel_request(request_id: str, patient: Patient, db: Db):
+    """Cancel a waiting request, or a confirmed appointment that has not happened yet."""
+    return await PortalRequestService(db, patient).cancel(request_id)

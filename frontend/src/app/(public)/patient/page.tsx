@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, type FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { patientPortalApi } from '@/lib/api/patientPortal'
 import { identityError, normalizeBdPhone } from '@/components/identity/identityUtils'
@@ -11,6 +12,7 @@ import {
   portalErrorBox,
   portalInput,
   portalLabel,
+  safeNextPath,
 } from '@/components/patient-portal/portalUtils'
 import { usePortalSignOut } from '@/lib/hooks/usePatientPortal'
 import type { VerifyRequestResponse } from '@/types/identity'
@@ -20,12 +22,16 @@ export default function PatientPortalPage() {
   const [ready, setReady] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
   const [expired, setExpired] = useState(false)
+  // where to go after signing in (only a same-origin relative path is ever accepted)
+  const [next, setNext] = useState<string | null>(null)
+  const router = useRouter()
   const signOut = usePortalSignOut()
 
   useEffect(() => {
     // sessionStorage only exists in the browser, so this cannot be a lazy initial state (hydration mismatch)
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSignedIn(patientPortalApi.hasSession())
+    setNext(safeNextPath(new URLSearchParams(window.location.search).get('next')))
     setReady(true)
   }, [])
 
@@ -44,7 +50,8 @@ export default function PatientPortalPage() {
       expired={expired}
       onSignedIn={() => {
         setExpired(false)
-        setSignedIn(true)
+        if (next) router.replace(next)
+        else setSignedIn(true)
       }}
     />
   )

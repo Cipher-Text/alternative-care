@@ -236,3 +236,37 @@ reachable only by a link in the public footer.
 
 Phase 3 (appointment requests with clinic confirmation) and Phase 4 (patient-controlled sharing between clinics)
 remain, together with the open legal and consent-wording items above.
+
+## Phase 3 implementation notes (built 2026-10-13)
+
+What exists: a signed-in patient asks a public practitioner for an appointment (`POST /patient/appointment-requests`),
+the clinic's doctors and receptionists confirm or decline (`/appointment-requests`), and the patient can cancel
+(`/patient/appointment-requests/{id}/cancel`). The holder can also add themselves or a child as a profile from the
+portal (`POST /patient/profiles`). Migration `d6f1b8c3a5e7` adds `appointment_requests`, `person_profiles.source`
+and the `appointment` link method.
+
+How the rules were applied:
+- **Asking is the consent.** The request form carries the wording (version `request-2026-10-v1`): the clinic
+  receives the person's basic details and links its record to their profile. The clinic sees a **snapshot** taken at
+  request time (name, age or birth date, gender, area, verified phone, relationship), never the live profile.
+- **Confirming goes through the normal rules.** The slot is checked before anything is created (a conflict leaves no
+  half-made record), the patient record is created through the patient service (so the plan's patient cap applies and
+  surfaces as `plan_limit_reached`), then linked by consent (method `appointment`, portal access granted because
+  the patient asked), and the appointment is booked and marked confirmed.
+- **No automatic matching (rule 4) still holds:** a clinic record with the same name and phone that is not linked is
+  left alone and a new record is created; a person already linked at the clinic reuses their record.
+- **Who can ask:** the holder's own profile or a child under 18 only. A portal can add only `self` (once) and
+  `child`; an adult dependent can only be recorded by a clinic. Only a currently public practitioner can be asked
+  (listed, verified, approved, in plan), only if they accept requests, only for a date within 60 days.
+- **Limits:** one waiting request per person per clinic (a database constraint) and at most 5 waiting per account.
+- **Texts to the patient** (confirm and decline) are best effort from the **clinic's own SMS allowance**; with none
+  left the action still succeeds without a text.
+- The unverified call-back form stays for people who cannot receive a code (rule: verification never blocks care).
+
+Known limits and risks: the request `reason` is free text and health information, stored with the snapshot; **no
+retention or deletion rule exists yet** (open item 4 applies to it too). A portal-created profile and its requests
+belong to the phone, so a **recycled number's new holder** sees them (Phase 2's hiding only covers clinic-created
+profiles); an inactivity lock or a second factor for long-dormant accounts is not built. The clinic is not notified
+when a patient cancels (it sees the change on the requests page). No rescheduling, waiting list, appointment
+reminders, or per-doctor availability (confirming relies on the existing slot check only). Phase 4 (sharing between
+clinics) remains.

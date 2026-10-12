@@ -95,6 +95,7 @@
     "logoutSuccess": "Logged out successfully",
     "dashboard": "Dashboard",
     "patients": "Patients",
+    "appointmentRequests": "Appointment requests",
     "appointments": "Appointments",
     "prescriptions": "Prescriptions",
     "payments": "Payments",

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useDateFormat } from '@/lib/i18n/date'
 import { patientPortalApi } from '@/lib/api/patientPortal'
 import { identityError } from '@/components/identity/identityUtils'
+import { AddPersonCard, MyRequests } from './AppointmentRequests'
 import {
   useActivatePortalCode,
   usePortalMe,
@@ -110,6 +111,8 @@ export function PatientDashboard({ onSignedOut }: { onSignedOut: (expired: boole
         </>
       )}
 
+      {me.data && <MyRequests onSignedOut={onSignedOut} />}
+      {me.data && <AddPersonCard onSignedOut={onSignedOut} />}
       {me.data && <ActivateCard onSignedOut={onSignedOut} />}
     </div>
   )
@@ -140,7 +143,7 @@ function ProfileSummary({ profile, onSignedOut }: { profile: PortalProfile; onSi
         {profile.display_name}
         {profile.is_dependent && <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-sm font-normal dark:bg-slate-800">{t('dashboard.dependent')}</span>}
       </h2>
-      <h3 className="text-base font-medium text-gray-700 dark:text-gray-300">{t('clinics.heading')}</h3>
+      {profile.clinics.length > 0 && <h3 className="text-base font-medium text-gray-700 dark:text-gray-300">{t('clinics.heading')}</h3>}
       <ul className="space-y-2">
         {profile.clinics.map((c) => (
           <li key={c.link_id} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-gray-50 p-3 dark:bg-slate-900">

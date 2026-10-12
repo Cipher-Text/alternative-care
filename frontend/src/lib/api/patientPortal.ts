@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { clearPatientSession, getPatientToken, setPatientSession } from '@/lib/patientSession'
 import type { PortalClinic, PortalMe, PortalRecords } from '@/types/patientPortal'
+import type { PortalProfile } from '@/types/patientPortal'
+import type { AppointmentRequestInput, PatientRequest, PortalProfileInput } from '@/types/appointmentRequest'
 import type { VerifyRequestResponse } from '@/types/identity'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
@@ -46,6 +48,15 @@ export const patientPortalApi = {
   revoke: async (linkId: string): Promise<void> => {
     await patientClient.post(`/links/${linkId}/revoke`)
   },
+  /** Add yourself (once) or a child under 18 */
+  addProfile: async (data: PortalProfileInput): Promise<PortalProfile> =>
+    (await patientClient.post('/profiles', data)).data,
+  requestAppointment: async (data: AppointmentRequestInput): Promise<PatientRequest> =>
+    (await patientClient.post('/appointment-requests', data)).data,
+  requests: async (): Promise<PatientRequest[]> => (await patientClient.get('/appointment-requests')).data,
+  /** A waiting request, or a confirmed appointment that has not happened yet */
+  cancelRequest: async (id: string): Promise<PatientRequest> =>
+    (await patientClient.post(`/appointment-requests/${id}/cancel`)).data,
   prescriptionPdf: async (linkId: string, prescriptionId: string): Promise<Blob> =>
     (await patientClient.get(`/links/${linkId}/prescriptions/${prescriptionId}/pdf`, { responseType: 'blob' })).data,
 }

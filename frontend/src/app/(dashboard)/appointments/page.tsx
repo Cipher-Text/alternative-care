@@ -21,6 +21,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAppointments } from '@/lib/hooks/useAppointments'
+import { useAppointmentRequests } from '@/lib/hooks/useAppointmentRequests'
 import { usePatients } from '@/lib/hooks/usePatients'
 import type { Appointment, AppointmentStatus } from '@/types/appointment'
 
@@ -56,6 +57,8 @@ function toDateTime(dateText: string, timeText: string): Date {
 export default function AppointmentsPage() {
   const tp = useTranslations('pages')
   const t = useTranslations('apptUi')
+  const tr = useTranslations('appointmentRequestsUi')
+  const waiting = useAppointmentRequests({ status: 'requested', limit: 51 }).data?.length ?? 0
   const locale = useLocale()
   const culture = locale === 'bn' ? 'bn' : 'en-US'
   const localizer = useMemo(
@@ -165,12 +168,19 @@ export default function AppointmentsPage() {
           <h1 className="text-3xl font-bold">{tp('appointmentsTitle')}</h1>
           <p className="text-muted-foreground">{tp('appointmentsSubtitle')}</p>
         </div>
+        <div className="flex flex-wrap items-center gap-3">
+        {waiting > 0 && (
+          <Link href="/appointment-requests" className="text-sm font-medium text-primary underline">
+            {waiting > 50 ? tr('waitingMany') : tr('waiting', { count: waiting })}
+          </Link>
+        )}
         <Link href="/appointments/new">
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
             {tp('newAppointment')}
           </Button>
         </Link>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 border rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">

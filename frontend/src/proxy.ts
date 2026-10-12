@@ -30,5 +30,11 @@ export const config = {
     '/symptoms/:path*',
     '/settings/:path*',
     '/admin/:path*',
+    // newer signed-in pages (each is also private in robots.ts)
+    '/content/:path*',
+    '/directory/:path*',
+    '/billing/:path*',
+    '/marketing/:path*',
+    '/appointment-requests/:path*',
   ],
 }

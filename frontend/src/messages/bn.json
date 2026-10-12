@@ -95,6 +95,7 @@
     "logoutSuccess": "সফলভাবে লগআউট হয়েছে",
     "dashboard": "ড্যাশবোর্ড",
     "patients": "রোগীরা",
+    "appointmentRequests": "অ্যাপয়েন্টমেন্টের অনুরোধ",
     "appointments": "অ্যাপয়েন্টমেন্ট",
     "prescriptions": "প্রেসক্রিপশন",
     "payments": "পেমেন্ট",
