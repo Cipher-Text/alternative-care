@@ -2,6 +2,7 @@ import axios from 'axios'
 import { clearPatientSession, getPatientToken, setPatientSession } from '@/lib/patientSession'
 import type { PortalClinic, PortalMe, PortalRecords } from '@/types/patientPortal'
 import type { PortalProfile } from '@/types/patientPortal'
+import type { PortalShare, ShareInput } from '@/types/sharing'
 import type { AppointmentRequestInput, PatientRequest, PortalProfileInput } from '@/types/appointmentRequest'
 import type { VerifyRequestResponse } from '@/types/identity'
 
@@ -57,6 +58,14 @@ export const patientPortalApi = {
   /** A waiting request, or a confirmed appointment that has not happened yet */
   cancelRequest: async (id: string): Promise<PatientRequest> =>
     (await patientClient.post(`/appointment-requests/${id}/cancel`)).data,
+  /** Everything you shared, with who read it and when */
+  shares: async (): Promise<PortalShare[]> => (await patientClient.get('/shares')).data,
+  /** Needs a recent sign-in: otherwise 403 recent_sign_in_required */
+  createShare: async (data: ShareInput): Promise<PortalShare> => (await patientClient.post('/shares', data)).data,
+  /** Takes effect at once: nothing was copied */
+  revokeShare: async (id: string): Promise<void> => {
+    await patientClient.post(`/shares/${id}/revoke`)
+  },
   prescriptionPdf: async (linkId: string, prescriptionId: string): Promise<Blob> =>
     (await patientClient.get(`/links/${linkId}/prescriptions/${prescriptionId}/pdf`, { responseType: 'blob' })).data,
 }

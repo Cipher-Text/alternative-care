@@ -9,6 +9,7 @@ import { useDateFormat } from '@/lib/i18n/date'
 import { patientPortalApi } from '@/lib/api/patientPortal'
 import { identityError } from '@/components/identity/identityUtils'
 import { AddPersonCard, MyRequests } from './AppointmentRequests'
+import { ShareRecords } from './ShareRecords'
 import {
   useActivatePortalCode,
   usePortalMe,
@@ -108,6 +109,7 @@ export function PatientDashboard({ onSignedOut }: { onSignedOut: (expired: boole
             ))}
           </div>
           <Records profileId={profile.id} section={section} onSignedOut={onSignedOut} />
+          <ShareRecords profile={profile} onSignedOut={onSignedOut} />
         </>
       )}
 

@@ -111,7 +111,9 @@ class ConsentEvent(BaseAuditModel):
 
     __tablename__ = "identity_consent_events"
     __table_args__ = (
-        CheckConstraint("kind IN ('link','revoke','portal_access')", name="ck_identity_consent_kind"),
+        CheckConstraint(
+            "kind IN ('link','revoke','portal_access','share_grant','share_revoke')", name="ck_identity_consent_kind"
+        ),
     )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
@@ -244,3 +246,58 @@ class AppointmentRequest(BaseAuditModel):
     confirmed_by: Mapped[str | None] = mapped_column(String(36), nullable=True)
     decline_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
     cancelled_by: Mapped[str | None] = mapped_column(String(10), nullable=True)  # patient | clinic
+
+
+SHARE_CATEGORIES = ("prescriptions", "diagnoses")
+SHARE_DURATIONS_DAYS = (7, 30, 90)
+
+
+class DataShare(BaseAuditModel):
+    """The patient lets one clinic read named categories of another clinic's records about them.
+
+    Nothing is copied: the recipient reads the source clinic's rows live, so ending a share (revoking it,
+    expiry, or either clinic being unlinked) cuts access immediately."""
+
+    __tablename__ = "data_shares"
+    __table_args__ = (
+        CheckConstraint("status IN ('active','revoked')", name="ck_data_share_status"),
+        CheckConstraint("source_link_id <> recipient_link_id", name="ck_data_share_distinct_links"),
+        Index(
+            "uq_data_share_one_active_per_pair", "source_link_id", "recipient_link_id",
+            unique=True, postgresql_where=text("status = 'active'"),
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    account_id: Mapped[str] = mapped_column(
+        ForeignKey("person_accounts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    profile_id: Mapped[str] = mapped_column(
+        ForeignKey("person_profiles.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    source_link_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_links.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    recipient_link_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_links.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    categories: Mapped[list] = mapped_column(JSON, nullable=False)
+    status: Mapped[str] = mapped_column(String(10), nullable=False, default="active")
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    consent_event_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+
+class DataShareAccess(BaseAuditModel):
+    """Every time the recipient clinic reads a share: who, when, how many records. The patient and the
+    source clinic can see this."""
+
+    __tablename__ = "data_share_access"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    share_id: Mapped[str] = mapped_column(
+        ForeignKey("data_shares.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    recipient_tenant_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    staff_user_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    record_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

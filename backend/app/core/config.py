@@ -230,6 +230,8 @@ class Settings(BaseSettings):
     # Patient portal sign-in (no clinic involved): a global daily ceiling on codes, and the session length
     OTP_MAX_PORTAL_PER_DAY: int = 3000
     PATIENT_TOKEN_HOURS: int = 12
+    # Sharing records with another clinic needs a sign-in within this many minutes (a stolen session is not enough)
+    PATIENT_RECENT_SIGNIN_MINUTES: int = 15
     RATE_LIMIT_PORTAL_PER_HOUR: int = 10
     # Public claim flow, per IP per hour
     RATE_LIMIT_CLAIM_PER_HOUR: int = 10

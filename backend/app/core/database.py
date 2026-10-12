@@ -79,6 +79,18 @@ async def bind_tenant(db: AsyncSession, tenant_id: str | None) -> None:
         db.info.pop(TENANT_INFO_KEY, None)
 
 
+@asynccontextmanager
+async def tenant_context(db: AsyncSession, tenant_id: str | None) -> AsyncGenerator[None, None]:
+    """Bind the session to `tenant_id` for a block (row-level security), then restore whatever was bound
+    before, so reading another clinic's rows on a patient's behalf can never leave that binding behind."""
+    previous = db.info.get(TENANT_INFO_KEY)
+    await bind_tenant(db, tenant_id)
+    try:
+        yield
+    finally:
+        await bind_tenant(db, previous)
+
+
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency to get database session.

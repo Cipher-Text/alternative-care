@@ -431,3 +431,14 @@ from app.shared.schemas.appointment_request import (  # noqa: E402
     RequestedAppointment,
     Requester,
 )
+
+from app.shared.schemas.sharing import (  # noqa: E402
+    PatientSharing,
+    PortalShare,
+    ShareCreate,
+    ShareSummary,
+    SharedDiagnosis,
+    SharedPrescription,
+    SharedPrescriptionItem,
+    SharedRecords,
+)

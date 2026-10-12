@@ -25,6 +25,7 @@ import { useCreateClaimCode, useCreatePortalCode, usePatientIdentity, useRevokeI
 import type { Patient } from '@/types/patient'
 import type { ClaimCode } from '@/types/identity'
 import { PhoneVerificationDialog } from './PhoneVerificationDialog'
+import { SharingBlock } from './SharingBlock'
 
 /** Everything outside the printed slip is hidden while printing (the slip is portalled to <body>). */
 const PRINT_CSS = '@media print { body > *:not([data-claim-print]) { display: none !important; } }'
@@ -151,6 +152,7 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
                 </div>
               </div>
             )}
+            <SharingBlock patientId={patient.id} />
           </div>
         )}
 

@@ -11,6 +11,7 @@ from app.core.phone import mask_phone
 from app.core.rate_limit import enforce_rate_limit
 from app.modules.identity.portal import PatientContext, PortalAuthService, PortalService, get_current_patient
 from app.modules.identity.requests import PortalRequestService
+from app.modules.identity.sharing import PortalSharingService
 from app.shared.schemas import (
     AppointmentRequestCreate,
     PatientRequestResponse,
@@ -22,7 +23,9 @@ from app.shared.schemas import (
     PortalProfile,
     PortalProfileCreate,
     PortalRecords,
+    PortalShare,
     PortalToken,
+    ShareCreate,
     VerifyRequestResponse,
 )
 
@@ -114,3 +117,25 @@ async def list_requests(patient: Patient, db: Db):
 async def cancel_request(request_id: str, patient: Patient, db: Db):
     """Cancel a waiting request, or a confirmed appointment that has not happened yet."""
     return await PortalRequestService(db, patient).cancel(request_id)
+
+
+# ===== Sharing records between clinics (phase 4) =====
+
+
+@router.get("/shares", response_model=list[PortalShare])
+async def list_shares(patient: Patient, db: Db):
+    """Every share you made, with who read it and when."""
+    return await PortalSharingService(db, patient).list_shares()
+
+
+@router.post("/shares", response_model=PortalShare, status_code=status.HTTP_201_CREATED)
+async def create_share(data: ShareCreate, patient: Patient, db: Db):
+    """Let one clinic you are linked to read named records from another, for 7, 30 or 90 days. Needs a recent
+    sign-in (403 recent_sign_in_required otherwise)."""
+    return await PortalSharingService(db, patient).create(data)
+
+
+@router.post("/shares/{share_id}/revoke", status_code=status.HTTP_204_NO_CONTENT)
+async def revoke_share(share_id: str, patient: Patient, db: Db):
+    await PortalSharingService(db, patient).revoke(share_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

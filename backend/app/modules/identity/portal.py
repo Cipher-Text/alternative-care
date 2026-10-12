@@ -67,6 +67,15 @@ RECORD_LIMIT = 50
 class PatientContext:
     account_id: str
     phone: str
+    issued_at: datetime | None = None
+
+    @property
+    def recently_signed_in(self) -> bool:
+        """True if the session began within PATIENT_RECENT_SIGNIN_MINUTES (tokens without `iat` never qualify)."""
+        return bool(
+            self.issued_at
+            and datetime.now(timezone.utc) - self.issued_at <= timedelta(minutes=settings.PATIENT_RECENT_SIGNIN_MINUTES)
+        )
 
 
 async def get_current_patient(
@@ -87,7 +96,9 @@ async def get_current_patient(
     if account is None or account.status != "active":
         raise unauthorised
     await bind_tenant(db, None)  # no clinic is bound; each clinic is bound explicitly, one at a time
-    return PatientContext(account_id=account.id, phone=account.phone)
+    iat = payload.get("iat")
+    issued_at = datetime.fromtimestamp(iat, tz=timezone.utc) if isinstance(iat, (int, float)) else None
+    return PatientContext(account_id=account.id, phone=account.phone, issued_at=issued_at)
 
 
 class PortalAuthService:

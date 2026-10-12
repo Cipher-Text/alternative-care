@@ -10,6 +10,7 @@ from app.core.database import get_db
 from app.core.dependencies import CurrentUser, require_role
 from app.core.rate_limit import enforce_rate_limit
 from app.modules.identity.service import ClaimService, IdentityService
+from app.modules.identity.sharing import ClinicSharingService
 from app.shared.schemas import (
     BasicDetails,
     ClaimCodeResponse,
@@ -19,10 +20,12 @@ from app.shared.schemas import (
     LinkRequest,
     LinkResponse,
     PatientIdentityStatus,
+    PatientSharing,
     ProfilePrefillRequest,
     ProfileSearch,
     ProfileSummary,
     RevokeRequest,
+    SharedRecords,
     VerifyConfirm,
     VerifyConfirmResponse,
     VerifyRequest,
@@ -97,6 +100,19 @@ async def patient_status(patient_id: str, service: Service):
 async def revoke_link(patient_id: str, data: RevokeRequest, db: Annotated[AsyncSession, Depends(get_db)], user: DoctorOnly):
     """On the patient's request. The clinic keeps its own medical record; only the link is removed."""
     return await IdentityService(db, user.tenant_id, user.user_id).revoke(patient_id, data.note)
+
+
+@router.get("/patients/{patient_id}/sharing", response_model=PatientSharing)
+async def patient_sharing(patient_id: str, db: Annotated[AsyncSession, Depends(get_db)], user: Staff):
+    """Who the patient shares records with, and who shared with this clinic: clinic names and dates only."""
+    return await ClinicSharingService(db, user.tenant_id, user.user_id).sharing(patient_id)
+
+
+@router.get("/patients/{patient_id}/shared-records", response_model=SharedRecords)
+async def shared_records(patient_id: str, db: Annotated[AsyncSession, Depends(get_db)], user: DoctorOnly):
+    """Records another clinic's patient chose to share with this clinic, read live and read-only. Doctors
+    only; every read is logged and visible to the patient."""
+    return await ClinicSharingService(db, user.tenant_id, user.user_id).shared_records(patient_id)
 
 
 @router.post("/patients/{patient_id}/portal-code", response_model=ClaimCodeResponse)

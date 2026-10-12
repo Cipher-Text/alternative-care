@@ -270,3 +270,44 @@ profiles); an inactivity lock or a second factor for long-dormant accounts is no
 when a patient cancels (it sees the change on the requests page). No rescheduling, waiting list, appointment
 reminders, or per-doctor availability (confirming relies on the existing slot check only). Phase 4 (sharing between
 clinics) remains.
+
+## Phase 4 implementation notes (built 2026-10-14)
+
+What exists: a signed-in patient lets **one** clinic read named categories of **another** clinic's records about them
+for 7, 30 or 90 days (`/patient/shares`), can stop it at any time, and sees who read it and when. Clinic staff see
+which shares exist (`/identity/patients/{id}/sharing`: clinic names and dates only), and a **doctor** at the
+recipient clinic reads the shared records (`/identity/patients/{id}/shared-records`). Migration `e8a2c5d7f1b3` adds
+`data_shares`, `data_share_access` and the `share_grant` / `share_revoke` consent kinds.
+
+How the rules were applied:
+- **Explicit, per clinic, time-limited, revocable (rule 6):** a share is between two clinic links for the same person,
+  names its categories, and ends at 7, 30 or 90 days. Both clinics must already be linked to the profile and visible
+  in the portal, so the recipient already knows who the person is.
+- **Minimal categories:** issued prescriptions (with the diagnosis and advice on them) and the diagnosis list. Never
+  doctors' private notes, examination notes, drafts, voided prescriptions, payments or appointments.
+- **Nothing is copied.** The recipient reads the source clinic's rows live, one clinic at a time with row-level
+  security bound to it (`tenant_context` restores the caller's own binding afterwards). Stopping a share, its expiry,
+  or removing either clinic from the patient's account therefore ends access at once.
+- **Granting needs a recent sign-in** (`PATIENT_RECENT_SIGNIN_MINUTES`, 15) via the token's `iat`, so a stolen or
+  forgotten session cannot share records; older tokens and tokens without `iat` can still view and stop shares.
+- **Only doctors at the recipient clinic read the records.** Receptionists see only that a share exists. Every read is
+  logged (`data_share_access`) and shown to the patient and to the source clinic.
+- **Consent is logged** (`share_grant`, wording `share-2026-10-v1`, written against the source clinic's record) and so
+  is stopping a share.
+
+Known limits and risks:
+- **What a screen can show can be copied.** Reading is on screen, read-only, with no export or print, but a clinician
+  can still write it down or photograph it. Technology cannot prevent this; it is a professional and legal duty of
+  the recipient clinic.
+- The **source clinic is not asked and cannot block** a share (the patient directs it); it is only told, in its
+  patient card. It is not notified by email or text.
+- Recycled numbers: sharing needs portal-visible links, so a new holder of an old number has none to share, but the
+  portal-created profiles risk noted in Phase 3 applies here as well.
+- Row-level security for the cross-clinic reads is written but never exercised against a restricted database role.
+- No per-record selection (categories only), no "referral" flow that bundles a share with a request, no sharing of
+  PDFs, lab reports or visit notes, and no automatic reminder before a share expires.
+- Whether a recipient clinic may **keep** what it read in its own notes, and who is responsible for it, is a legal
+  question this design does not answer.
+
+All four planned phases are now built. What remains is the work listed under "Before building" (legal and consent
+review, caps, retention, SMS reliability) before real patients use it.

@@ -1,4 +1,5 @@
 import { apiClient } from './client'
+import type { PatientSharing, SharedRecords } from '@/types/sharing'
 import type {
   BasicDetails,
   ClaimCode,
@@ -29,6 +30,12 @@ export const identityApi = {
   revoke: async (patientId: string, note?: string): Promise<PatientIdentityStatus> =>
     (await apiClient.post(`/identity/patients/${patientId}/revoke`, { note })).data,
   /** For an already-linked patient: a code they enter in their portal account to see this clinic's records */
+  /** Clinic names and dates only: who the patient shares records with, and who shared with this clinic */
+  sharing: async (patientId: string): Promise<PatientSharing> =>
+    (await apiClient.get(`/identity/patients/${patientId}/sharing`)).data,
+  /** Doctors only. Records another clinic's patient chose to share, read live; opening it is logged. */
+  sharedRecords: async (patientId: string): Promise<SharedRecords> =>
+    (await apiClient.get(`/identity/patients/${patientId}/shared-records`)).data,
   createPortalCode: async (patientId: string): Promise<ClaimCode> =>
     (await apiClient.post(`/identity/patients/${patientId}/portal-code`)).data,
   createClaimCode: async (patientId: string): Promise<ClaimCode> =>

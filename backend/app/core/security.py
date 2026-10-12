@@ -132,9 +132,13 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
 def create_patient_token(account_id: str, expires_delta: timedelta | None = None) -> str:
     """Token for the patient portal. A different `type` from staff tokens, so neither kind is ever
     accepted where the other is expected, and it carries no tenant, role or email."""
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(hours=settings.PATIENT_TOKEN_HOURS))
+    now = datetime.now(timezone.utc)
+    expire = now + (expires_delta or timedelta(hours=settings.PATIENT_TOKEN_HOURS))
+    # `iat` lets sensitive actions (sharing records) require a RECENT sign-in
     return jwt.encode(
-        {"sub": account_id, "type": "patient", "exp": expire}, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+        {"sub": account_id, "type": "patient", "exp": expire, "iat": now},
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
     )
 
 
