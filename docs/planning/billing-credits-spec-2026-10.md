@@ -29,6 +29,12 @@ and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
    a plan limit the clinic buys; receipts and invoices are issued to the clinic name; only doctors can
    buy or renew (receptionists cannot); the payer's name and phone are recorded per order for support.
 
+8. **Every limit, including Free's, is defined in the plan configuration** (admin plan editor and the
+   `plan_entitlements` table), never hardcoded. Code defaults in `app/core/entitlements.py` only apply
+   until an admin stores a value; the pricing page renders from the stored values. Enforcement already
+   exists for patients, seats, SMS, invoicing, AI and the directory listing; new limits (monthly email,
+   credit balances) follow the same mechanism.
+
 ## 2. Messaging credits (SMS and email)
 
 - A clinic has a balance per channel made of (a) the **plan allowance**, granted monthly from the plan's
@@ -54,7 +60,7 @@ decision and legal advice before anyone builds it.
 
 | # | Question | Leaning |
 |---|---|---|
-| 1 | Free limits (patient cap? invoicing off or capped?) | cap patients, keep clinical loop free |
+| 1 | Free limit *values* (decided: they live in the plan config; the numbers are still to set, e.g. patient cap, invoicing) | cap patients, keep clinical loop free |
 | 2 | Gating dimensions: patients, seats, SMS, email, invoicing, directory, AI | as proposed in `pricing-usage-onboarding` §2.2 |
 | 3 | Prices (monthly, yearly) and founding-member price | derive from cost per active clinic |
 | 4 | ~~Who pays~~ — **decided: the clinic** (see §1.7) | done |
@@ -67,8 +73,9 @@ decision and legal advice before anyone builds it.
 
 ## 5. Build order
 
-1. Settle plan values (§4 items 1-4); set them in the plan config; add enforcement for patient cap,
-   seats and SMS/email with upgrade prompts (today only the directory and AI are gated).
+1. Settle plan values (§4 items 1-4) and set them in the plan config. Enforcement of patients, seats,
+   SMS, invoicing, AI and the directory already exists; add the monthly email limit and upgrade prompts
+   (a clear "upgrade or buy credits" message instead of a bare 403).
 2. Platform-only providers from env, the credit ledger, send routes charging credits, retire per-clinic
    integrations.
 3. Payment orders, SSLCommerz and bKash checkout with idempotent confirmation, subscription activation,
