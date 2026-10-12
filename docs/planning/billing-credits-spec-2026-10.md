@@ -24,6 +24,11 @@ and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
    when the gateway confirms payment, runs to the paid-until date, reminders go out before expiry, and the
    existing expiry fallback moves the clinic to Free. No auto-recurring charges in v1.
 
+7. **The clinic pays** (decided 2026-10-12). The subscription, the credit balance and every receipt belong
+   to the clinic (tenant), not to an individual doctor. Consequences: seats (doctors in the clinic) are
+   a plan limit the clinic buys; receipts and invoices are issued to the clinic name; only doctors can
+   buy or renew (receptionists cannot); the payer's name and phone are recorded per order for support.
+
 ## 2. Messaging credits (SMS and email)
 
 - A clinic has a balance per channel made of (a) the **plan allowance**, granted monthly from the plan's
@@ -52,7 +57,7 @@ decision and legal advice before anyone builds it.
 | 1 | Free limits (patient cap? invoicing off or capped?) | cap patients, keep clinical loop free |
 | 2 | Gating dimensions: patients, seats, SMS, email, invoicing, directory, AI | as proposed in `pricing-usage-onboarding` §2.2 |
 | 3 | Prices (monthly, yearly) and founding-member price | derive from cost per active clinic |
-| 4 | Who pays: doctor or clinic (affects seats) | - |
+| 4 | ~~Who pays~~ — **decided: the clinic** (see §1.7) | done |
 | 5 | Email: allowance only, or top-ups too | allowance only (low cost) |
 | 6 | Unused monthly allowance: expire or roll over | expire |
 | 7 | Purchased credits: expire after N months or never | - |
