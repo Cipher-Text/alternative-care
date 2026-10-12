@@ -397,7 +397,7 @@
     },
     "panel": {
       "profileTitle": "{system} কেস প্রোফাইল",
-      "profileDescription": "গঠন, সাধারণ লক্ষণ, মন ও ইতিহাস। একবার নিয়ে হালনাগাদ রাখা হয়; সবকিছুই ঐচ্ছিক।",
+      "profileDescription": "দুই ভিজিটের মাঝেও যা সত্য থাকে: গঠন, সক্ষমতা ও ইতিহাস। একবার নিয়ে হালনাগাদ রাখা হয়; সবকিছুই ঐচ্ছিক।",
       "visitTitle": "এই ভিজিটের {system} তথ্য",
       "edit": "সম্পাদনা",
       "save": "সংরক্ষণ",
@@ -416,6 +416,326 @@
       "noDetails": "এই ভিজিটে {system} তথ্য লেখা হয়নি।",
       "readOnly": "শুধু ডাক্তার এটি পাল্টাতে পারেন।",
       "draftNote": "খসড়া ঘরের তালিকা: অভিজ্ঞ চিকিৎসকেরা দেখছেন।"
+    },
+    "ayurveda": {
+      "title": "আয়ুর্বেদ",
+      "groups": {
+        "constitution": "প্রকৃতি ও গঠন",
+        "capacity": "বল ও সক্ষমতা",
+        "history": "ইতিহাস",
+        "current": "বর্তমান বিকৃতি",
+        "examination": "অষ্টবিধ পরীক্ষা",
+        "cause": "নিদান ও সম্প্রাপ্তি",
+        "treatment": "চিকিৎসা"
+      },
+      "fields": {
+        "prakriti": {
+          "label": "প্রকৃতি",
+          "options": {
+            "vata": "বাত",
+            "pitta": "পিত্ত",
+            "kapha": "কফ",
+            "vata_pitta": "বাত-পিত্ত",
+            "pitta_kapha": "পিত্ত-কফ",
+            "vata_kapha": "বাত-কফ",
+            "tridosha": "সমদোষ"
+          }
+        },
+        "vikriti": {
+          "label": "বিকৃতি",
+          "options": {
+            "vata": "বাত",
+            "pitta": "পিত্ত",
+            "kapha": "কফ",
+            "vata_pitta": "বাত-পিত্ত",
+            "pitta_kapha": "পিত্ত-কফ",
+            "vata_kapha": "বাত-কফ",
+            "tridosha": "ত্রিদোষ"
+          }
+        },
+        "agni": {
+          "label": "অগ্নি",
+          "options": {
+            "sama": "সম",
+            "vishama": "বিষম",
+            "tikshna": "তীক্ষ্ণ",
+            "manda": "মন্দ"
+          }
+        },
+        "koshtha": {
+          "label": "কোষ্ঠ",
+          "options": {
+            "mridu": "মৃদু",
+            "madhyama": "মধ্যম",
+            "krura": "ক্রূর"
+          }
+        },
+        "ama": {
+          "label": "আম",
+          "options": {
+            "absent": "নেই",
+            "mild": "সামান্য",
+            "moderate": "মাঝারি",
+            "marked": "বেশি"
+          }
+        },
+        "nadi": {
+          "label": "নাড়ি",
+          "options": {
+            "vata": "বাত",
+            "pitta": "পিত্ত",
+            "kapha": "কফ",
+            "mixed": "মিশ্র"
+          }
+        },
+        "mutra": {
+          "label": "মূত্র",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "increased": "বেশি",
+            "reduced": "কম",
+            "burning": "জ্বালাপোড়া",
+            "turbid": "ঘোলা",
+            "frequent_night": "রাতে বারবার"
+          }
+        },
+        "mala": {
+          "label": "মল",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "hard": "শক্ত",
+            "loose": "পাতলা",
+            "sticky": "আঠালো",
+            "undigested": "অজীর্ণ খাবারসহ"
+          }
+        },
+        "jihva": {
+          "label": "জিহ্বা",
+          "options": {
+            "clean": "পরিষ্কার",
+            "white": "সাদা আস্তরণ",
+            "yellow": "হলুদ আস্তরণ",
+            "thick": "পুরু আস্তরণ",
+            "cracked": "ফাটা",
+            "red": "লালচে"
+          }
+        },
+        "shabda": {
+          "label": "শব্দ / স্বর",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "hoarse": "ভাঙা",
+            "weak": "দুর্বল",
+            "loud": "জোরালো"
+          }
+        },
+        "sparsha": {
+          "label": "স্পর্শ",
+          "options": {
+            "warm": "উষ্ণ",
+            "cool": "শীতল",
+            "dry": "শুষ্ক",
+            "oily": "তৈলাক্ত",
+            "rough": "খসখসে",
+            "moist": "আর্দ্র"
+          }
+        },
+        "drik": {
+          "label": "দৃক / চোখ",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "dull": "নিষ্প্রভ",
+            "red": "লাল",
+            "yellowish": "হলদেটে",
+            "dry": "শুষ্ক",
+            "watery": "জলযুক্ত"
+          }
+        },
+        "akriti": {
+          "label": "আকৃতি",
+          "options": {
+            "thin": "কৃশ",
+            "medium": "মাঝারি",
+            "heavy": "স্থূল"
+          }
+        },
+        "bala": {
+          "label": "বল",
+          "options": {
+            "good": "ভালো",
+            "medium": "মাঝারি",
+            "poor": "কম"
+          }
+        },
+        "satva": {
+          "label": "সত্ত্ব",
+          "options": {
+            "strong": "প্রবল",
+            "medium": "মাঝারি",
+            "weak": "দুর্বল"
+          }
+        },
+        "ahara_shakti": {
+          "label": "আহারশক্তি",
+          "options": {
+            "good": "ভালো",
+            "medium": "মাঝারি",
+            "poor": "কম"
+          }
+        },
+        "vyayama_shakti": {
+          "label": "ব্যায়ামশক্তি",
+          "options": {
+            "good": "ভালো",
+            "medium": "মাঝারি",
+            "poor": "কম"
+          }
+        },
+        "vaya": {
+          "label": "বয়স",
+          "options": {
+            "bala": "বাল",
+            "madhya": "মধ্য",
+            "vriddha": "বৃদ্ধ"
+          }
+        },
+        "preferred_tastes": {
+          "label": "পছন্দের স্বাদ",
+          "options": {
+            "madhura": "মধুর",
+            "amla": "অম্ল",
+            "lavana": "লবণ",
+            "katu": "কটু",
+            "tikta": "তিক্ত",
+            "kashaya": "কষায়"
+          }
+        },
+        "nidana": {
+          "label": "নিদান",
+          "options": {
+            "improper_diet": "অনুচিত খাদ্য",
+            "irregular_meals": "অনিয়মিত খাওয়া",
+            "day_sleep": "দিনে ঘুম",
+            "night_waking": "রাত জাগা",
+            "suppressed_urges": "বেগ ধারণ",
+            "stress": "মানসিক চাপ",
+            "too_much_exercise": "অতিরিক্ত ব্যায়াম",
+            "too_little_exercise": "ব্যায়ামের অভাব",
+            "seasonal": "ঋতুজনিত"
+          }
+        },
+        "doshas_involved": {
+          "label": "দূষিত দোষ",
+          "options": {
+            "vata": "বাত",
+            "pitta": "পিত্ত",
+            "kapha": "কফ"
+          }
+        },
+        "dhatus_involved": {
+          "label": "দূষিত ধাতু",
+          "options": {
+            "rasa": "রস",
+            "rakta": "রক্ত",
+            "mamsa": "মাংস",
+            "meda": "মেদ",
+            "asthi": "অস্থি",
+            "majja": "মজ্জা",
+            "shukra": "শুক্র"
+          }
+        },
+        "srotas_involved": {
+          "label": "স্রোতস",
+          "options": {
+            "pranavaha": "প্রাণবহ",
+            "annavaha": "অন্নবহ",
+            "udakavaha": "উদকবহ",
+            "rasavaha": "রসবহ",
+            "raktavaha": "রক্তবহ",
+            "mamsavaha": "মাংসবহ",
+            "medovaha": "মেদোবহ",
+            "asthivaha": "অস্থিবহ",
+            "majjavaha": "মজ্জাবহ",
+            "shukravaha": "শুক্রবহ",
+            "mutravaha": "মূত্রবহ",
+            "purishavaha": "পুরীষবহ",
+            "svedavaha": "স্বেদবহ",
+            "artavavaha": "আর্তববহ",
+            "manovaha": "মনোবহ"
+          }
+        },
+        "desha": {
+          "label": "দেশ",
+          "options": {
+            "anupa": "আনূপ",
+            "jangala": "জাঙ্গল",
+            "sadharana": "সাধারণ"
+          }
+        },
+        "ritu": {
+          "label": "ঋতু",
+          "options": {
+            "vasanta": "বসন্ত",
+            "grishma": "গ্রীষ্ম",
+            "varsha": "বর্ষা",
+            "sharad": "শরৎ",
+            "hemanta": "হেমন্ত",
+            "shishira": "শীত"
+          }
+        },
+        "treatment_approach": {
+          "label": "চিকিৎসার ধরন",
+          "options": {
+            "shamana": "শমন",
+            "shodhana": "শোধন",
+            "both": "উভয়"
+          }
+        },
+        "panchakarma": {
+          "label": "পঞ্চকর্ম",
+          "options": {
+            "vamana": "বমন",
+            "virechana": "বিরেচন",
+            "basti": "বস্তি",
+            "nasya": "নস্য",
+            "raktamokshana": "রক্তমোক্ষণ"
+          }
+        },
+        "formulation": {
+          "label": "ওষুধ / যোগ"
+        },
+        "anupana": {
+          "label": "অনুপান",
+          "options": {
+            "warm_water": "কুসুম গরম পানি",
+            "honey": "মধু",
+            "ghee": "ঘি",
+            "milk": "দুধ",
+            "buttermilk": "ঘোল",
+            "other": "অন্যান্য"
+          }
+        },
+        "when_to_take": {
+          "label": "কখন খাবেন",
+          "options": {
+            "before_food": "খাবারের আগে",
+            "after_food": "খাবারের পরে",
+            "empty_stomach": "খালি পেটে",
+            "bedtime": "শোয়ার আগে"
+          }
+        },
+        "diet_lifestyle_advice": {
+          "label": "পথ্য ও জীবনযাপনের পরামর্শ"
+        },
+        "rasashastra_history": {
+          "label": "আগে ধাতুঘটিত (রসশাস্ত্র) ওষুধ খেয়েছেন",
+          "options": {
+            "yes": "হ্যাঁ",
+            "no": "না",
+            "unknown": "জানা নেই"
+          }
+        }
+      }
     }
   }
 }

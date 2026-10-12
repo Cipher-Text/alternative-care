@@ -397,7 +397,7 @@
     },
     "panel": {
       "profileTitle": "{system} case profile",
-      "profileDescription": "Constitution, generals, mind and history. Taken once and kept up to date; everything is optional.",
+      "profileDescription": "What stays true between visits: constitution, capacity and history. Taken once and kept up to date; everything is optional.",
       "visitTitle": "{system} details for this visit",
       "edit": "Edit",
       "save": "Save",
@@ -416,6 +416,326 @@
       "noDetails": "No {system} details were recorded for this visit.",
       "readOnly": "Only the doctor can change this.",
       "draftNote": "Draft field list: being reviewed by practising doctors."
+    },
+    "ayurveda": {
+      "title": "Ayurveda",
+      "groups": {
+        "constitution": "Constitution",
+        "capacity": "Strength and capacity",
+        "history": "History",
+        "current": "Present imbalance",
+        "examination": "Ashtavidha pariksha (eight-fold examination)",
+        "cause": "Cause and disease process",
+        "treatment": "Treatment"
+      },
+      "fields": {
+        "prakriti": {
+          "label": "Prakriti (born constitution)",
+          "options": {
+            "vata": "Vata",
+            "pitta": "Pitta",
+            "kapha": "Kapha",
+            "vata_pitta": "Vata-pitta",
+            "pitta_kapha": "Pitta-kapha",
+            "vata_kapha": "Vata-kapha",
+            "tridosha": "All three equal"
+          }
+        },
+        "vikriti": {
+          "label": "Vikriti (present imbalance)",
+          "options": {
+            "vata": "Vata",
+            "pitta": "Pitta",
+            "kapha": "Kapha",
+            "vata_pitta": "Vata-pitta",
+            "pitta_kapha": "Pitta-kapha",
+            "vata_kapha": "Vata-kapha",
+            "tridosha": "All three"
+          }
+        },
+        "agni": {
+          "label": "Agni (digestive fire)",
+          "options": {
+            "sama": "Balanced (sama)",
+            "vishama": "Irregular (vishama)",
+            "tikshna": "Sharp (tikshna)",
+            "manda": "Slow (manda)"
+          }
+        },
+        "koshtha": {
+          "label": "Koshtha (bowel type)",
+          "options": {
+            "mridu": "Soft (mridu)",
+            "madhyama": "Medium (madhyama)",
+            "krura": "Hard (krura)"
+          }
+        },
+        "ama": {
+          "label": "Ama (undigested residue)",
+          "options": {
+            "absent": "Absent",
+            "mild": "Mild",
+            "moderate": "Moderate",
+            "marked": "Marked"
+          }
+        },
+        "nadi": {
+          "label": "Nadi (pulse)",
+          "options": {
+            "vata": "Vata type",
+            "pitta": "Pitta type",
+            "kapha": "Kapha type",
+            "mixed": "Mixed"
+          }
+        },
+        "mutra": {
+          "label": "Mutra (urine)",
+          "options": {
+            "normal": "Normal",
+            "increased": "Increased",
+            "reduced": "Reduced",
+            "burning": "Burning",
+            "turbid": "Turbid",
+            "frequent_night": "Frequent at night"
+          }
+        },
+        "mala": {
+          "label": "Mala (stool)",
+          "options": {
+            "normal": "Normal",
+            "hard": "Hard",
+            "loose": "Loose",
+            "sticky": "Sticky",
+            "undigested": "With undigested food"
+          }
+        },
+        "jihva": {
+          "label": "Jihva (tongue)",
+          "options": {
+            "clean": "Clean",
+            "white": "White coating",
+            "yellow": "Yellow coating",
+            "thick": "Thick coating",
+            "cracked": "Cracked",
+            "red": "Red"
+          }
+        },
+        "shabda": {
+          "label": "Shabda (voice)",
+          "options": {
+            "normal": "Normal",
+            "hoarse": "Hoarse",
+            "weak": "Weak",
+            "loud": "Loud"
+          }
+        },
+        "sparsha": {
+          "label": "Sparsha (touch, skin)",
+          "options": {
+            "warm": "Warm",
+            "cool": "Cool",
+            "dry": "Dry",
+            "oily": "Oily",
+            "rough": "Rough",
+            "moist": "Moist"
+          }
+        },
+        "drik": {
+          "label": "Drik (eyes)",
+          "options": {
+            "normal": "Normal",
+            "dull": "Dull",
+            "red": "Red",
+            "yellowish": "Yellowish",
+            "dry": "Dry",
+            "watery": "Watery"
+          }
+        },
+        "akriti": {
+          "label": "Akriti (build)",
+          "options": {
+            "thin": "Thin",
+            "medium": "Medium",
+            "heavy": "Heavy"
+          }
+        },
+        "bala": {
+          "label": "Bala (strength)",
+          "options": {
+            "good": "Good",
+            "medium": "Medium",
+            "poor": "Poor"
+          }
+        },
+        "satva": {
+          "label": "Satva (mental strength)",
+          "options": {
+            "strong": "Strong",
+            "medium": "Medium",
+            "weak": "Weak"
+          }
+        },
+        "ahara_shakti": {
+          "label": "Ahara shakti (digestive capacity)",
+          "options": {
+            "good": "Good",
+            "medium": "Medium",
+            "poor": "Poor"
+          }
+        },
+        "vyayama_shakti": {
+          "label": "Vyayama shakti (exercise capacity)",
+          "options": {
+            "good": "Good",
+            "medium": "Medium",
+            "poor": "Poor"
+          }
+        },
+        "vaya": {
+          "label": "Vaya (age stage)",
+          "options": {
+            "bala": "Child (bala)",
+            "madhya": "Adult (madhya)",
+            "vriddha": "Elderly (vriddha)"
+          }
+        },
+        "preferred_tastes": {
+          "label": "Preferred tastes",
+          "options": {
+            "madhura": "Sweet (madhura)",
+            "amla": "Sour (amla)",
+            "lavana": "Salty (lavana)",
+            "katu": "Pungent (katu)",
+            "tikta": "Bitter (tikta)",
+            "kashaya": "Astringent (kashaya)"
+          }
+        },
+        "nidana": {
+          "label": "Nidana (causes)",
+          "options": {
+            "improper_diet": "Improper diet",
+            "irregular_meals": "Irregular meals",
+            "day_sleep": "Sleeping in the day",
+            "night_waking": "Staying awake at night",
+            "suppressed_urges": "Suppressing natural urges",
+            "stress": "Stress",
+            "too_much_exercise": "Too much exercise",
+            "too_little_exercise": "Too little exercise",
+            "seasonal": "Seasonal"
+          }
+        },
+        "doshas_involved": {
+          "label": "Doshas involved",
+          "options": {
+            "vata": "Vata",
+            "pitta": "Pitta",
+            "kapha": "Kapha"
+          }
+        },
+        "dhatus_involved": {
+          "label": "Dhatus involved",
+          "options": {
+            "rasa": "Rasa",
+            "rakta": "Rakta",
+            "mamsa": "Mamsa",
+            "meda": "Meda",
+            "asthi": "Asthi",
+            "majja": "Majja",
+            "shukra": "Shukra"
+          }
+        },
+        "srotas_involved": {
+          "label": "Srotas involved",
+          "options": {
+            "pranavaha": "Pranavaha (breath)",
+            "annavaha": "Annavaha (food)",
+            "udakavaha": "Udakavaha (water)",
+            "rasavaha": "Rasavaha",
+            "raktavaha": "Raktavaha",
+            "mamsavaha": "Mamsavaha",
+            "medovaha": "Medovaha",
+            "asthivaha": "Asthivaha",
+            "majjavaha": "Majjavaha",
+            "shukravaha": "Shukravaha",
+            "mutravaha": "Mutravaha",
+            "purishavaha": "Purishavaha",
+            "svedavaha": "Svedavaha",
+            "artavavaha": "Artavavaha",
+            "manovaha": "Manovaha"
+          }
+        },
+        "desha": {
+          "label": "Desha (region type)",
+          "options": {
+            "anupa": "Marshy, wet (anupa)",
+            "jangala": "Dry (jangala)",
+            "sadharana": "Mixed (sadharana)"
+          }
+        },
+        "ritu": {
+          "label": "Ritu (season)",
+          "options": {
+            "vasanta": "Spring",
+            "grishma": "Summer",
+            "varsha": "Rains",
+            "sharad": "Autumn",
+            "hemanta": "Late autumn",
+            "shishira": "Winter"
+          }
+        },
+        "treatment_approach": {
+          "label": "Treatment approach",
+          "options": {
+            "shamana": "Pacifying (shamana)",
+            "shodhana": "Purifying (shodhana)",
+            "both": "Both"
+          }
+        },
+        "panchakarma": {
+          "label": "Panchakarma advised or done",
+          "options": {
+            "vamana": "Vamana",
+            "virechana": "Virechana",
+            "basti": "Basti",
+            "nasya": "Nasya",
+            "raktamokshana": "Raktamokshana"
+          }
+        },
+        "formulation": {
+          "label": "Formulation"
+        },
+        "anupana": {
+          "label": "Anupana (vehicle)",
+          "options": {
+            "warm_water": "Warm water",
+            "honey": "Honey",
+            "ghee": "Ghee",
+            "milk": "Milk",
+            "buttermilk": "Buttermilk",
+            "other": "Other"
+          }
+        },
+        "when_to_take": {
+          "label": "When to take",
+          "options": {
+            "before_food": "Before food",
+            "after_food": "After food",
+            "empty_stomach": "Empty stomach",
+            "bedtime": "At bedtime"
+          }
+        },
+        "diet_lifestyle_advice": {
+          "label": "Diet and lifestyle advice"
+        },
+        "rasashastra_history": {
+          "label": "Metal-based (rasa-shastra) preparations taken before",
+          "options": {
+            "yes": "Yes",
+            "no": "No",
+            "unknown": "Not known"
+          }
+        }
+      }
     }
   }
 }

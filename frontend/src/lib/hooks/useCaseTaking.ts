@@ -8,7 +8,7 @@ import { useDoctorProfile } from '@/lib/hooks/useDoctor'
 import type { CaseData } from '@/types/caseTaking'
 
 /** Systems that have case-taking forms (the others are added as their fields are reviewed). */
-export const CASE_SYSTEMS = ['homeopathy'] as const
+export const CASE_SYSTEMS = ['homeopathy', 'ayurveda'] as const
 export type CaseSystem = (typeof CASE_SYSTEMS)[number]
 
 export const caseKeys = {

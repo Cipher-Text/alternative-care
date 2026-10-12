@@ -17,17 +17,30 @@ MESSAGES = Path(__file__).resolve().parents[3] / "frontend" / "src" / "messages"
 HOMEO = SYSTEMS["homeopathy"]
 
 
-def _labels(lang: str) -> dict:
-    return json.loads((MESSAGES / lang / "caseTaking.json").read_text(encoding="utf-8"))["caseTakingUi"]["homeopathy"]
+def _labels(system: str, lang: str) -> dict:
+    return json.loads((MESSAGES / lang / "caseTaking.json").read_text(encoding="utf-8"))["caseTakingUi"][system]
+
+
+@pytest.mark.parametrize("system", sorted(SYSTEMS))
+def test_registry_is_consistent(system):
+    s = SYSTEMS[system]
+    groups = dict(s.groups)
+    assert len(groups) == len(s.groups)  # a group is listed once
+    assert len({f.key for f in s.fields}) == len(s.fields)  # keys are unique
+    for f in s.fields:
+        assert groups.get(f.group) == f.scope, f.key  # every field sits in a group of its own scope
+        if f.type in ("one", "many"):
+            assert f.options and len(set(f.options)) == len(f.options), f.key
 
 
 @pytest.mark.parametrize("lang", ["en", "bn"])
-def test_every_field_group_and_option_has_a_label(lang):
-    labels = _labels(lang)
+@pytest.mark.parametrize("system", sorted(SYSTEMS))
+def test_every_field_group_and_option_has_a_label(system, lang):
+    labels = _labels(system, lang)
+    fields = SYSTEMS[system].fields
     assert labels["title"]
-    assert {g for g, _ in HOMEO.groups} == set(labels["groups"])
-    assert len({f.key for f in HOMEO.fields}) == len(HOMEO.fields)  # keys are unique
-    for f in HOMEO.fields:
+    assert {g for g, _ in SYSTEMS[system].groups} == set(labels["groups"])
+    for f in fields:
         entry = labels["fields"][f.key]
         assert entry["label"].strip(), f.key
         assert f.group in labels["groups"], f.key
@@ -38,7 +51,7 @@ def test_every_field_group_and_option_has_a_label(lang):
             for code in column.options:
                 assert entry["options"][code].strip(), (f.key, code)
     # no label for a field that no longer exists
-    assert set(labels["fields"]) == {f.key for f in HOMEO.fields}
+    assert set(labels["fields"]) == {f.key for f in fields}
 
 
 def test_validate_cleans_and_refuses():
@@ -82,7 +95,8 @@ def test_definitions_describe_the_forms():
 async def test_definitions_endpoint(client, doctor_token):
     r = await client.get("/api/v1/case-taking/homeopathy", headers=H(doctor_token))
     assert r.status_code == 200 and r.json()["system"] == "homeopathy" and len(r.json()["fields"]) == 38
-    assert (await client.get("/api/v1/case-taking/ayurvedic", headers=H(doctor_token))).status_code == 404
+    assert (await client.get("/api/v1/case-taking/unani", headers=H(doctor_token))).status_code == 404  # no form yet
+    assert (await client.get("/api/v1/case-taking/ayurveda", headers=H(doctor_token))).json()["system"] == "ayurveda"
     assert (await client.get("/api/v1/case-taking/homeopathy")).status_code == 401
 
 
@@ -156,3 +170,32 @@ async def test_receptionist_reads_but_cannot_write_and_other_clinics_see_nothing
     for url in (p_url, v_url):
         assert (await client.get(url, headers=H(test_access_token_2))).status_code == 404
         assert (await client.put(url, json={"data": {}}, headers=H(test_access_token_2))).status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_ayurveda_forms_use_the_same_endpoints(client, doctor_token, test_patient, test_user):
+    d = (await client.get("/api/v1/case-taking/ayurveda", headers=H(doctor_token))).json()
+    by_key = {f["key"]: f for f in d["fields"]}
+    assert len(d["fields"]) == 32 and by_key["prakriti"]["scope"] == "patient" and by_key["vikriti"]["scope"] == "visit"
+    assert by_key["agni"]["options"] == ["sama", "vishama", "tikshna", "manda"]
+
+    p_url = f"/api/v1/case-taking/patients/{test_patient.id}/ayurveda"
+    r = await client.put(p_url, json={"data": {"prakriti": "vata_pitta", "koshtha": "krura", "preferred_tastes": ["madhura", "amla"], "rasashastra_history": "no"}}, headers=H(doctor_token))
+    assert r.status_code == 200, r.text
+    assert (await client.get(p_url, headers=H(doctor_token))).json()["data"]["prakriti"] == "vata_pitta"
+    # visit-level answers do not belong on the patient form
+    assert (await client.put(p_url, json={"data": {"vikriti": "vata"}}, headers=H(doctor_token))).status_code == 422
+
+    visit = (await client.post("/api/v1/appointments/visits", headers=H(doctor_token), json={
+        "patient_id": test_patient.id, "doctor_id": test_user.id, "visit_date": str(date.today()),
+    })).json()
+    v_url = f"/api/v1/case-taking/visits/{visit['id']}/ayurveda"
+    r = await client.put(v_url, json={"data": {
+        "vikriti": "vata", "agni": "vishama", "ama": "mild", "nadi": "vata", "jihva": "white", "nidana": ["irregular_meals", "stress"],
+        "doshas_involved": ["vata"], "treatment_approach": "shamana", "anupana": "warm_water", "diet_lifestyle_advice": "Warm, cooked food at fixed times.",
+    }}, headers=H(doctor_token))
+    assert r.status_code == 200, r.text
+    assert (await client.get(v_url, headers=H(doctor_token))).json()["data"]["agni"] == "vishama"
+    assert (await client.put(v_url, json={"data": {"prakriti": "vata"}}, headers=H(doctor_token))).status_code == 422
+    # the homeopathy answers for the same patient are separate
+    assert (await client.get(f"/api/v1/case-taking/patients/{test_patient.id}/homeopathy", headers=H(doctor_token))).json()["exists"] is False
