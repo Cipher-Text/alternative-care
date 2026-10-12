@@ -7,6 +7,7 @@ import { useCan } from '@/lib/auth/permissions'
 import { useAuthStore } from '@/store/authStore'
 import { useOverviewStats, useFinancialAnalytics, usePatientAnalytics } from '@/lib/hooks/useDashboard'
 import { OnboardingChecklist } from '@/components/dashboard/OnboardingChecklist'
+import { DirectorySummaryCard } from '@/components/directory/DirectorySummaryCard'
 import { StatsCard } from '@/components/dashboard/StatsCard'
 import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { PatientDemographicsChart } from '@/components/dashboard/PatientDemographicsChart'
@@ -152,6 +153,9 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Directory summary: doctors only; hides itself if stats are unavailable */}
+      <DirectorySummaryCard />
 
       {/* Key Metrics */}
       <div>

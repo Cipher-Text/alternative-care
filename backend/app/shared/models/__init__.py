@@ -6,6 +6,7 @@ from app.shared.models.doctor import DoctorDegree, DoctorTraining
 from app.shared.models.institution import Institution
 from app.shared.models.pharmacy import Pharmacy
 from app.shared.models.article import Article
+from app.shared.models.directory import ContactRequest, ListingEvent, PractitionerListing
 from app.shared.models.geographic import Division, District, Upazila
 from app.shared.models.patient import Patient, PatientTag, PatientDiagnosis
 from app.shared.models.prescription import Prescription, PrescriptionItem
@@ -57,6 +58,9 @@ __all__ = [
     "Institution",
     "Pharmacy",
     "Article",
+    "ContactRequest",
+    "ListingEvent",
+    "PractitionerListing",
     "Division",
     "District",
     "Upazila",

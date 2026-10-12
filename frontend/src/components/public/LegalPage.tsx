@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 
-const SECTION_COUNTS = { privacy: 6, terms: 6, disclaimer: 4 } as const
+const SECTION_COUNTS = { privacy: 7, terms: 6, disclaimer: 4 } as const
 
 export type LegalKind = keyof typeof SECTION_COUNTS
 

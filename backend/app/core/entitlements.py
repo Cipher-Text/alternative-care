@@ -72,6 +72,9 @@ CATALOG: dict[str, EntitlementDef] = {
         ),
         EntitlementDef("feature_invoicing", "feature", "Payments & invoicing", "পেমেন্ট ও ইনভয়েস"),
         EntitlementDef("feature_ai_assistant", "feature", "AI assistant", "এআই সহকারী"),
+        EntitlementDef(
+            "feature_directory_listing", "feature", "Public practitioner listing", "পাবলিক চিকিৎসক তালিকা"
+        ),
     )
 }
 
@@ -87,7 +90,7 @@ class PlanDefaults:
     entitlements: dict[str, tuple[bool, int | None]]
 
 
-def _defaults(ai_enabled: bool, ai_quota: int) -> dict[str, tuple[bool, int | None]]:
+def _defaults(ai_enabled: bool, ai_quota: int, directory: bool = False) -> dict[str, tuple[bool, int | None]]:
     return {
         "max_patients": (True, None),
         "max_seats": (True, None),
@@ -95,6 +98,7 @@ def _defaults(ai_enabled: bool, ai_quota: int) -> dict[str, tuple[bool, int | No
         "monthly_ai_queries": (True, ai_quota),
         "feature_invoicing": (True, None),
         "feature_ai_assistant": (ai_enabled, None),
+        "feature_directory_listing": (directory, None),
     }
 
 
@@ -107,12 +111,12 @@ DEFAULT_PLANS: dict[str, PlanDefaults] = {
     "plus": PlanDefaults(
         "Plus", "প্লাস",
         "For growing clinics", "বর্ধনশীল ক্লিনিকের জন্য",
-        2, _defaults(False, 0),
+        2, _defaults(False, 0, True),
     ),
     "pro": PlanDefaults(
         "Pro", "প্রো",
         "For established practices", "প্রতিষ্ঠিত প্র্যাকটিসের জন্য",
-        3, _defaults(True, 200),
+        3, _defaults(True, 200, True),
     ),
 }
 FALLBACK_PLAN = "free"

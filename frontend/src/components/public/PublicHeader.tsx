@@ -20,10 +20,13 @@ const navigation = [
   { key: 'navAbout', href: '/about' },
 ] as const
 
-export function PublicHeader() {
+export function PublicHeader({ directoryLaunched = false }: { directoryLaunched?: boolean }) {
   const t = useTranslations('publicShellUi')
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const items = directoryLaunched
+    ? [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...navigation]
+    : navigation
   const user = useAuthStore((state) => state.user)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
@@ -38,7 +41,7 @@ export function PublicHeader() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {navigation.map((item) => (
+            {items.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -84,7 +87,7 @@ export function PublicHeader() {
 
         {mobileOpen && (
           <nav className="lg:hidden pb-4 flex flex-col gap-1">
-            {navigation.map((item) => (
+            {items.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

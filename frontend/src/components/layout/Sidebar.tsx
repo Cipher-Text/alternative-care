@@ -19,6 +19,7 @@ import {
   Store,
   Tags,
   Newspaper,
+  BadgeCheck,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -34,6 +35,7 @@ const doctorNavigation = [
   { key: 'pharmacies', href: '/pharmacies', icon: Store },
   { key: 'symptoms', href: '/symptoms', icon: Stethoscope },
   { key: 'articles', href: '/content', icon: Newspaper },
+  { key: 'directory', href: '/directory', icon: BadgeCheck },
   { key: 'settings', href: '/settings', icon: Settings },
 ]
 
@@ -65,7 +67,7 @@ export function useNavItems() {
     : doctorNavigation.filter(
         (item) =>
           (can.manageClinicSettings || item.href !== '/settings') &&
-          (!can.isReceptionist || item.href !== '/content') // articles: doctors and admins only
+          (!can.isReceptionist || (item.href !== '/content' && item.href !== '/directory')) // articles and directory: no receptionists
       )
 }
 

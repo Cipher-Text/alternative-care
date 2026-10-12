@@ -2,12 +2,15 @@ import type { ReactNode } from 'react'
 import { PublicHeader } from '@/components/public/PublicHeader'
 import { PublicFooter } from '@/components/public/PublicFooter'
 
-export default function PublicSiteLayout({ children }: { children: ReactNode }) {
+import { isDirectoryLaunched } from '@/lib/api/publicDirectory'
+
+export default async function PublicSiteLayout({ children }: { children: ReactNode }) {
+  const directoryLaunched = await isDirectoryLaunched().catch(() => false)
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <PublicHeader />
+      <PublicHeader directoryLaunched={directoryLaunched} />
       <main className="flex-1">{children}</main>
-      <PublicFooter />
+      <PublicFooter directoryLaunched={directoryLaunched} />
     </div>
   )
 }

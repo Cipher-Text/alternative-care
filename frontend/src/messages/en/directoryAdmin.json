@@ -1,0 +1,161 @@
+{
+  "directoryAdminUi": {
+    "title": "Public listing",
+    "subtitle": "Let patients find you on AltCare. You choose what is shown, and you can turn the listing off at any time.",
+    "loadFailed": "Could not load your listing. Please refresh the page.",
+    "status": {
+      "liveTitle": "Your profile is public",
+      "liveText": "Patients can find you in the AltCare directory.",
+      "viewProfile": "View your public profile",
+      "notLiveTitle": "Your profile is not public yet",
+      "notLiveText": "A listing goes public only when all five steps below are done.",
+      "done": "Done",
+      "todo": "Not done",
+      "gate": {
+        "not_listed": {
+          "label": "Listing turned on",
+          "fix": "Turn on \"Show me in the public directory\" below and save."
+        },
+        "not_verified": {
+          "label": "Credentials verified by AltCare",
+          "fix": "An AltCare admin reviews your registration. Make sure your registration body and number are filled in under Profile and Settings. Verification is free."
+        },
+        "not_approved": {
+          "label": "Clinic approved",
+          "fix": "Your clinic account is waiting for approval by AltCare. You do not need to do anything."
+        },
+        "not_in_plan": {
+          "label": "Plan includes the listing",
+          "fix": "The listing is included in the Plus and Pro plans.",
+          "link": "See plans"
+        },
+        "no_profile_text": {
+          "label": "Profile text added",
+          "fix": "Write a short bio (in English or Bangla) below and save."
+        }
+      },
+      "paymentNote": "Paying for a plan does not replace verification. Both are needed."
+    },
+    "stats": {
+      "title": "This month",
+      "requests": "Call-back requests",
+      "calls": "Call taps",
+      "whatsapp": "WhatsApp taps",
+      "open": "Open requests",
+      "hint": "Counted from the public listing since the start of the month. Zero is normal until your profile is public."
+    },
+    "form": {
+      "title": "Your listing",
+      "enable": "Show me in the public directory",
+      "enableHint": "When off, nobody can see your profile, even if everything else is ready.",
+      "lang": {
+        "en": "English",
+        "bn": "বাংলা"
+      },
+      "headline": "Headline",
+      "headlineHint": "One line about you, for example \"Homeopath for chronic and skin conditions\". Up to {max} characters.",
+      "bio": "About you",
+      "bioHint": "Required for the listing. Describe your training, approach and the conditions you see most. Up to {max} characters. Avoid promises of cure.",
+      "languages": "Languages you speak",
+      "languagesHint": "Separate with commas, for example: Bangla, English. Up to {max}.",
+      "languagesPlaceholder": "Bangla, English",
+      "hours": "Consultation hours",
+      "hoursHint": "Short text, for example \"Sat-Thu 5 pm to 9 pm\".",
+      "availability": "How you see patients",
+      "availabilityOptions": {
+        "in_person": "In person",
+        "online": "Online",
+        "both": "In person and online"
+      },
+      "privacy": "What patients can see and do",
+      "showFee": "Show my consultation fee",
+      "showFeeHint": "Shows the consultation and follow-up fee from your clinic settings.",
+      "showPhone": "Show a call button",
+      "showPhoneHint": "Patients can tap to call your clinic phone. Taps are counted.",
+      "showWhatsapp": "Show a WhatsApp button",
+      "showWhatsappHint": "Patients can tap to message you on WhatsApp. Taps are counted.",
+      "acceptsRequests": "Accept call-back requests",
+      "acceptsRequestsHint": "Patients can leave their name and number. You get an email and see it below.",
+      "alwaysShown": "Always shown when you are listed",
+      "alwaysShownText": "Your name, qualifications, registration body and clinic address come from your Profile and Settings. Your registration number is never shown.",
+      "profileLink": "Open Profile",
+      "settingsLink": "Open Settings",
+      "save": "Save listing",
+      "saving": "Saving...",
+      "unsaved": "You have unsaved changes.",
+      "saved": "All changes saved.",
+      "discard": "Discard changes",
+      "tooManyLanguages": "You can list at most {max} languages."
+    },
+    "requests": {
+      "title": "Call-back requests",
+      "subtitle": "Patients who asked you to call them. This is personal information: use it only to contact the patient about their request.",
+      "filter": {
+        "all": "All",
+        "new": "New",
+        "contacted": "Contacted",
+        "closed": "Closed"
+      },
+      "status": {
+        "new": "New",
+        "contacted": "Contacted",
+        "closed": "Closed"
+      },
+      "col": {
+        "patient": "Patient",
+        "phone": "Phone",
+        "preferred": "Preferred time",
+        "message": "Message",
+        "received": "Received",
+        "status": "Status",
+        "action": "Action"
+      },
+      "markContacted": "Mark contacted",
+      "markClosed": "Close",
+      "reopen": "Reopen",
+      "noMessage": "No message",
+      "noPreferred": "Any time",
+      "emptyAll": "No requests yet. They will appear here when patients ask for a call back.",
+      "emptyFiltered": "No requests with this status.",
+      "noun": "requests",
+      "callPatient": "Call {name}"
+    },
+    "toast": {
+      "saved": "Listing saved",
+      "saveFailed": "Could not save the listing",
+      "requestUpdated": "Request updated",
+      "requestFailed": "Could not update the request"
+    },
+    "dashCard": {
+      "title": "Directory",
+      "summary": "{requests} requests this month, {open} open",
+      "open": "Open directory"
+    },
+    "verification": {
+      "title": "Credential verification",
+      "description": "Record that you checked this doctor's registration and credentials. Free for every plan. Required before the clinic can appear in the public directory.",
+      "state": "Status",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "verifiedAt": "Verified on",
+      "note": "Note on file",
+      "noteMissing": "Not shown here. The clinic detail data does not include the note or the date unless you just changed it in this session.",
+      "details": "What to check",
+      "detailsMissing": "Registration body and number, license number, years of experience and degrees are not part of this page's data yet. Check them in the doctor's records before verifying.",
+      "noteLabel": "What you checked (required)",
+      "notePlaceholder": "For example: BHMS certificate and Board registration checked",
+      "noteRequired": "Write what you checked.",
+      "verify": "Verify credentials",
+      "remove": "Remove verification",
+      "working": "Saving...",
+      "doneVerified": "Credentials marked as verified",
+      "doneRemoved": "Verification removed",
+      "failed": "Could not update verification",
+      "readOnly": "Only admins can change verification."
+    },
+    "clients": {
+      "unverified": "Unverified",
+      "verified": "Verified"
+    }
+  }
+}
