@@ -62,6 +62,9 @@ CATALOG: dict[str, EntitlementDef] = {
             "monthly_sms", "limit", "SMS per month", "মাসিক এসএমএস", "SMS / month", "এসএমএস / মাস", "monthly"
         ),
         EntitlementDef(
+            "monthly_email", "limit", "Emails per month", "মাসিক ইমেইল", "emails / month", "ইমেইল / মাস", "monthly"
+        ),
+        EntitlementDef(
             "monthly_ai_queries",
             "limit",
             "AI assistant queries per month",
@@ -95,6 +98,7 @@ def _defaults(ai_enabled: bool, ai_quota: int, directory: bool = False) -> dict[
         "max_patients": (True, None),
         "max_seats": (True, None),
         "monthly_sms": (True, None),
+        "monthly_email": (True, None),
         "monthly_ai_queries": (True, ai_quota),
         "feature_invoicing": (True, None),
         "feature_ai_assistant": (ai_enabled, None),
@@ -218,9 +222,14 @@ class EntitlementService:
                 )
             )
             return int(result.scalar_one())
-        if key in ("monthly_sms", "monthly_ai_queries"):
+        if key in ("monthly_sms", "monthly_email", "monthly_ai_queries"):
             month = await UsageService(self.db, tenant_id).get_month_to_date()
-            return int(month["sms_sent" if key == "monthly_sms" else "ai_queries_made"])
+            field = {
+                "monthly_sms": "sms_sent",
+                "monthly_email": "emails_sent",
+                "monthly_ai_queries": "ai_queries_made",
+            }[key]
+            return int(month[field])
         return 0
 
     async def check_feature(self, tenant_id: str, key: str) -> None:

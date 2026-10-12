@@ -22,10 +22,14 @@ interface IntegrationsListProps {
   onAdd: () => void;
   onEdit: (integrationId: number) => void;
   onTest: (integrationId: number) => void;
+  /** Provider types not to show (SMS/email while AltCare's own platform provider is available) */
+  hideTypes?: ProviderType[];
 }
 
-export function IntegrationsList({ onAdd, onEdit, onTest }: IntegrationsListProps) {
-  const [activeTab, setActiveTab] = useState<'all' | ProviderType>('all');
+export function IntegrationsList({ onAdd, onEdit, onTest, hideTypes = [] }: IntegrationsListProps) {
+  const [selectedTab, setActiveTab] = useState<'all' | ProviderType>('all');
+  // a tab can be hidden after it was selected (platform provider became known)
+  const activeTab: 'all' | ProviderType = selectedTab !== 'all' && hideTypes.includes(selectedTab) ? 'all' : selectedTab;
 
   const { data: integrations, isLoading } = useIntegrations({
     is_active: true,
@@ -59,10 +63,12 @@ export function IntegrationsList({ onAdd, onEdit, onTest }: IntegrationsListProp
   const providerMap = new Map(providers?.map((p) => [p.id, p]) || []);
 
   // Enrich integrations with provider data
-  const enrichedIntegrations = integrations?.map((integration) => ({
+  const enrichedIntegrations = (integrations?.map((integration) => ({
     ...integration,
     provider: providerMap.get(integration.provider_id),
-  })) || [];
+  })) || []).filter(
+    (i) => !(i.provider && hideTypes.includes(i.provider.provider_type))
+  );
 
   if (isLoading) {
     return (
@@ -101,8 +107,8 @@ export function IntegrationsList({ onAdd, onEdit, onTest }: IntegrationsListProp
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
           <TabsList>
             <TabsTrigger value="all">All ({enrichedIntegrations.length})</TabsTrigger>
-            <TabsTrigger value="sms">SMS ({smsCount})</TabsTrigger>
-            <TabsTrigger value="email">Email ({emailCount})</TabsTrigger>
+            {!hideTypes.includes('sms') && <TabsTrigger value="sms">SMS ({smsCount})</TabsTrigger>}
+            {!hideTypes.includes('email') && <TabsTrigger value="email">Email ({emailCount})</TabsTrigger>}
             <TabsTrigger value="payment">Payment ({paymentCount})</TabsTrigger>
           </TabsList>
         </Tabs>

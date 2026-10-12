@@ -346,3 +346,24 @@ from app.shared.schemas.directory import (  # noqa: E402
     PublicPractitionerItem,
     PublicPractitionerList,
 )
+
+from app.shared.schemas.credits import (  # noqa: E402
+    ChannelBalance,
+    CreditAdjustment,
+    CreditSummary,
+    LedgerEntry,
+    MessagingStatus,
+)
+
+from app.shared.schemas.checkout import (  # noqa: E402
+    AdminOrderItem,
+    CheckoutRequest,
+    CheckoutResponse,
+    CreditPackCreate,
+    CreditPackResponse,
+    CreditPackUpdate,
+    FakeGatewayComplete,
+    OrderResponse,
+    PlanOption,
+    SubscriptionInfo,
+)

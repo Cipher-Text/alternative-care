@@ -93,7 +93,8 @@ class IntegrationLog(TenantScopedModel):
     __tablename__ = "integration_logs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    tenant_integration_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    # NULL for sends made through the platform's own providers (no per-clinic integration)
+    tenant_integration_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
 
     # Transaction type: sms_sent, email_sent, payment_initiated, payment_completed
     transaction_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)

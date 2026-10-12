@@ -14,6 +14,7 @@ import type {
   SendSMSRequest,
   SendEmailRequest,
 } from '@/types/integration';
+import { useSendErrorToast } from '@/lib/hooks/useSendError';
 
 // ===== Provider Hooks =====
 
@@ -178,11 +179,14 @@ export function useIntegrationLogs(filters?: LogFilters) {
  */
 export function useSendSMS() {
   const queryClient = useQueryClient();
+  const notifySendError = useSendErrorToast();
 
   return useMutation((payload: SendSMSRequest) => integrationsApi.sendSMS(payload), {
     onSuccess: () => {
       queryClient.invalidateQueries(['integrations', 'logs']);
     },
+    // 403 credits_exhausted gets a notice linking to Messaging; other errors show the server's message
+    onError: (error) => notifySendError(error),
   });
 }
 
@@ -191,10 +195,13 @@ export function useSendSMS() {
  */
 export function useSendEmail() {
   const queryClient = useQueryClient();
+  const notifySendError = useSendErrorToast();
 
   return useMutation((payload: SendEmailRequest) => integrationsApi.sendEmail(payload), {
     onSuccess: () => {
       queryClient.invalidateQueries(['integrations', 'logs']);
     },
+    // 403 credits_exhausted gets a notice linking to Messaging; other errors show the server's message
+    onError: (error) => notifySendError(error),
   });
 }

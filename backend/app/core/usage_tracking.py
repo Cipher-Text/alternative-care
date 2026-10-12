@@ -61,16 +61,18 @@ class UsageService:
                 func.coalesce(func.sum(UsageTracking.ai_queries_made), 0),
                 func.coalesce(func.sum(UsageTracking.sms_sent), 0),
                 func.coalesce(func.sum(UsageTracking.pdfs_generated), 0),
+                func.coalesce(func.sum(UsageTracking.emails_sent), 0),
             ).where(
                 UsageTracking.tenant_id == self.tenant_id,
                 UsageTracking.usage_date >= month_start,
                 UsageTracking.usage_date <= today,
             )
         )
-        prescriptions_created, ai_queries_made, sms_sent, pdfs_generated = result.one()
+        prescriptions_created, ai_queries_made, sms_sent, pdfs_generated, emails_sent = result.one()
         return {
             "prescriptions_created": prescriptions_created,
             "ai_queries_made": ai_queries_made,
             "sms_sent": sms_sent,
             "pdfs_generated": pdfs_generated,
+            "emails_sent": emails_sent,
         }

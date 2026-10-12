@@ -1,7 +1,8 @@
 # Billing, platform integrations and messaging credits — spec (draft)
 
-Status: **decisions recorded 2026-10-12; plan values and several details still open.** Nothing in this
-document is built yet. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
+Status: **decisions recorded 2026-10-12; plan values and several details still open.** Step 2 of §5
+(platform providers from env + credit ledger + charged send routes) is built. Step 3 is built
+against a **fake gateway only** (§8); SSLCommerz and bKash are not. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
 and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
 
 ## 1. Decided
@@ -88,3 +89,53 @@ decision and legal advice before anyone builds it.
 Email (exists): `EMAIL_PROVIDER=resend`, `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`.
 SMS: `SMS_PROVIDER`, provider keys. SSLCommerz: store id, store password, sandbox flag. bKash: existing
 `BKASH_*`. Exact names are set when each piece is built.
+
+## 7. Implementation notes (built 2026-10-12, branch `feat/platform-messaging-credits`)
+
+- `credit_balances` / `credit_ledger` (migration `a4d9e2c7b6f1`); `usage_tracking.emails_sent`; new
+  entitlement `monthly_email`; `integration_logs.tenant_integration_id` is now nullable (platform sends).
+- `app/core/credits.py` `CreditService`: `spend` (allowance first, then a single conditional UPDATE on the
+  purchased balance, so concurrent sends cannot overspend), `refund`, `grant`, `summary`, `ledger`.
+  Allowance usage is measured in `usage_tracking`, not the ledger; only purchased credits are ledgered.
+- `app/core/messaging.py`: platform SMS (`SMS_PROVIDER=bulksmsbd`, `BULKSMSBD_*`) and email
+  (`EMAIL_PROVIDER`, e.g. Resend) from the environment; `messaging_status()` returns configured-or-not only.
+- `/integrations/send/sms` and `/send/email` use the platform provider when it is configured (charged);
+  otherwise they fall back to the clinic's own provider (legacy, until clinics are migrated).
+  Failed sends are refunded by the Celery task; clinic emails carry the clinic as Reply-To.
+- API: clinic `GET /billing/credits`, `GET /billing/credits/ledger`; admin `POST /admin/tenants/{id}/credits`
+  (grant or remove, note required), `GET /admin/messaging/status`.
+- **Known gaps:** the existing BulkSMSBD client is the repo's earlier generic implementation (its request
+  format is marked "adjust based on actual API documentation") and has not been verified against the real
+  provider; no provider-balance lookup or low-balance alert yet; no bounce handling; no checkout, so
+  credits are added by an admin until Step 3; clinics' own provider integrations are not migrated or retired;
+  the allowance check and its increment are not one atomic step (a burst of concurrent sends can overshoot
+  the allowance by a few).
+
+## 8. Checkout (built 2026-10-12 against a fake gateway, branch `feat/checkout-fake-gateway`)
+
+- **Tables:** `billing_orders` (AltCare's own revenue; separate from the clinic-to-patient `payments`),
+  `credit_packs` (admin-priced top-ups), `tenants.plan_reminder_stage` (migrations `b8e3f1a6c2d5`,
+  `c5f2a7d9e1b3`).
+- **Gateway interface** (`app/modules/billing/gateways/`): `create_checkout(order)` returns a redirect;
+  `verify(order)` asks the gateway what happened. Only `FakeGateway` exists. SSLCommerz and bKash are
+  two more classes behind the same interface plus their notification endpoints.
+- **Fake gateway** is a test page where a tester picks success/failed/cancelled. It exists only when
+  `PAYMENT_FAKE_GATEWAY_ENABLED=true`; **the app refuses to start in production with it on.**
+- **Settling is the only place money becomes entitlement.** It runs under a row lock on the order, is
+  idempotent (a repeated or racing notification cannot grant twice), and refuses to fulfil if the
+  gateway's amount or currency differs from the order. The browser's return page is never trusted: it
+  polls the order, and a pending order is re-checked with the gateway on every read.
+- **Fulfilment:** subscription sets `tenants.plan` and `plan_expires_at` (renewing the same plan extends
+  from the current expiry; a lapsed or new plan starts now; no proration when upgrading mid-period);
+  a credit pack grants credits atomically with the order and records the receipt number in the ledger.
+- **Rules computed by the server** (`assess`): subscribe / renew / upgrade allowed; a lower plan while a
+  higher one is active, a plan that never expires, and a plan with no online price are refused.
+  Only doctors can buy or see orders; orders are private to their clinic.
+- **Housekeeping** (`app/modules/billing/maintenance.py`, Celery beat daily): expiry reminders at 7 and 1
+  days (once per stage, reset on renewal) and expiry of pending orders older than 24h after a last
+  gateway check. Needs a Celery worker **and beat** process in deployment.
+- **Known gaps:** no real gateway; no gateway notification (IPN) endpoint yet (the fake needs none);
+  no refunds or cancellation; no PDF receipt (a printable page only); no invoices with tax details; no
+  proration; no admin manual "mark paid" for bank transfers; plan prices are still unset (the pricing
+  and checkout pages show "contact us" until an admin saves prices in the plan editor); the order
+  list does not filter by date.

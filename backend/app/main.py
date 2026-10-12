@@ -119,6 +119,8 @@ from app.modules.institution import router as institution_router
 from app.modules.pharmacy import router as pharmacy_router
 from app.modules.content import router as content_router
 from app.modules.directory import router as directory_router
+from app.modules.billing import router as billing_router
+from app.modules.billing.admin_routes import router as billing_admin_router
 from app.modules.plans.routes import (
     admin_router as plans_admin_router,
     me_router as entitlements_me_router,
@@ -144,6 +146,8 @@ app.include_router(public_router, prefix=f"{settings.API_V1_PREFIX}/public", tag
 app.include_router(institution_router, prefix=f"{settings.API_V1_PREFIX}/institutions", tags=["Institutions"])
 app.include_router(content_router, prefix=f"{settings.API_V1_PREFIX}/articles", tags=["Content"])
 app.include_router(directory_router, prefix=f"{settings.API_V1_PREFIX}/directory", tags=["Directory"])
+app.include_router(billing_router, prefix=f"{settings.API_V1_PREFIX}/billing", tags=["Billing"])
+app.include_router(billing_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/billing", tags=["Admin"])
 app.include_router(pharmacy_router, prefix=f"{settings.API_V1_PREFIX}/pharmacies", tags=["Pharmacies"])
 app.include_router(plans_public_router, prefix=f"{settings.API_V1_PREFIX}/plans", tags=["Plans"])
 app.include_router(plans_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/plans", tags=["Platform Admin"])

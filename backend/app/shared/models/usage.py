@@ -29,6 +29,7 @@ class UsageTracking(TenantScopedModel):
     ai_queries_made: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     pdfs_generated: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     sms_sent: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    emails_sent: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     # Current totals (for display)
     total_patients: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
