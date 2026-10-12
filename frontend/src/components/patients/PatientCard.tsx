@@ -26,18 +26,18 @@ export function PatientCard({ patient }: PatientCardProps) {
   return (
     <Card className="bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:shadow-md dark:hover:shadow-emerald-500/10 transition-all duration-200">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-900/50 border-2 border-emerald-200 dark:border-emerald-800 flex items-center justify-center">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="h-12 w-12 shrink-0 rounded-full bg-emerald-100 dark:bg-emerald-900/50 border-2 border-emerald-200 dark:border-emerald-800 flex items-center justify-center">
               <User className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{fullName}</h3>
+            <div className="min-w-0">
+              <h3 className="break-words font-semibold text-lg text-gray-900 dark:text-white">{fullName}</h3>
             </div>
           </div>
           <Badge
             variant="outline"
-            className="bg-gray-100 dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300"
+            className="shrink-0 bg-gray-100 dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300"
           >
             {gender}
           </Badge>
