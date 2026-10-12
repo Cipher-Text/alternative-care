@@ -35,6 +35,9 @@ class PersonAccount(BaseAuditModel):
     phone: Mapped[str] = mapped_column(String(20), nullable=False, unique=True, index=True)
     phone_verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     status: Mapped[str] = mapped_column(String(10), nullable=False, default="active")
+    # First time this phone signed in to the patient portal. Links made before this moment stay
+    # hidden until a clinic code activates them (ADR 009 rule 10: a recycled number sees no history).
+    portal_registered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class PersonProfile(BaseAuditModel):
@@ -72,7 +75,7 @@ class OtpChallenge(BaseAuditModel):
     __tablename__ = "otp_challenges"
     __table_args__ = (
         CheckConstraint(
-            "purpose IN ('clinic_verify','claim')", name="ck_otp_challenge_purpose"
+            "purpose IN ('clinic_verify','claim','portal_login')", name="ck_otp_challenge_purpose"
         ),
         Index("ix_otp_challenges_phone_created", "phone", "created_at"),
         Index("ix_otp_challenges_tenant_created", "tenant_id", "created_at"),
@@ -105,11 +108,11 @@ class ConsentEvent(BaseAuditModel):
 
     __tablename__ = "identity_consent_events"
     __table_args__ = (
-        CheckConstraint("kind IN ('link','revoke')", name="ck_identity_consent_kind"),
+        CheckConstraint("kind IN ('link','revoke','portal_access')", name="ck_identity_consent_kind"),
     )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    kind: Mapped[str] = mapped_column(String(10), nullable=False)
+    kind: Mapped[str] = mapped_column(String(20), nullable=False)
     tenant_id: Mapped[str] = mapped_column(
         ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -160,6 +163,8 @@ class PatientLink(BaseAuditModel):
     consent_event_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     revoked_by: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    # When the holder gained access to this clinic's records in the patient portal; null = not visible
+    portal_access_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class ClaimCode(BaseAuditModel):
@@ -177,3 +182,7 @@ class ClaimCode(BaseAuditModel):
     code_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # 'link': links an unlinked record (Phase 1). 'portal': gives the holder portal access to an
+    # already-linked record, so it is tied to that link.
+    purpose: Mapped[str] = mapped_column(String(10), nullable=False, default="link", server_default="link")
+    link_id: Mapped[str | None] = mapped_column(String(36), nullable=True)

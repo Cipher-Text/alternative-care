@@ -22,7 +22,8 @@
     "navFindPractitioner": "চিকিৎসক খুঁজুন",
     "navContact": "যোগাযোগ",
     "navFaq": "প্রশ্নোত্তর ও বিলিং",
-    "navRefundPolicy": "রিফান্ড নীতি"
+    "navRefundPolicy": "রিফান্ড নীতি",
+    "navPatientLogin": "রোগীর লগইন"
   },
   "publicMetaUi": {
     "default": {

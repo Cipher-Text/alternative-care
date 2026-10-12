@@ -16,6 +16,7 @@ const columns = [
       { key: 'navPractitioners', href: '/for-practitioners' },
       { key: 'navPricing', href: '/pricing' },
       { key: 'signIn', href: '/login' },
+      { key: 'navPatientLogin', href: '/patient' },
     ],
   },
   {

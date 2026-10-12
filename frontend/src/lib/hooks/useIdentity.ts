@@ -39,6 +39,11 @@ export function useCreateClaimCode(patientId: string) {
   return useMutation(() => identityApi.createClaimCode(patientId))
 }
 
+/** Create a one-time portal code for a linked patient (shown once, so not cached). */
+export function useCreatePortalCode(patientId: string) {
+  return useMutation(() => identityApi.createPortalCode(patientId))
+}
+
 /** The signed-in user's clinic name, for the consent script. Undefined while loading or unavailable. */
 export function useClinicName(enabled = true): string | undefined {
   const { data } = useQuery('identityClinicName', () => authApi.getCurrentUser(), {

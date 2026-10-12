@@ -106,6 +106,12 @@ async def find_or_create_profile(
             return p, True
     if len(existing) >= MAX_PROFILES_PER_ACCOUNT:
         raise _conflict("profile_limit", "This phone already has the maximum number of profiles.")
+    if data.relationship == "self" and any(p.relationship == "self" for p in existing):
+        # Exactly one person is the account holder; others under this phone are family members
+        raise _conflict(
+            "self_profile_exists",
+            "This phone already has an account holder. Choose how this person is related to them.",
+        )
     profile = PersonProfile(
         id=str(uuid4()),
         account_id=account_id,
@@ -281,6 +287,7 @@ class IdentityService:
             )
 
         now = datetime.now(timezone.utc)
+        account = (await self.db.execute(select(PersonAccount).where(PersonAccount.id == session.account_id))).scalar_one()
         consent = ConsentEvent(
             id=str(uuid4()), kind="link", tenant_id=self.tenant_id, patient_id=patient.id, profile_id=profile.id,
             account_id=session.account_id, method="clinic_otp", staff_user_id=self.user_id,
@@ -292,6 +299,9 @@ class IdentityService:
             id=str(uuid4()), tenant_id=self.tenant_id, patient_id=patient.id, profile_id=profile.id,
             method="clinic_otp", status="linked", linked_at=now, linked_by=self.user_id, consent_event_id=consent.id,
             created_by=self.user_id,
+            # Visible in the portal at once only if this phone already signs in there; otherwise a clinic
+            # code is needed (a recycled number must not read an earlier owner's records)
+            portal_access_at=now if account.portal_registered_at else None,
         )
         self.db.add(link)
         session.link_count += 1
@@ -310,12 +320,13 @@ class IdentityService:
         link = await self._active_link(patient_id)
         if link is None:
             return PatientIdentityStatus(
-                patient_id=patient_id, level=0, linked=False, linked_at=None, method=None, profile_display_name=None
+                patient_id=patient_id, level=0, linked=False, linked_at=None, method=None,
+                profile_display_name=None, portal_access=False,
             )
         profile = (await self.db.execute(select(PersonProfile).where(PersonProfile.id == link.profile_id))).scalar_one()
         return PatientIdentityStatus(
             patient_id=patient_id, level=1, linked=True, linked_at=link.linked_at, method=link.method,
-            profile_display_name=profile.display_name,
+            profile_display_name=profile.display_name, portal_access=link.portal_access_at is not None,
         )
 
     async def revoke(self, patient_id: str, note: str | None) -> PatientIdentityStatus:
@@ -348,7 +359,10 @@ class IdentityService:
         now = datetime.now(timezone.utc)
         old = (
             await self.db.execute(
-                select(ClaimCode).where(ClaimCode.tenant_id == self.tenant_id, ClaimCode.patient_id == patient_id, ClaimCode.used_at.is_(None))
+                select(ClaimCode).where(
+                    ClaimCode.tenant_id == self.tenant_id, ClaimCode.patient_id == patient_id,
+                    ClaimCode.used_at.is_(None), ClaimCode.purpose == "link",
+                )
             )
         ).scalars().all()
         for c in old:  # one live code per record
@@ -365,6 +379,32 @@ class IdentityService:
         return f"{raw[:4]}-{raw[4:]}", expires
 
 
+    async def create_portal_code(self, patient_id: str) -> tuple[str, datetime]:
+        """A code that lets the patient see this already-linked record in their own portal account."""
+        await self._patient(patient_id)
+        link = await self._active_link(patient_id)
+        if link is None:
+            raise _conflict("not_linked", "Link this patient to a verified profile first.")
+        now = datetime.now(timezone.utc)
+        old = (
+            await self.db.execute(
+                select(ClaimCode).where(ClaimCode.link_id == link.id, ClaimCode.purpose == "portal", ClaimCode.used_at.is_(None))
+            )
+        ).scalars().all()
+        for c in old:  # one live code per link
+            c.expires_at = now
+        raw = "".join(secrets.choice(CLAIM_ALPHABET) for _ in range(8))
+        expires = now + CLAIM_CODE_TTL
+        self.db.add(
+            ClaimCode(
+                id=str(uuid4()), tenant_id=self.tenant_id, patient_id=patient_id, code_hash=hash_secret(raw, "portal"),
+                expires_at=expires, created_by=self.user_id, purpose="portal", link_id=link.id,
+            )
+        )
+        await self.db.commit()
+        return f"{raw[:4]}-{raw[4:]}", expires
+
+
 class ClaimService:
     """Patient side, no login: verify the phone, then link the record the claim code points to."""
 
@@ -373,7 +413,9 @@ class ClaimService:
 
     async def _claim(self, raw_code: str) -> ClaimCode:
         claim = (
-            await self.db.execute(select(ClaimCode).where(ClaimCode.code_hash == hash_secret(normalize_claim_code(raw_code), "claim")))
+            await self.db.execute(select(ClaimCode).where(
+                    ClaimCode.code_hash == hash_secret(normalize_claim_code(raw_code), "claim"), ClaimCode.purpose == "link"
+                ))
         ).scalar_one_or_none()
         if claim is None or claim.used_at is not None or claim.expires_at < datetime.now(timezone.utc):
             raise HTTPException(
@@ -444,6 +486,7 @@ class ClaimService:
             PatientLink(
                 id=str(uuid4()), tenant_id=claim.tenant_id, patient_id=patient.id, profile_id=profile.id,
                 method="claim_code", status="linked", linked_at=now, linked_by=None, consent_event_id=consent.id,
+                portal_access_at=now,  # the patient proved the phone and the clinic's code themselves
             )
         )
         claim.used_at = now

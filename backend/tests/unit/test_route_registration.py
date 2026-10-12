@@ -67,4 +67,5 @@ def test_current_api_route_count_matches_docs():
     # Contact form: +1 /public/contact, +2 /admin/contact — 199 -> 202.
     # Patient identity (ADR 009 phase 1): +8 /identity, +2 /public/identity — 202 -> 212.
     # Real gateways: +3 /billing/gateways (sslcommerz GET+POST, bkash GET) — 212 -> 215.
-    assert api_method_count == 215
+    # Patient portal (ADR 009 phase 2): +7 /patient, +1 /identity portal-code — 215 -> 223.
+    assert api_method_count == 223

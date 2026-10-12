@@ -227,6 +227,10 @@ class Settings(BaseSettings):
     OTP_MAX_PER_PHONE_PER_HOUR: int = 3
     OTP_MAX_PER_CLINIC_PER_DAY: int = 200
     IDENTITY_TOKEN_TTL_SECONDS: int = 900
+    # Patient portal sign-in (no clinic involved): a global daily ceiling on codes, and the session length
+    OTP_MAX_PORTAL_PER_DAY: int = 3000
+    PATIENT_TOKEN_HOURS: int = 12
+    RATE_LIMIT_PORTAL_PER_HOUR: int = 10
     # Public claim flow, per IP per hour
     RATE_LIMIT_CLAIM_PER_HOUR: int = 10
     RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600

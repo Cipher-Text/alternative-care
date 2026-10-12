@@ -1,0 +1,113 @@
+{
+  "patientPortalUi": {
+    "metaTitle": "Patient login - AltCare",
+    "signIn": {
+      "title": "Your AltCare account",
+      "intro": "Sign in with your mobile number to see your visits, prescriptions and receipts from clinics that use AltCare. We will send you a code by SMS. It is free.",
+      "sessionEnded": "Your session ended. Please sign in again.",
+      "phoneLabel": "Mobile number",
+      "phoneHint": "For example 01712345678",
+      "sendCode": "Send code",
+      "sending": "Sending...",
+      "codeSent": "We sent a 6-digit code to {phone}.",
+      "smsCodeLabel": "Code from the SMS",
+      "confirm": "Sign in",
+      "confirming": "Checking...",
+      "resend": "Send the code again",
+      "resendIn": "Send again in {seconds}s",
+      "sendNew": "Send a new code",
+      "changeNumber": "Use a different number",
+      "errors": {
+        "phone": "Enter a Bangladesh mobile number, like 01712345678.",
+        "codeLength": "Enter the 6-digit code.",
+        "otpInvalid": "That code is not correct. Check the SMS and try again.",
+        "otpExpired": "That code has expired. Tap Send the code again.",
+        "otpLocked": "Too many wrong tries. Please send a new code.",
+        "otpCooldown": "A code was just sent. Please wait a minute before asking for another.",
+        "tooMany": "Too many requests. Please try again later.",
+        "smsUnavailable": "We cannot send SMS right now. Please try again later.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "dashboard": {
+      "title": "Your records",
+      "signedInAs": "Signed in as {phone}",
+      "signOut": "Sign out",
+      "loading": "Loading",
+      "loadFailed": "We could not load your account.",
+      "retry": "Try again",
+      "noProfiles": "No clinic records are shown yet. If a clinic recorded your phone number before today, ask them for a portal code and enter it below.",
+      "profilesLabel": "Whose records",
+      "dependent": "child"
+    },
+    "clinics": {
+      "heading": "Clinics",
+      "since": "Added {date}",
+      "remove": "Remove",
+      "removeTitle": "Remove {clinic}?",
+      "removeBody": "This clinic will no longer appear in your account. The clinic keeps its own record of your visits.",
+      "cancel": "Cancel",
+      "confirmRemove": "Remove clinic",
+      "removeFailed": "We could not remove the clinic. Please try again."
+    },
+    "records": {
+      "label": "Your records",
+      "loading": "Loading",
+      "loadFailed": "We could not load these records.",
+      "retry": "Try again",
+      "appointments": {
+        "tab": "Appointments",
+        "empty": "No appointments to show.",
+        "upcoming": "Upcoming",
+        "past": "Past",
+        "reason": "Reason: {reason}",
+        "status": {
+          "scheduled": "Scheduled",
+          "confirmed": "Confirmed",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "cancelled": "Cancelled",
+          "no_show": "Did not come"
+        }
+      },
+      "prescriptions": {
+        "tab": "Prescriptions",
+        "empty": "No prescriptions to show.",
+        "noDoctor": "Doctor not named",
+        "show": "Show",
+        "hide": "Hide",
+        "advice": "Advice",
+        "noMedicines": "No medicines listed.",
+        "medicine": "Medicine",
+        "dosage": "Dose",
+        "frequency": "How often",
+        "duration": "For how long",
+        "downloadPdf": "Download PDF",
+        "downloading": "Preparing...",
+        "pdfUnavailable": "The PDF is not available right now. Please try again later.",
+        "pdfFailed": "We could not download the PDF. Please try again."
+      },
+      "receipts": {
+        "tab": "Receipts",
+        "empty": "No receipts to show.",
+        "method": "Paid by {method}",
+        "invoice": "Invoice {number}"
+      }
+    },
+    "activate": {
+      "title": "Have a code from your clinic?",
+      "body": "If a clinic's record is missing here, ask the clinic for a portal code and enter it. A code works once.",
+      "label": "Portal code",
+      "add": "Add",
+      "adding": "Adding...",
+      "added": "{clinic} was added to your account.",
+      "errors": {
+        "required": "Enter the code from your clinic.",
+        "invalid": "That code is not valid, was already used, or has expired. Ask the clinic for a new one.",
+        "notVisible": "This record belongs to another adult, who needs to sign in with their own phone.",
+        "tooMany": "Too many tries. Please try again later.",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
+  }
+}

@@ -28,6 +28,9 @@ export const identityApi = {
     (await apiClient.get(`/identity/patients/${patientId}`)).data,
   revoke: async (patientId: string, note?: string): Promise<PatientIdentityStatus> =>
     (await apiClient.post(`/identity/patients/${patientId}/revoke`, { note })).data,
+  /** For an already-linked patient: a code they enter in their portal account to see this clinic's records */
+  createPortalCode: async (patientId: string): Promise<ClaimCode> =>
+    (await apiClient.post(`/identity/patients/${patientId}/portal-code`)).data,
   createClaimCode: async (patientId: string): Promise<ClaimCode> =>
     (await apiClient.post(`/identity/patients/${patientId}/claim-code`)).data,
 }

@@ -120,6 +120,7 @@ from app.modules.pharmacy import router as pharmacy_router
 from app.modules.content import router as content_router
 from app.modules.directory import router as directory_router
 from app.modules.billing import router as billing_router
+from app.modules.identity import portal_router as patient_portal_router
 from app.modules.identity import public_router as identity_public_router
 from app.modules.identity import router as identity_router
 from app.modules.contact.admin_routes import router as contact_admin_router
@@ -155,6 +156,7 @@ app.include_router(directory_router, prefix=f"{settings.API_V1_PREFIX}/directory
 app.include_router(billing_router, prefix=f"{settings.API_V1_PREFIX}/billing", tags=["Billing"])
 app.include_router(identity_router, prefix=f"{settings.API_V1_PREFIX}/identity", tags=["Patient identity"])
 app.include_router(identity_public_router, prefix=f"{settings.API_V1_PREFIX}/public/identity", tags=["Patient identity"])
+app.include_router(patient_portal_router, prefix=f"{settings.API_V1_PREFIX}/patient", tags=["Patient portal"])
 app.include_router(contact_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/contact", tags=["Admin"])
 app.include_router(marketing_router, prefix=f"{settings.API_V1_PREFIX}/marketing", tags=["Marketing"])
 app.include_router(marketing_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/marketing", tags=["Admin"])

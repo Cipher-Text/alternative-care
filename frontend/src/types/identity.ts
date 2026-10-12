@@ -83,6 +83,8 @@ export interface PatientIdentityStatus {
   linked_at: string | null
   method: 'clinic_otp' | 'claim_code' | null
   profile_display_name: string | null
+  /** The patient can see this clinic's records in their own portal account */
+  portal_access: boolean
 }
 
 export interface ClaimCode {

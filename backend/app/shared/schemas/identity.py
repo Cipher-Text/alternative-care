@@ -130,6 +130,8 @@ class PatientIdentityStatus(BaseModel):
     linked_at: datetime | None
     method: str | None
     profile_display_name: str | None
+    # The patient can see this clinic's records in their own portal account
+    portal_access: bool = False
 
 
 class RevokeRequest(BaseModel):
@@ -165,3 +167,94 @@ class ClaimResult(BaseModel):
     linked: bool
     clinic_name: str
     profile_display_name: str
+
+
+# ===== Patient portal (phase 2) =====
+
+
+class PortalAuthRequest(BaseModel):
+    phone: str
+
+    _norm = field_validator("phone")(_phone)
+
+
+class PortalAuthVerify(BaseModel):
+    challenge_id: str = Field(..., max_length=36)
+    code: str = Field(..., min_length=6, max_length=6, pattern=r"^[0-9]{6}$")
+
+
+class PortalToken(BaseModel):
+    access_token: str
+    expires_at: datetime
+
+
+class PortalClinic(BaseModel):
+    link_id: str
+    clinic_name: str
+    linked_at: datetime
+
+
+class PortalProfile(BaseModel):
+    id: str
+    display_name: str
+    age_years: int | None
+    gender: str | None
+    relationship: Relationship
+    is_dependent: bool
+    clinics: list[PortalClinic]
+
+
+class PortalMe(BaseModel):
+    phone_masked: str
+    profiles: list[PortalProfile]
+
+
+class PortalActivate(BaseModel):
+    code: str = Field(..., min_length=8, max_length=12)
+
+
+class PortalAppointment(BaseModel):
+    clinic_name: str
+    doctor_name: str | None
+    date: date
+    time: str
+    duration_minutes: int
+    status: str
+    reason: str | None
+
+
+class PortalPrescriptionItem(BaseModel):
+    medicine: str
+    dosage: str
+    frequency: str
+    duration: str | None
+    instructions: str | None
+
+
+class PortalPrescription(BaseModel):
+    id: str
+    link_id: str
+    clinic_name: str
+    doctor_name: str | None
+    date: date
+    diagnosis: str | None
+    advice: str | None
+    items: list[PortalPrescriptionItem]
+
+
+class PortalReceipt(BaseModel):
+    clinic_name: str
+    date: date
+    amount: float
+    currency: str
+    method: str
+    description: str | None
+    invoice_number: str | None
+
+
+class PortalRecords(BaseModel):
+    """Read-only. Doctor's private notes, visit examination notes and unissued drafts are never included."""
+
+    appointments: list[PortalAppointment]
+    prescriptions: list[PortalPrescription]
+    receipts: list[PortalReceipt]

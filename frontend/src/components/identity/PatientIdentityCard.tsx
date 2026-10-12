@@ -21,7 +21,7 @@ import {
 import { useDateFormat } from '@/lib/i18n/date'
 import { errorMessage } from '@/lib/apiErrors'
 import { useAuthStore } from '@/store/authStore'
-import { useCreateClaimCode, usePatientIdentity, useRevokeIdentity } from '@/lib/hooks/useIdentity'
+import { useCreateClaimCode, useCreatePortalCode, usePatientIdentity, useRevokeIdentity } from '@/lib/hooks/useIdentity'
 import type { Patient } from '@/types/patient'
 import type { ClaimCode } from '@/types/identity'
 import { PhoneVerificationDialog } from './PhoneVerificationDialog'
@@ -35,12 +35,14 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
   const isDoctor = useAuthStore((s) => s.user?.role) === 'doctor'
   const { data: status, isLoading, isError, refetch } = usePatientIdentity(patient.id)
   const createCode = useCreateClaimCode(patient.id)
+  const portalCodeMut = useCreatePortalCode(patient.id)
   const revoke = useRevokeIdentity(patient.id)
 
   const [verifyOpen, setVerifyOpen] = useState(false)
   const [revokeOpen, setRevokeOpen] = useState(false)
   const [note, setNote] = useState('')
   const [claim, setClaim] = useState<ClaimCode | null>(null)
+  const [portal, setPortal] = useState<ClaimCode | null>(null)
   // read when the code is created: window is not available while server-rendering
   const [origin, setOrigin] = useState('')
 
@@ -54,6 +56,16 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
     }
   }
 
+  const makePortalCode = async () => {
+    try {
+      const created = await portalCodeMut.mutateAsync()
+      setOrigin(window.location.origin)
+      setPortal(created)
+    } catch (err) {
+      toast.error(errorMessage(err, t('portalCode.failed')))
+    }
+  }
+
   const doRevoke = async () => {
     try {
       await revoke.mutateAsync(note.trim() || undefined)
@@ -64,6 +76,9 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
       toast.error(errorMessage(err, t('revoke.failed')))
     }
   }
+
+  // the printed slip is the code that is on screen
+  const slip = portal ? { kind: 'portal' as const, code: portal } : claim ? { kind: 'claim' as const, code: claim } : null
 
   return (
     <Card>
@@ -103,10 +118,38 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
                 {status.method === 'claim_code' && t('card.methodClaim')}
               </p>
             )}
-            {isDoctor && (
-              <Button variant="outline" size="sm" onClick={() => setRevokeOpen(true)}>
-                {t('revoke.button')}
+            <p className="text-sm">
+              {status.portal_access ? t('portalCode.visible') : t('portalCode.notVisible')}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={makePortalCode} disabled={portalCodeMut.isLoading}>
+                {portalCodeMut.isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <KeyRound className="mr-2 h-4 w-4" aria-hidden="true" />
+                )}
+                {t('portalCode.give')}
               </Button>
+              {isDoctor && (
+                <Button variant="outline" size="sm" onClick={() => setRevokeOpen(true)}>
+                  {t('revoke.button')}
+                </Button>
+              )}
+            </div>
+            {portal && (
+              <div className="space-y-3 rounded-lg border-2 border-dashed p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('portalCode.heading')}</p>
+                <p className="font-mono text-4xl font-bold tracking-widest" data-testid="portal-code">{portal.code}</p>
+                <p className="text-sm text-muted-foreground">{t('claimCode.expires', { date: fmt(portal.expires_at, 'MMM d, yyyy, h:mm a') })}</p>
+                <p className="text-sm">{t('portalCode.explain', { origin })}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => window.print()}>
+                    <Printer className="mr-2 h-4 w-4" aria-hidden="true" />
+                    {t('claimCode.print')}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setPortal(null)}>{t('claimCode.hide')}</Button>
+                </div>
+              </div>
             )}
           </div>
         )}
@@ -154,14 +197,14 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
         )}
       </CardContent>
 
-      {claim &&
+      {slip &&
         createPortal(
           <div data-claim-print className="hidden bg-white p-10 text-black print:block">
             <style>{PRINT_CSS}</style>
-            <h1 className="text-2xl font-bold">{t('claimCode.slipTitle')}</h1>
-            <p className="mt-6 font-mono text-5xl font-bold tracking-widest">{claim.code}</p>
-            <p className="mt-6 text-lg">{t('claimCode.explain', { origin })}</p>
-            <p className="mt-4 text-base">{t('claimCode.expires', { date: fmt(claim.expires_at, 'MMM d, yyyy, h:mm a') })}</p>
+            <h1 className="text-2xl font-bold">{t(slip.kind === 'portal' ? 'portalCode.slipTitle' : 'claimCode.slipTitle')}</h1>
+            <p className="mt-6 font-mono text-5xl font-bold tracking-widest">{slip.code.code}</p>
+            <p className="mt-6 text-lg">{t(slip.kind === 'portal' ? 'portalCode.explain' : 'claimCode.explain', { origin })}</p>
+            <p className="mt-4 text-base">{t('claimCode.expires', { date: fmt(slip.code.expires_at, 'MMM d, yyyy, h:mm a') })}</p>
           </div>,
           document.body
         )}

@@ -197,3 +197,42 @@ Known limits: only the clinic that verified can see a profile, but a **recycled 
 holder pass a clinic OTP and find profiles by typing a name (only basic details are exposed, and the clinic
 confirms the person in front of them); the profile name search is a simple contains match; dates of birth are
 stored as given.
+
+## Phase 2 implementation notes (built 2026-10-13)
+
+What exists: patient sign-in with a phone code (`/patient/auth/request|verify`, a `patient` token that is a different
+type from staff tokens, so neither is ever accepted where the other is expected), and a read-only portal API
+(`/patient/me`, `/patient/profiles/{id}/records`, `/patient/links/activate`, `/patient/links/{id}/revoke`, a
+prescription PDF); clinic staff give a **portal code** for an already-linked patient
+(`/identity/patients/{id}/portal-code`). Migration `c3e7a9f4b1d2` adds `person_accounts.portal_registered_at`,
+`patient_links.portal_access_at`, a `purpose` on claim codes, the `portal_login` code purpose and the
+`portal_access` consent kind.
+
+How the rules were applied:
+- **Recycled-number defence (rule 10):** a link made before the phone first signed in to the portal has no
+  `portal_access_at`, so it is hidden until a clinic's portal code activates it. A link made afterwards (the holder is
+  in front of the clinic) or through the public claim page (the patient proved the phone and the clinic's code) is
+  visible at once. A profile with no visible clinic is not returned at all, so a new holder of an old number does not
+  even learn the earlier owner's name.
+- **Who is visible:** the holder's own profile and their dependents only. Another adult under the same phone is
+  never shown and their record cannot be activated (`profile_not_visible`). A phone can have only **one** account
+  holder profile (relationship `self`); everyone else is a family member (this tightened Phase 1).
+- **Read-only and minimal:** appointments, issued prescriptions (diagnosis, advice, medicines) and paid receipts.
+  Never the doctor's private notes, visit examination notes, appointment notes, drafts or voided prescriptions.
+- **Isolation:** the portal reads a clinic's rows only through a link, only that linked patient's own rows, one clinic
+  at a time with row-level security bound to it (`bind_tenant`), and clears the binding afterwards.
+- **Sign-in cost and abuse:** the platform pays; per phone (cooldown, 3 per hour), per IP, and a platform-wide daily
+  ceiling (`OTP_MAX_PORTAL_PER_DAY`, 3,000). The answer to a code request is identical for any phone. Sessions last
+  12 hours (`PATIENT_TOKEN_HOURS`) and live in sessionStorage; a longer "remember me" would trade SMS cost for
+  convenience and is not built.
+- **Patient removal:** the patient can remove a clinic from their account; that revokes the link, logs a revoke
+  event (method `portal`) and leaves the clinic's own record.
+
+Known limits: row-level security was written to bind per clinic but is **not exercised** in dev or CI (a superuser
+connection bypasses it), so it has not been proven against a restricted database role; the prescription PDF depends on
+the PDF renderer being available (503 otherwise); no patient-initiated booking, messaging, record sharing between
+clinics, data export, or account deletion yet; a holder cannot manage family profiles from the portal; the portal is
+reachable only by a link in the public footer.
+
+Phase 3 (appointment requests with clinic confirmation) and Phase 4 (patient-controlled sharing between clinics)
+remain, together with the open legal and consent-wording items above.

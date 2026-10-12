@@ -37,7 +37,7 @@ class OtpService:
         self.db = db
 
     async def issue(
-        self, *, phone: str, purpose: str, tenant_id: str, requested_by: str | None, claim_code_id: str | None = None
+        self, *, phone: str, purpose: str, tenant_id: str | None, requested_by: str | None, claim_code_id: str | None = None
     ) -> tuple[OtpChallenge, int]:
         """Create a challenge and send the code. Returns (challenge, resend_after_seconds)."""
         now = datetime.now(timezone.utc)
@@ -62,18 +62,29 @@ class OtpService:
             raise _refuse("otp_phone_limit", "Too many codes were requested for this number. Try again later.", retry_after=3600)
 
         day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        day_count = (
-            await self.db.execute(
-                select(func.count()).select_from(OtpChallenge).where(
-                    OtpChallenge.tenant_id == tenant_id, OtpChallenge.created_at >= day_start
+        if tenant_id is not None:
+            day_count = (
+                await self.db.execute(
+                    select(func.count()).select_from(OtpChallenge).where(
+                        OtpChallenge.tenant_id == tenant_id, OtpChallenge.created_at >= day_start
+                    )
                 )
-            )
-        ).scalar_one()
-        if day_count >= settings.OTP_MAX_PER_CLINIC_PER_DAY:
-            raise _refuse("otp_clinic_daily_cap", "The daily verification limit was reached. Try again tomorrow.", retry_after=3600)
-
-        # The plan's monthly allowance (403 with a structured upgrade message when used up)
-        await EntitlementService(self.db).check_limit(tenant_id, ENTITLEMENT)
+            ).scalar_one()
+            if day_count >= settings.OTP_MAX_PER_CLINIC_PER_DAY:
+                raise _refuse("otp_clinic_daily_cap", "The daily verification limit was reached. Try again tomorrow.", retry_after=3600)
+            # The plan's monthly allowance (403 with a structured upgrade message when used up)
+            await EntitlementService(self.db).check_limit(tenant_id, ENTITLEMENT)
+        else:
+            # Patient portal sign-in has no clinic to bill or cap, so a platform-wide daily ceiling applies
+            portal_count = (
+                await self.db.execute(
+                    select(func.count()).select_from(OtpChallenge).where(
+                        OtpChallenge.purpose == "portal_login", OtpChallenge.created_at >= day_start
+                    )
+                )
+            ).scalar_one()
+            if portal_count >= settings.OTP_MAX_PORTAL_PER_DAY:
+                raise _refuse("otp_portal_daily_cap", "Sign-in codes are unavailable right now. Try again later.", retry_after=3600)
 
         code = f"{secrets.randbelow(1_000_000):06d}"
         challenge_id = str(uuid4())
@@ -90,12 +101,15 @@ class OtpService:
         self.db.add(challenge)
         await self.db.commit()
 
-        tenant = (await self.db.execute(select(Tenant).where(Tenant.id == tenant_id))).scalar_one()
-        clinic = tenant.clinic_name or tenant.name
-        if purpose == "clinic_verify":
-            message = f"AltCare: {clinic} আপনার তথ্য যুক্ত করতে চায়। কোড {code}। রাজি হলে কোডটি বলুন।"
+        if purpose == "portal_login":
+            message = f"AltCare কোড {code}। আপনার অ্যাকাউন্টে ঢুকতে এটি দিন। অন্য কাউকে দেবেন না।"
         else:
-            message = f"AltCare: {clinic}-এর রেকর্ড যুক্ত করতে কোড {code}। অন্য কাউকে দেবেন না।"
+            tenant = (await self.db.execute(select(Tenant).where(Tenant.id == tenant_id))).scalar_one()
+            clinic = tenant.clinic_name or tenant.name
+            if purpose == "clinic_verify":
+                message = f"AltCare: {clinic} আপনার তথ্য যুক্ত করতে চায়। কোড {code}। রাজি হলে কোডটি বলুন।"
+            else:
+                message = f"AltCare: {clinic}-এর রেকর্ড যুক্ত করতে কোড {code}। অন্য কাউকে দেবেন না।"
         try:
             await sms.dispatch_sms(phone, message, code)
         except HTTPException:

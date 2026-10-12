@@ -22,7 +22,8 @@
     "navFindPractitioner": "Find a practitioner",
     "navContact": "Contact",
     "navFaq": "FAQ & billing",
-    "navRefundPolicy": "Refund policy"
+    "navRefundPolicy": "Refund policy",
+    "navPatientLogin": "Patient login"
   },
   "publicMetaUi": {
     "default": {

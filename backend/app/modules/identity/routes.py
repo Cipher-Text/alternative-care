@@ -99,6 +99,13 @@ async def revoke_link(patient_id: str, data: RevokeRequest, db: Annotated[AsyncS
     return await IdentityService(db, user.tenant_id, user.user_id).revoke(patient_id, data.note)
 
 
+@router.post("/patients/{patient_id}/portal-code", response_model=ClaimCodeResponse)
+async def create_portal_code(patient_id: str, service: Service):
+    """For an already-linked patient: a code they enter in their portal account to see this clinic's records."""
+    code, expires = await service.create_portal_code(patient_id)
+    return ClaimCodeResponse(code=code, expires_at=expires)
+
+
 @router.post("/patients/{patient_id}/claim-code", response_model=ClaimCodeResponse)
 async def create_claim_code(patient_id: str, service: Service):
     """A code to hand to the patient so they can link this record later from their own phone."""

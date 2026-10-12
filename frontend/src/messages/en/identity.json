@@ -177,6 +177,15 @@
         "codeLength": "Enter the 6-digit code from the SMS.",
         "consentRequired": "Please tick the box to agree."
       }
+    },
+    "portalCode": {
+      "visible": "The patient can see this record in their AltCare account.",
+      "notVisible": "Not visible in the patient's account yet.",
+      "give": "Give a portal code",
+      "failed": "Could not create a portal code.",
+      "heading": "Portal code",
+      "explain": "The patient signs in at {origin}/patient with their mobile number and enters this code under \"Have a code from your clinic?\". It works once and expires.",
+      "slipTitle": "AltCare portal code"
     }
   }
 }

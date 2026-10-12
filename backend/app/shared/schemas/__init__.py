@@ -405,3 +405,18 @@ from app.shared.schemas.identity import (  # noqa: E402
     VerifyRequest,
     VerifyRequestResponse,
 )
+
+from app.shared.schemas.identity import (  # noqa: E402
+    PortalActivate,
+    PortalAppointment,
+    PortalAuthRequest,
+    PortalAuthVerify,
+    PortalClinic,
+    PortalMe,
+    PortalPrescription,
+    PortalPrescriptionItem,
+    PortalProfile,
+    PortalReceipt,
+    PortalRecords,
+    PortalToken,
+)

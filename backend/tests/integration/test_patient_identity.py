@@ -312,12 +312,30 @@ async def test_same_name_and_birth_date_reuse_one_profile_and_profiles_are_cappe
     again, reused2 = await find_or_create_profile(db_session, account.id, NewProfile(display_name="  rahim  UDDIN ", date_of_birth=date(1980, 5, 15)))
     assert (reused, reused2, first.id) == (False, True, again.id)
     for i in range(9):
-        await find_or_create_profile(db_session, account.id, NewProfile(display_name=f"Person {i}", date_of_birth=date(1990, 1, i + 1)))
+        await find_or_create_profile(
+            db_session, account.id,
+            NewProfile(display_name=f"Person {i}", date_of_birth=date(1990, 1, i + 1), relationship="other"),
+        )
     from fastapi import HTTPException
 
     with pytest.raises(HTTPException) as exc:
-        await find_or_create_profile(db_session, account.id, NewProfile(display_name="One too many", date_of_birth=date(2000, 1, 1)))
+        await find_or_create_profile(
+            db_session, account.id, NewProfile(display_name="One too many", date_of_birth=date(2000, 1, 1), relationship="other")
+        )
     assert exc.value.detail["code"] == "profile_limit"
+
+
+@pytest.mark.asyncio
+async def test_a_phone_has_only_one_account_holder(db_session):
+    account = PersonAccount(id=str(uuid.uuid4()), phone=PHONE_E164, phone_verified_at=datetime.now(timezone.utc))
+    db_session.add(account)
+    await db_session.flush()
+    await find_or_create_profile(db_session, account.id, NewProfile(display_name="Rahim Uddin", date_of_birth=date(1980, 5, 15)))
+    from fastapi import HTTPException
+
+    with pytest.raises(HTTPException) as exc:
+        await find_or_create_profile(db_session, account.id, NewProfile(display_name="Karim Uddin", date_of_birth=date(1985, 1, 1)))
+    assert exc.value.detail["code"] == "self_profile_exists"
 
 
 @pytest.mark.asyncio
