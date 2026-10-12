@@ -90,6 +90,12 @@ class Settings(BaseSettings):
 
         # Warn about default MinIO credentials in production
         if self.ENVIRONMENT == "production":
+            if self.SSLCOMMERZ_STORE_ID and self.SSLCOMMERZ_IS_SANDBOX:
+                errors.append("SSLCOMMERZ_IS_SANDBOX must be false in production when SSLCommerz is configured.")
+            if self.BKASH_APP_KEY and (self.BKASH_IS_SANDBOX or "sandbox" in self.BKASH_BASE_URL):
+                errors.append("bKash must use the live BKASH_BASE_URL and BKASH_IS_SANDBOX=false in production.")
+            if (self.SSLCOMMERZ_STORE_ID or self.BKASH_APP_KEY) and not self.BACKEND_PUBLIC_URL.startswith("https://"):
+                errors.append("BACKEND_PUBLIC_URL must be an https URL in production: gateways call it back.")
             if self.PAYMENT_FAKE_GATEWAY_ENABLED:
                 errors.append(
                     "PAYMENT_FAKE_GATEWAY_ENABLED must be false in production: it allows "
@@ -165,6 +171,10 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_FROM_NUMBER: str = ""
+
+    # Public base URL of THIS backend, used in the callback URLs given to payment gateways
+    # (https and reachable from the internet in production)
+    BACKEND_PUBLIC_URL: str = "http://localhost:8000"
 
     # Payment (SSLCommerz)
     SSLCOMMERZ_STORE_ID: str = ""

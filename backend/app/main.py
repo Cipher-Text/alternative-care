@@ -126,6 +126,7 @@ from app.modules.contact.admin_routes import router as contact_admin_router
 from app.modules.marketing import router as marketing_router
 from app.modules.marketing.admin_routes import router as marketing_admin_router
 from app.modules.billing.admin_routes import router as billing_admin_router
+from app.modules.billing.gateway_routes import router as billing_gateway_router
 from app.modules.plans.routes import (
     admin_router as plans_admin_router,
     me_router as entitlements_me_router,
@@ -158,6 +159,7 @@ app.include_router(contact_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin
 app.include_router(marketing_router, prefix=f"{settings.API_V1_PREFIX}/marketing", tags=["Marketing"])
 app.include_router(marketing_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/marketing", tags=["Admin"])
 app.include_router(billing_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/billing", tags=["Admin"])
+app.include_router(billing_gateway_router, prefix=f"{settings.API_V1_PREFIX}/billing/gateways", tags=["Billing"])
 app.include_router(pharmacy_router, prefix=f"{settings.API_V1_PREFIX}/pharmacies", tags=["Pharmacies"])
 app.include_router(plans_public_router, prefix=f"{settings.API_V1_PREFIX}/plans", tags=["Plans"])
 app.include_router(plans_admin_router, prefix=f"{settings.API_V1_PREFIX}/admin/plans", tags=["Platform Admin"])

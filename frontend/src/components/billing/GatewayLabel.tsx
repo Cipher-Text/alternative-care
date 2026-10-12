@@ -14,11 +14,19 @@ export function GatewayLabel({ gateway }: { gateway: string }) {
       </span>
     )
   }
-  return <span>{gateway}</span>
+  return <span>{gatewayText(gateway, t)}</span>
+}
+
+/** Known providers get a plain name; an unknown one shows as is. */
+function gatewayText(gateway: string, t: (key: string) => string): string {
+  if (gateway === 'sslcommerz') return t('sslcommerz')
+  if (gateway === 'bkash') return t('bkash')
+  if (gateway === 'fake') return t('fake')
+  return gateway
 }
 
 /** Plain-text name (table cells). */
 export function useGatewayName() {
   const t = useTranslations('billingUi.gateway')
-  return (gateway: string) => (gateway === 'fake' ? t('fake') : gateway)
+  return (gateway: string) => gatewayText(gateway, t)
 }

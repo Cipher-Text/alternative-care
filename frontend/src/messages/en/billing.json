@@ -96,7 +96,9 @@
     },
     "gateway": {
       "fake": "Test payment (no real money)",
-      "testBadge": "TEST"
+      "testBadge": "TEST",
+      "sslcommerz": "Card, bKash and mobile banking (SSLCommerz)",
+      "bkash": "bKash"
     },
     "confirm": {
       "title": "Confirm your purchase",
@@ -274,6 +276,10 @@
           "date": "Date"
         }
       }
+    },
+    "testMode": {
+      "title": "Test mode",
+      "body": "Payments here are tests. No real money is charged, and a successful test still activates the plan."
     }
   }
 }

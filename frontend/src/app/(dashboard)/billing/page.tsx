@@ -19,6 +19,7 @@ import type { BillingPeriod, CreditPack, PlanOption } from '@/types/checkout'
 /** The clinic's plan, credit packs and receipts. Doctors only: the clinic is the payer. */
 export default function BillingPage() {
   const t = useTranslations('billingUi.page')
+  const ttest = useTranslations('billingUi.testMode')
   const tp = useTranslations('billingUi.plans')
   const tk = useTranslations('billingUi.packs')
   const tc = useTranslations('billingUi.channel')
@@ -82,6 +83,16 @@ export default function BillingPage() {
               <div>
                 <p className="font-semibold">{t('noGatewayTitle')}</p>
                 <p className="text-muted-foreground">{t('noGatewayText')}</p>
+              </div>
+            </div>
+          )}
+
+          {canPay && sub.data.test_mode && (
+            <div role="status" className="flex items-start gap-2 rounded-lg border border-amber-500/60 bg-amber-50 p-3 text-sm dark:bg-amber-950/30">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
+              <div>
+                <p className="font-semibold">{ttest('title')}</p>
+                <p className="text-muted-foreground">{ttest('body')}</p>
               </div>
             </div>
           )}

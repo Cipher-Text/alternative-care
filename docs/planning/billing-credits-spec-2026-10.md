@@ -2,7 +2,7 @@
 
 Status: **decisions recorded 2026-10-12; plan values and several details still open.** Step 2 of §5
 (platform providers from env + credit ledger + charged send routes) is built. Step 3 is built
-against a **fake gateway only** (§8); SSLCommerz and bKash are not. Seed plans and prices: §9. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
+with a fake gateway (§8) and real SSLCommerz and bKash gateways (§13, mock-tested, not yet run against a real sandbox). Seed plans and prices: §9. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
 and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
 
 ## 1. Decided
@@ -302,3 +302,48 @@ decision 7 above; today they never expire), and the real provider cost per SMS o
 - **Still missing:** a contact email, WhatsApp number and Facebook page URL (set the three variables above); a
   separate Enterprise lead form (the contact form's Enterprise topic is the interim); canonical URLs and an
   indexable-404 fix; product screenshots; a patient-facing home door.
+
+## 13. Real payment gateways: SSLCommerz and bKash (built 2026-10-13)
+
+Two gateways behind the same interface as the fake one (`app/modules/billing/gateways/`): `sslcommerz.py` and
+`bkash.py`. A method appears at checkout only when its credentials are set, so a blank environment shows none.
+The checkout page flags **test mode** whenever a usable method is the fake gateway or a provider sandbox.
+
+**How a payment is trusted (the important part).** Checkout creates a pending order and sends the browser to the
+provider. The browser coming back, and the provider's own notification, only *identify* the order. Every callback
+then asks the provider server to server what happened, and settles only from that answer, after checking the
+amount, the currency and that the transaction is for this order's receipt number. A forged "success" for an unpaid
+order, a wrong amount, or someone else's transaction changes nothing; settling is idempotent, so repeated or racing
+callbacks and notifications cannot grant twice; a provider outage changes nothing and the return page keeps
+checking, which also recovers a lost callback. (Tests cover each of these.)
+
+- **SSLCommerz** (cards, bKash, Nagad, Rocket and other mobile banking on one page): session created with our
+  receipt number as `tran_id`; browser returns to `/api/v1/billing/gateways/sslcommerz/{success|fail|cancel}`; its
+  server calls `.../sslcommerz/ipn`; we query the transaction by `tran_id`, then confirm a valid one with the
+  validation API (`val_id`) before reporting it paid.
+- **bKash (direct, tokenized checkout):** token, create payment (our receipt number is the invoice number),
+  browser returns to `/api/v1/billing/gateways/bkash/callback?paymentID=..&status=..`; only on `success` do we call
+  Execute (which captures the money) and then trust bKash's response, falling back to a status query if Execute
+  reports an error (for example a repeated callback). It is a separate client from the clinic-to-patient bKash
+  service, so platform billing cannot be affected by that feature.
+
+**Configuration** (`.env`, see `.env.example`): `BACKEND_PUBLIC_URL` (callbacks; https and public in production),
+`SSLCOMMERZ_STORE_ID`, `SSLCOMMERZ_STORE_PASSWORD`, `SSLCOMMERZ_IS_SANDBOX`, `BKASH_APP_KEY`, `BKASH_APP_SECRET`,
+`BKASH_USERNAME`, `BKASH_PASSWORD`, `BKASH_BASE_URL`, `BKASH_IS_SANDBOX`. **Production refuses to start** with a
+sandbox flag or sandbox bKash URL while that gateway is configured, with a non-https `BACKEND_PUBLIC_URL`, or with
+the fake gateway on.
+
+**Trying it with sandbox accounts:** put the sandbox keys in `.env`, restart the backend, and buy a plan. The
+browser returns work on localhost; SSLCommerz's server-to-server IPN cannot reach a laptop, so it is recovered by the
+return page's check (use a tunnel such as ngrok and set `BACKEND_PUBLIC_URL` to test IPN itself). In the SSLCommerz
+merchant panel also set the IPN listener URL to `<BACKEND_PUBLIC_URL>/api/v1/billing/gateways/sslcommerz/ipn`.
+
+**Not verified, and why it matters:** both gateways were written from the providers' documented APIs and tested
+against **mocked responses only**. Field names, status values and edge cases (for example bKash's status after
+Execute, SSLCommerz's risk flags) must be confirmed against a real sandbox account before going live.
+
+**Known gaps:** no refunds and no admin "mark paid" for a payment a provider took but could not confirm; an
+SSLCommerz payment flagged high risk is still fulfilled (the risk level is stored on the order for review);
+payer details sent to the provider use placeholders when a clinic has no phone or address; no provider fee is
+tracked against orders (about 1.4% to 2.5%); order descriptions are English only; bKash's merchant agreement
+(and any recurring or tokenized agreement) is not set up.

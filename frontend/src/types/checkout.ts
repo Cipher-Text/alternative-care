@@ -29,6 +29,8 @@ export interface SubscriptionInfo {
   options: PlanOption[]
   /** Payment methods usable right now, e.g. ["fake"]. Empty = online payment not available. */
   gateways: string[]
+  /** True when a usable method moves no real money (the test gateway or a provider sandbox) */
+  test_mode: boolean
 }
 
 export interface CreditPack {

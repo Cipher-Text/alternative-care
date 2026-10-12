@@ -80,6 +80,8 @@ class SubscriptionInfo(BaseModel):
     days_left: int | None
     options: list[PlanOption]
     gateways: list[str]  # payment methods that can be used right now
+    # True when a usable method moves no real money (the test gateway or a provider sandbox)
+    test_mode: bool = False
 
 
 class CreditPackResponse(BaseModel):

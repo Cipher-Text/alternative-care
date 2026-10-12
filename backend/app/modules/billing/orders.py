@@ -18,8 +18,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.credits import CreditService
 from app.core.entitlements import FALLBACK_PLAN, effective_plan_key
-from app.modules.billing.gateways import available_gateways, get_gateway
-from app.modules.billing.gateways.base import GatewayResult
+from app.modules.billing.gateways import available_gateways, get_gateway, is_test_mode
+from app.modules.billing.gateways.base import Customer, GatewayResult
 from app.modules.plans.service import PlansService
 from app.shared.models import BillingOrder, CreditPack, Plan, Tenant, User
 from app.shared.schemas import CheckoutRequest, PlanOption, SubscriptionInfo
@@ -98,6 +98,7 @@ async def subscription_info(db: AsyncSession, tenant: Tenant) -> SubscriptionInf
         days_left=days_left,
         options=options,
         gateways=available_gateways(),
+        test_mode=is_test_mode(),
     )
 
 
@@ -161,7 +162,17 @@ class OrderService:
         )
         self.db.add(order)
         await self.db.flush()
-        session = await gateway.create_checkout(order)
+        customer = Customer(
+            name=user.full_name,
+            email=user.email or tenant.clinic_email or tenant.email,
+            phone=user.phone or tenant.clinic_phone or tenant.phone or "01700000000",
+            address=(tenant.address_line_1 or tenant.clinic_address or "N/A"),
+        )
+        try:
+            session = await gateway.create_checkout(order, customer)
+        except HTTPException:
+            await self.db.rollback()  # the provider refused or is down: leave no half-made order behind
+            raise
         order.gateway_data = {"session_id": session.gateway_session_id}
         await self.db.commit()
         await self.db.refresh(order)

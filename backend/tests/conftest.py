@@ -48,6 +48,18 @@ def _disable_rate_limiting_by_default(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def _no_real_payment_gateways_by_default(monkeypatch):
+    """A developer's real sandbox keys in .env must not change test behaviour. Tests that exercise a
+    real gateway set their own (fake) credentials for their own scope."""
+    for name in (
+        "SSLCOMMERZ_STORE_ID", "SSLCOMMERZ_STORE_PASSWORD", "BKASH_APP_KEY", "BKASH_APP_SECRET",
+        "BKASH_USERNAME", "BKASH_PASSWORD",
+    ):
+        monkeypatch.setattr(settings, name, "")
+    monkeypatch.setattr(settings, "PAYMENT_FAKE_GATEWAY_ENABLED", False)
+
+
+@pytest.fixture(autouse=True)
 async def _flush_rate_limit_redis():
     """Clear any rate-limit counters left over from a previous test run."""
     from app.core.rate_limit import get_redis_client

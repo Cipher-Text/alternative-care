@@ -8,7 +8,7 @@ the outcome the "customer" chose, so the same settle/fulfil code path is exercis
 from decimal import Decimal
 
 from app.core.config import settings
-from app.modules.billing.gateways.base import CheckoutGateway, CheckoutSession, GatewayResult
+from app.modules.billing.gateways.base import CheckoutGateway, CheckoutSession, Customer, GatewayResult
 from app.shared.models import BillingOrder
 
 OUTCOMES = {"success": "paid", "failed": "failed", "cancelled": "cancelled"}
@@ -16,8 +16,10 @@ OUTCOMES = {"success": "paid", "failed": "failed", "cancelled": "cancelled"}
 
 class FakeGateway(CheckoutGateway):
     name = "fake"
+    label = "Test payment"
+    sandbox = True
 
-    async def create_checkout(self, order: BillingOrder) -> CheckoutSession:
+    async def create_checkout(self, order: BillingOrder, customer: Customer | None = None) -> CheckoutSession:
         return CheckoutSession(
             redirect_url=f"{settings.FRONTEND_URL}/billing/fake-gateway?order={order.id}",
             gateway_session_id=f"FAKE-SESSION-{order.id[:8]}",
