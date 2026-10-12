@@ -320,3 +320,43 @@ decision, not a side effect.
 - Bengali strings written by us have had no native-speaker review.
 - Not exercised: the editor dialogs and read-only states beyond a smoke check; video playback.
 - Doctors authoring is not tied to a plan; decide whether it is a Plus benefit (strategy §6.3).
+
+---
+
+## 14. Phase 2 progress (2026-10-12)
+
+**Built**
+- **Listing** (`practitioner_listings`, migration `f3c8d5a1b9e4`): one opt-in public listing per clinic over
+  real tenant data (ADR-008): headline/bio (en, bn), languages, hours, availability, and what to show
+  (fee, phone, WhatsApp, call-back requests). Name, qualifications, registration *body* and address
+  always show when listed; the registration **number** never does. No ratings.
+- **Gates — all must hold:** doctor opted in, **admin verified** the clinic (free; `tenants.is_verified`
+  now has an admin endpoint with an audit note), clinic approved/active, **plan includes
+  `feature_directory_listing`** (new entitlement; default Free off, Plus and Pro on, editable in the
+  plan config), and a bio exists. Verification and plan are separate gates so paying never replaces
+  verification. The doctor's page shows exactly which gate is missing.
+- **Launch gate:** `/practitioners`, the nav link and the sitemap stay hidden/noindex until
+  `DIRECTORY_MIN_PROFILES` (default 20) profiles are visible; visitors see a teaser.
+- **Contact v1:** `tel:` / WhatsApp taps (counted) and a "request a call back" form with mandatory consent,
+  a honeypot and an IP rate limit; stored per clinic, emailed to the clinic (best effort), inbox with
+  New/Contacted/Closed, month-to-date numbers on `/directory` and a card on the doctor dashboard.
+  Explicitly *not* booking (needs the patient-identity ADR).
+- Public pages: `/practitioners`, `/practitioners/[slug]` (JSON-LD `Physician`), `/verification`; privacy
+  page has an "Appointment requests" section.
+- 12 tests in `tests/integration/test_directory_routes.py`; full suite 839 passed.
+
+**Not done / needs you**
+- **Directory plan benefit is still a default, not a decision:** Plus+ (as proposed in §6.3). Change it in
+  the plan config if you decide on a minimal free listing.
+- **Verification is manual and undefined in practice:** who checks documents, against which registers
+  (no central Unani/Ayurveda register exists — see future-scope), and how long it takes. The admin UI only
+  records a decision and a note; it does not show the doctor's uploaded documents (degree certificates have
+  a `certificate_url` field, no upload flow yet).
+- **Legal review needed** for the privacy "Appointment requests" section (retention period and legal basis
+  are left as "to be confirmed"), and for the consent wording.
+- No photo/upload for profiles (clinic logo only); no map embed; no "Featured/Pro priority" ordering
+  (deliberately skipped — it needs a clear "sponsored" label first).
+- Recruiting: nothing shows publicly until 20 verified, opted-in clinics exist. The list endpoint resolves
+  the plan gate per clinic (fine for hundreds; cache or denormalise if it grows).
+- Bengali strings have had no native-speaker review. Operators cannot verify (admin only).
+- Seeded dev address shows "Debidwar, Dhaka, Dhaka" — an upazila/district mismatch in seed data.

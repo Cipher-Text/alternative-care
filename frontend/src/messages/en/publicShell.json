@@ -18,7 +18,8 @@
     "terms": "Terms of Use",
     "disclaimer": "Medical Disclaimer",
     "contact": "Contact",
-    "navArticles": "Articles"
+    "navArticles": "Articles",
+    "navFindPractitioner": "Find a practitioner"
   },
   "publicMetaUi": {
     "default": {
@@ -56,6 +57,14 @@
     "articles": {
       "title": "Articles and videos",
       "description": "Reviewed articles and videos about Homeopathy, Ayurveda, Unani and Herbal medicine, with a clear evidence label on each."
+    },
+    "verification": {
+      "title": "How we verify practitioners",
+      "description": "What \"Verified\" means for practitioners on AltCare: what we check, what we do not, and how to report a problem."
+    },
+    "directory": {
+      "title": "Find a practitioner",
+      "description": "Verified Homeopathy, Ayurveda, Unani and Herbal practitioners in Bangladesh. Call the clinic or ask for a call back."
     }
   }
 }

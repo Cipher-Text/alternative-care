@@ -89,6 +89,8 @@ class Tenant(BaseAuditModel):
     license_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    verified_by: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    verification_note: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Subscription
     plan: Mapped[str] = mapped_column(

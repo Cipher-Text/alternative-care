@@ -191,6 +191,10 @@ class Settings(BaseSettings):
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     RATE_LIMIT_KEY_PREFIX: str = "altcare"
     RATE_LIMIT_AI_PER_HOUR: int = 20
+    # Public directory launches (nav, sitemap, listing page) once this many profiles are visible (ADR-008)
+    DIRECTORY_MIN_PROFILES: int = 20
+    # Contact-request form: submissions per IP per hour
+    RATE_LIMIT_CONTACT_REQUEST_PER_HOUR: int = 5
     RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600
 
     # Security headers

@@ -277,6 +277,9 @@ export default function AdminClientsPage() {
                             <Badge variant={client.tenant.is_approved ? 'default' : 'outline'}>
                               {client.tenant.is_approved ? 'Approved' : 'Pending'}
                             </Badge>
+                            {!client.tenant.is_verified && (
+                              <Badge variant="outline">Unverified</Badge>
+                            )}
                             {!client.tenant.is_active && (
                               <Badge variant="destructive">Inactive</Badge>
                             )}

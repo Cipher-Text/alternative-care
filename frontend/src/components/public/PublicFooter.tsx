@@ -31,8 +31,12 @@ const columns = [
   },
 ] as const
 
-export function PublicFooter() {
+export function PublicFooter({ directoryLaunched = false }: { directoryLaunched?: boolean }) {
   const t = useTranslations('publicShellUi')
+  const directoryLinks = directoryLaunched
+    ? [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...columns[0].links]
+    : columns[0].links
+  const cols = [{ ...columns[0], links: directoryLinks }, ...columns.slice(1)]
   return (
     <footer className="border-t border-gray-200 dark:border-slate-800 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -46,7 +50,7 @@ export function PublicFooter() {
             </p>
           </div>
 
-          {columns.map((column) => (
+          {cols.map((column) => (
             <div key={t(column.title)}>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                 {t(column.title)}

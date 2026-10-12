@@ -17,6 +17,7 @@ import {
   User,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
+import { TenantVerificationCard } from '@/components/admin/TenantVerificationCard'
 import { TenantEntitlementsCard } from '@/components/admin/TenantEntitlementsCard'
 import { useAdminClient, useCreateTenantDoctor } from '@/lib/hooks/useAdminClients'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -346,6 +347,8 @@ export default function AdminClientDetailPage({
           )}
         </CardContent>
       </Card>
+
+      <TenantVerificationCard tenantId={tenantId} isVerified={tenant.is_verified} canEdit={canEdit} />
 
       <TenantEntitlementsCard tenantId={tenantId} canEdit={canEdit} />
 

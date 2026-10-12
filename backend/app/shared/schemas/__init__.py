@@ -330,3 +330,19 @@ __all__ = [
     "SendEmailRequest",
     "SendOperationResponse",
 ]
+
+from app.shared.schemas.directory import (  # noqa: E402
+    ContactRequestCreate,
+    ContactRequestResponse,
+    ContactRequestUpdate,
+    DirectoryStats,
+    DirectoryVerification,
+    Eligibility,
+    ListingEventCreate,
+    ListingResponse,
+    ListingUpdate,
+    PublicDegree,
+    PublicPractitioner,
+    PublicPractitionerItem,
+    PublicPractitionerList,
+)

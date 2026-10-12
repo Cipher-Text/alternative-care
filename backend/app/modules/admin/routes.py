@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import RequireAdmin, RequireAdminOrOperator
+from app.shared.schemas import DirectoryVerification
 from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
     AdminAddTenantDoctorResponse,
@@ -224,3 +225,33 @@ async def update_user(
 ):
     service = AdminService(db)
     return await service.update_user(user_id, data)
+
+
+# ============================================================================
+# Credential verification (public directory trust signal — free)
+# ============================================================================
+
+
+@router.post(
+    "/tenants/{tenant_id}/verification",
+    summary="Verify or unverify a tenant's credentials",
+    description=(
+        "Records that an admin checked the tenant's registration and credentials. Free for every "
+        "plan; a verified tenant can appear in the public directory if it opts in and its plan allows."
+    ),
+)
+async def set_tenant_verification(
+    tenant_id: str,
+    data: DirectoryVerification,
+    current_user: RequireAdmin,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    from app.modules.directory.service import set_verification
+
+    tenant = await set_verification(db, tenant_id, current_user.user_id, data.verified, data.note)
+    return {
+        "tenant_id": tenant.id,
+        "is_verified": tenant.is_verified,
+        "verified_at": tenant.verified_at,
+        "verification_note": tenant.verification_note,
+    }

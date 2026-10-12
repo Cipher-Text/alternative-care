@@ -12,7 +12,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 > The "Production Ready" claim previously here did not hold. Stage 0 ("Truth & Green") is done and
 > Stage 1 ("Shippable") is underway and Stage 2 ("Catalog Foundation") has begun — code-verified on
-> 2026-09-26: `pytest -q` runs **827 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-11). Sentry and structlog
+> 2026-09-26: `pytest -q` runs **839 passed / 0 xfailed / 0 failed** locally (re-verified 2026-10-11). Sentry and structlog
 > are initialised (`app/core/observability.py`).
 > **PostgreSQL RLS on the 8 clinical tables landed 2026-09-26** (Stage 2, D2): migration
 > `273747e56a3f` adds `ENABLE`/`FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy to
@@ -83,7 +83,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management, tenant usage ✅
 
-**Backend:** 14 routed modules, 165 endpoints (+ `/`, `/health`, `/metrics`), 35 table models
+**Backend:** 15 routed modules, 176 endpoints (+ `/`, `/health`, `/metrics`), 38 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)
 
@@ -342,6 +342,7 @@ backend/app/
 │   ├── geographic/       # ✅ Divisions, districts, upazilas (3 endpoints)
 │   ├── tenant/           # ✅ Clinic profile (2 endpoints)
 │   ├── content/          # ✅ Editorial articles + curated YouTube videos: draft → in_review → published, admin sign-off with public reviewer credit, evidence labels, re-review dates (9 authoring endpoints; public read at `/public/articles`) — authoring UI at `/content`, public pages at `/articles`
+│   ├── directory/        # ✅ Public practitioner directory: opt-in listing per clinic, free admin credential verification (`POST /admin/tenants/{id}/verification`), plan gate `feature_directory_listing` (Plus/Pro), call-back requests + call/WhatsApp tap counts; doctor UI at `/directory`, public pages `/practitioners` (hidden until `DIRECTORY_MIN_PROFILES`=20 visible profiles) and `/verification` (5 doctor endpoints; public read in `modules/public`)
 │   ├── pharmacy/         # ✅ Admin-curated pharmacy/wholesaler directory: list + near-me search, CSV import (6 endpoints) — admin UI at `/admin/pharmacies`, practitioner list/map/near-me at `/pharmacies`, 50 seeded Hamdard (Unani) outlets in `seed_data/pharmacies.json`
 │   ├── plans/            # ✅ Plan & entitlement configuration, public pricing, per-tenant overrides (8 endpoints; enforcement lives in `app/core/entitlements.py`)
 │   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
