@@ -29,7 +29,7 @@ async def test_tenant_data(db_session):
         email="test@clinic.com",
         clinic_name="Test Clinic",
         specializations=["homeopathy"],
-        plan="free",
+        plan="plus",  # invoicing is not part of the Free plan
         is_active=True,
         is_approved=True,
     )

@@ -2,7 +2,7 @@
 
 Status: **decisions recorded 2026-10-12; plan values and several details still open.** Step 2 of §5
 (platform providers from env + credit ledger + charged send routes) is built. Step 3 is built
-against a **fake gateway only** (§8); SSLCommerz and bKash are not. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
+against a **fake gateway only** (§8); SSLCommerz and bKash are not. Seed plans and prices: §9. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
 and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
 
 ## 1. Decided
@@ -139,3 +139,108 @@ SMS: `SMS_PROVIDER`, provider keys. SSLCommerz: store id, store password, sandbo
   proration; no admin manual "mark paid" for bank transfers; plan prices are still unset (the pricing
   and checkout pages show "contact us" until an admin saves prices in the plan editor); the order
   list does not filter by date.
+
+## 9. Seed plans and the Bangladesh market analysis (2026-10-12)
+
+Four plans: **Free, Plus, Pro, Enterprise**. Values live in `DEFAULT_PLANS` (`app/core/entitlements.py`) and
+are seeded into the database by migration `d2a8e4b6f1c7` (prices only where none was set; descriptions only
+where they still had the old built-in text). They are **hypotheses to validate, not measured willingness to
+pay**, and every one is editable in the admin plan editor.
+
+| | Free | Plus | Pro | Enterprise |
+|---|---|---|---|---|
+| Who | Solo doctor trying it | Working chamber / small clinic | Established clinic, several doctors | Hospitals, chains, institutions |
+| Price per month (BDT) | 0 | **1,000** | **3,000** | custom ("contact us"; start around 15,000) |
+| Price per year (BDT) | 0 | **10,000** (2 months free) | **30,000** (2 months free) | custom |
+| Patients | 200 | unlimited | unlimited | unlimited |
+| Doctors (seats) | 1 | 2 | 5 | unlimited |
+| SMS / month | 0 | 300 | 1,000 | 5,000 |
+| Email / month | 50 | 1,000 | 5,000 | 20,000 |
+| Invoicing | no | yes | yes | yes |
+| Public directory listing | no | yes | yes | yes |
+| AI assistant (when built) | no | no | 200 queries | 1,000 queries |
+| Facebook profile feature (AltCare page) | no | no | 1 per quarter | 3 per quarter (about 1 a month) |
+
+### What the market data says (and does not)
+Searches on 2026-10-12 found **no published taka price list for clinic or chamber software in Bangladesh**,
+and **no consultation-fee or practitioner-count data specific to homeopathy, Ayurveda or Unani**. What exists:
+
+- **SMS cost (the main variable cost):** Alpha SMS publishes non-masking 0.31 to 0.40 BDT and masking 0.55 to
+  0.64 BDT per SMS depending on the recharge tier ([pricing](https://sms.net.bd/Pricing)); another provider
+  advertises from 0.24 BDT ([Automas](https://sms.automas.com.bd/)). Masking needs operator approval; Bangla
+  text fits 70 characters per SMS segment versus 160 in English, so Bangla messages cost more.
+- **Payment gateway fee:** one university payment page lists 1.4% via SSLCommerz and 1.15% for direct bKash
+  ([BUBT](https://payment.bubt.edu.bd/)); an older news article gives 2% to 4% for mobile banking and a 15,000
+  BDT SSLCommerz setup cost ([UNB](https://unb.com.bd/category/business/renowned-online-payment-gateways-in-bangladesh-for-domestic-international-transactions/74554)).
+  Merchant-specific quotes will differ.
+- **Local software benchmarks:** small-business cloud tools run roughly 1,000 to 5,000 BDT/month (an accounting
+  tool from 4,500, [review](https://rakibhassan.eu/best-small-business-accounting-software-bangladesh/); global
+  per-seat tools such as Odoo about 7.25 USD/user/month, roughly 880 BDT at the 121 BDT/USD rate that source
+  used, [Odoo pricing](https://oec.sh/odoo-pricing/bangladesh)). A Bangladeshi prescription-software listing
+  shows a one-time lifetime licence of 35,000 BDT ([bdstall](https://bdstall.com/details/prescription-writing-software-30583)),
+  about 35 months of Plus. Hospital ERP is far higher: one Dhaka vendor lists a starting price of 150 USD/month
+  (about 18,000 BDT, third-party listing, [SoftwareSuggest](https://www.softwaresuggest.com/global-mediklaud-bd)).
+  Indian clinic SaaS lists around 2,999 INR/month, a rough upper benchmark for a multi-doctor clinic.
+- **Doctor fees (affordability anchor):** opinion pieces cite urban specialist visits of 500 to 1,200 BDT
+  ([Financial Express](https://thefinancialexpress.com.bd/views/consultation-fees-and-medical-test-charge)),
+  while rural chambers can charge far less (a Dinajpur example at 40 BDT,
+  [Daily Star](https://www.thedailystar.net/backpage/peoples-doctor-consultation-medicines-just-tk-40-1533295)).
+  Alternative-medicine chambers are probably at the lower end; **not verified**.
+
+### How the numbers were chosen
+- **Plus at 1,000 BDT:** at the low end of the local small-business SaaS range, and about two to three
+  paid consultations a month for a chamber charging 400 BDT. It is cheap enough for a solo practitioner to say
+  yes, and it covers its own variable cost: 300 SMS at the worst-case 0.64 BDT is 192 BDT, 1,000 emails are
+  about 50 BDT (assumed, unverified), the gateway fee up to 2.5% is 25 BDT, leaving roughly 730 BDT before
+  VAT, hosting and support.
+- **Pro at 3,000 BDT:** three times Plus for 2.5 times the doctors, 3 times the SMS and the AI assistant. Worst
+  case cost: 1,000 SMS 640 + 5,000 emails 250 + AI 200 queries (assumed 2 to 5 BDT each, 400 to 1,000, the AI
+  is not built so this is a guess) + gateway 75, about 1,370 to 1,970 BDT, leaving roughly 1,030 to 1,630.
+- **Enterprise custom:** its allowances alone cost about 5,800 to 8,800 BDT a month at those assumptions, so it
+  cannot be sold below roughly 15,000 BDT without losing money; that also sits near the 18,000 BDT hospital-ERP
+  anchor. It is quoted per deal.
+- **Free is trial-sized, not a permanent clinic:** 200 patients is about a month for a typical solo chamber;
+  one doctor, no SMS (the largest cost and abuse risk), and no invoicing, which is the "I am running a
+  business" upgrade moment. The directory listing is a Plus benefit (strategy §6.3).
+- **Yearly price is 10 months** (about 17% off), which also reduces gateway fees and churn.
+- **Seats count doctors**, not receptionists (the clinic pays; see §1.7).
+
+### Not verified, to resolve before launch
+- Whether VAT applies to subscriptions and whether prices are quoted inclusive. These figures ignore it;
+  with 15% inclusive VAT, margins fall by roughly 130 BDT on Plus and 390 BDT on Pro. Confirm with an accountant.
+- Real SMS and gateway terms from the providers you sign with, and Resend's actual per-email cost.
+- AI cost per query, once the assistant exists.
+- What homeopathy, Ayurveda and Unani practitioners earn and pay for software today. Run the 8 to 12
+  interviews and Van Westendorp questions in `pricing-usage-onboarding-2026-10.md` §2.4 before treating
+  1,000 and 3,000 as final; consider a founding-member price for the first clinics.
+- Patient cap of 200 and doctor counts are product judgement, not data.
+- **Stored values beat code defaults:** if an admin has already saved a plan in the plan editor, these new
+  defaults do not apply to that plan (the migration only fills missing prices and unedited descriptions).
+
+## 10. Facebook profile promotion (built 2026-10-13; Pro and Enterprise benefit)
+
+A paid-plan benefit: AltCare features the doctor's public profile on the **AltCare Facebook page**.
+
+- **Delivery is manual** (decided): there is no Facebook API integration. The doctor requests a feature, AltCare
+  staff draft the post from the public profile, the doctor approves the exact text, staff publish it by hand
+  on Facebook and paste the post link back. This avoids a Facebook app review and token management; it can be
+  automated later behind the same workflow.
+- **Consent rule, enforced on the server:** staff cannot mark a request posted unless the doctor approved the
+  exact text (`approved_text` is frozen at approval and staff cannot redraft after it). The doctor can approve,
+  ask for changes with a comment (it returns to staff), or cancel.
+- **Quota:** new entitlement `quarterly_facebook_features` (period `quarterly`, per calendar quarter):
+  Pro 1, Enterprise 3 (about one a month), Free and Plus off. Cancelled and rejected requests give the quota
+  back. A clinic may have one open request at a time (also a partial unique index in the database).
+- **Prerequisite:** the clinic's public directory profile must be live (listed, verified, approved, in plan,
+  with a bio), because the post points at it.
+- **Tables / API:** `facebook_feature_requests` (migration `e4c7a1d8b5f2`); doctor `/marketing/facebook...`
+  (5 endpoints), admin queue `/admin/marketing/facebook...` (4 endpoints, admin only). Staff and doctors get
+  best-effort emails at each step.
+- **UI:** doctor page `/marketing`, admin queue `/admin/marketing`; the pricing page lists the benefit from the
+  plan catalog automatically.
+- **Gaps and risks:** staff time scales with the number of Pro and Enterprise clinics (1 hour per feature is a
+  good planning figure; this is not in the price analysis yet, so check that 3,000 BDT still covers it); there
+  is no post preview image, scheduling, or reporting of Facebook reach; posting is not verified (the link is
+  trusted); the AltCare Facebook page itself, its audience and its posting policy need to exist and be owned by
+  someone; health content on social media may carry regulatory and platform-policy limits that nobody has
+  checked here.

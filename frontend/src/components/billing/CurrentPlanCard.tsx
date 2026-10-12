@@ -3,7 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl'
 import { AlertTriangle, CalendarClock } from 'lucide-react'
 import { useDateFormat } from '@/lib/i18n/date'
-import { planName } from '@/lib/billingFormat'
+import { planKeyName, planName } from '@/lib/billingFormat'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { SubscriptionInfo } from '@/types/checkout'
@@ -14,7 +14,7 @@ export function CurrentPlanCard({ sub }: { sub: SubscriptionInfo }) {
   const { fmt } = useDateFormat()
 
   const current = sub.options.find((o) => o.plan_key === sub.plan)
-  const name = current ? planName(current, locale) : sub.plan
+  const name = current ? planName(current, locale) : planKeyName(sub.plan, locale)
   const noExpiry = sub.plan_expires_at === null
   const soon = !sub.expired && sub.days_left !== null && sub.days_left <= 7
 

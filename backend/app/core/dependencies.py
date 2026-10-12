@@ -297,5 +297,6 @@ def require_feature(entitlement_key: str):
     return _check_feature
 
 
-RequireProPlan = Annotated[CurrentUser, Depends(require_plan("pro"))]
+# Enterprise includes everything Pro does
+RequireProPlan = Annotated[CurrentUser, Depends(require_plan("pro", "enterprise"))]
 RequireAiAssistant = Annotated[CurrentUser, Depends(require_feature("feature_ai_assistant"))]

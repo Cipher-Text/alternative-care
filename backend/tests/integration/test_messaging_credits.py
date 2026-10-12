@@ -112,7 +112,8 @@ async def test_failed_send_is_refunded(db_session, test_tenant):
 
 
 @pytest.mark.asyncio
-async def test_unlimited_plan_never_touches_credits(client, doctor_token, platform_sms):
+async def test_unlimited_plan_never_touches_credits(client, doctor_token, db_session, test_tenant, platform_sms):
+    await _limit(db_session, test_tenant, "monthly_sms", None)  # unlimited, e.g. a custom Enterprise deal
     for _ in range(3):
         assert (await client.post("/api/v1/integrations/send/sms", json=SMS, headers=H(doctor_token))).status_code == 200
     assert {s["source"] for s in platform_sms} == {"allowance"}

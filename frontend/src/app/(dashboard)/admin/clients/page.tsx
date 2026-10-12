@@ -461,6 +461,7 @@ export default function AdminClientsPage() {
                             <SelectItem value="free">Free</SelectItem>
                             <SelectItem value="plus">Plus</SelectItem>
                             <SelectItem value="pro">Pro</SelectItem>
+                            <SelectItem value="enterprise">Enterprise</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

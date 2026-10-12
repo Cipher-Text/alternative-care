@@ -73,6 +73,12 @@ export default function PricingPage() {
       tagline: t('fallbackProTagline'),
       features: [t('fallbackProFeature1'), t('fallbackProFeature2'), t('fallbackProFeature3')],
     },
+    {
+      key: 'enterprise',
+      name: t('fallbackEnterpriseName'),
+      tagline: t('fallbackEnterpriseTagline'),
+      features: [t('fallbackEnterpriseFeature1'), t('fallbackEnterpriseFeature2'), t('fallbackEnterpriseFeature3')],
+    },
   ]
 
   const cards = data
@@ -94,7 +100,7 @@ export default function PricingPage() {
       }))
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-16">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
         <p className="mt-3 text-gray-600 dark:text-gray-400">
@@ -102,7 +108,7 @@ export default function PricingPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((plan) => (
           <Card key={plan.key} className={plan.highlighted ? 'border-emerald-500 shadow-md' : ''}>
             <CardHeader>

@@ -10,6 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.shared.models import Payment, Invoice, Patient, Visit
 
 
+@pytest.fixture(autouse=True)
+async def _paid_plan(db_session, test_tenant):
+    """Free is deliberately limited (no invoicing or SMS, one doctor); this module exercises invoicing."""
+    test_tenant.plan = "plus"
+    await db_session.commit()
+
+
+
 @pytest.mark.asyncio
 class TestPaymentRoutes:
     """Test payment API endpoints."""

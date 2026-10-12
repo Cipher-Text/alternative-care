@@ -176,3 +176,12 @@ Review weekly: where is the largest drop?
 4. First-run checklist and activation tracking.
 5. Subscription lifecycle and payment collection.
 6. Pricing page rendered from entitlements, with real prices once §2.4 is done.
+
+
+---
+
+## 7. Update (2026-10-12): four plans and seed prices
+
+The plan set is now Free, Plus, Pro and Enterprise, with seed prices and limits chosen from a Bangladesh
+market analysis. See `billing-credits-spec-2026-10.md` §9 for the table, the sources, the unit economics and the
+list of assumptions that still need validating (§2.4 above is still the right next step).

@@ -48,15 +48,16 @@ async def test_subscription_options_come_from_the_server(client, doctor_token, f
     info = (await client.get("/api/v1/billing/subscription", headers=H(doctor_token))).json()
     assert info["applied_plan"] == "free" and info["gateways"] == ["fake"]
     by_key = {o["plan_key"]: o for o in info["options"]}
-    assert set(by_key) == {"plus", "pro"}
+    assert set(by_key) == {"plus", "pro", "enterprise"}
     assert by_key["plus"]["action"] == "subscribe" and Decimal(by_key["plus"]["price_monthly"]) == 1000
+    # Enterprise has custom pricing, so it is never bought online
+    assert by_key["enterprise"]["action"] == "unavailable"
 
 
 @pytest.mark.asyncio
-async def test_unpriced_plan_is_not_purchasable(client, doctor_token, fake_gateway):
-    info = (await client.get("/api/v1/billing/subscription", headers=H(doctor_token))).json()
-    assert {o["action"] for o in info["options"]} == {"unavailable"}
-    r = await client.post("/api/v1/billing/checkout", json=PLUS_MONTHLY, headers=H(doctor_token))
+async def test_plan_without_online_price_is_not_purchasable(client, doctor_token, fake_gateway):
+    enterprise = {**PLUS_MONTHLY, "plan_key": "enterprise"}
+    r = await client.post("/api/v1/billing/checkout", json=enterprise, headers=H(doctor_token))
     assert r.status_code == 409 and r.json()["detail"]["code"] == "not_purchasable"
 
 

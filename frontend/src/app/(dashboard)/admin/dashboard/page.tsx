@@ -93,7 +93,7 @@ export default function AdminDashboardPage() {
     )
   }
 
-  const plans = data?.plans ?? { free: 0, plus: 0, pro: 0 }
+  const plans = data?.plans ?? { free: 0, plus: 0, pro: 0, enterprise: 0 }
 
   return (
     <div className="space-y-8">
@@ -150,13 +150,13 @@ export default function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            {(['free', 'plus', 'pro'] as const).map((plan) => (
+            {(['free', 'plus', 'pro', 'enterprise'] as const).map((plan) => (
               <div key={plan} className="flex items-center gap-3 p-4 rounded-lg border min-w-[140px]">
                 <div className="flex-1">
                   <p className="text-2xl font-bold">{plans[plan]}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge
-                      variant={plan === 'pro' ? 'default' : 'outline'}
+                      variant={plan === 'pro' || plan === 'enterprise' ? 'default' : 'outline'}
                       className="capitalize"
                     >
                       {plan}

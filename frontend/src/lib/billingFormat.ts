@@ -14,6 +14,20 @@ export function planName(option: Pick<PlanOption, 'name_en' | 'name_bn'>, locale
   return locale === 'bn' && option.name_bn ? option.name_bn : option.name_en
 }
 
+const PLAN_KEY_NAMES: Record<string, { en: string; bn: string }> = {
+  free: { en: 'Free', bn: 'ফ্রি' },
+  plus: { en: 'Plus', bn: 'প্লাস' },
+  pro: { en: 'Pro', bn: 'প্রো' },
+  enterprise: { en: 'Enterprise', bn: 'এন্টারপ্রাইজ' },
+}
+
+/** Display name for a stored plan key, e.g. for Free, which is never in the purchasable options. */
+export function planKeyName(key: string, locale: string): string {
+  const known = PLAN_KEY_NAMES[key]
+  if (!known) return key.charAt(0).toUpperCase() + key.slice(1)
+  return locale === 'bn' ? known.bn : known.en
+}
+
 /** Name for a pack/plan with optional Bengali text. */
 export function localName(en: string, bn: string | null | undefined, locale: string): string {
   return locale === 'bn' && bn ? bn : en

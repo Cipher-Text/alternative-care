@@ -78,6 +78,8 @@ class PlansService:
                     name_bn=d.name_bn,
                     description_en=d.description_en,
                     description_bn=d.description_bn,
+                    price_monthly=d.price_monthly,
+                    price_yearly=d.price_yearly,
                     currency="BDT",
                     is_public=True,
                     sort_order=d.sort_order,

@@ -44,17 +44,22 @@
       "coreBuilder": "Prescription builder",
       "coreLibrary": "Medicine & symptom library",
       "fallbackFreeName": "Free",
-      "fallbackFreeTagline": "For solo practitioners getting started",
+      "fallbackFreeTagline": "Try AltCare in your own chamber",
       "fallbackPlusName": "Plus",
-      "fallbackPlusTagline": "For growing clinics",
+      "fallbackPlusTagline": "For a working chamber or small clinic",
       "fallbackPlusFeature1": "Everything in Free",
       "fallbackPlusFeature2": "Payments & invoicing",
       "fallbackPlusFeature3": "SMS/email integrations",
       "fallbackProName": "Pro",
-      "fallbackProTagline": "For established practices",
+      "fallbackProTagline": "For established clinics with several doctors",
       "fallbackProFeature1": "Everything in Plus",
       "fallbackProFeature2": "AI-assisted lookups (coming soon)",
-      "fallbackProFeature3": "Priority support"
+      "fallbackProFeature3": "Priority support",
+      "fallbackEnterpriseName": "Enterprise",
+      "fallbackEnterpriseTagline": "For hospitals, chains and institutions: custom plan and pricing",
+      "fallbackEnterpriseFeature1": "Everything in Pro",
+      "fallbackEnterpriseFeature2": "Unlimited doctors and large messaging allowances",
+      "fallbackEnterpriseFeature3": "Dedicated support"
     }
   }
 }

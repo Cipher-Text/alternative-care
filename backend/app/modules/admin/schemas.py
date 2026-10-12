@@ -19,7 +19,7 @@ class AdminDashboardResponse(BaseModel):
     pending_approvals: int
     total_doctors: int
     total_users: int
-    plans: dict[str, int]  # { "free": 6, "plus": 3, "pro": 3 }
+    plans: dict[str, int]  # { "free": 6, "plus": 3, "pro": 3, "enterprise": 1 }
 
 
 # ============================================================================
@@ -84,7 +84,7 @@ class AdminTenantDetailResponse(BaseModel):
 class AdminUpdateTenantRequest(BaseModel):
     """Payload for PATCH /admin/tenants/{id}."""
 
-    plan: Literal["free", "plus", "pro"] | None = None
+    plan: Literal["free", "plus", "pro", "enterprise"] | None = None
     is_active: bool | None = None
     is_approved: bool | None = None
 
@@ -142,7 +142,7 @@ class AdminProvisionRequest(BaseModel):
 
     # Professional
     license_number: str | None = Field(None, max_length=100)
-    plan: Literal["free", "plus", "pro"] = "free"
+    plan: Literal["free", "plus", "pro", "enterprise"] = "free"
     auto_approve: bool = True
 
 

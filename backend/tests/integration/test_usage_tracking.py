@@ -14,6 +14,14 @@ from sqlalchemy import select
 from app.shared.models import IntegrationProvider, UsageTracking
 
 
+@pytest.fixture(autouse=True)
+async def _paid_plan(db_session, test_tenant):
+    """Free is deliberately limited (no invoicing or SMS, one doctor); this module exercises SMS sending."""
+    test_tenant.plan = "plus"
+    await db_session.commit()
+
+
+
 async def _usage_row(db_session, tenant_id):
     result = await db_session.execute(
         select(UsageTracking).where(

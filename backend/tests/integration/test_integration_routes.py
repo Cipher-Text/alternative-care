@@ -8,6 +8,14 @@ from app.core.security import create_access_token
 from app.shared.models import IntegrationLog, IntegrationProvider, TenantIntegration, User
 
 
+@pytest.fixture(autouse=True)
+async def _paid_plan(db_session, test_tenant):
+    """Free is deliberately limited (no invoicing or SMS, one doctor); this module exercises SMS sending."""
+    test_tenant.plan = "plus"
+    await db_session.commit()
+
+
+
 @pytest.fixture
 async def integration_providers(db_session):
     sms = IntegrationProvider(

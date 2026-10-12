@@ -1,0 +1,141 @@
+{
+  "marketingUi": {
+    "title": "Facebook promotion",
+    "subtitle": "Ask the AltCare team to feature your public profile on the AltCare Facebook page. You approve the exact words before anything is posted.",
+    "loadFailed": "Could not load your Facebook promotion details. Please try again.",
+    "what": "Our team writes a post about you from your public AltCare profile and shares it on the AltCare Facebook page, only after you approve the text.",
+    "viewPost": "View the Facebook post",
+    "toast": {
+      "failed": "Something went wrong. Please try again.",
+      "requested": "Request sent. Our team will prepare your post.",
+      "cancelled": "Request cancelled.",
+      "approved": "Approved. We will post it soon.",
+      "changesSent": "Your comment was sent. Our team will update the draft.",
+      "drafted": "Draft saved and sent to the doctor.",
+      "rejected": "Request rejected.",
+      "posted": "Marked as posted."
+    },
+    "status": {
+      "requested": "Requested",
+      "drafted": "Draft ready",
+      "approved": "Approved",
+      "posted": "Posted",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "upsell": {
+      "title": "Included in the Pro and Enterprise plans",
+      "text": "Upgrade your plan to have your profile featured on the AltCare Facebook page.",
+      "cta": "See plans and billing"
+    },
+    "benefit": {
+      "title": "Your Facebook promotion allowance",
+      "usedOf": "{used} of {limit} used",
+      "usedUnlimited": "{used} used",
+      "period": "This quarter: {start} to {end}",
+      "remaining": "Remaining this quarter: {remaining}"
+    },
+    "profile": {
+      "live": "Our team writes your post from your public profile, which is live now.",
+      "view": "View my public profile"
+    },
+    "blockers": {
+      "heading": "Why you cannot send a request right now",
+      "no_public_profile": {
+        "title": "Your public profile is not live yet",
+        "fix": "We write the post from your public directory profile, so it must be live first.",
+        "cta": "Set up my public profile"
+      },
+      "quota_used": {
+        "title": "You have used your allowance for this quarter",
+        "fix": "Available again from {date}."
+      },
+      "open_request": {
+        "title": "You already have a request in progress",
+        "fix": "You can send a new one after the current request is finished."
+      }
+    },
+    "form": {
+      "title": "Request a Facebook post",
+      "intro": "Tell us what to highlight. This is optional.",
+      "noteLabel": "What should we highlight, and when would you like it posted?",
+      "notePlaceholder": "For example: my 20 years of experience with skin conditions; ideally early next month.",
+      "noteCount": "{count} of {max} characters",
+      "submit": "Send request"
+    },
+    "steps": {
+      "label": "Request progress",
+      "requested": "Requested",
+      "drafted": "Draft ready",
+      "approved": "Approved",
+      "posted": "Posted"
+    },
+    "tracker": {
+      "title": "Your current request",
+      "requestedText": "Our team is preparing your post.",
+      "yourComment": "Your last comment",
+      "cancel": "Cancel request",
+      "cancelConfirm": "Cancel this request? It will not count against your allowance.",
+      "nothingPosted": "Nothing is posted until you approve it.",
+      "draftIntro": "Here is the exact text our team wrote. Please read it carefully.",
+      "approve": "Approve this post",
+      "askChanges": "Ask for changes",
+      "changesTitle": "Ask for changes",
+      "changesDescription": "Tell our team what to change. They will send you a new draft.",
+      "changesLabel": "What should we change?",
+      "changesSend": "Send to our team",
+      "approvedText": "Approved. We will post it soon. This is the text we will post:",
+      "postedText": "Your post is live on the AltCare Facebook page.",
+      "rejectedText": "This request was not accepted."
+    },
+    "dialog": {
+      "minHint": "At least {min} characters.",
+      "back": "Go back"
+    },
+    "history": {
+      "title": "Past requests",
+      "empty": "You have not made any requests yet.",
+      "date": "Date",
+      "status": "Status",
+      "post": "Post",
+      "capNote": "Showing your 20 most recent requests."
+    },
+    "admin": {
+      "adminOnly": "Platform admin access required.",
+      "title": "Facebook promotion",
+      "subtitle": "Write each doctor's post by hand from their public profile, wait for their approval, then post it on Facebook and paste the link here.",
+      "queueTitle": "Requests",
+      "tabs": {
+        "needsDraft": "Needs draft",
+        "waiting": "Waiting for doctor",
+        "ready": "Ready to post",
+        "posted": "Posted",
+        "closed": "Closed"
+      },
+      "loadFailed": "Could not load the requests.",
+      "empty": "No requests here.",
+      "requestedBy": "Requested by {name} on {date}",
+      "doctorNote": "What the doctor asked to highlight",
+      "noNote": "No note.",
+      "doctorComment": "The doctor asked for changes",
+      "rejectReason": "Reason",
+      "profileLink": "Open the public profile",
+      "profileNotLive": "The public profile is not live.",
+      "draftLabel": "Post text",
+      "draftHint": "At least {min} characters. Saving emails the doctor to review it.",
+      "saveDraft": "Save draft and send to doctor",
+      "reject": "Reject",
+      "rejectTitle": "Reject this request",
+      "rejectDescription": "The doctor will see the reason, and the request will not count against their allowance.",
+      "rejectLabel": "Reason",
+      "rejectConfirm": "Reject request",
+      "approvedText": "Approved text (post exactly this)",
+      "copy": "Copy text",
+      "copied": "Copied.",
+      "copyFailed": "Could not copy. Select the text and copy it.",
+      "postUrlLabel": "Link to the Facebook post",
+      "postUrlInvalid": "Enter a link starting with https:// from facebook.com, fb.com or fb.watch.",
+      "markPosted": "Mark as posted"
+    }
+  }
+}

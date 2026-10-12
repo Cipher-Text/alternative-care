@@ -367,3 +367,15 @@ from app.shared.schemas.checkout import (  # noqa: E402
     PlanOption,
     SubscriptionInfo,
 )
+
+from app.shared.schemas.marketing import (  # noqa: E402
+    AdminFacebookRequest,
+    FacebookApprove,
+    FacebookChangesRequest,
+    FacebookDraft,
+    FacebookPosted,
+    FacebookReject,
+    FacebookRequestCreate,
+    FacebookRequestResponse,
+    FacebookSummary,
+)

@@ -1,4 +1,4 @@
-export type SubscriptionPlan = 'free' | 'plus' | 'pro'
+export type SubscriptionPlan = 'free' | 'plus' | 'pro' | 'enterprise'
 export type UserRole = 'admin' | 'operator' | 'doctor' | 'receptionist'
 
 // ============================================================================
@@ -15,6 +15,7 @@ export interface AdminDashboard {
     free: number
     plus: number
     pro: number
+    enterprise: number
   }
 }
 

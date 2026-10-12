@@ -19,7 +19,7 @@ export interface LoginRequest {
 }
 
 export type MedicalSystem = 'homeopathy' | 'ayurveda' | 'unani' | 'herbal'
-export type SubscriptionPlan = 'free' | 'plus' | 'pro'
+export type SubscriptionPlan = 'free' | 'plus' | 'pro' | 'enterprise'
 
 export interface AdminCreateTenantDoctorRequest {
   email: string
@@ -39,7 +39,7 @@ export interface AdminCreateTenantDoctorRequest {
   auto_approve: boolean
 }
 
-export type RequestedPlan = 'free' | 'plus' | 'pro'
+export type RequestedPlan = 'free' | 'plus' | 'pro' | 'enterprise'
 
 export interface RegisterRequest {
   email: string

@@ -6,6 +6,7 @@ from app.shared.models.doctor import DoctorDegree, DoctorTraining
 from app.shared.models.institution import Institution
 from app.shared.models.pharmacy import Pharmacy
 from app.shared.models.article import Article
+from app.shared.models.marketing import FacebookFeatureRequest
 from app.shared.models.billing import BillingOrder, CreditPack
 from app.shared.models.credits import CreditBalance, CreditLedger
 from app.shared.models.directory import ContactRequest, ListingEvent, PractitionerListing
@@ -60,6 +61,7 @@ __all__ = [
     "Institution",
     "Pharmacy",
     "Article",
+    "FacebookFeatureRequest",
     "BillingOrder",
     "CreditPack",
     "CreditBalance",

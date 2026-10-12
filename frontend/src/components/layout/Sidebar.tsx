@@ -22,6 +22,7 @@ import {
   BadgeCheck,
   MessageSquare,
   Receipt,
+  Megaphone,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -39,6 +40,7 @@ const doctorNavigation = [
   { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'directory', href: '/directory', icon: BadgeCheck },
   { key: 'billing', href: '/billing', icon: Receipt },
+  { key: 'facebookPromotion', href: '/marketing', icon: Megaphone },
   { key: 'settings', href: '/settings', icon: Settings },
   // Doctors reach Messaging through Settings; receptionists have no Settings, so they get a direct link
   { key: 'messaging', href: '/settings/messaging', icon: MessageSquare },
@@ -49,6 +51,7 @@ const adminNavigation = [
   { key: 'clients', href: '/admin/clients', icon: Building2 },
   { key: 'plansPricing', href: '/admin/plans', icon: Tags },
   { key: 'adminBilling', href: '/admin/billing', icon: Receipt },
+  { key: 'facebookPromotion', href: '/admin/marketing', icon: Megaphone },
   { key: 'users', href: '/admin/users', icon: UserCog },
   { key: 'articles', href: '/content', icon: Newspaper },
   { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },
@@ -69,12 +72,12 @@ export function useNavItems() {
   // rather than a separate, currently-empty menu.
   return user?.role === 'admin' || user?.role === 'operator'
     ? // the content and billing APIs are admin only, so operators don't get those links
-      adminNavigation.filter((item) => user.role === 'admin' || (item.href !== '/content' && item.href !== '/admin/billing'))
+      adminNavigation.filter((item) => user.role === 'admin' || (item.href !== '/content' && item.href !== '/admin/billing' && item.href !== '/admin/marketing'))
     : doctorNavigation.filter(
         (item) =>
           (can.manageClinicSettings ? item.href !== '/settings/messaging' : item.href !== '/settings' && item.href !== '/billing') && // billing: doctors only
           
-          (!can.isReceptionist || (item.href !== '/content' && item.href !== '/directory')) // articles and directory: no receptionists
+          (!can.isReceptionist || (item.href !== '/content' && item.href !== '/directory' && item.href !== '/marketing')) // articles, directory, Facebook promotion: no receptionists
       )
 }
 

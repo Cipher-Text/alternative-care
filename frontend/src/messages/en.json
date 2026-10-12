@@ -115,7 +115,8 @@
     "switchToLight": "Switch to light mode",
     "messaging": "Messaging",
     "billing": "Billing",
-    "adminBilling": "Billing"
+    "adminBilling": "Billing",
+    "facebookPromotion": "Facebook promotion"
   },
   "patients": {
     "title": "Patients",
@@ -150,7 +151,8 @@
       "pending_tenants": "pending tenants",
       "results": "results",
       "entries": "entries",
-      "orders": "orders"
+      "orders": "orders",
+      "requests": "requests"
     }
   },
   "pages": {

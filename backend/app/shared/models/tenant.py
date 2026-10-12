@@ -97,7 +97,7 @@ class Tenant(BaseAuditModel):
         String(20),
         nullable=False,
         default="free",
-    )  # free, plus, pro
+    )  # free, plus, pro, enterprise
     plan_started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

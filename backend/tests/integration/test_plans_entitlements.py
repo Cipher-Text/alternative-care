@@ -44,10 +44,12 @@ class TestPublicPlans:
         response = await client.get("/api/v1/plans")
         assert response.status_code == 200
         body = response.json()
-        assert [p["key"] for p in body["plans"]] == ["free", "plus", "pro"]
+        assert [p["key"] for p in body["plans"]] == ["free", "plus", "pro", "enterprise"]
         assert {c["key"] for c in body["catalog"]} >= {"max_patients", "feature_invoicing"}
-        # no price has been approved yet
-        assert all(p["price_monthly"] is None for p in body["plans"])
+        # seed prices (BDT): free is 0, enterprise is custom ("contact us" = no price)
+        prices = {p["key"]: p["price_monthly"] for p in body["plans"]}
+        assert float(prices["free"]) == 0
+        assert float(prices["plus"]) == 1000 and float(prices["pro"]) == 3000 and prices["enterprise"] is None
 
 
 @pytest.mark.asyncio
@@ -56,13 +58,49 @@ class TestAdminPlanEditor:
         assert (await doctor.get("/api/v1/admin/plans")).status_code == 403
         assert (await doctor.put("/api/v1/admin/plans/free", json={})).status_code == 403
 
-    async def test_defaults_are_permissive_except_ai(self, admin_client: AsyncClient):
-        free = await _plan(admin_client, "free")
-        values = {e["key"]: e for e in free["entitlements"]}
-        assert values["max_patients"]["limit"] is None
-        assert values["feature_invoicing"]["enabled"] is True
-        assert values["feature_ai_assistant"]["enabled"] is False
-        assert (await _plan(admin_client, "pro"))["entitlements"][-1]["enabled"] is True
+    async def test_seed_plan_structure(self, admin_client: AsyncClient):
+        """The four seed plans: Free is trial-sized, paid plans widen it, Enterprise is the most generous."""
+
+        async def values(key: str) -> dict:
+            return {e["key"]: e for e in (await _plan(admin_client, key))["entitlements"]}
+
+        free = await values("free")
+        plus = await values("plus")
+        pro = await values("pro")
+        ent = await values("enterprise")
+        assert free["max_patients"]["limit"] == 200 and free["max_seats"]["limit"] == 1
+        assert free["monthly_sms"]["limit"] == 0 and free["monthly_email"]["limit"] == 50
+        assert free["feature_invoicing"]["enabled"] is False
+        assert free["feature_directory_listing"]["enabled"] is False
+        assert free["feature_ai_assistant"]["enabled"] is False
+        assert free["quarterly_facebook_features"]["enabled"] is False
+
+        assert plus["max_patients"]["limit"] is None and plus["max_seats"]["limit"] == 2
+        assert plus["monthly_sms"]["limit"] == 300 and plus["feature_invoicing"]["enabled"] is True
+        assert plus["feature_directory_listing"]["enabled"] is True
+        assert plus["feature_ai_assistant"]["enabled"] is False
+        assert plus["quarterly_facebook_features"]["enabled"] is False  # Pro and Enterprise only
+
+        assert pro["max_seats"]["limit"] == 5 and pro["monthly_sms"]["limit"] == 1000
+        assert pro["feature_ai_assistant"]["enabled"] is True and pro["monthly_ai_queries"]["limit"] == 200
+        assert pro["quarterly_facebook_features"] == {**pro["quarterly_facebook_features"], "enabled": True, "limit": 1}
+
+        assert ent["max_seats"]["limit"] is None and ent["max_patients"]["limit"] is None
+        assert ent["monthly_sms"]["limit"] == 5000 and ent["monthly_ai_queries"]["limit"] == 1000
+        assert ent["quarterly_facebook_features"]["enabled"] is True and ent["quarterly_facebook_features"]["limit"] == 3
+
+    async def test_each_plan_offers_at_least_the_one_below(self, admin_client: AsyncClient):
+        """The seed values must never put a paid plan below a cheaper one (the editor enforces this too)."""
+        rank = ["free", "plus", "pro", "enterprise"]
+        plans = [await _plan(admin_client, k) for k in rank]
+        for lower, higher in zip(plans, plans[1:]):
+            low = {e["key"]: e for e in lower["entitlements"]}
+            for key, hi in {e["key"]: e for e in higher["entitlements"]}.items():
+                lo = low[key]
+                if hi["enabled"] is False:
+                    assert lo["enabled"] is False, (lower["key"], higher["key"], key)
+                elif hi["limit"] is not None:  # a finite limit on the higher plan
+                    assert lo["limit"] is not None and lo["limit"] <= hi["limit"], (lower["key"], higher["key"], key)
 
     async def test_update_records_audit_trail(self, admin_client: AsyncClient):
         free = await _plan(admin_client, "free")
@@ -74,7 +112,7 @@ class TestAdminPlanEditor:
         audit = (await admin_client.get("/api/v1/admin/plans/audit?plan_key=free")).json()
         changed = {(a["entitlement_key"], a["field"]): a for a in audit}
         entry = changed[("max_patients", "limit")]
-        assert entry["old_value"] is None and entry["new_value"] == "25"
+        assert entry["old_value"] == "200" and entry["new_value"] == "25"
         assert entry["changed_by"] is not None
 
     async def test_higher_plan_cannot_offer_less(self, admin_client: AsyncClient):

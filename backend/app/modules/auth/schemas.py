@@ -56,7 +56,7 @@ class RegisterRequest(BaseModel):
 
     # Plan the visitor was looking at on the pricing page. Informational only (shown to admins);
     # every tenant still starts on the free plan.
-    requested_plan: Literal["free", "plus", "pro"] | None = None
+    requested_plan: Literal["free", "plus", "pro", "enterprise"] | None = None
 
     @field_validator("specializations")
     @classmethod

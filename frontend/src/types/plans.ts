@@ -9,7 +9,7 @@ export interface CatalogItem {
   label_bn: string
   unit_en: string
   unit_bn: string
-  period: 'total' | 'monthly' | null
+  period: 'total' | 'monthly' | 'quarterly' | null
 }
 
 export interface EntitlementValue {
@@ -89,7 +89,7 @@ export interface TenantEntitlementItem {
   enabled: boolean
   limit: number | null
   used: number | null
-  period: 'total' | 'monthly' | null
+  period: 'total' | 'monthly' | 'quarterly' | null
   source: 'plan' | 'override'
 }
 

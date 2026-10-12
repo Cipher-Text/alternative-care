@@ -97,6 +97,9 @@ export function TenantEntitlementsCard({
                     {item.period === 'monthly' && (
                       <span className="ml-1 text-xs text-muted-foreground">(this month)</span>
                     )}
+                    {item.period === 'quarterly' && (
+                      <span className="ml-1 text-xs text-muted-foreground">(this quarter)</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {editing === item.key ? (

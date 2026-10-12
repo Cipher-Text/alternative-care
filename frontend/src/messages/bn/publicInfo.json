@@ -44,17 +44,22 @@
       "coreBuilder": "প্রেসক্রিপশন বিল্ডার",
       "coreLibrary": "ঔষধ ও লক্ষণ লাইব্রেরি",
       "fallbackFreeName": "ফ্রি",
-      "fallbackFreeTagline": "যেসব একক চিকিৎসক সবে শুরু করছেন তাদের জন্য",
+      "fallbackFreeTagline": "নিজের চেম্বারে AltCare ব্যবহার করে দেখুন",
       "fallbackPlusName": "প্লাস",
-      "fallbackPlusTagline": "বর্ধনশীল ক্লিনিকের জন্য",
+      "fallbackPlusTagline": "চালু চেম্বার বা ছোট ক্লিনিকের জন্য",
       "fallbackPlusFeature1": "ফ্রি-র সব সুবিধা",
       "fallbackPlusFeature2": "পেমেন্ট ও ইনভয়েস",
       "fallbackPlusFeature3": "এসএমএস/ইমেইল ইন্টিগ্রেশন",
       "fallbackProName": "প্রো",
-      "fallbackProTagline": "প্রতিষ্ঠিত প্র্যাকটিসের জন্য",
+      "fallbackProTagline": "একাধিক চিকিৎসকের প্রতিষ্ঠিত ক্লিনিকের জন্য",
       "fallbackProFeature1": "প্লাস-এর সব সুবিধা",
       "fallbackProFeature2": "এআই-সহায়ক অনুসন্ধান (শীঘ্রই আসছে)",
-      "fallbackProFeature3": "অগ্রাধিকার সহায়তা"
+      "fallbackProFeature3": "অগ্রাধিকার সহায়তা",
+      "fallbackEnterpriseName": "এন্টারপ্রাইজ",
+      "fallbackEnterpriseTagline": "হাসপাতাল, চেইন ও প্রতিষ্ঠানের জন্য: কাস্টম প্ল্যান ও মূল্য",
+      "fallbackEnterpriseFeature1": "প্রো-এর সব সুবিধা",
+      "fallbackEnterpriseFeature2": "সীমাহীন চিকিৎসক এবং বড় মেসেজিং সীমা",
+      "fallbackEnterpriseFeature3": "নির্দিষ্ট সহায়তা"
     }
   }
 }

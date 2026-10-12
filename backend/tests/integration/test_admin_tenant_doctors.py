@@ -7,6 +7,14 @@ from sqlalchemy import select
 from app.shared.models import User
 
 
+@pytest.fixture(autouse=True)
+async def _paid_plan(db_session, test_tenant):
+    """Free is deliberately limited (no invoicing or SMS, one doctor); this module exercises several doctors per clinic."""
+    test_tenant.plan = "pro"
+    await db_session.commit()
+
+
+
 @pytest.mark.asyncio
 async def test_admin_can_add_multiple_doctors_to_existing_tenant(
     admin_client: AsyncClient,

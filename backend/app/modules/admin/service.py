@@ -76,7 +76,7 @@ class AdminService:
         total_users = total_users_result.scalar() or 0
 
         # Plan breakdown
-        plans: dict[str, int] = {"free": 0, "plus": 0, "pro": 0}
+        plans: dict[str, int] = {"free": 0, "plus": 0, "pro": 0, "enterprise": 0}
         plan_result = await self.db.execute(
             select(Tenant.plan, func.count().label("count"))
             .group_by(Tenant.plan)

@@ -35,7 +35,7 @@ const SYSTEMS: Array<{ value: MedicalSystem; labelKey: string }> = [
   { value: 'herbal', labelKey: 'systemHerbal' },
 ]
 
-const PLANS: RequestedPlan[] = ['free', 'plus', 'pro']
+const PLANS: RequestedPlan[] = ['free', 'plus', 'pro', 'enterprise']
 
 export function RegisterForm({ plan }: { plan?: string | null }) {
   const t = useTranslations('auth')

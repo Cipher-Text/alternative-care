@@ -12,14 +12,15 @@ The *values* (and prices) are editable by platform admins and stored in the ``pl
 replaces a single entitlement for a single tenant. When a plan has no stored row for a key, the
 defaults below apply, so the system behaves sensibly on a fresh database.
 
-Defaults are deliberately permissive (no limits) except where the product already restricted
-something (the AI assistant is Pro-only): nothing is capped until an admin sets a limit.
+The defaults below are the seed plan structure (see the comment above ``DEFAULT_PLANS``); an admin can
+change any value without a deploy.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Literal
 
 from fastapi import HTTPException, status
@@ -27,7 +28,9 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.usage_tracking import UsageService
+from app.shared.models.marketing import FB_COUNTED
 from app.shared.models import (
+    FacebookFeatureRequest,
     Patient,
     Plan,
     PlanEntitlement,
@@ -37,7 +40,7 @@ from app.shared.models import (
 )
 
 Kind = Literal["limit", "feature"]
-Period = Literal["total", "monthly"]
+Period = Literal["total", "monthly", "quarterly"]
 
 
 @dataclass(frozen=True)
@@ -63,6 +66,15 @@ CATALOG: dict[str, EntitlementDef] = {
         ),
         EntitlementDef(
             "monthly_email", "limit", "Emails per month", "মাসিক ইমেইল", "emails / month", "ইমেইল / মাস", "monthly"
+        ),
+        EntitlementDef(
+            "quarterly_facebook_features",
+            "limit",
+            "Facebook profile features per quarter",
+            "প্রতি কোয়ার্টারে ফেসবুক প্রোফাইল প্রচার",
+            "features / quarter",
+            "প্রচার / কোয়ার্টার",
+            "quarterly",
         ),
         EntitlementDef(
             "monthly_ai_queries",
@@ -91,36 +103,84 @@ class PlanDefaults:
     sort_order: int
     # key -> (enabled, limit)  (limit None = unlimited)
     entitlements: dict[str, tuple[bool, int | None]]
+    # BDT. 0 = free; None = "contact us" (custom pricing). Seeded into a plan row only when that row
+    # is first created; after that the admin's saved price wins.
+    price_monthly: Decimal | None = None
+    price_yearly: Decimal | None = None
 
 
-def _defaults(ai_enabled: bool, ai_quota: int, directory: bool = False) -> dict[str, tuple[bool, int | None]]:
+def _plan_values(
+    *,
+    patients: int | None,
+    seats: int | None,
+    sms: int,
+    email: int,
+    invoicing: bool,
+    directory: bool,
+    ai_queries: int = 0,
+    facebook: int = 0,
+) -> dict[str, tuple[bool, int | None]]:
+    """One plan's entitlements. `sms`/`email` are monthly allowances (0 = none included);
+    `ai_queries` > 0 turns the AI assistant on with that monthly quota; `facebook` > 0 includes that many
+    Facebook profile features per calendar quarter (staff-run). None = unlimited."""
     return {
-        "max_patients": (True, None),
-        "max_seats": (True, None),
-        "monthly_sms": (True, None),
-        "monthly_email": (True, None),
-        "monthly_ai_queries": (True, ai_quota),
-        "feature_invoicing": (True, None),
-        "feature_ai_assistant": (ai_enabled, None),
+        "max_patients": (True, patients),
+        "max_seats": (True, seats),
+        "monthly_sms": (True, sms),
+        "monthly_email": (True, email),
+        "quarterly_facebook_features": (facebook > 0, facebook),
+        "monthly_ai_queries": (True, ai_queries),
+        "feature_invoicing": (invoicing, None),
+        "feature_ai_assistant": (ai_queries > 0, None),
         "feature_directory_listing": (directory, None),
     }
 
 
+# Seed values, set 2026-10-12 from the Bangladesh market analysis in
+# docs/planning/billing-credits-spec-2026-10.md §9. They are hypotheses to validate with practitioners,
+# not measured willingness to pay; everything here is editable in the admin plan editor.
+#
+#   Free        trial-sized: 200 patients, 1 doctor, no SMS, 50 emails, no invoicing/listing/AI
+#   Plus        ৳1,000/mo  (৳10,000/yr = 2 months free): working chamber, 2 doctors, 300 SMS, listing
+#   Pro         ৳3,000/mo  (৳30,000/yr): clinic, 5 doctors, 1,000 SMS, AI assistant (200 queries),
+#               1 Facebook profile feature per quarter
+#   Enterprise  custom price (contact us): chains and institutions, unlimited doctors, big allowances,
+#               3 Facebook profile features per quarter (about one a month)
 DEFAULT_PLANS: dict[str, PlanDefaults] = {
     "free": PlanDefaults(
         "Free", "ফ্রি",
-        "For solo practitioners getting started", "শুরু করা একক চিকিৎসকদের জন্য",
-        1, _defaults(False, 0),
+        "Try AltCare in your own chamber", "নিজের চেম্বারে AltCare ব্যবহার করে দেখুন",
+        1,
+        _plan_values(patients=200, seats=1, sms=0, email=50, invoicing=False, directory=False),
+        Decimal("0"), Decimal("0"),
     ),
     "plus": PlanDefaults(
         "Plus", "প্লাস",
-        "For growing clinics", "বর্ধনশীল ক্লিনিকের জন্য",
-        2, _defaults(False, 0, True),
+        "For a working chamber or small clinic", "চালু চেম্বার বা ছোট ক্লিনিকের জন্য",
+        2,
+        _plan_values(patients=None, seats=2, sms=300, email=1000, invoicing=True, directory=True),
+        Decimal("1000"), Decimal("10000"),
     ),
     "pro": PlanDefaults(
         "Pro", "প্রো",
-        "For established practices", "প্রতিষ্ঠিত প্র্যাকটিসের জন্য",
-        3, _defaults(True, 200, True),
+        "For established clinics with several doctors", "একাধিক চিকিৎসকের প্রতিষ্ঠিত ক্লিনিকের জন্য",
+        3,
+        _plan_values(
+            patients=None, seats=5, sms=1000, email=5000, invoicing=True, directory=True, ai_queries=200,
+            facebook=1,
+        ),
+        Decimal("3000"), Decimal("30000"),
+    ),
+    "enterprise": PlanDefaults(
+        "Enterprise", "এন্টারপ্রাইজ",
+        "For hospitals, chains and institutions: custom plan and pricing",
+        "হাসপাতাল, চেইন ও প্রতিষ্ঠানের জন্য: কাস্টম প্ল্যান ও মূল্য",
+        4,
+        _plan_values(
+            patients=None, seats=None, sms=5000, email=20000, invoicing=True, directory=True,
+            ai_queries=1000, facebook=3,
+        ),
+        None, None,
     ),
 }
 FALLBACK_PLAN = "free"
@@ -219,6 +279,21 @@ class EntitlementService:
                     User.tenant_id == tenant_id,
                     User.is_active.is_(True),
                     User.role == "doctor",
+                )
+            )
+            return int(result.scalar_one())
+        if key == "quarterly_facebook_features":
+            from app.modules.marketing.service import quarter_bounds  # lazy: marketing imports this module
+
+            start, end = quarter_bounds()
+            result = await self.db.execute(
+                select(func.count())
+                .select_from(FacebookFeatureRequest)
+                .where(
+                    FacebookFeatureRequest.tenant_id == tenant_id,
+                    FacebookFeatureRequest.status.in_(FB_COUNTED),
+                    FacebookFeatureRequest.created_at >= start,
+                    FacebookFeatureRequest.created_at < end,
                 )
             )
             return int(result.scalar_one())

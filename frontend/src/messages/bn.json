@@ -115,7 +115,8 @@
     "switchToLight": "লাইট মোডে যান",
     "messaging": "মেসেজিং",
     "billing": "বিলিং",
-    "adminBilling": "বিলিং"
+    "adminBilling": "বিলিং",
+    "facebookPromotion": "Facebook প্রমোশন"
   },
   "patients": {
     "title": "রোগীরা",
@@ -150,7 +151,8 @@
       "pending_tenants": "অপেক্ষমান ক্লিনিক",
       "results": "ফলাফল",
       "entries": "এন্ট্রি",
-      "orders": "অর্ডার"
+      "orders": "অর্ডার",
+      "requests": "অনুরোধ"
     }
   },
   "pages": {
