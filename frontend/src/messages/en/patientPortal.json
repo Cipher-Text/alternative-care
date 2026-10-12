@@ -1,6 +1,6 @@
 {
   "patientPortalUi": {
-    "metaTitle": "Patient login - AltCare",
+    "metaTitle": "Patient login",
     "signIn": {
       "title": "Your AltCare account",
       "intro": "Sign in with your mobile number to see your visits, prescriptions and receipts from clinics that use AltCare. We will send you a code by SMS. It is free.",
@@ -218,7 +218,7 @@
       "cancelAppointment": "Cancel appointment",
       "cancelRequestTitle": "Cancel this request?",
       "cancelAppointmentTitle": "Cancel this appointment?",
-      "cancelBody": "{clinic} will be told that you cancelled.",
+      "cancelBody": "{clinic} will see that you cancelled.",
       "keep": "Keep it",
       "confirmCancel": "Yes, cancel",
       "errors": {

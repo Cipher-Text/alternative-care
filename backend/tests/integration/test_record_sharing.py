@@ -133,6 +133,11 @@ async def test_a_share_lets_the_other_clinics_doctor_read_only_what_was_chosen(c
     # both sides can see that it happened, and the patient sees who read it
     mine = (await client.get("/api/v1/patient/shares", headers=H(world.token))).json()[0]
     assert mine["access_count"] == 1 and mine["last_accessed_at"] is not None
+    # reading again straight away is the same reading, not a second log entry
+    again = await client.get(f"/api/v1/identity/patients/{world.pid_b}/shared-records", headers=H(world.doctor_b))
+    assert again.status_code == 200
+    mine = (await client.get("/api/v1/patient/shares", headers=H(world.token))).json()[0]
+    assert mine["access_count"] == 1
     out_a = (await client.get(f"/api/v1/identity/patients/{world.pid_a}/sharing", headers=H(world.doctor_a))).json()
     assert [(s["clinic_name"], s["access_count"]) for s in out_a["outgoing"]] == [(test_tenant_2.clinic_name, 1)] and out_a["incoming"] == []
     in_b = (await client.get(f"/api/v1/identity/patients/{world.pid_b}/sharing", headers=H(world.doctor_b))).json()

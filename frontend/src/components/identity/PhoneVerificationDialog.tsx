@@ -40,6 +40,8 @@ export interface PrefillResult {
   /** The patient is a new person: the parent links after saving, using these */
   newPerson?: boolean
   relationship?: Relationship
+  /** The phone that was verified, as +8801XXXXXXXXX (new person path) */
+  phone?: string
   approxBirthYear?: number | null
 }
 
@@ -258,7 +260,13 @@ function Flow(props: Props) {
       setBirthYearError(true)
       return
     }
-    props.onPrefill({ token: session.verification_token, newPerson: true, relationship, approxBirthYear: year })
+    props.onPrefill({
+      token: session.verification_token,
+      newPerson: true,
+      relationship,
+      approxBirthYear: year,
+      phone: normalizeBdPhone(phone) ?? undefined,
+    })
     props.onClose()
   }
 
@@ -320,7 +328,7 @@ function Flow(props: Props) {
           <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden="true" />
           {t('dialog.title')}
         </DialogTitle>
-        <DialogDescription>{t('dialog.intro')}</DialogDescription>
+        <DialogDescription>{t(props.mode === 'prefill' ? 'dialog.introPrefill' : 'dialog.intro')}</DialogDescription>
       </DialogHeader>
 
       {step === 'phone' && (

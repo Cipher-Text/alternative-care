@@ -3,6 +3,7 @@
     "dialog": {
       "title": "Verify phone",
       "intro": "Optional. Confirms the patient's phone with a code so their basic details can be linked to an AltCare profile. Treatment never depends on it.",
+      "introPrefill": "Optional. Confirms the patient's phone with a code, so you can fill in their details from an existing AltCare profile or start a new one. Treatment never depends on it.",
       "skip": "Skip — register without verification",
       "close": "Close"
     },

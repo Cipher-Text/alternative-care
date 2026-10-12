@@ -85,6 +85,9 @@ async def _clinic_names(db: AsyncSession, tenant_ids: set[str]) -> dict[str, str
     return {t.id: (t.clinic_name or t.name) for t in rows.scalars()}
 
 
+ACCESS_LOG_DEDUPE = timedelta(minutes=10)
+
+
 class PortalSharingService:
     """Patient side."""
 
@@ -326,12 +329,21 @@ class ClinicSharingService:
                                 icd_code=d.icd_code, diagnosed_at=d.diagnosed_at, is_active=d.is_active,
                             )
                         )
-            self.db.add(
-                DataShareAccess(
-                    id=str(uuid4()), share_id=share.id, recipient_tenant_id=self.tenant_id,
-                    staff_user_id=self.user_id, record_count=count,
+            # One log entry per staff member and share per window: reloading the page is one reading.
+            recent = await self.db.scalar(
+                select(func.count()).select_from(DataShareAccess).where(
+                    DataShareAccess.share_id == share.id,
+                    DataShareAccess.staff_user_id == self.user_id,
+                    DataShareAccess.created_at >= datetime.now(timezone.utc) - ACCESS_LOG_DEDUPE,
                 )
             )
+            if not recent:
+                self.db.add(
+                    DataShareAccess(
+                        id=str(uuid4()), share_id=share.id, recipient_tenant_id=self.tenant_id,
+                        staff_user_id=self.user_id, record_count=count,
+                    )
+                )
         await self.db.commit()
         incoming, _ = await self._summaries(link)
         prescriptions.sort(key=lambda r: r.date, reverse=True)

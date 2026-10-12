@@ -32,7 +32,10 @@ export default function NewPatientPage() {
   const handlePrefill = (result: PrefillResult) => {
     setVerified(result)
     const d = result.details
-    if (!d) return
+    if (!d) {
+      if (result.phone) setPrefill({ version: Date.now(), values: { phone: toLocalPhone(result.phone) } })
+      return
+    }
     const gender = GENDERS.find((g) => g === d.gender)
     setPrefill({
       version: Date.now(),
