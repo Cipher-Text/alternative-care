@@ -95,7 +95,7 @@ def test_definitions_describe_the_forms():
 async def test_definitions_endpoint(client, doctor_token):
     r = await client.get("/api/v1/case-taking/homeopathy", headers=H(doctor_token))
     assert r.status_code == 200 and r.json()["system"] == "homeopathy" and len(r.json()["fields"]) == 38
-    assert (await client.get("/api/v1/case-taking/unani", headers=H(doctor_token))).status_code == 404  # no form yet
+    assert (await client.get("/api/v1/case-taking/herbal", headers=H(doctor_token))).status_code == 404  # no form yet
     assert (await client.get("/api/v1/case-taking/ayurveda", headers=H(doctor_token))).json()["system"] == "ayurveda"
     assert (await client.get("/api/v1/case-taking/homeopathy")).status_code == 401
 
@@ -199,3 +199,31 @@ async def test_ayurveda_forms_use_the_same_endpoints(client, doctor_token, test_
     assert (await client.put(v_url, json={"data": {"prakriti": "vata"}}, headers=H(doctor_token))).status_code == 422
     # the homeopathy answers for the same patient are separate
     assert (await client.get(f"/api/v1/case-taking/patients/{test_patient.id}/homeopathy", headers=H(doctor_token))).json()["exists"] is False
+
+
+@pytest.mark.asyncio
+async def test_unani_forms_use_the_same_endpoints(client, doctor_token, test_patient, test_user):
+    d = (await client.get("/api/v1/case-taking/unani", headers=H(doctor_token))).json()
+    by_key = {f["key"]: f for f in d["fields"]}
+    assert len(d["fields"]) == 23 and by_key["mizaj"]["scope"] == "patient" and by_key["disease_mizaj"]["scope"] == "visit"
+    assert by_key["mizaj"]["options"] == ["damvi", "balghami", "safravi", "saudavi"]
+    assert by_key["nabz_rate"]["type"] == "quantity" and by_key["nabz_rate"]["units"] == ["per_minute"]
+
+    p_url = f"/api/v1/case-taking/patients/{test_patient.id}/unani"
+    assert (await client.put(p_url, json={"data": {"mizaj": "safravi"}}, headers=H(doctor_token))).status_code == 200
+    assert (await client.get(p_url, headers=H(doctor_token))).json()["data"] == {"mizaj": "safravi"}
+    assert (await client.put(p_url, json={"data": {"akhlat_affected": ["safra"]}}, headers=H(doctor_token))).status_code == 422  # a visit answer
+
+    visit = (await client.post("/api/v1/appointments/visits", headers=H(doctor_token), json={
+        "patient_id": test_patient.id, "doctor_id": test_user.id, "visit_date": str(date.today()),
+    })).json()
+    v_url = f"/api/v1/case-taking/visits/{visit['id']}/unani"
+    r = await client.put(v_url, json={"data": {
+        "disease_mizaj": "hot_dry", "akhlat_affected": ["safra"], "nabz_rate": {"value": 82, "unit": "per_minute"}, "nabz_character": ["fast", "strong"],
+        "baul_colour": "dark", "hawa_e_muhit": "normal", "makool_mashroob": "excess", "ilaj_tadbeer": ["hijama", "dalk"],
+        "ilaj_dawa_drug": "Sharbat-e-Bazoori", "drug_type": "murakkab", "drug_form": "sharbat",
+    }}, headers=H(doctor_token))
+    assert r.status_code == 200, r.text
+    assert (await client.get(v_url, headers=H(doctor_token))).json()["data"]["nabz_rate"] == {"value": 82, "unit": "per_minute"}
+    assert (await client.put(v_url, json={"data": {"mizaj": "safravi"}}, headers=H(doctor_token))).status_code == 422
+    assert (await client.put(v_url, json={"data": {"nabz_rate": {"value": 82, "unit": "per_second"}}}, headers=H(doctor_token))).status_code == 422

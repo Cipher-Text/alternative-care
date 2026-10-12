@@ -736,6 +736,213 @@
           }
         }
       }
+    },
+    "unani": {
+      "title": "ইউনানী",
+      "groups": {
+        "constitution": "মিজাজ",
+        "diagnosis": "রোগের মিজাজ ও আখলাত",
+        "examination": "পরীক্ষা",
+        "six_factors": "আসবাব-এ-সিত্তা জরুরিয়া (ছয়টি অপরিহার্য কারণ)",
+        "treatment": "চিকিৎসা"
+      },
+      "fields": {
+        "mizaj": {
+          "label": "মিজাজ",
+          "options": {
+            "damvi": "দামাভী (রক্তপ্রধান)",
+            "balghami": "বালগামী (কফপ্রধান)",
+            "safravi": "সাফরাভী (পিত্তপ্রধান)",
+            "saudavi": "সাওদাভী (কৃষ্ণপিত্তপ্রধান)"
+          }
+        },
+        "disease_mizaj": {
+          "label": "রোগের মিজাজ",
+          "options": {
+            "hot_dry": "উষ্ণ-শুষ্ক",
+            "hot_moist": "উষ্ণ-আর্দ্র",
+            "cold_dry": "শীতল-শুষ্ক",
+            "cold_moist": "শীতল-আর্দ্র"
+          }
+        },
+        "akhlat_affected": {
+          "label": "আখলাত",
+          "options": {
+            "dam": "দম (রক্ত)",
+            "balgham": "বালগাম (কফ)",
+            "safra": "সাফরা (পিত্ত)",
+            "sauda": "সাওদা (কৃষ্ণপিত্ত)"
+          }
+        },
+        "nabz_rate": {
+          "label": "নাবজ — গতি",
+          "options": {
+            "per_minute": "প্রতি মিনিটে"
+          }
+        },
+        "nabz_character": {
+          "label": "নাবজের ধরন",
+          "options": {
+            "strong": "সবল",
+            "weak": "দুর্বল",
+            "fast": "দ্রুত",
+            "slow": "ধীর",
+            "full": "পূর্ণ",
+            "empty": "ফাঁপা",
+            "hard": "কঠিন",
+            "soft": "নরম",
+            "irregular": "অনিয়মিত"
+          }
+        },
+        "baul_colour": {
+          "label": "বাউল (প্রস্রাব) — রং",
+          "options": {
+            "pale": "ফ্যাকাশে",
+            "straw": "খড়ের রং",
+            "yellow": "হলুদ",
+            "dark": "গাঢ় বা লালচে"
+          }
+        },
+        "baul_clarity": {
+          "label": "বাউল — স্বচ্ছতা",
+          "options": {
+            "clear": "স্বচ্ছ",
+            "turbid": "ঘোলা",
+            "sediment": "তলানিসহ"
+          }
+        },
+        "baraz": {
+          "label": "বারাজ (মল)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "hard": "শক্ত",
+            "loose": "পাতলা",
+            "mucous": "আমযুক্ত",
+            "pale": "ফ্যাকাশে",
+            "dark": "কালচে"
+          }
+        },
+        "skin_complexion": {
+          "label": "ত্বক ও গাত্রবর্ণ",
+          "options": {
+            "pale": "ফ্যাকাশে",
+            "ruddy": "রক্তিম",
+            "yellowish": "হলদেটে",
+            "dusky": "কালচে"
+          }
+        },
+        "tongue": {
+          "label": "জিহ্বা",
+          "options": {
+            "clean": "পরিষ্কার",
+            "white": "সাদা আস্তরণ",
+            "yellow": "হলুদ আস্তরণ",
+            "dry": "শুষ্ক"
+          }
+        },
+        "lams_notes": {
+          "label": "লামস — নোট"
+        },
+        "hawa_e_muhit": {
+          "label": "হাওয়া-এ-মুহিত (পরিবেশের বাতাস)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "excess": "বেশি",
+            "deficient": "কম",
+            "abnormal": "অস্বাভাবিক"
+          }
+        },
+        "makool_mashroob": {
+          "label": "মাকুল-ও-মাশরুব (খাদ্য ও পানীয়)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "excess": "বেশি",
+            "deficient": "কম",
+            "abnormal": "অস্বাভাবিক"
+          }
+        },
+        "harkat_badni": {
+          "label": "হারকত-ও-সুকুন বাদনী (শারীরিক পরিশ্রম ও বিশ্রাম)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "excess": "বেশি",
+            "deficient": "কম",
+            "abnormal": "অস্বাভাবিক"
+          }
+        },
+        "harkat_nafsani": {
+          "label": "হারকত-ও-সুকুন নাফসানী (মানসিক ক্রিয়া ও বিশ্রাম)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "excess": "বেশি",
+            "deficient": "কম",
+            "abnormal": "অস্বাভাবিক"
+          }
+        },
+        "naum_yaqza": {
+          "label": "নওম-ও-ইয়াকজা (ঘুম ও জাগরণ)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "excess": "বেশি",
+            "deficient": "কম",
+            "abnormal": "অস্বাভাবিক"
+          }
+        },
+        "ehtebas_istifragh": {
+          "label": "ইহতিবাস-ও-ইস্তিফরাগ (ধারণ ও নিষ্কাশন)",
+          "options": {
+            "normal": "স্বাভাবিক",
+            "excess": "বেশি",
+            "deficient": "কম",
+            "abnormal": "অস্বাভাবিক"
+          }
+        },
+        "ilaj_tadbeer": {
+          "label": "ইলাজ বিল তদবীর",
+          "options": {
+            "hijama": "হিজামা",
+            "fasd": "ফাসদ",
+            "dalk": "দালক",
+            "hammam": "হাম্মাম",
+            "riyazat": "রিয়াযত",
+            "taleeq": "তালিক (জোঁক)",
+            "ishal": "ইশহাল",
+            "qai": "কায়",
+            "huqna": "হুকনা",
+            "idrar": "ইদরার"
+          }
+        },
+        "ilaj_ghiza": {
+          "label": "ইলাজ বিল গিযা (পথ্য) — পরামর্শ"
+        },
+        "ilaj_dawa_drug": {
+          "label": "ইলাজ বিল দাওয়া — ওষুধ"
+        },
+        "drug_type": {
+          "label": "ওষুধের ধরন",
+          "options": {
+            "mufrad": "মুফরাদ (একক)",
+            "murakkab": "মুরাক্কাব (যৌগিক)"
+          }
+        },
+        "drug_form": {
+          "label": "ওষুধের রূপ",
+          "options": {
+            "safoof": "সফুফ (গুঁড়া)",
+            "joshanda": "জোশান্দা",
+            "sharbat": "শরবত",
+            "majoon": "মাজুন",
+            "qurs": "কুরস (ট্যাবলেট)",
+            "marham": "মারহাম (মলম)",
+            "roghan": "রওগন (তেল)",
+            "arq": "আরক",
+            "khamira": "খামিরা"
+          }
+        },
+        "drug_mizaj_degree": {
+          "label": "ওষুধের মিজাজ ও দরজা (ওষুধ-তালিকা থেকে দেখাবে)"
+        }
+      }
     }
   }
 }

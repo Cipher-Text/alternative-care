@@ -736,6 +736,213 @@
           }
         }
       }
+    },
+    "unani": {
+      "title": "Unani",
+      "groups": {
+        "constitution": "Constitution",
+        "diagnosis": "Temperament of the disease and humours",
+        "examination": "Examination",
+        "six_factors": "Asbab-e-sitta zaruriya (six essential factors)",
+        "treatment": "Treatment"
+      },
+      "fields": {
+        "mizaj": {
+          "label": "Mizaj (temperament)",
+          "options": {
+            "damvi": "Sanguine (damvi)",
+            "balghami": "Phlegmatic (balghami)",
+            "safravi": "Choleric (safravi)",
+            "saudavi": "Melancholic (saudavi)"
+          }
+        },
+        "disease_mizaj": {
+          "label": "Mizaj of the disease",
+          "options": {
+            "hot_dry": "Hot and dry",
+            "hot_moist": "Hot and moist",
+            "cold_dry": "Cold and dry",
+            "cold_moist": "Cold and moist"
+          }
+        },
+        "akhlat_affected": {
+          "label": "Akhlat (humours) affected",
+          "options": {
+            "dam": "Dam (blood)",
+            "balgham": "Balgham (phlegm)",
+            "safra": "Safra (yellow bile)",
+            "sauda": "Sauda (black bile)"
+          }
+        },
+        "nabz_rate": {
+          "label": "Nabz (pulse) — rate",
+          "options": {
+            "per_minute": "per minute"
+          }
+        },
+        "nabz_character": {
+          "label": "Nabz (pulse) — character",
+          "options": {
+            "strong": "Strong",
+            "weak": "Weak",
+            "fast": "Fast",
+            "slow": "Slow",
+            "full": "Full",
+            "empty": "Empty",
+            "hard": "Hard",
+            "soft": "Soft",
+            "irregular": "Irregular"
+          }
+        },
+        "baul_colour": {
+          "label": "Baul (urine) — colour",
+          "options": {
+            "pale": "Pale",
+            "straw": "Straw",
+            "yellow": "Yellow",
+            "dark": "Dark or reddish"
+          }
+        },
+        "baul_clarity": {
+          "label": "Baul (urine) — clarity",
+          "options": {
+            "clear": "Clear",
+            "turbid": "Turbid",
+            "sediment": "With sediment"
+          }
+        },
+        "baraz": {
+          "label": "Baraz (stool)",
+          "options": {
+            "normal": "Normal",
+            "hard": "Hard",
+            "loose": "Loose",
+            "mucous": "With mucus",
+            "pale": "Pale",
+            "dark": "Dark"
+          }
+        },
+        "skin_complexion": {
+          "label": "Skin and complexion",
+          "options": {
+            "pale": "Pale",
+            "ruddy": "Ruddy",
+            "yellowish": "Yellowish",
+            "dusky": "Dusky"
+          }
+        },
+        "tongue": {
+          "label": "Tongue",
+          "options": {
+            "clean": "Clean",
+            "white": "White coating",
+            "yellow": "Yellow coating",
+            "dry": "Dry"
+          }
+        },
+        "lams_notes": {
+          "label": "Lams (examination by touch) — notes"
+        },
+        "hawa_e_muhit": {
+          "label": "Hawa-e-muhit (air and surroundings)",
+          "options": {
+            "normal": "Normal",
+            "excess": "Too much",
+            "deficient": "Too little",
+            "abnormal": "Abnormal quality"
+          }
+        },
+        "makool_mashroob": {
+          "label": "Makool-o-mashroob (food and drink)",
+          "options": {
+            "normal": "Normal",
+            "excess": "Too much",
+            "deficient": "Too little",
+            "abnormal": "Abnormal quality"
+          }
+        },
+        "harkat_badni": {
+          "label": "Harkat-o-sukoon badni (physical activity and rest)",
+          "options": {
+            "normal": "Normal",
+            "excess": "Too much",
+            "deficient": "Too little",
+            "abnormal": "Abnormal quality"
+          }
+        },
+        "harkat_nafsani": {
+          "label": "Harkat-o-sukoon nafsani (mental activity and rest)",
+          "options": {
+            "normal": "Normal",
+            "excess": "Too much",
+            "deficient": "Too little",
+            "abnormal": "Abnormal quality"
+          }
+        },
+        "naum_yaqza": {
+          "label": "Naum-o-yaqza (sleep and wakefulness)",
+          "options": {
+            "normal": "Normal",
+            "excess": "Too much",
+            "deficient": "Too little",
+            "abnormal": "Abnormal quality"
+          }
+        },
+        "ehtebas_istifragh": {
+          "label": "Ehtebas-o-istifragh (retention and evacuation)",
+          "options": {
+            "normal": "Normal",
+            "excess": "Too much",
+            "deficient": "Too little",
+            "abnormal": "Abnormal quality"
+          }
+        },
+        "ilaj_tadbeer": {
+          "label": "Ilaj bil tadbeer (regimenal therapy)",
+          "options": {
+            "hijama": "Cupping (hijama)",
+            "fasd": "Venesection (fasd)",
+            "dalk": "Massage (dalk)",
+            "hammam": "Bath (hammam)",
+            "riyazat": "Exercise (riyazat)",
+            "taleeq": "Leeching (taleeq)",
+            "ishal": "Purgation (ishal)",
+            "qai": "Emesis (qai)",
+            "huqna": "Enema (huqna)",
+            "idrar": "Diuresis (idrar)"
+          }
+        },
+        "ilaj_ghiza": {
+          "label": "Ilaj bil ghiza (dietotherapy) — advice"
+        },
+        "ilaj_dawa_drug": {
+          "label": "Ilaj bil dawa — drug"
+        },
+        "drug_type": {
+          "label": "Drug type",
+          "options": {
+            "mufrad": "Single drug (mufrad)",
+            "murakkab": "Compound (murakkab)"
+          }
+        },
+        "drug_form": {
+          "label": "Drug form",
+          "options": {
+            "safoof": "Powder (safoof)",
+            "joshanda": "Decoction (joshanda)",
+            "sharbat": "Syrup (sharbat)",
+            "majoon": "Majoon",
+            "qurs": "Tablet (qurs)",
+            "marham": "Ointment (marham)",
+            "roghan": "Oil (roghan)",
+            "arq": "Distillate (arq)",
+            "khamira": "Khamira"
+          }
+        },
+        "drug_mizaj_degree": {
+          "label": "Mizaj and degree of the drug (shown from the medicine library)"
+        }
+      }
     }
   }
 }

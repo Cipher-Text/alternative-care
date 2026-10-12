@@ -35,6 +35,7 @@ from app.shared.models import (
 
 RAHMAN_TENANT = "550e8400-e29b-41d4-a716-446655440001"
 KARIM_TENANT = "550e8400-e29b-41d4-a716-446655440002"
+AHMED_TENANT = "550e8400-e29b-41d4-a716-446655440003"  # practises homeopathy, Ayurveda and Unani
 
 
 def _id(*parts: str) -> str:
@@ -54,6 +55,7 @@ PATIENTS = [
     ("kamal-r", RAHMAN_TENANT, "Kamal Hossain", "male", 29, "01711000004", "Acidity", None, "AB+"),
     ("nasrin-k", KARIM_TENANT, "Nasrin Akter", "female", 34, "01700000001", "Digestive trouble", "Gastritis", "B+"),
     ("jahid-k", KARIM_TENANT, "Jahid Islam", "male", 45, "01722000005", "Back pain", "Desk job, no prior surgery", "O-"),
+    ("farhana-a", AHMED_TENANT, "Farhana Yasmin", "female", 41, "01733000006", "Burning in the stomach and constipation", "Gastric trouble for two years", "A-"),
 ]
 
 # patient key -> (doctor email id lookup by tenant, diagnosis, [(medicine, dosage, frequency, duration)], advice)
@@ -88,6 +90,7 @@ HEALTH_PROFILES = {
 
 # patient key -> a recent visit with vitals
 VISITS = {
+    "farhana-a": dict(complaint="Burning in the stomach and constipation", temperature_c=37.1, pulse_bpm=82, bp_systolic=122, bp_diastolic=80, weight_kg=61.0, height_cm=156.0, pain_score=4),
     "nasrin-k": dict(complaint="Burning pain after meals", temperature_c=36.9, pulse_bpm=80, bp_systolic=116, bp_diastolic=74, weight_kg=58.0, height_cm=160.0, pain_score=4),
     "nasrin-r": dict(complaint="Recurring headache", temperature_c=36.8, pulse_bpm=78, bp_systolic=118, bp_diastolic=76, respiratory_rate=16, spo2_percent=99, weight_kg=58.0, height_cm=160.0, pain_score=5),
     "rahim-r": dict(complaint="Knee pain on climbing stairs", temperature_c=36.9, pulse_bpm=84, bp_systolic=142, bp_diastolic=90, respiratory_rate=18, spo2_percent=97, weight_kg=82.0, height_cm=171.0, blood_sugar_mmol=8.4, blood_sugar_type="fasting", pain_score=6),
@@ -96,6 +99,7 @@ VISITS = {
 
 # Case-taking for the demo patients, by (patient key, system); codes from app/shared/case_taking/
 CASE_PROFILES = {
+    ("farhana-a", "unani"): {"mizaj": "safravi"},
     ("nasrin-k", "ayurveda"): {
         "prakriti": "pitta", "koshtha": "madhyama", "akriti": "medium", "bala": "medium", "vaya": "madhya",
         "preferred_tastes": ["amla", "katu"], "rasashastra_history": "no",
@@ -108,6 +112,13 @@ CASE_PROFILES = {
     },
 }
 VISIT_CASES = {
+    ("farhana-a", "unani"): {
+        "disease_mizaj": "hot_dry", "akhlat_affected": ["safra"], "nabz_rate": {"value": 82, "unit": "per_minute"}, "nabz_character": ["fast", "strong"],
+        "baul_colour": "dark", "baraz": "hard", "tongue": "yellow", "hawa_e_muhit": "normal", "makool_mashroob": "abnormal",
+        "harkat_badni": "deficient", "ehtebas_istifragh": "abnormal", "ilaj_tadbeer": ["dalk", "riyazat"],
+        "ilaj_ghiza": "Avoid fried and very spicy food. Prefer cooling foods such as cucumber and barley water.",
+        "ilaj_dawa_drug": "Sharbat-e-Bazoori", "drug_type": "murakkab", "drug_form": "sharbat",
+    },
     ("nasrin-k", "ayurveda"): {
         "vikriti": "pitta", "agni": "tikshna", "ama": "mild", "nadi": "pitta", "mala": "loose", "jihva": "yellow",
         "nidana": ["improper_diet", "irregular_meals"], "doshas_involved": ["pitta"], "dhatus_involved": ["rasa"],
@@ -138,7 +149,7 @@ async def seed_demo_patients(session: AsyncSession) -> dict[str, int]:
     by_key = {p[0]: p for p in PATIENTS}
     doctors = {
         tid: (await session.execute(text("select id from users where tenant_id = :t and role = 'doctor' limit 1"), {"t": tid})).scalar_one_or_none()
-        for tid in (RAHMAN_TENANT, KARIM_TENANT)
+        for tid in (RAHMAN_TENANT, KARIM_TENANT, AHMED_TENANT)
     }
     if not all(doctors.values()):
         print("  ⚠ sample doctors missing; skipping demo patients")
