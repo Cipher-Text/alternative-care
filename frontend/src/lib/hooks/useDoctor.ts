@@ -11,9 +11,10 @@ import { toast } from 'react-hot-toast'
 
 // ===== Profile Hooks =====
 
-export function useDoctorProfile() {
+export function useDoctorProfile(options?: { enabled?: boolean }) {
   return useQuery('doctorProfile', () => doctorApi.getProfile(), {
     staleTime: 60000, // 1 minute
+    enabled: options?.enabled ?? true,
   })
 }
 

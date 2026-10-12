@@ -14,7 +14,13 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/store/authStore'
+import { errorMessage } from '@/lib/apiErrors'
+import { toast } from 'react-hot-toast'
 import { useCreateVisit, useHealthOptions, useVisits } from '@/lib/hooks/useHealth'
+import { useCaseSystems, useSaveVisitCase } from '@/lib/hooks/useCaseTaking'
+import { CaseForm } from '@/components/case-taking/CaseForm'
+import { VisitCaseDetails } from '@/components/case-taking/VisitCaseDetails'
+import type { CaseData } from '@/types/caseTaking'
 import type { VisitInput, VisitListItem } from '@/types/health'
 import { useCodeLabel } from './useCodeLabel'
 import { localToday } from './localDate'
@@ -44,6 +50,7 @@ export function VisitsCard({ patientId, canEdit }: { patientId: string; canEdit:
   const t = useTranslations('healthUi.visits')
   const { data: visits, isLoading } = useVisits(patientId)
   const [open, setOpen] = useState(false)
+  const systems = useCaseSystems()
 
   return (
     <Card>
@@ -67,15 +74,15 @@ export function VisitsCard({ patientId, canEdit }: { patientId: string; canEdit:
       <CardContent className="space-y-3">
         {isLoading && <Loader2 className="h-5 w-5 animate-spin text-emerald-600" aria-hidden="true" />}
         {visits && visits.length === 0 && <p className="text-sm text-muted-foreground">{t('empty')}</p>}
-        {visits?.map((v) => <VisitRow key={v.id} visit={v} />)}
+        {visits?.map((v) => <VisitRow key={v.id} visit={v} systems={systems} canEdit={canEdit} />)}
         {!canEdit && <Badge variant="outline">{t('readOnly')}</Badge>}
       </CardContent>
-      {open && <VisitDialog patientId={patientId} onClose={() => setOpen(false)} />}
+      {open && <VisitDialog patientId={patientId} systems={systems} onClose={() => setOpen(false)} />}
     </Card>
   )
 }
 
-function VisitRow({ visit }: { visit: VisitListItem }) {
+function VisitRow({ visit, systems, canEdit }: { visit: VisitListItem; systems: readonly string[]; canEdit: boolean }) {
   const t = useTranslations('healthUi.visits')
   const locale = useLocale()
   const typeLabel = useCodeLabel('visitType')
@@ -120,17 +127,23 @@ function VisitRow({ visit }: { visit: VisitListItem }) {
           ))}
         </div>
       )}
+      {systems.map((system) => (
+        <VisitCaseDetails key={system} visitId={visit.id} system={system} canEdit={canEdit} />
+      ))}
     </div>
   )
 }
 
 type Draft = Record<string, string>
 
-function VisitDialog({ patientId, onClose }: { patientId: string; onClose: () => void }) {
+function VisitDialog({ patientId, systems, onClose }: { patientId: string; systems: readonly string[]; onClose: () => void }) {
   const t = useTranslations('healthUi.visits')
   const userId = useAuthStore((s) => s.user?.id)
   const { data: options } = useHealthOptions()
   const create = useCreateVisit(patientId)
+  const saveCase = useSaveVisitCase()
+  const tc = useTranslations('caseTakingUi.panel')
+  const [caseData, setCaseData] = useState<Record<string, CaseData>>({})
   const typeLabel = useCodeLabel('visitType')
   const flagLabel = useCodeLabel('redFlag')
   const referralLabel = useCodeLabel('referral')
@@ -191,12 +204,24 @@ function VisitDialog({ patientId, onClose }: { patientId: string; onClose: () =>
       red_flags: flags.length > 0 ? flags : undefined,
       referral_urgency: draft.referral_urgency !== NONE ? draft.referral_urgency : undefined,
     }
+    let visit: VisitListItem
     try {
-      await create.mutateAsync(body)
-      onClose()
+      visit = await create.mutateAsync(body)
     } catch {
-      /* the mutation's onError already showed the reason */
+      return // the mutation's onError already showed the reason
     }
+    // The visit exists now; each system's details are saved to it. A failure here never loses the visit:
+    // the details can be completed later from the visit's own "details" link.
+    for (const system of systems) {
+      const data = caseData[system]
+      if (!data || Object.keys(data).length === 0) continue
+      try {
+        await saveCase.mutateAsync({ visitId: visit.id, system, data })
+      } catch (error) {
+        toast.error(errorMessage(error, tc('saveFailed')))
+      }
+    }
+    onClose()
   }
 
   const field = (key: string, label: string, opts?: { inputMode?: 'numeric' | 'decimal' }) => (
@@ -286,6 +311,10 @@ function VisitDialog({ patientId, onClose }: { patientId: string; onClose: () =>
             </div>
           </section>
 
+          {systems.map((system) => (
+            <CaseFormSection key={system} system={system} value={caseData[system] ?? {}} onChange={(next) => setCaseData((d) => ({ ...d, [system]: next }))} />
+          ))}
+
           <div className="space-y-1.5">
             <Label htmlFor="v-exam">{t('examination')}</Label>
             <Textarea id="v-exam" rows={2} value={draft.examination_notes ?? ''} onChange={(e) => set('examination_notes', e.target.value)} />
@@ -309,5 +338,16 @@ function VisitDialog({ patientId, onClose }: { patientId: string; onClose: () =>
         </form>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function CaseFormSection({ system, value, onChange }: { system: string; value: CaseData; onChange: (next: CaseData) => void }) {
+  const t = useTranslations(`caseTakingUi.${system}`)
+  const tp = useTranslations('caseTakingUi.panel')
+  return (
+    <section className="space-y-3 rounded-md border p-3">
+      <h3 className="text-sm font-semibold">{tp('visitTitle', { system: t('title') })}</h3>
+      <CaseForm system={system} scope="visit" value={value} onChange={onChange} />
+    </section>
   )
 }

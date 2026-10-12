@@ -1,0 +1,421 @@
+{
+  "caseTakingUi": {
+    "homeopathy": {
+      "title": "Homeopathy",
+      "groups": {
+        "complaint": "Complaint in detail",
+        "generals": "Physical generals",
+        "mind": "Mind",
+        "history": "History and constitution",
+        "prescription": "Prescription and follow-up"
+      },
+      "fields": {
+        "location": {
+          "label": "Location"
+        },
+        "sensation": {
+          "label": "Sensation",
+          "options": {
+            "burning": "Burning",
+            "stitching": "Stitching",
+            "throbbing": "Throbbing",
+            "cutting": "Cutting",
+            "pressing": "Pressing",
+            "cramping": "Cramping",
+            "tearing": "Tearing",
+            "bursting": "Bursting",
+            "dull": "Dull",
+            "sharp": "Sharp",
+            "itching": "Itching",
+            "numbness": "Numbness"
+          }
+        },
+        "onset": {
+          "label": "Onset",
+          "options": {
+            "sudden": "Sudden",
+            "gradual": "Gradual"
+          }
+        },
+        "duration": {
+          "label": "Duration",
+          "options": {
+            "days": "Days",
+            "weeks": "Weeks",
+            "months": "Months",
+            "years": "Years"
+          }
+        },
+        "causation": {
+          "label": "Illness began after (causation)",
+          "options": {
+            "grief": "Grief",
+            "fright": "Fright",
+            "anger": "Anger",
+            "shock": "Shock",
+            "suppressed_emotion": "Suppressed emotion",
+            "injury": "Injury",
+            "vaccination": "Vaccination",
+            "suppressed_discharge": "Suppressed skin disease or discharge",
+            "cold_wet": "Exposure to cold or wet",
+            "overwork": "Overwork",
+            "after_illness": "After fever or another illness"
+          }
+        },
+        "worse_from": {
+          "label": "Worse from",
+          "options": {
+            "morning": "Morning",
+            "afternoon": "Afternoon",
+            "evening": "Evening",
+            "night": "Night",
+            "heat": "Heat",
+            "cold": "Cold",
+            "damp": "Damp weather",
+            "weather_change": "Change of weather",
+            "motion": "Motion",
+            "rest": "Rest",
+            "lying_left": "Lying on the left",
+            "lying_right": "Lying on the right",
+            "touch": "Touch",
+            "pressure": "Pressure",
+            "eating": "Eating",
+            "drinking": "Drinking",
+            "sleep": "Sleep",
+            "company": "Company",
+            "solitude": "Being alone"
+          }
+        },
+        "better_from": {
+          "label": "Better from",
+          "options": {
+            "morning": "Morning",
+            "afternoon": "Afternoon",
+            "evening": "Evening",
+            "night": "Night",
+            "heat": "Heat",
+            "cold": "Cold",
+            "damp": "Damp weather",
+            "weather_change": "Change of weather",
+            "motion": "Motion",
+            "rest": "Rest",
+            "lying_left": "Lying on the left",
+            "lying_right": "Lying on the right",
+            "touch": "Touch",
+            "pressure": "Pressure",
+            "eating": "Eating",
+            "drinking": "Drinking",
+            "sleep": "Sleep",
+            "company": "Company",
+            "solitude": "Being alone"
+          }
+        },
+        "accompanying": {
+          "label": "Accompanying symptoms"
+        },
+        "side_affected": {
+          "label": "Side affected",
+          "options": {
+            "right": "Right",
+            "left": "Left",
+            "both": "Both",
+            "alternating": "Alternating"
+          }
+        },
+        "thermal_state": {
+          "label": "Thermal state",
+          "options": {
+            "chilly": "Chilly",
+            "hot": "Hot",
+            "ambithermal": "In between"
+          }
+        },
+        "thirst": {
+          "label": "Thirst",
+          "options": {
+            "thirstless": "Thirstless",
+            "little": "Little",
+            "moderate": "Moderate",
+            "large": "Large"
+          }
+        },
+        "water_preference": {
+          "label": "Water preference",
+          "options": {
+            "cold": "Cold",
+            "warm": "Warm",
+            "none": "No preference"
+          }
+        },
+        "food_desires": {
+          "label": "Food desires",
+          "options": {
+            "sweet": "Sweet",
+            "salty": "Salty",
+            "sour": "Sour",
+            "spicy": "Spicy",
+            "fatty": "Fatty or fried",
+            "milk": "Milk",
+            "eggs": "Eggs",
+            "meat": "Meat",
+            "fish": "Fish",
+            "cold_drinks": "Cold drinks",
+            "hot_drinks": "Hot drinks"
+          }
+        },
+        "food_aversions": {
+          "label": "Food aversions",
+          "options": {
+            "sweet": "Sweet",
+            "salty": "Salty",
+            "sour": "Sour",
+            "spicy": "Spicy",
+            "fatty": "Fatty or fried",
+            "milk": "Milk",
+            "eggs": "Eggs",
+            "meat": "Meat",
+            "fish": "Fish",
+            "cold_drinks": "Cold drinks",
+            "hot_drinks": "Hot drinks"
+          }
+        },
+        "perspiration": {
+          "label": "Perspiration",
+          "options": {
+            "none": "None",
+            "scanty": "Scanty",
+            "moderate": "Moderate",
+            "profuse": "Profuse"
+          }
+        },
+        "perspiration_odour": {
+          "label": "Perspiration odour",
+          "options": {
+            "none": "None",
+            "offensive": "Offensive"
+          }
+        },
+        "perspiration_where": {
+          "label": "Perspiration — where"
+        },
+        "sleep_position": {
+          "label": "Sleep position",
+          "options": {
+            "back": "On the back",
+            "left": "Left side",
+            "right": "Right side",
+            "abdomen": "On the abdomen",
+            "any": "No fixed position"
+          }
+        },
+        "dreams": {
+          "label": "Dreams"
+        },
+        "menstrual_cycle": {
+          "label": "Menstrual cycle",
+          "options": {
+            "regular": "Regular",
+            "irregular": "Irregular"
+          }
+        },
+        "menstrual_flow": {
+          "label": "Menstrual flow",
+          "options": {
+            "scanty": "Scanty",
+            "normal": "Normal",
+            "heavy": "Heavy"
+          }
+        },
+        "menstrual_pain": {
+          "label": "Menstrual pain",
+          "options": {
+            "none": "None",
+            "before": "Before",
+            "during": "During",
+            "after": "After"
+          }
+        },
+        "leucorrhoea": {
+          "label": "Leucorrhoea",
+          "options": {
+            "none": "None",
+            "mild": "Mild",
+            "profuse": "Profuse"
+          }
+        },
+        "fears": {
+          "label": "Fears",
+          "options": {
+            "dark": "Dark",
+            "alone": "Being alone",
+            "death": "Death",
+            "disease": "Disease",
+            "animals": "Animals",
+            "heights": "Heights",
+            "crowd": "Crowds",
+            "exams": "Exams"
+          }
+        },
+        "mood_tendencies": {
+          "label": "Mood tendencies",
+          "options": {
+            "anxious": "Anxious",
+            "irritable": "Irritable",
+            "weepy": "Weepy",
+            "sad": "Sad",
+            "restless": "Restless",
+            "suspicious": "Suspicious",
+            "jealous": "Jealous",
+            "indifferent": "Indifferent",
+            "cheerful": "Cheerful"
+          }
+        },
+        "consolation": {
+          "label": "Effect of consolation",
+          "options": {
+            "better": "Better",
+            "worse": "Worse",
+            "none": "No effect"
+          }
+        },
+        "company": {
+          "label": "Company",
+          "options": {
+            "desire": "Desires company",
+            "aversion": "Dislikes company",
+            "none": "No effect"
+          }
+        },
+        "childhood_illnesses": {
+          "label": "Childhood illnesses",
+          "options": {
+            "measles": "Measles",
+            "chickenpox": "Chickenpox",
+            "mumps": "Mumps",
+            "whooping_cough": "Whooping cough",
+            "typhoid": "Typhoid",
+            "jaundice": "Jaundice",
+            "tonsillitis": "Recurrent tonsillitis",
+            "worms": "Worms"
+          }
+        },
+        "suppressive_history": {
+          "label": "Earlier suppressive treatment",
+          "options": {
+            "steroid_cream": "Steroid creams",
+            "antibiotics": "Repeated antibiotics",
+            "antihistamines": "Antihistamines",
+            "painkillers": "Long-term painkillers",
+            "vaccine_reaction": "Reaction after vaccination"
+          }
+        },
+        "previous_remedies": {
+          "label": "Earlier homeopathic remedies and response",
+          "columns": {
+            "remedy": "Remedy",
+            "potency": "Potency",
+            "response": "Response"
+          },
+          "options": {
+            "better": "Better",
+            "same": "Same",
+            "worse": "Worse"
+          }
+        },
+        "dominant_miasm": {
+          "label": "Dominant miasm (optional)",
+          "options": {
+            "psora": "Psora",
+            "sycosis": "Sycosis",
+            "syphilis": "Syphilis",
+            "tubercular": "Tubercular"
+          }
+        },
+        "remedy": {
+          "label": "Remedy"
+        },
+        "potency": {
+          "label": "Potency",
+          "options": {
+            "6c": "6C",
+            "30c": "30C",
+            "200c": "200C",
+            "1m": "1M",
+            "10m": "10M",
+            "lm": "LM scale",
+            "mt": "Mother tincture"
+          }
+        },
+        "dose_form": {
+          "label": "Dose form",
+          "options": {
+            "pills": "Pills",
+            "liquid": "Liquid",
+            "powder": "Powder",
+            "tablet": "Tablet"
+          }
+        },
+        "repetition": {
+          "label": "Repetition",
+          "options": {
+            "single": "Single dose",
+            "daily": "Daily",
+            "twice_daily": "Twice a day",
+            "weekly": "Weekly",
+            "as_needed": "As needed"
+          }
+        },
+        "avoid": {
+          "label": "Things to avoid",
+          "options": {
+            "coffee": "Coffee",
+            "camphor": "Camphor",
+            "mint": "Mint",
+            "strong_smells": "Strong smells"
+          }
+        },
+        "response": {
+          "label": "Response at follow-up",
+          "options": {
+            "better": "Better",
+            "same": "Same",
+            "worse": "Worse",
+            "aggravation_then_better": "Worse first, then better",
+            "new_symptom": "New symptom"
+          }
+        },
+        "next_step": {
+          "label": "Next step",
+          "options": {
+            "continue": "Continue the same",
+            "change_potency": "Change the potency",
+            "change_remedy": "Change the remedy",
+            "wait": "Wait"
+          }
+        }
+      }
+    },
+    "panel": {
+      "profileTitle": "{system} case profile",
+      "profileDescription": "Constitution, generals, mind and history. Taken once and kept up to date; everything is optional.",
+      "visitTitle": "{system} details for this visit",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "saved": "Case profile saved",
+      "saveFailed": "Could not save. Check the highlighted answers.",
+      "empty": "Nothing recorded yet.",
+      "addRow": "Add a row",
+      "removeRow": "Remove row",
+      "unit": "Unit",
+      "number": "Number",
+      "choose": "Choose",
+      "viewDetails": "Show {system} details",
+      "hideDetails": "Hide details",
+      "noDetails": "No {system} details were recorded for this visit.",
+      "readOnly": "Only the doctor can change this.",
+      "draftNote": "Draft field list: being reviewed by practising doctors."
+    }
+  }
+}

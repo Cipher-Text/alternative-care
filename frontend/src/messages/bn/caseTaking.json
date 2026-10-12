@@ -1,0 +1,421 @@
+{
+  "caseTakingUi": {
+    "homeopathy": {
+      "title": "হোমিওপ্যাথি",
+      "groups": {
+        "complaint": "অভিযোগের বিস্তারিত",
+        "generals": "শারীরিক সাধারণ লক্ষণ",
+        "mind": "মন",
+        "history": "ইতিহাস ও গঠন",
+        "prescription": "প্রেসক্রিপশন ও ফলো-আপ"
+      },
+      "fields": {
+        "location": {
+          "label": "স্থান"
+        },
+        "sensation": {
+          "label": "অনুভূতির ধরন",
+          "options": {
+            "burning": "জ্বালাপোড়া",
+            "stitching": "ছুঁচ ফোটানোর মতো",
+            "throbbing": "দপদপ",
+            "cutting": "কাটার মতো",
+            "pressing": "চাপ দেওয়ার মতো",
+            "cramping": "খিঁচুনি",
+            "tearing": "ছেঁড়ার মতো",
+            "bursting": "ফেটে যাওয়ার মতো",
+            "dull": "ভোঁতা",
+            "sharp": "তীক্ষ্ণ",
+            "itching": "চুলকানি",
+            "numbness": "অবশ ভাব"
+          }
+        },
+        "onset": {
+          "label": "শুরু",
+          "options": {
+            "sudden": "হঠাৎ",
+            "gradual": "ধীরে ধীরে"
+          }
+        },
+        "duration": {
+          "label": "কতদিন ধরে",
+          "options": {
+            "days": "দিন",
+            "weeks": "সপ্তাহ",
+            "months": "মাস",
+            "years": "বছর"
+          }
+        },
+        "causation": {
+          "label": "যার পর থেকে অসুস্থতা শুরু",
+          "options": {
+            "grief": "শোক",
+            "fright": "ভয়",
+            "anger": "রাগ",
+            "shock": "মানসিক আঘাত",
+            "suppressed_emotion": "চাপা আবেগ",
+            "injury": "আঘাত",
+            "vaccination": "টিকা",
+            "suppressed_discharge": "চাপা পড়া চর্মরোগ বা স্রাব",
+            "cold_wet": "ঠান্ডা বা ভেজা",
+            "overwork": "অতিরিক্ত পরিশ্রম",
+            "after_illness": "জ্বর বা অন্য অসুখের পর"
+          }
+        },
+        "worse_from": {
+          "label": "যাতে বাড়ে",
+          "options": {
+            "morning": "সকাল",
+            "afternoon": "বিকাল",
+            "evening": "সন্ধ্যা",
+            "night": "রাত",
+            "heat": "গরম",
+            "cold": "ঠান্ডা",
+            "damp": "স্যাঁতসেঁতে আবহাওয়া",
+            "weather_change": "আবহাওয়া বদল",
+            "motion": "নড়াচড়া",
+            "rest": "বিশ্রাম",
+            "lying_left": "বাম কাতে শোয়া",
+            "lying_right": "ডান কাতে শোয়া",
+            "touch": "স্পর্শ",
+            "pressure": "চাপ",
+            "eating": "খাওয়া",
+            "drinking": "পানি পান",
+            "sleep": "ঘুম",
+            "company": "মানুষের সঙ্গ",
+            "solitude": "একা থাকা"
+          }
+        },
+        "better_from": {
+          "label": "যাতে কমে",
+          "options": {
+            "morning": "সকাল",
+            "afternoon": "বিকাল",
+            "evening": "সন্ধ্যা",
+            "night": "রাত",
+            "heat": "গরম",
+            "cold": "ঠান্ডা",
+            "damp": "স্যাঁতসেঁতে আবহাওয়া",
+            "weather_change": "আবহাওয়া বদল",
+            "motion": "নড়াচড়া",
+            "rest": "বিশ্রাম",
+            "lying_left": "বাম কাতে শোয়া",
+            "lying_right": "ডান কাতে শোয়া",
+            "touch": "স্পর্শ",
+            "pressure": "চাপ",
+            "eating": "খাওয়া",
+            "drinking": "পানি পান",
+            "sleep": "ঘুম",
+            "company": "মানুষের সঙ্গ",
+            "solitude": "একা থাকা"
+          }
+        },
+        "accompanying": {
+          "label": "সঙ্গের উপসর্গ"
+        },
+        "side_affected": {
+          "label": "কোন দিকে",
+          "options": {
+            "right": "ডান",
+            "left": "বাম",
+            "both": "দুই দিকে",
+            "alternating": "পালা করে"
+          }
+        },
+        "thermal_state": {
+          "label": "শীত-গরমের ধাত",
+          "options": {
+            "chilly": "শীতকাতর",
+            "hot": "গরমকাতর",
+            "ambithermal": "মাঝামাঝি"
+          }
+        },
+        "thirst": {
+          "label": "পিপাসা",
+          "options": {
+            "thirstless": "তৃষ্ণাহীন",
+            "little": "অল্প",
+            "moderate": "মাঝারি",
+            "large": "প্রচুর"
+          }
+        },
+        "water_preference": {
+          "label": "পানির পছন্দ",
+          "options": {
+            "cold": "ঠান্ডা",
+            "warm": "গরম",
+            "none": "কোনো পছন্দ নেই"
+          }
+        },
+        "food_desires": {
+          "label": "খাবারের আকাঙ্ক্ষা",
+          "options": {
+            "sweet": "মিষ্টি",
+            "salty": "নোনতা",
+            "sour": "টক",
+            "spicy": "ঝাল",
+            "fatty": "চর্বি বা ভাজা",
+            "milk": "দুধ",
+            "eggs": "ডিম",
+            "meat": "মাংস",
+            "fish": "মাছ",
+            "cold_drinks": "ঠান্ডা পানীয়",
+            "hot_drinks": "গরম পানীয়"
+          }
+        },
+        "food_aversions": {
+          "label": "যে খাবারে অরুচি",
+          "options": {
+            "sweet": "মিষ্টি",
+            "salty": "নোনতা",
+            "sour": "টক",
+            "spicy": "ঝাল",
+            "fatty": "চর্বি বা ভাজা",
+            "milk": "দুধ",
+            "eggs": "ডিম",
+            "meat": "মাংস",
+            "fish": "মাছ",
+            "cold_drinks": "ঠান্ডা পানীয়",
+            "hot_drinks": "গরম পানীয়"
+          }
+        },
+        "perspiration": {
+          "label": "ঘাম",
+          "options": {
+            "none": "নেই",
+            "scanty": "সামান্য",
+            "moderate": "মাঝারি",
+            "profuse": "প্রচুর"
+          }
+        },
+        "perspiration_odour": {
+          "label": "ঘামের গন্ধ",
+          "options": {
+            "none": "নেই",
+            "offensive": "দুর্গন্ধযুক্ত"
+          }
+        },
+        "perspiration_where": {
+          "label": "ঘাম কোথায়"
+        },
+        "sleep_position": {
+          "label": "ঘুমের ভঙ্গি",
+          "options": {
+            "back": "চিত",
+            "left": "বাম কাত",
+            "right": "ডান কাত",
+            "abdomen": "উপুড়",
+            "any": "নির্দিষ্ট নেই"
+          }
+        },
+        "dreams": {
+          "label": "স্বপ্ন"
+        },
+        "menstrual_cycle": {
+          "label": "মাসিকের চক্র",
+          "options": {
+            "regular": "নিয়মিত",
+            "irregular": "অনিয়মিত"
+          }
+        },
+        "menstrual_flow": {
+          "label": "মাসিকের প্রবাহ",
+          "options": {
+            "scanty": "কম",
+            "normal": "স্বাভাবিক",
+            "heavy": "বেশি"
+          }
+        },
+        "menstrual_pain": {
+          "label": "মাসিকের ব্যথা",
+          "options": {
+            "none": "নেই",
+            "before": "আগে",
+            "during": "চলাকালীন",
+            "after": "পরে"
+          }
+        },
+        "leucorrhoea": {
+          "label": "সাদা স্রাব",
+          "options": {
+            "none": "নেই",
+            "mild": "অল্প",
+            "profuse": "প্রচুর"
+          }
+        },
+        "fears": {
+          "label": "ভয়",
+          "options": {
+            "dark": "অন্ধকার",
+            "alone": "একা থাকা",
+            "death": "মৃত্যু",
+            "disease": "রোগ",
+            "animals": "প্রাণী",
+            "heights": "উচ্চতা",
+            "crowd": "ভিড়",
+            "exams": "পরীক্ষা"
+          }
+        },
+        "mood_tendencies": {
+          "label": "মেজাজের প্রবণতা",
+          "options": {
+            "anxious": "দুশ্চিন্তাগ্রস্ত",
+            "irritable": "খিটখিটে",
+            "weepy": "কান্নাপ্রবণ",
+            "sad": "বিষণ্ণ",
+            "restless": "অস্থির",
+            "suspicious": "সন্দেহপ্রবণ",
+            "jealous": "ঈর্ষাপ্রবণ",
+            "indifferent": "উদাসীন",
+            "cheerful": "হাসিখুশি"
+          }
+        },
+        "consolation": {
+          "label": "সান্ত্বনার প্রভাব",
+          "options": {
+            "better": "ভালো লাগে",
+            "worse": "খারাপ লাগে",
+            "none": "কোনো প্রভাব নেই"
+          }
+        },
+        "company": {
+          "label": "সঙ্গ",
+          "options": {
+            "desire": "সঙ্গ চান",
+            "aversion": "সঙ্গ অপছন্দ",
+            "none": "কোনো প্রভাব নেই"
+          }
+        },
+        "childhood_illnesses": {
+          "label": "শৈশবের অসুখ",
+          "options": {
+            "measles": "হাম",
+            "chickenpox": "জলবসন্ত",
+            "mumps": "মাম্পস",
+            "whooping_cough": "হুপিং কাশি",
+            "typhoid": "টাইফয়েড",
+            "jaundice": "জন্ডিস",
+            "tonsillitis": "বারবার টনসিলাইটিস",
+            "worms": "কৃমি"
+          }
+        },
+        "suppressive_history": {
+          "label": "আগের চাপা দেওয়া চিকিৎসা",
+          "options": {
+            "steroid_cream": "স্টেরয়েড ক্রিম",
+            "antibiotics": "বারবার অ্যান্টিবায়োটিক",
+            "antihistamines": "অ্যান্টিহিস্টামিন",
+            "painkillers": "দীর্ঘদিন ব্যথানাশক",
+            "vaccine_reaction": "টিকার পর প্রতিক্রিয়া"
+          }
+        },
+        "previous_remedies": {
+          "label": "আগের হোমিও ওষুধ ও সাড়া",
+          "columns": {
+            "remedy": "ওষুধ",
+            "potency": "শক্তি",
+            "response": "সাড়া"
+          },
+          "options": {
+            "better": "ভালো",
+            "same": "একই",
+            "worse": "খারাপ"
+          }
+        },
+        "dominant_miasm": {
+          "label": "প্রধান মায়াজম (ঐচ্ছিক)",
+          "options": {
+            "psora": "সোরা",
+            "sycosis": "সাইকোসিস",
+            "syphilis": "সিফিলিস",
+            "tubercular": "টিউবারকুলার"
+          }
+        },
+        "remedy": {
+          "label": "ওষুধ"
+        },
+        "potency": {
+          "label": "শক্তি",
+          "options": {
+            "6c": "৬সি",
+            "30c": "৩০সি",
+            "200c": "২০০সি",
+            "1m": "১এম",
+            "10m": "১০এম",
+            "lm": "এলএম",
+            "mt": "মাদার টিংচার"
+          }
+        },
+        "dose_form": {
+          "label": "ডোজের ধরন",
+          "options": {
+            "pills": "বড়ি",
+            "liquid": "তরল",
+            "powder": "পাউডার",
+            "tablet": "ট্যাবলেট"
+          }
+        },
+        "repetition": {
+          "label": "কতবার",
+          "options": {
+            "single": "একবারই",
+            "daily": "প্রতিদিন",
+            "twice_daily": "দিনে দুবার",
+            "weekly": "সপ্তাহে একবার",
+            "as_needed": "প্রয়োজনমতো"
+          }
+        },
+        "avoid": {
+          "label": "যা এড়াতে হবে",
+          "options": {
+            "coffee": "কফি",
+            "camphor": "কর্পূর",
+            "mint": "পুদিনা",
+            "strong_smells": "তীব্র গন্ধ"
+          }
+        },
+        "response": {
+          "label": "ফলো-আপে সাড়া",
+          "options": {
+            "better": "ভালো",
+            "same": "একই",
+            "worse": "খারাপ",
+            "aggravation_then_better": "প্রথমে বাড়ে, পরে কমে",
+            "new_symptom": "নতুন উপসর্গ"
+          }
+        },
+        "next_step": {
+          "label": "পরবর্তী সিদ্ধান্ত",
+          "options": {
+            "continue": "একই চালিয়ে যান",
+            "change_potency": "শক্তি বদলান",
+            "change_remedy": "ওষুধ বদলান",
+            "wait": "অপেক্ষা করুন"
+          }
+        }
+      }
+    },
+    "panel": {
+      "profileTitle": "{system} কেস প্রোফাইল",
+      "profileDescription": "গঠন, সাধারণ লক্ষণ, মন ও ইতিহাস। একবার নিয়ে হালনাগাদ রাখা হয়; সবকিছুই ঐচ্ছিক।",
+      "visitTitle": "এই ভিজিটের {system} তথ্য",
+      "edit": "সম্পাদনা",
+      "save": "সংরক্ষণ",
+      "saving": "সংরক্ষণ হচ্ছে...",
+      "cancel": "বাতিল",
+      "saved": "কেস প্রোফাইল সংরক্ষণ হয়েছে",
+      "saveFailed": "সংরক্ষণ করা যায়নি। চিহ্নিত উত্তরগুলো দেখুন।",
+      "empty": "এখনো কিছু লেখা হয়নি।",
+      "addRow": "সারি যোগ করুন",
+      "removeRow": "সারি সরান",
+      "unit": "একক",
+      "number": "সংখ্যা",
+      "choose": "বাছুন",
+      "viewDetails": "{system} তথ্য দেখুন",
+      "hideDetails": "তথ্য লুকান",
+      "noDetails": "এই ভিজিটে {system} তথ্য লেখা হয়নি।",
+      "readOnly": "শুধু ডাক্তার এটি পাল্টাতে পারেন।",
+      "draftNote": "খসড়া ঘরের তালিকা: অভিজ্ঞ চিকিৎসকেরা দেখছেন।"
+    }
+  }
+}

@@ -21,6 +21,7 @@ from app.modules.identity.service import name_key
 from app.shared.models import (
     ConsentEvent,
     Patient,
+    PatientCaseProfile,
     PatientDiagnosis,
     PatientHealthProfile,
     PatientLink,
@@ -29,6 +30,7 @@ from app.shared.models import (
     Prescription,
     PrescriptionItem,
     Visit,
+    VisitAssessment,
 )
 
 RAHMAN_TENANT = "550e8400-e29b-41d4-a716-446655440001"
@@ -89,6 +91,23 @@ VISITS = {
     "nasrin-r": dict(complaint="Recurring headache", temperature_c=36.8, pulse_bpm=78, bp_systolic=118, bp_diastolic=76, respiratory_rate=16, spo2_percent=99, weight_kg=58.0, height_cm=160.0, pain_score=5),
     "rahim-r": dict(complaint="Knee pain on climbing stairs", temperature_c=36.9, pulse_bpm=84, bp_systolic=142, bp_diastolic=90, respiratory_rate=18, spo2_percent=97, weight_kg=82.0, height_cm=171.0, blood_sugar_mmol=8.4, blood_sugar_type="fasting", pain_score=6),
     "sufia-r": dict(complaint="Poor sleep for a month", temperature_c=36.7, pulse_bpm=72, bp_systolic=150, bp_diastolic=92, spo2_percent=98, weight_kg=64.0, height_cm=152.0, pain_score=2),
+}
+
+# Homeopathy case-taking for the demo patients (codes from app/shared/case_taking/homeopathy.py)
+CASE_PROFILES = {
+    "nasrin-r": {
+        "thermal_state": "chilly", "thirst": "little", "food_desires": ["sweet", "salty"], "perspiration": "scanty",
+        "fears": ["dark", "alone"], "mood_tendencies": ["anxious", "weepy"], "consolation": "better", "company": "desire",
+        "childhood_illnesses": ["measles", "chickenpox"],
+        "previous_remedies": [{"remedy": "Pulsatilla", "potency": "30C", "response": "better"}],
+    },
+}
+VISIT_CASES = {
+    "nasrin-r": {
+        "location": "Right temple", "sensation": ["throbbing"], "duration": {"value": 3, "unit": "days"},
+        "worse_from": ["heat", "motion"], "better_from": ["rest", "pressure"], "side_affected": "right",
+        "remedy": "Belladonna", "potency": "200c", "dose_form": "pills", "repetition": "twice_daily", "avoid": ["coffee", "camphor"],
+    },
 }
 
 # phone -> (profiles: key, display, relationship, years old, dependent, patient keys to link)
@@ -155,6 +174,18 @@ async def seed_demo_patients(session: AsyncSession) -> dict[str, int]:
                     status="completed", **values,
                 )
             )
+    await session.flush()
+
+    for key, data in CASE_PROFILES.items():
+        tenant = by_key[key][1]
+        await session.execute(text("select set_config('app.tenant_id', :t, true)"), {"t": tenant})
+        if (await session.get(PatientCaseProfile, _id("caseprofile", key))) is None:
+            session.add(PatientCaseProfile(id=_id("caseprofile", key), tenant_id=tenant, patient_id=_id("patient", key), system="homeopathy", data=data, schema_version=1))
+    for key, data in VISIT_CASES.items():
+        tenant = by_key[key][1]
+        await session.execute(text("select set_config('app.tenant_id', :t, true)"), {"t": tenant})
+        if (await session.get(VisitAssessment, _id("assessment", key))) is None:
+            session.add(VisitAssessment(id=_id("assessment", key), tenant_id=tenant, visit_id=_id("visit", key), patient_id=_id("patient", key), system="homeopathy", data=data, schema_version=1))
     await session.flush()
 
     for phone, profiles in ACCOUNTS.items():

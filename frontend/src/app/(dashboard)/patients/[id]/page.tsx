@@ -27,6 +27,8 @@ import { PatientIdentityCard } from '@/components/identity/PatientIdentityCard'
 import { SafetyBanner } from '@/components/health/SafetyBanner'
 import { HealthProfileCard } from '@/components/health/HealthProfileCard'
 import { VisitsCard } from '@/components/health/VisitsCard'
+import { PatientCaseCard } from '@/components/case-taking/PatientCaseCard'
+import { useCaseSystems } from '@/lib/hooks/useCaseTaking'
 import { calculateAge, formatPhone } from '@/lib/utils/format'
 import {
   Dialog,
@@ -51,6 +53,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const { data: tags } = usePatientTags(id)
   const { data: diagnoses } = usePatientDiagnoses(id)
   const deletePatient = useDeletePatient()
+  const caseSystems = useCaseSystems()
 
   const handleDelete = async () => {
     await deletePatient.mutateAsync(id)
@@ -201,6 +204,10 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       <PatientIdentityCard patient={patient} />
 
       <HealthProfileCard patientId={id} canEdit={can.writeClinical} />
+
+      {caseSystems.map((system) => (
+        <PatientCaseCard key={system} patientId={id} system={system} />
+      ))}
 
       <VisitsCard patientId={id} canEdit={can.writeClinical} />
 
