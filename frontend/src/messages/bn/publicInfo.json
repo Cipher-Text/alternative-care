@@ -37,7 +37,7 @@
       "contactUs": "যোগাযোগ করুন",
       "free": "ফ্রি",
       "perMonth": "{currency} {amount}/মাস",
-      "perYear": "অথবা {currency} {amount}/বছর",
+      "perYear": "{currency} {amount}/বছর",
       "unlimited": "{label}: সীমাহীন",
       "limited": "{label}: {value}",
       "coreRecords": "রোগীর রেকর্ড ও অ্যাপয়েন্টমেন্ট",
@@ -59,7 +59,14 @@
       "fallbackEnterpriseTagline": "হাসপাতাল, চেইন ও প্রতিষ্ঠানের জন্য: কাস্টম প্ল্যান ও মূল্য",
       "fallbackEnterpriseFeature1": "প্রো-এর সব সুবিধা",
       "fallbackEnterpriseFeature2": "সীমাহীন চিকিৎসক এবং বড় মেসেজিং সীমা",
-      "fallbackEnterpriseFeature3": "নির্দিষ্ট সহায়তা"
+      "fallbackEnterpriseFeature3": "নির্দিষ্ট সহায়তা",
+      "billingPeriod": "বিলিংয়ের মেয়াদ",
+      "billingMonthly": "মাসিক",
+      "billingYearly": "বার্ষিক",
+      "saveUpTo": "সর্বোচ্চ {percent}% সাশ্রয়",
+      "savePercent": "{percent}% সাশ্রয়",
+      "perMonthEquivalent": "প্রায় {currency} {amount}/মাস",
+      "noYearlyPrice": "বার্ষিক মূল্য এখনো নেই"
     }
   }
 }

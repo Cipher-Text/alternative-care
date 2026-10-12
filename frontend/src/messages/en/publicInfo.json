@@ -37,7 +37,7 @@
       "contactUs": "Contact us",
       "free": "Free",
       "perMonth": "{currency} {amount}/month",
-      "perYear": "or {currency} {amount}/year",
+      "perYear": "{currency} {amount}/year",
       "unlimited": "{label}: unlimited",
       "limited": "{label}: {value}",
       "coreRecords": "Patient records & appointments",
@@ -59,7 +59,14 @@
       "fallbackEnterpriseTagline": "For hospitals, chains and institutions: custom plan and pricing",
       "fallbackEnterpriseFeature1": "Everything in Pro",
       "fallbackEnterpriseFeature2": "Unlimited doctors and large messaging allowances",
-      "fallbackEnterpriseFeature3": "Dedicated support"
+      "fallbackEnterpriseFeature3": "Dedicated support",
+      "billingPeriod": "Billing period",
+      "billingMonthly": "Monthly",
+      "billingYearly": "Yearly",
+      "saveUpTo": "Save up to {percent}%",
+      "savePercent": "Save {percent}%",
+      "perMonthEquivalent": "about {currency} {amount}/month",
+      "noYearlyPrice": "Yearly price not available"
     }
   }
 }

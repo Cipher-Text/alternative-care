@@ -244,3 +244,35 @@ A paid-plan benefit: AltCare features the doctor's public profile on the **AltCa
   trusted); the AltCare Facebook page itself, its audience and its posting policy need to exist and be owned by
   someone; health content on social media may carry regulatory and platform-policy limits that nobody has
   checked here.
+
+## 11. Seed credit packs (2026-10-13)
+
+Starting top-up packs for clinics that use up their plan's monthly allowance, seeded by migration
+`f6b3e9a2c4d7` only when no packs exist (an admin who already created packs is not affected). All are
+editable or retirable in Admin > Billing; past orders keep the price they sold at. Like the plan prices they are
+**hypotheses**, not market-tested.
+
+| Pack | Price (BDT) | Per message | Cost at provider* | Gross margin |
+|---|---|---|---|---|
+| 200 SMS | 250 | 1.25 | 128 | about 49% |
+| 500 SMS | 550 | 1.10 | 320 | about 42% |
+| 1,000 SMS | 1,000 | 1.00 | 640 | about 36% |
+| 5,000 SMS | 4,500 | 0.90 | 3,200 | about 29% |
+| 10,000 SMS | 8,000 | 0.80 | 6,400 | about 20% |
+| 1,000 email | 150 | 0.15 | 50 | about 67% |
+| 5,000 email | 600 | 0.12 | 250 | about 58% |
+| 20,000 email | 2,000 | 0.10 | 1,000 | about 50% |
+
+\* SMS cost uses the worst case from the market research, 0.64 BDT per masked SMS at the smallest recharge tier
+([Alpha SMS](https://sms.net.bd/Pricing)); email cost uses an assumed 0.05 BDT each (unverified). Margins are
+before the payment-gateway fee (about 1.4% to 2.5%), VAT, hosting and support.
+
+Why these prices: a clinic cannot bring its own provider (integrations are platform-owned), so packs are priced
+as a convenience at about 1.0 BDT per SMS for a typical top-up, falling to 0.8 BDT at 10,000. That is above what
+a business pays a bulk provider directly (0.31 to 0.64 BDT), which is the price of not managing a provider
+account, and it still undercuts the temptation to use one. The largest pack has the thinnest margin at the
+worst-case cost; buying provider credit at a higher recharge tier (0.55 BDT or less) lifts it to about 31%.
+Email is priced low and kept simple because its cost is tiny; the main aim is to stop emails from blocking a clinic.
+
+Also check before launch: whether pack purchases are subject to VAT, whether unused credits may expire (open
+decision 7 above; today they never expire), and the real provider cost per SMS once an account exists.
