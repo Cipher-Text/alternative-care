@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import RequireAdmin, RequireAdminOrOperator
-from app.shared.schemas import DirectoryVerification
+from app.shared.schemas import CreditAdjustment, DirectoryVerification, MessagingStatus
 from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
     AdminAddTenantDoctorResponse,
@@ -255,3 +255,46 @@ async def set_tenant_verification(
         "verified_at": tenant.verified_at,
         "verification_note": tenant.verification_note,
     }
+
+
+# ============================================================================
+# Messaging credits and platform providers
+# ============================================================================
+
+
+@router.post(
+    "/tenants/{tenant_id}/credits",
+    summary="Grant or remove a clinic's purchased messaging credits",
+    description="Manual adjustment (gift, correction, manual payment). Always recorded in the ledger with a note.",
+)
+async def adjust_tenant_credits(
+    tenant_id: str,
+    data: CreditAdjustment,
+    current_user: RequireAdmin,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    from fastapi import HTTPException
+
+    from app.core.credits import CreditService
+    from app.shared.models import Tenant
+    from sqlalchemy import select
+
+    if (await db.execute(select(Tenant.id).where(Tenant.id == tenant_id))).first() is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Tenant not found")
+    service = CreditService(db, tenant_id)
+    balance = await service.grant(
+        data.channel, data.quantity, "adjustment", note=data.note, created_by=current_user.user_id
+    )
+    return {"channel": data.channel, "purchased": balance}
+
+
+@router.get(
+    "/messaging/status",
+    response_model=MessagingStatus,
+    summary="Are the platform SMS and email providers configured",
+    description="Reads environment settings only. Never returns credentials.",
+)
+async def get_messaging_status(current_user: RequireAdminOrOperator):  # noqa: ARG001
+    from app.core.messaging import messaging_status
+
+    return messaging_status()

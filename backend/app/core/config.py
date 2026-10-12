@@ -193,6 +193,11 @@ class Settings(BaseSettings):
     RATE_LIMIT_AI_PER_HOUR: int = 20
     # Public directory launches (nav, sitemap, listing page) once this many profiles are visible (ADR-008)
     DIRECTORY_MIN_PROFILES: int = 20
+    # Platform-owned SMS provider (clinics never configure providers). Empty = not configured.
+    SMS_PROVIDER: str = ""  # "bulksmsbd"
+    BULKSMSBD_API_KEY: str = ""
+    BULKSMSBD_SENDER_ID: str = ""
+    BULKSMSBD_API_URL: str = ""  # optional override of the provider's default endpoint
     # Contact-request form: submissions per IP per hour
     RATE_LIMIT_CONTACT_REQUEST_PER_HOUR: int = 5
     RATE_LIMIT_AI_WINDOW_SECONDS: int = 3600

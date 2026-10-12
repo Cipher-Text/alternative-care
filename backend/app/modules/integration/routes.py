@@ -4,16 +4,24 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import CurrentUser, get_current_user, require_tenant_user
 from app.core.security import decrypt_credentials
+from app.core.credits import CreditService
 from app.core.entitlements import EntitlementService
+from app.core.messaging import email_configured, sms_configured
 from app.core.usage_tracking import UsageService
 from app.modules.integration.factory import IntegrationProviderFactory
 from app.modules.integration.service import IntegrationService
-from app.modules.integration.tasks import send_email_task, send_sms_task
+from app.modules.integration.tasks import (
+    send_email_task,
+    send_platform_email_task,
+    send_platform_sms_task,
+    send_sms_task,
+)
 from app.shared.schemas import (
     IntegrationLogListItem,
     IntegrationProviderListItem,
@@ -361,7 +369,23 @@ async def send_sms(
     - Queued via Celery for async processing
     - Returns immediately with transaction ID
     """
-    # Get integration (primary or specified)
+    # Platform-owned provider: clinics are charged credits (allowance first, then purchased)
+    if sms_configured():
+        source = await CreditService(service.db, current_user.tenant_id).spend("sms")
+        task = send_platform_sms_task.delay(
+            tenant_id=current_user.tenant_id,
+            recipient=data.recipient,
+            message=data.message,
+            source=source,
+        )
+        return SendOperationResponse(
+            success=True,
+            message=f"SMS queued for sending to {data.recipient}",
+            transaction_id=task.id,
+            queued=True,
+        )
+
+    # Legacy: a clinic's own provider (to be retired once clinics are migrated)
     if data.provider_id:
         integration = await service.get_integration(data.provider_id)
         provider = await service.get_provider(integration.provider_id)
@@ -414,7 +438,31 @@ async def send_email(
     - Queued via Celery for async processing
     - Supports both HTML and plain text
     """
-    # Get integration (primary or specified)
+    # Platform-owned provider: charged against the monthly email allowance, then purchased credits
+    if email_configured():
+        from app.shared.models import Tenant
+
+        source = await CreditService(service.db, current_user.tenant_id).spend("email")
+        tenant = (
+            await service.db.execute(select(Tenant).where(Tenant.id == current_user.tenant_id))
+        ).scalar_one()
+        task = send_platform_email_task.delay(
+            tenant_id=current_user.tenant_id,
+            recipient=data.recipient,
+            subject=data.subject,
+            body_html=data.body_html,
+            body_text=data.body_text,
+            reply_to=tenant.clinic_email or tenant.email,
+            source=source,
+        )
+        return SendOperationResponse(
+            success=True,
+            message=f"Email queued for sending to {data.recipient}",
+            transaction_id=task.id,
+            queued=True,
+        )
+
+    # Legacy: a clinic's own provider (to be retired once clinics are migrated)
     if data.provider_id:
         integration = await service.get_integration(data.provider_id)
         provider = await service.get_provider(integration.provider_id)

@@ -1,7 +1,7 @@
 # Billing, platform integrations and messaging credits — spec (draft)
 
-Status: **decisions recorded 2026-10-12; plan values and several details still open.** Nothing in this
-document is built yet. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
+Status: **decisions recorded 2026-10-12; plan values and several details still open.** Step 2 of §5
+(platform providers from env + credit ledger + charged send routes) is built; checkout is not. It extends `pricing-usage-onboarding-2026-10.md` (§2.3 subscription lifecycle)
 and `public-site-strategy-2026-10.md` (§6.3 listing benefit).
 
 ## 1. Decided
@@ -88,3 +88,24 @@ decision and legal advice before anyone builds it.
 Email (exists): `EMAIL_PROVIDER=resend`, `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS`.
 SMS: `SMS_PROVIDER`, provider keys. SSLCommerz: store id, store password, sandbox flag. bKash: existing
 `BKASH_*`. Exact names are set when each piece is built.
+
+## 7. Implementation notes (built 2026-10-12, branch `feat/platform-messaging-credits`)
+
+- `credit_balances` / `credit_ledger` (migration `a4d9e2c7b6f1`); `usage_tracking.emails_sent`; new
+  entitlement `monthly_email`; `integration_logs.tenant_integration_id` is now nullable (platform sends).
+- `app/core/credits.py` `CreditService`: `spend` (allowance first, then a single conditional UPDATE on the
+  purchased balance, so concurrent sends cannot overspend), `refund`, `grant`, `summary`, `ledger`.
+  Allowance usage is measured in `usage_tracking`, not the ledger; only purchased credits are ledgered.
+- `app/core/messaging.py`: platform SMS (`SMS_PROVIDER=bulksmsbd`, `BULKSMSBD_*`) and email
+  (`EMAIL_PROVIDER`, e.g. Resend) from the environment; `messaging_status()` returns configured-or-not only.
+- `/integrations/send/sms` and `/send/email` use the platform provider when it is configured (charged);
+  otherwise they fall back to the clinic's own provider (legacy, until clinics are migrated).
+  Failed sends are refunded by the Celery task; clinic emails carry the clinic as Reply-To.
+- API: clinic `GET /billing/credits`, `GET /billing/credits/ledger`; admin `POST /admin/tenants/{id}/credits`
+  (grant or remove, note required), `GET /admin/messaging/status`.
+- **Known gaps:** the existing BulkSMSBD client is the repo's earlier generic implementation (its request
+  format is marked "adjust based on actual API documentation") and has not been verified against the real
+  provider; no provider-balance lookup or low-balance alert yet; no bounce handling; no checkout, so
+  credits are added by an admin until Step 3; clinics' own provider integrations are not migrated or retired;
+  the allowance check and its increment are not one atomic step (a burst of concurrent sends can overshoot
+  the allowance by a few).

@@ -70,6 +70,7 @@ class SMTPService(BaseProviderService):
         subject: str,
         body_html: str | None = None,
         body_text: str | None = None,
+        reply_to: str | None = None,
     ) -> dict[str, Any]:
         """Send email via SMTP.
 
@@ -91,6 +92,8 @@ class SMTPService(BaseProviderService):
             msg["From"] = self.from_email
             msg["To"] = recipient
             msg["Subject"] = subject
+            if reply_to:
+                msg["Reply-To"] = reply_to
 
             # Add text body
             if body_text:

@@ -346,3 +346,11 @@ from app.shared.schemas.directory import (  # noqa: E402
     PublicPractitionerItem,
     PublicPractitionerList,
 )
+
+from app.shared.schemas.credits import (  # noqa: E402
+    ChannelBalance,
+    CreditAdjustment,
+    CreditSummary,
+    LedgerEntry,
+    MessagingStatus,
+)
