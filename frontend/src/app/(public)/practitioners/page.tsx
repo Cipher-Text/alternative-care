@@ -31,13 +31,13 @@ function parse(sp: Awaited<SearchParams>) {
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const { discipline, q, page } = parse(await searchParams)
-  const [t, list] = await Promise.all([getTranslations('publicMetaUi.directory'), fetchPractitioners({ limit: 1 })])
+  const tm = await getTranslations('publicMetaUi.directory')
   return {
-    title: t('title'),
-    description: t('description'),
+    title: tm('title'),
+    description: tm('description'),
     alternates: { canonical: '/practitioners' },
-    // Teaser (not launched) and filtered/search/paged views should not be indexed.
-    robots: !list.launched || q || discipline || page > 1 ? { index: false, follow: true } : undefined,
+    // Filtered, search and paged views should not be indexed.
+    robots: q || discipline || page > 1 ? { index: false, follow: true } : undefined,
   }
 }
 
@@ -50,26 +50,6 @@ export default async function PractitionersPage({ searchParams }: { searchParams
     limit: PAGE_SIZE + 1,
     offset: (page - 1) * PAGE_SIZE,
   })
-
-  if (!data.launched) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('teaserTitle')}</h1>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">{t('teaserBody')}</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/articles" className="rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
-            {t('teaserArticles')}
-          </Link>
-          <Link href="/for-practitioners" className="rounded-md border border-emerald-600 px-5 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950">
-            {t('teaserListed')}
-          </Link>
-        </div>
-        <p className="mt-6 text-sm">
-          <Link href="/verification" className="text-emerald-700 underline dark:text-emerald-400">{t('verifiedHelp')}</Link>
-        </p>
-      </div>
-    )
-  }
 
   const hasNext = data.items.length > PAGE_SIZE
   const items = data.items.slice(0, PAGE_SIZE)
@@ -107,7 +87,7 @@ export default async function PractitionersPage({ searchParams }: { searchParams
 
       {items.length === 0 ? (
         <div className="mt-12 rounded-lg border border-dashed border-gray-300 p-12 text-center dark:border-slate-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('emptyFiltered')}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{filtered || page > 1 ? t('emptyFiltered') : t('emptyNone')}</h2>
           {(filtered || page > 1) && (
             <Link href="/practitioners" className="mt-4 inline-block text-emerald-700 underline dark:text-emerald-400">
               {t('clearFilters')}

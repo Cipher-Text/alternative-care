@@ -31,6 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.core.security import get_password_hash
+from scripts.demo_directory import seed_demo_directory
 from scripts.demo_patients import seed_demo_patients
 from scripts.demo_platform import seed_demo_platform
 from app.shared.models import (
@@ -331,6 +332,7 @@ async def main():
                 demo_stats = await seed_demo_patients(session) if settings.ENVIRONMENT == "development" else None
                 if settings.ENVIRONMENT == "development":
                     await seed_demo_platform(session)
+                    await seed_demo_directory(session)
                 pharmacies_count = await seeder.seed_pharmacies()
                 translations_count = await seeder.seed_translations()
 

@@ -290,10 +290,6 @@ class PublicDirectoryService:
             logo_url=tenant.logo_url,
         )
 
-    async def count_visible(self) -> int:
-        rows = (await self.db.execute(self._base())).all()
-        return len(await self._visible(rows))
-
     async def search(
         self,
         discipline: str | None,
@@ -301,10 +297,7 @@ class PublicDirectoryService:
         q: str | None,
         limit: int,
         offset: int,
-    ) -> tuple[bool, int, list[PublicPractitionerItem]]:
-        total_visible = await self.count_visible()
-        launched = total_visible >= settings.DIRECTORY_MIN_PROFILES
-
+    ) -> tuple[int, list[PublicPractitionerItem]]:
         query = self._base()
         if discipline:
             query = query.where(Tenant.specializations.any(discipline))
@@ -324,7 +317,7 @@ class PublicDirectoryService:
             PublicPractitionerItem(**self._item_fields(lst, t, users.get(lst.user_id), districts))
             for lst, t in page
         ]
-        return launched, len(visible), items
+        return len(visible), items
 
     async def _find(self, slug: str) -> tuple[PractitionerListing, Tenant]:
         row = (await self.db.execute(self._base().where(PractitionerListing.slug == slug))).first()

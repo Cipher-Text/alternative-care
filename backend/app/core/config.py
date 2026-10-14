@@ -213,7 +213,6 @@ class Settings(BaseSettings):
     RATE_LIMIT_KEY_PREFIX: str = "altcare"
     RATE_LIMIT_AI_PER_HOUR: int = 20
     # Public directory launches (nav, sitemap, listing page) once this many profiles are visible (ADR-008)
-    DIRECTORY_MIN_PROFILES: int = 20
     # Platform-owned SMS provider (clinics never configure providers). Empty = not configured.
     SMS_PROVIDER: str = ""  # "bulksmsbd"
     BULKSMSBD_API_KEY: str = ""

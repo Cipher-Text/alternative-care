@@ -2,7 +2,6 @@
 
 import pytest
 
-from app.core.config import settings
 
 H = lambda token: {"Authorization": f"Bearer {token}"}  # noqa: E731
 PROFILE = {"is_listed": True, "bio_en": "Homeopath with ten years of experience.", "languages": ["Bangla", "English"]}
@@ -12,12 +11,6 @@ REQUEST = {
     "message": "Back pain for a month",
     "consent": True,
 }
-
-
-@pytest.fixture
-def launched(monkeypatch):
-    """The directory only 'launches' at DIRECTORY_MIN_PROFILES; tests treat one profile as enough."""
-    monkeypatch.setattr(settings, "DIRECTORY_MIN_PROFILES", 1)
 
 
 async def _go_public(client, db_session, tenant, token, **profile):
@@ -42,7 +35,7 @@ async def test_new_listing_is_private_and_explains_why(client, doctor_token, db_
 
 @pytest.mark.asyncio
 async def test_listing_needs_verification_and_plan_and_bio(
-    client, doctor_token, db_session, test_tenant, launched
+    client, doctor_token, db_session, test_tenant
 ):
     # Free plan: listed + verified + bio is still not enough
     r = await client.put("/api/v1/directory/listing", json=PROFILE, headers=H(doctor_token))
@@ -68,7 +61,7 @@ async def test_listing_needs_verification_and_plan_and_bio(
 
 
 @pytest.mark.asyncio
-async def test_expired_plan_removes_listing(client, doctor_token, db_session, test_tenant, launched):
+async def test_expired_plan_removes_listing(client, doctor_token, db_session, test_tenant):
     from datetime import datetime, timedelta, timezone
 
     listing = await _go_public(client, db_session, test_tenant, doctor_token)
@@ -79,7 +72,7 @@ async def test_expired_plan_removes_listing(client, doctor_token, db_session, te
 
 
 @pytest.mark.asyncio
-async def test_public_profile_respects_privacy_choices(client, doctor_token, db_session, test_tenant, launched):
+async def test_public_profile_respects_privacy_choices(client, doctor_token, db_session, test_tenant):
     test_tenant.clinic_phone, test_tenant.clinic_whatsapp = "+8801811111111", "+8801822222222"
     test_tenant.consultation_fee = 50000  # paisa
     test_tenant.registration_number = "SECRET-REG-1"
@@ -103,23 +96,23 @@ async def test_public_profile_respects_privacy_choices(client, doctor_token, db_
 
 
 @pytest.mark.asyncio
-async def test_list_is_gated_until_launch(client, doctor_token, db_session, test_tenant, monkeypatch):
-    await _go_public(client, db_session, test_tenant, doctor_token)
-    monkeypatch.setattr(settings, "DIRECTORY_MIN_PROFILES", 20)
+async def test_list_shows_every_visible_profile_with_no_minimum(client, doctor_token, db_session, test_tenant):
+    # nobody is visible yet: an empty list, not a "not launched" state
     r = (await client.get("/api/v1/public/practitioners")).json()
-    assert r["launched"] is False
+    assert r == {"total": 0, "items": []}
     assert (await client.get("/api/v1/public/practitioners/slugs")).json() == []
 
-    monkeypatch.setattr(settings, "DIRECTORY_MIN_PROFILES", 1)
+    # one visible profile is shown as one
+    await _go_public(client, db_session, test_tenant, doctor_token)
     r = (await client.get("/api/v1/public/practitioners")).json()
-    assert r["launched"] is True and r["total"] == 1
+    assert r["total"] == 1 and "launched" not in r
     assert r["items"][0]["display_name"] == "Dr. Test Doctor"
     assert "bio_en" not in r["items"][0]
     assert len((await client.get("/api/v1/public/practitioners/slugs")).json()) == 1
 
 
 @pytest.mark.asyncio
-async def test_list_filters(client, doctor_token, db_session, test_tenant, launched):
+async def test_list_filters(client, doctor_token, db_session, test_tenant):
     await _go_public(client, db_session, test_tenant, doctor_token)
     ok = (await client.get("/api/v1/public/practitioners", params={"discipline": "homeopathy"})).json()
     assert ok["total"] == 1
@@ -130,7 +123,7 @@ async def test_list_filters(client, doctor_token, db_session, test_tenant, launc
 
 
 @pytest.mark.asyncio
-async def test_contact_request_flow_and_counting(client, doctor_token, db_session, test_tenant, launched):
+async def test_contact_request_flow_and_counting(client, doctor_token, db_session, test_tenant):
     listing = await _go_public(client, db_session, test_tenant, doctor_token)
     slug = listing["slug"]
 
@@ -152,7 +145,7 @@ async def test_contact_request_flow_and_counting(client, doctor_token, db_sessio
 
 
 @pytest.mark.asyncio
-async def test_contact_request_validation(client, doctor_token, db_session, test_tenant, launched):
+async def test_contact_request_validation(client, doctor_token, db_session, test_tenant):
     slug = (await _go_public(client, db_session, test_tenant, doctor_token))["slug"]
     url = f"/api/v1/public/practitioners/{slug}/requests"
     assert (await client.post(url, json={**REQUEST, "consent": False})).status_code == 422
@@ -169,7 +162,7 @@ async def test_contact_request_validation(client, doctor_token, db_session, test
 
 
 @pytest.mark.asyncio
-async def test_request_to_unlisted_practitioner_is_404(client, doctor_token, db_session, test_tenant, launched):
+async def test_request_to_unlisted_practitioner_is_404(client, doctor_token, db_session, test_tenant):
     # Saved but free plan -> not public
     r = await client.put("/api/v1/directory/listing", json=PROFILE, headers=H(doctor_token))
     slug = r.json()["slug"]
@@ -181,7 +174,7 @@ async def test_request_to_unlisted_practitioner_is_404(client, doctor_token, db_
 
 @pytest.mark.asyncio
 async def test_requests_are_tenant_isolated(
-    client, doctor_token, test_access_token_2, db_session, test_tenant, launched
+    client, doctor_token, test_access_token_2, db_session, test_tenant
 ):
     slug = (await _go_public(client, db_session, test_tenant, doctor_token))["slug"]
     await client.post(f"/api/v1/public/practitioners/{slug}/requests", json=REQUEST)

@@ -159,9 +159,8 @@ async def get_public_article(
 
 # ===== Practitioner directory =====
 #
-# Only listings that pass every gate (opted in, admin-verified, approved, in plan, has a bio).
-# The list reports `launched` (>= DIRECTORY_MIN_PROFILES visible profiles, ADR-008); until then the
-# site shows a teaser instead of a thin directory.
+# Only listings that pass every gate (opted in, admin-verified, approved, in plan, has a bio). There is no minimum
+# number of profiles: the directory shows whatever is visible.
 
 
 @router.get("/practitioners", response_model=PublicPractitionerList)
@@ -175,17 +174,16 @@ async def list_public_practitioners(
     offset: int = Query(0, ge=0),
 ):
     response.headers["Cache-Control"] = "public, max-age=300"
-    launched, total, items = await PublicDirectoryService(db).search(discipline, district_id, q, limit, offset)
-    return PublicPractitionerList(launched=launched, total=total, items=items)
+    total, items = await PublicDirectoryService(db).search(discipline, district_id, q, limit, offset)
+    return PublicPractitionerList(total=total, items=items)
 
 
 @router.get("/practitioners/slugs", response_model=list[str])
 async def list_public_practitioner_slugs(db: Annotated[AsyncSession, Depends(get_db)], response: Response):
-    """For the sitemap. Empty until the directory has launched."""
+    """For the sitemap: every visible profile."""
     response.headers["Cache-Control"] = "public, max-age=300"
     svc = PublicDirectoryService(db)
-    slugs = await svc.slugs()
-    return slugs if len(slugs) >= settings.DIRECTORY_MIN_PROFILES else []
+    return await svc.slugs()
 
 
 @router.get("/practitioners/{slug}", response_model=PublicPractitioner)

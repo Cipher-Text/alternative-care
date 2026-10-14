@@ -335,8 +335,9 @@ decision, not a side effect.
   `feature_directory_listing`** (new entitlement; default Free off, Plus and Pro on, editable in the
   plan config), and a bio exists. Verification and plan are separate gates so paying never replaces
   verification. The doctor's page shows exactly which gate is missing.
-- **Launch gate:** `/practitioners`, the nav link and the sitemap stay hidden/noindex until
-  `DIRECTORY_MIN_PROFILES` (default 20) profiles are visible; visitors see a teaser.
+- **No launch threshold (decided 2026-10-15):** `/practitioners`, the nav link and the sitemap show whatever is
+  visible: one profile shows one, a hundred show a hundred. The earlier "hidden until 20 profiles" rule
+  (`DIRECTORY_MIN_PROFILES`, with a teaser page) was removed. Quality comes from the verification gate, not a count.
 - **Contact v1:** `tel:` / WhatsApp taps (counted) and a "request a call back" form with mandatory consent,
   a honeypot and an IP rate limit; stored per clinic, emailed to the clinic (best effort), inbox with
   New/Contacted/Closed, month-to-date numbers on `/directory` and a card on the doctor dashboard.

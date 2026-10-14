@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     articles.push(...batch)
     if (batch.length < 200) break
   }
-  // Returns [] until the directory launches (and on failure), so nothing thin is advertised.
+  // Every visible practitioner profile ([] if the API is down).
   const slugs = await fetchPractitionerSlugs()
   const directory: MetadataRoute.Sitemap = slugs.length
     ? [{ url: `${base}/practitioners` }, ...slugs.map((slug) => ({ url: `${base}/practitioners/${slug}` }))]

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { ArrowLeft, BadgeCheck, MapPin, Stethoscope } from 'lucide-react'
-import { fetchPractitioner, isDirectoryLaunched } from '@/lib/api/publicDirectory'
+import { fetchPractitioner } from '@/lib/api/publicDirectory'
 import { pickLocalized } from '@/lib/api/publicArticles'
 import { formatFee, isDirectoryDiscipline, telHref, whatsappDigits } from '@/lib/directoryFormat'
 import { VerifiedBadge } from '@/components/public/directory/VerifiedBadge'
@@ -17,7 +17,7 @@ const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').repla
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params
-  const [p, launched] = await Promise.all([fetchPractitioner(slug).catch(() => null), isDirectoryLaunched()])
+  const p = await fetchPractitioner(slug).catch(() => null)
   if (!p) return {}
   const [locale, t] = await Promise.all([getLocale(), getTranslations('publicPractitionersUi')])
   const discipline = p.disciplines[0]
@@ -34,7 +34,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title,
     description,
     alternates: { canonical: `/practitioners/${p.slug}` },
-    robots: launched ? undefined : { index: false, follow: true },
     openGraph: {
       type: 'profile',
       title,

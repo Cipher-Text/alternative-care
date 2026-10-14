@@ -21,13 +21,11 @@ const navigation = [
   { key: 'navContact', href: '/contact' },
 ] as const
 
-export function PublicHeader({ directoryLaunched = false }: { directoryLaunched?: boolean }) {
+export function PublicHeader() {
   const t = useTranslations('publicShellUi')
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const items = directoryLaunched
-    ? [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...navigation]
-    : navigation
+  const items = [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...navigation]
   const user = useAuthStore((state) => state.user)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 

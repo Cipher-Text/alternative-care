@@ -57,10 +57,6 @@
     "untitled": "Practitioner",
     "lang_en": "English",
     "lang_bn": "Bengali",
-    "teaserTitle": "We're verifying practitioners. The directory opens soon.",
-    "teaserBody": "We only list practitioners whose registration and degrees we have checked ourselves. We would rather open with fewer, trusted profiles than with a long list nobody has checked.",
-    "teaserArticles": "Read articles",
-    "teaserListed": "Are you a practitioner? Get listed",
     "breadcrumbBack": "All practitioners",
     "registeredWith": "Registered with {body}",
     "about": "About",
@@ -121,6 +117,7 @@
       "s6Body": "If a profile looks wrong, or you have a concern about a practitioner, tell us and we will look into it.",
       "contactLink": "About AltCare and contact details",
       "browseLink": "Find a practitioner"
-    }
+    },
+    "emptyNone": "No practitioners are listed yet. Check back soon."
   }
 }

@@ -18,10 +18,10 @@ export async function fetchPractitioners(params: {
   Object.entries(params).forEach(([k, v]) => v !== undefined && v !== '' && qs.set(k, String(v)))
   try {
     const res = await fetch(`${API_URL}/public/practitioners?${qs}`, { next: { revalidate: 300 } })
-    if (!res.ok) return { launched: false, total: 0, items: [] }
+    if (!res.ok) return { total: 0, items: [] }
     return await res.json()
   } catch {
-    return { launched: false, total: 0, items: [] }
+    return { total: 0, items: [] }
   }
 }
 
@@ -42,11 +42,6 @@ export async function fetchPractitionerSlugs(): Promise<string[]> {
   } catch {
     return []
   }
-}
-
-/** Whether the directory has enough profiles to be shown (nav, sitemap). */
-export async function isDirectoryLaunched(): Promise<boolean> {
-  return (await fetchPractitioners({ limit: 1 })).launched
 }
 
 /** Browser-side: a patient asks the clinic to call back. Throws with the API's detail on failure. */

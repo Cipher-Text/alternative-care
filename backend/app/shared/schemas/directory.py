@@ -183,8 +183,7 @@ class PublicPractitioner(PublicPractitionerItem):
 
 
 class PublicPractitionerList(BaseModel):
-    """`launched` is false until enough profiles exist (ADR-008); the site then shows a teaser."""
+    """Every visible profile, however many there are: one profile shows one, a hundred show a hundred."""
 
-    launched: bool
     total: int
     items: list[PublicPractitionerItem]

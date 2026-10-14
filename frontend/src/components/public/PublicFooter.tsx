@@ -38,12 +38,10 @@ const columns = [
   },
 ] as const
 
-export function PublicFooter({ directoryLaunched = false }: { directoryLaunched?: boolean }) {
+export function PublicFooter() {
   const t = useTranslations('publicShellUi')
   const facebook = getContactInfo().facebook
-  const directoryLinks = directoryLaunched
-    ? [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...columns[0].links]
-    : columns[0].links
+  const directoryLinks = [{ key: 'navFindPractitioner', href: '/practitioners' } as const, ...columns[0].links]
   const cols = [{ ...columns[0], links: directoryLinks }, ...columns.slice(1)]
   return (
     <footer className="border-t border-gray-200 dark:border-slate-800 bg-background">

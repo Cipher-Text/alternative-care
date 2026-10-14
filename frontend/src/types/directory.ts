@@ -121,9 +121,8 @@ export interface PublicPractitioner extends PublicPractitionerItem {
   degrees: PublicDegree[]
 }
 
-/** `launched` is false until enough profiles exist; the site then shows a teaser instead. */
+/** Every visible profile: there is no minimum number before the directory shows. */
 export interface PublicPractitionerList {
-  launched: boolean
   total: number
   items: PublicPractitionerItem[]
 }
