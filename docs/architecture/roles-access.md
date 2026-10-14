@@ -5,6 +5,12 @@ Last updated: 2026-07-11
 
 ---
 
+> **Dynamic roles (ADR 010, Phase 1 built 2026-10-14).** Roles and permissions are now also stored as data
+> (`roles`, `permissions`, `user_roles`) and `GET /auth/me/permissions` lists what a user may do. The four roles below
+> are the *system roles*; their permission sets reproduce exactly what is described here and are pinned by
+> `tests/unit/test_permissions.py`. Route guards are unchanged for now (`require_role`, the receptionist router
+> guards), so this document is still what is enforced. See `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
+
 ## Role taxonomy
 
 There are two levels: **Platform** (no tenant) and **Tenant** (scoped to one clinic).

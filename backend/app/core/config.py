@@ -54,6 +54,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # How long a user's effective permissions are cached in each process (seconds; 0 = off). A role change clears
+    # the cache of the process that made it at once; other processes see it within this time.
+    PERMISSION_CACHE_SECONDS: int = 60
+
     # CORS
     CORS_ORIGINS: str = "http://localhost:3000"
 

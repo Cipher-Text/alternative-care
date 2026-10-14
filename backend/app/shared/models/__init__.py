@@ -44,6 +44,7 @@ from app.shared.models.library import (
     Highlight,
 )
 from app.shared.models.message_log import MessageLog
+from app.shared.models.rbac import PermissionRow, Role, RoleAuditLog, RolePermission, UserRole
 from app.shared.models.translation import Translation
 from app.shared.models.usage import UsageTracking
 from app.shared.models.plan import (
@@ -116,6 +117,11 @@ __all__ = [
     "Bookmark",
     "Highlight",
     "MessageLog",
+    "PermissionRow",
+    "Role",
+    "RolePermission",
+    "UserRole",
+    "RoleAuditLog",
     "Translation",
     "UsageTracking",
 ]

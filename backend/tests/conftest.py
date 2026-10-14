@@ -60,6 +60,15 @@ def _no_real_payment_gateways_by_default(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def _no_permission_cache(monkeypatch):
+    """Effective permissions are cached per process in production; tests must see every change at once."""
+    from app.core import permission_cache
+
+    monkeypatch.setattr(settings, "PERMISSION_CACHE_SECONDS", 0)
+    permission_cache.invalidate_all()
+
+
+@pytest.fixture(autouse=True)
 def memory_storage(monkeypatch):
     """Tests never touch R2 or MinIO: file storage is an in-process fake. Tests can ask for it by name."""
     from app.core import storage

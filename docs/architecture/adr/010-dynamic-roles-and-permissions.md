@@ -1,7 +1,7 @@
 # ADR 010: Dynamic roles and permissions: a fixed permission catalogue, roles that are global or tenant-specific, and users who hold roles
 
-- Status: **Proposed (2026-10-14). Nothing is built.** Needs the product owner's answers to the four decisions at the
-  end before Phase 1 starts.
+- Status: **Accepted 2026-10-14 with the recommended answers to the four decisions below. Phase 1 is built**
+  (see "Phase 1 as built"); Phases 2 to 4 are not.
 - Date: 2026-10-14
 - Related: ADR 002 (platform vs tenant data), `docs/architecture/roles-access.md` (the current, hard-coded model),
   `docs/architecture/multi-tenancy.md`, `backend/app/core/entitlements.py` (the plan/entitlement system, which this
@@ -153,7 +153,32 @@ Phases 1 and 2 are invisible to users. Phase 3 is the first visible change.
 - The permission catalogue becomes a public contract in the code: adding a permission is a code change and a
   migration; removing one is a breaking change.
 
-## Decisions needed from the product owner
+## Phase 1 as built (2026-10-14)
+
+- `app/core/permissions.py`: the catalogue (57 permissions: 42 clinic-level, 15 platform-level), the four system roles
+  with their pinned permission sets, and the two safety rules that need no database (`validate_role_permissions`:
+  scope; `check_can_grant`: no escalation). `tests/unit/test_permissions.py` pins every set.
+- Tables `permissions`, `roles`, `role_permissions`, `user_roles`, `role_audit_log` (migration `i4e0a6d2f8b5`), loaded
+  by `sync_catalogue()` (`app/core/rbac.py`), which the migration runs and any later catalogue change runs again.
+  Every existing user was given the system role named by `users.role`.
+- `users.role` is still the source of truth. An ORM hook (`app/shared/models/rbac.py`) keeps `user_roles` in step when a
+  user is created or their role changes, so no existing code needed editing. A user with no assignment falls back to
+  the system role named by `users.role`, so a missing row can never lock anyone out or grant more than before.
+- `require_permission(...)` (all required) and `require_any_permission(...)` in `app/core/dependencies.py`, backed by
+  a per-process cache of 60 seconds (`PERMISSION_CACHE_SECONDS`; a role change clears the cache of the process that
+  made it).
+- `GET /auth/me/permissions` returns the user's roles and effective permissions.
+- **No route guard was changed**: `require_role` and the receptionist router guards still decide access. Nothing
+  visible to users changed.
+- **Deviation from section 3:** row-level security is on `roles` only. `role_permissions` and `user_roles` hold no
+  clinic id and are reachable only through `roles`; a policy on them would need a join and protects nothing while the
+  app connects as a superuser. Revisit with the least-privileged database role.
+- **Phase 2 mapping notes** (guards that are not a plain role check): `identity` routes use two roles (`Staff` =
+  doctor + receptionist, mapped to `identity.link`; `DoctorOnly` for revoking, mapped to `identity.revoke`, and for
+  reading shared records, `shared_records.read`); billing uses `TenantStaff` (`billing.view`) and `Buyer`
+  (`billing.manage`); content authoring allows a doctor or an admin (`content.author` or `content.manage`).
+
+## Decisions needed from the product owner (answered 2026-10-14: the recommended answer for each)
 
 1. **One role per user, or several?** Recommended: several (union of permissions). Simpler alternative: exactly one.
 2. **Can clinics create their own roles?** Recommended: yes, by copying a template, limited to their own

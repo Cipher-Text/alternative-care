@@ -28,6 +28,8 @@ class CurrentUser:
         email: str,
         plan: str | None = None,
     ):
+        # Set by require_permission / require_any_permission once the user's permissions have been read
+        self.permissions: frozenset[str] | None = None
         self.user_id = user_id
         self.tenant_id = tenant_id
         self.role = role
@@ -165,6 +167,53 @@ def require_role(*allowed_roles: str):
         return user
 
     return _check_role
+
+
+def _permission_denied(missing: str) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail={"code": "permission_denied", "message": "You do not have permission to do this.", "permission": missing},
+    )
+
+
+async def get_permissions(user: CurrentUser, db: AsyncSession) -> frozenset[str]:
+    """The user's effective permissions (cached briefly). See app/core/rbac.py."""
+    from app.core.rbac import effective_permissions
+
+    if user.permissions is None:
+        user.permissions = await effective_permissions(db, user.user_id, user.role, user.tenant_id is None)
+    return user.permissions
+
+
+def require_permission(*keys: str):
+    """Require EVERY listed permission. The permission-based replacement for `require_role` (ADR 010).
+
+    Usage:
+        @router.post("/prescriptions/{id}/issue")
+        async def issue(user: CurrentUser = Depends(require_permission("prescriptions.issue"))):
+            ...
+    """
+
+    async def _check(user: CurrentUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> CurrentUser:
+        held = await get_permissions(user, db)
+        for key in keys:
+            if key not in held:
+                raise _permission_denied(key)
+        return user
+
+    return _check
+
+
+def require_any_permission(*keys: str):
+    """Require AT LEAST ONE of the listed permissions."""
+
+    async def _check(user: CurrentUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> CurrentUser:
+        held = await get_permissions(user, db)
+        if not any(key in held for key in keys):
+            raise _permission_denied(keys[0])
+        return user
+
+    return _check
 
 
 _SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})

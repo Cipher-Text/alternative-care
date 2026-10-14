@@ -77,4 +77,5 @@ def test_current_api_route_count_matches_docs():
     # Platform admin work queue: +1 /admin/dashboard/queue — 247 -> 248.
     # Clinic integrations removed: -9 /integrations endpoints (3 remain as /messaging) and -3 bKash payment endpoints
     # — 248 -> 236.
-    assert api_method_count == 236
+    # Roles and permissions as data: +1 /auth/me/permissions — 236 -> 237.
+    assert api_method_count == 237

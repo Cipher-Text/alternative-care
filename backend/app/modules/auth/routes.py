@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, get_permissions
 from app.modules.auth.schemas import (
     UpdateLanguageRequest,
     UpdateLanguageResponse,
@@ -389,6 +389,36 @@ async def get_profile(
     """Get current user profile."""
     service = AuthService(db)
     return await service.get_user_profile(current_user.user_id)
+
+
+@router.get(
+    "/me/permissions",
+    summary="What the current user may do",
+    description="The user's roles and effective permissions (the union over their active roles). The frontend uses "
+    "this to show or hide controls; the server still checks every request.",
+)
+async def my_permissions(
+    current_user: CurrentUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from sqlalchemy import select
+
+    from app.shared.models.rbac import Role, UserRole
+
+    rows = (
+        await db.execute(
+            select(Role).join(UserRole, UserRole.role_id == Role.id).where(UserRole.user_id == current_user.user_id, Role.is_active.is_(True))
+        )
+    ).scalars().all()
+    permissions = await get_permissions(current_user, db)
+    return {
+        "role": current_user.role,
+        "roles": [
+            {"id": r.id, "key": r.key, "name_en": r.name_en, "name_bn": r.name_bn, "scope": r.scope, "is_system": r.is_system}
+            for r in rows
+        ],
+        "permissions": sorted(permissions),
+    }
 
 
 @router.patch(
