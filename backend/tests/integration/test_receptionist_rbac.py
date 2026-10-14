@@ -46,7 +46,8 @@ async def desk(client: AsyncClient, receptionist, test_tenant) -> AsyncClient:
 def _denied(response):
     assert response.status_code == 403, response.text
     detail = response.json()["detail"]
-    assert isinstance(detail, dict) and detail["code"] == "role_not_permitted"
+    # Refused by a permission guard (ADR 010): the body names the permission the role lacks
+    assert isinstance(detail, dict) and detail["code"] == "permission_denied" and detail["permission"]
 
 
 @pytest.mark.asyncio
