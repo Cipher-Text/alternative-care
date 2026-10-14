@@ -245,23 +245,21 @@ async def test_tenant_isolation(db_session):
 
 Platform users (`tenant_id = null`) are rejected with **403** from all tenant-scoped service factories.
 
-**Dynamic roles (ADR 010, Phase 1 built 2026-10-14):** roles and permissions also exist as data — `permissions` (catalogue defined in
-`app/core/permissions.py`: 42 clinic-level + 15 platform-level), `roles` (global or clinic-specific), `user_roles`, `role_audit_log`;
-`require_permission("patients.write")` / `require_any_permission(...)` in `app/core/dependencies.py`; `GET /auth/me/permissions`. The four
-roles above are *system roles* whose permission sets reproduce today's behaviour (pinned in `tests/unit/test_permissions.py`). **Route guards
-are not migrated yet** (Phase 2): `require_role` and the receptionist router guards still decide access, and `users.role` is still the source
-of truth (an ORM hook keeps `user_roles` in step). Plan: `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
+**Dynamic roles (ADR 010, Phases 1 to 3 built 2026-10-14):** roles and permissions are data — `permissions` (catalogue in
+`app/core/permissions.py`: 43 clinic-level + 15 platform-level), `roles` (global or clinic-specific), `user_roles`, `role_audit_log`. Every
+route is guarded by permission (`require_permission` / `require_any_permission` / `module_guard` / `access_guard` in
+`app/core/dependencies.py`; `ensure_permission` for request-dependent checks); `tests/unit/test_access_matrix.py` fails for any route
+without one. `GET /auth/me/permissions` feeds the frontend's `useCan()`. The four roles above are *system roles* whose permission sets are
+pinned in `tests/unit/test_permissions.py`. Clinics manage staff and their own roles at `/team` (`app/modules/team`, rules in ADR 010
+"Phase 3 as built"). `users.role` is still written (an ORM hook mirrors it into `user_roles`) until Phase 4 retires it.
+Plan: `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
 
-**Role-Based Access:**
+**Permission-Based Access:**
 ```python
-from app.core.dependencies import RequireDoctor, RequireAdmin, require_role
+from app.core.dependencies import require_permission, require_any_permission
 
 @router.post("/medicines")
-async def create_medicine(user: RequireDoctor):  # Doctors only
-    ...
-
-@router.get("/analytics")
-async def analytics(user: CurrentUser = Depends(require_role("doctor", "admin"))):
+async def create_medicine(user: CurrentUser = Depends(require_permission("medicines.write"))):
     ...
 ```
 
@@ -349,6 +347,7 @@ backend/app/
 │   ├── pharmacy/         # ✅ Admin-curated pharmacy/wholesaler directory: list + near-me search, CSV import (6 endpoints) — admin UI at `/admin/pharmacies`, practitioner list/map/near-me at `/pharmacies`, 50 seeded Hamdard (Unani) outlets in `seed_data/pharmacies.json`
 │   ├── plans/            # ✅ Plan & entitlement configuration, public pricing, per-tenant overrides (8 endpoints; enforcement lives in `app/core/entitlements.py`)
 │   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
+│   ├── team/             # ✅ Clinic staff, clinic roles and their audit trail (10 endpoints) — UI at `/team`
 │   └── notification/     # 📋 Placeholder
 └── shared/
     ├── models/           # SQLAlchemy models

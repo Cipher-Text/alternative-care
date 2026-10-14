@@ -1,7 +1,7 @@
 # ADR 010: Dynamic roles and permissions: a fixed permission catalogue, roles that are global or tenant-specific, and users who hold roles
 
-- Status: **Accepted 2026-10-14 with the recommended answers to the four decisions below. Phase 1 is built**
-  (see "Phase 1 as built"); Phases 2 to 4 are not.
+- Status: **Accepted 2026-10-14 with the recommended answers to the four decisions below. Phases 1 to 3 are built**
+  (see "Phase 1 as built", "Phase 3 as built"); Phase 4 is not.
 - Date: 2026-10-14
 - Related: ADR 002 (platform vs tenant data), `docs/architecture/roles-access.md` (the current, hard-coded model),
   `docs/architecture/multi-tenancy.md`, `backend/app/core/entitlements.py` (the plan/entitlement system, which this
@@ -168,8 +168,9 @@ Phases 1 and 2 are invisible to users. Phase 3 is the first visible change.
   a per-process cache of 60 seconds (`PERMISSION_CACHE_SECONDS`; a role change clears the cache of the process that
   made it).
 - `GET /auth/me/permissions` returns the user's roles and effective permissions.
-- **No route guard was changed**: `require_role` and the receptionist router guards still decide access. Nothing
-  visible to users changed.
+- **No route guard was changed in Phase 1**; Phase 2 then moved every guard to permissions (`require_role` and the
+  receptionist guards are gone), proven by a frozen route-by-role snapshot (`tests/golden/access_matrix.json`) and a
+  default-deny test that fails for any route without a permission guard.
 - **Deviation from section 3:** row-level security is on `roles` only. `role_permissions` and `user_roles` hold no
   clinic id and are reachable only through `roles`; a policy on them would need a join and protects nothing while the
   app connects as a superuser. Revisit with the least-privileged database role.
@@ -177,6 +178,32 @@ Phases 1 and 2 are invisible to users. Phase 3 is the first visible change.
   doctor + receptionist, mapped to `identity.link`; `DoctorOnly` for revoking, mapped to `identity.revoke`, and for
   reading shared records, `shared_records.read`); billing uses `TenantStaff` (`billing.view`) and `Buyer`
   (`billing.manage`); content authoring allows a doctor or an admin (`content.author` or `content.manage`).
+
+## Phase 3 as built (2026-10-14)
+
+- Module `app/modules/team` (10 endpoints under `/api/v1/team`, router guard: `team.read` to look, `team.manage` to
+  change): `GET /permissions`, `GET|POST /roles`, `PATCH|DELETE /roles/{id}`, `GET|POST /members`,
+  `PUT /members/{id}/roles`, `PATCH /members/{id}/status`, `GET /audit`. Frontend: `/team` with Staff, Roles and
+  Activity tabs (menu item shown with `team.read`; English and Bengali).
+- Rules, all enforced in `TeamService` and covered by `tests/integration/test_team.py` (22 tests):
+  1. **No escalation**: creating or editing a role, assigning a role and removing one each require the actor to hold
+     every permission involved; a role holding permissions the actor lacks cannot be edited, assigned or removed by
+     them, and a person holding such a role cannot be switched off or re-roled by them (`can_manage`).
+  2. **Scope**: unknown or platform-level permissions are refused (422).
+  3. **A clinic keeps an owner**: after every change that could remove it, the service checks that at least one active
+     person still holds `team.manage`, and rolls back with 409 `last_owner` if not. Nobody can deactivate themselves.
+  4. **Sensitive permissions** need `acknowledge_sensitive: true` when newly granted; the UI asks for a tick.
+  5. **Audit**: every change writes `role_audit_log` (created/updated/deleted role, roles assigned, member invited,
+     switched off or on) with before and after; the clinic reads its own through `GET /team/audit`.
+- A member must hold at least one role (a user with no `user_roles` rows would fall back to the legacy role and could
+  gain access). A clinic may have at most 20 own roles; a role in use cannot be deleted.
+- Inviting creates the user with an unknown password and emails a set-password link (the password-reset token, valid
+  3 days). Practitioner seats: anyone whose roles include `prescriptions.issue` is stored with legacy `users.role =
+  'doctor'` and so counts against `max_seats`; everyone else is `'receptionist'`. The legacy role is written with a
+  plain UPDATE so the ORM hook that mirrors `users.role` into `user_roles` does not overwrite the chosen roles.
+- Deviation from section 4: role changes do not bump `token_version`; permissions are resolved from the database on
+  every request (60 s cache, cleared on change in the process that made it), so a change applies at once. Deactivating
+  a member does bump it and revokes their sessions.
 
 ## Decisions needed from the product owner (answered 2026-10-14: the recommended answer for each)
 

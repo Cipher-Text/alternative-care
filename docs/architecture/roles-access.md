@@ -5,11 +5,12 @@ Last updated: 2026-07-11
 
 ---
 
-> **Dynamic roles (ADR 010, Phase 1 built 2026-10-14).** Roles and permissions are now also stored as data
-> (`roles`, `permissions`, `user_roles`) and `GET /auth/me/permissions` lists what a user may do. The four roles below
-> are the *system roles*; their permission sets reproduce exactly what is described here and are pinned by
-> `tests/unit/test_permissions.py`. Route guards are unchanged for now (`require_role`, the receptionist router
-> guards), so this document is still what is enforced. See `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
+> **Dynamic roles (ADR 010, Phases 1 to 3 built 2026-10-14).** Roles and permissions are stored as data
+> (`roles`, `permissions`, `user_roles`) and every route is guarded by permission, not by role name. The four roles
+> below are the *system roles*: their permission sets reproduce exactly what is described here (pinned by
+> `tests/unit/test_permissions.py`, and route by route by `tests/golden/access_matrix.json`). A clinic can add staff
+> and create its own roles from the Team page (`/team`); a person's access is the union of their roles. Read this
+> document as the default each system role starts from. See `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
 
 ## Role taxonomy
 

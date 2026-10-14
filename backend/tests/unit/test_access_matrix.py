@@ -31,6 +31,18 @@ def test_the_snapshot_itself_is_sane():
     assert golden["GET /api/v1/admin/tenants"]["operator"] is True and golden["GET /api/v1/admin/tenants"]["doctor"] is False
 
 
+def test_the_team_routes_are_for_doctors_only_by_default():
+    """Added after the snapshot was frozen, so asserted here: the clinic owner role may use them, nobody else holds team.*."""
+    from tests.access_matrix import ADDED_AFTER_FREEZE
+
+    now = matrix(app)
+    team = {k: v for k, v in now.items() if k.split(" ", 1)[1].startswith(ADDED_AFTER_FREEZE)}
+    assert len(team) == 10
+    for key, decision in team.items():
+        assert decision["doctor"] is True, key
+        assert not any(decision[r] for r in ROLES if r != "doctor"), key
+
+
 # ----- default deny: a route added without a permission guard must fail here, not slip into production ------------------
 
 from fastapi.routing import APIRoute  # noqa: E402

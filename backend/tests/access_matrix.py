@@ -64,6 +64,11 @@ def matrix(app) -> dict[str, dict]:
     return out
 
 
+# Routes added after the snapshot was frozen (ADR 010, Phase 3). They have no "before" to compare with, so each gets its own
+# explicit test (tests/unit/test_access_matrix.py) instead of a silent skip.
+ADDED_AFTER_FREEZE = ("/api/v1/team",)
+
+
 def comparable(golden: dict, now: dict) -> list[str]:
     """What differs between the frozen decisions and the current ones, as readable lines.
 
@@ -73,6 +78,8 @@ def comparable(golden: dict, now: dict) -> list[str]:
     for key in sorted(set(golden) | set(now)):
         if key not in now:
             problems.append(f"{key}: route removed")
+        elif key not in golden and key.split(" ", 1)[1].startswith(ADDED_AFTER_FREEZE):
+            continue
         elif key not in golden:
             problems.append(f"{key}: new route, not in the snapshot")
         else:

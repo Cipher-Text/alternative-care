@@ -25,6 +25,7 @@ import {
   Megaphone,
   Inbox,
   CalendarClock,
+  ShieldCheck,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
@@ -50,6 +51,7 @@ const doctorNavigation: NavItem[] = [
   { key: 'symptoms', href: '/symptoms', icon: Stethoscope, any: ['symptoms.read'] },
   { key: 'articles', href: '/content', icon: Newspaper, any: ['content.author'] },
   { key: 'directory', href: '/directory', icon: BadgeCheck, any: ['directory.manage'] },
+  { key: 'team', href: '/team', icon: ShieldCheck, any: ['team.read'] },
   { key: 'billing', href: '/billing', icon: Receipt, any: ['billing.manage'] },
   { key: 'facebookPromotion', href: '/marketing', icon: Megaphone, any: ['marketing.request'] },
   // The settings page leads to Messaging. Staff without clinic settings (the front desk) get a direct Messaging link instead.

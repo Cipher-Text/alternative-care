@@ -1,0 +1,115 @@
+{
+  "teamUi": {
+    "title": "Team",
+    "subtitleManage": "Add your staff and decide what each person can do. Changes take effect straight away.",
+    "subtitleRead": "The people in your clinic and the roles they hold.",
+    "noAccess": "You do not have access to the team page.",
+    "loading": "Loading",
+    "loadFailed": "Could not load this. Please try again.",
+    "failed": "Could not save the change. Please try again.",
+    "saved": "Saved",
+    "invited": "Invitation sent",
+    "roleDeleted": "Role deleted",
+    "cancel": "Cancel",
+    "save": "Save",
+    "tabs": {
+      "members": "Staff",
+      "roles": "Roles",
+      "activity": "Activity"
+    },
+    "members": {
+      "intro": "Everyone who can sign in to your clinic. Each person's access is the combination of their roles.",
+      "add": "Add staff member",
+      "person": "Person",
+      "roles": "Roles",
+      "status": "Status",
+      "actions": "Actions",
+      "you": "You",
+      "active": "Active",
+      "inactive": "Switched off",
+      "invitePending": "Has not signed in yet",
+      "editRoles": "Change roles",
+      "deactivate": "Switch off",
+      "activate": "Switch on",
+      "cannotManage": "Holds permissions you do not"
+    },
+    "invite": {
+      "title": "Add a staff member",
+      "description": "They get an email with a link to set their own password. You choose what they can do.",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "language": "Language",
+      "roles": "Roles",
+      "submit": "Send invitation"
+    },
+    "memberRoles": {
+      "title": "Roles for {name}",
+      "description": "Their access is everything the ticked roles allow, together. Changes apply at once.",
+      "atLeastOne": "Choose at least one role."
+    },
+    "roles": {
+      "intro": "A role is a set of things a person is allowed to do. Built-in roles cannot be changed; copy one to make your own.",
+      "create": "New role",
+      "system": "Built-in",
+      "custom": "Your clinic",
+      "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
+      "members": "{count, plural, =1 {# person} other {# people}}",
+      "showPermissions": "What this role allows",
+      "copy": "Copy",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteBlocked": "People still hold this role. Change their roles first.",
+      "deleteConfirm": "Delete the role {name}? This cannot be undone.",
+      "cannotAssign": "You cannot give this role: it allows things you cannot do yourself."
+    },
+    "editor": {
+      "createTitle": "New role",
+      "editTitle": "Edit role",
+      "description": "Name the role and tick what it allows.",
+      "copyOf": "Starting from {name}. Change what you need.",
+      "nameEn": "Name (English)",
+      "nameBn": "Name (Bengali, optional)",
+      "permissions": "What it allows ({count} ticked)",
+      "sensitive": "Sensitive",
+      "youDoNotHold": "You do not have this permission yourself, so you cannot give it.",
+      "acknowledge": "{count, plural, =1 {# ticked permission is sensitive.} other {# ticked permissions are sensitive.}} I understand and want to give it to this role."
+    },
+    "activity": {
+      "intro": "Every change to roles and access in your clinic, newest first.",
+      "empty": "Nothing has changed yet.",
+      "someone": "Someone",
+      "newer": "Newer",
+      "older": "Older",
+      "actions": {
+        "role_created": "{actor} created the role {role}",
+        "role_updated": "{actor} changed the role {role}",
+        "role_deleted": "{actor} deleted the role {role}",
+        "roles_assigned": "{actor} changed the roles of {member}",
+        "member_invited": "{actor} added {member}",
+        "member_deactivated": "{actor} switched off {member}",
+        "member_activated": "{actor} switched on {member}",
+        "other": "{actor} changed access settings"
+      }
+    },
+    "modules": {
+      "dashboard": "Dashboard",
+      "patients": "Patients",
+      "health": "Health records",
+      "appointments": "Appointments",
+      "visits": "Visits",
+      "prescriptions": "Prescriptions",
+      "payments": "Payments and invoices",
+      "library": "Medicine and symptom library",
+      "identity": "Patient identity",
+      "clinic": "Clinic and doctor profile",
+      "directory": "Public directory",
+      "marketing": "Promotion",
+      "content": "Articles",
+      "messaging": "Messaging",
+      "billing": "Plan and credits",
+      "ai": "AI assistant",
+      "team": "Team"
+    }
+  }
+}
