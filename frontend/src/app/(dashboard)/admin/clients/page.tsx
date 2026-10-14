@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   UserPlus,
   Users,
+  ShieldCheck,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import {
@@ -289,12 +290,20 @@ export default function AdminClientsPage() {
                         </TableCell>
                         <TableCell>{client.doctor_count}</TableCell>
                         <TableCell className="text-right">
-                          <Button asChild size="sm" variant="outline">
-                            <Link href={`/admin/clients/${client.tenant.id}`}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              Details
-                            </Link>
-                          </Button>
+                          <div className="flex justify-end gap-2">
+                            <Button asChild size="sm" variant="outline">
+                              <Link href={`/admin/clients/${client.tenant.id}`}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                Details
+                              </Link>
+                            </Button>
+                            <Button asChild size="sm" variant="outline">
+                              <Link href={`/admin/clients/${client.tenant.id}/team`}>
+                                <ShieldCheck className="h-4 w-4 mr-2" />
+                                Team &amp; roles
+                              </Link>
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

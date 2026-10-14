@@ -12,7 +12,7 @@ import { roleName } from './roleNames'
 import type { TeamPermission, TeamRole } from '@/types/team'
 
 // Everyday clinic work first, administration last
-const MODULE_ORDER = ['dashboard', 'patients', 'health', 'appointments', 'visits', 'prescriptions', 'payments', 'library', 'identity', 'messaging', 'clinic', 'directory', 'content', 'marketing', 'ai', 'billing', 'team']
+const MODULE_ORDER = ['tenants', 'users', 'plans', 'billing', 'content', 'catalogue', 'contact', 'marketing', 'roles', 'audit', 'dashboard', 'patients', 'health', 'appointments', 'visits', 'prescriptions', 'payments', 'library', 'identity', 'messaging', 'clinic', 'directory', 'content', 'marketing', 'ai', 'billing', 'team']
 
 export type RoleEditorMode = { kind: 'create'; base: TeamRole | null } | { kind: 'edit'; role: TeamRole }
 

@@ -1,10 +1,17 @@
-"""A clinic's staff and roles (ADR 010, Phase 3).
+"""Staff and roles (ADR 010, Phases 3 and 4). Only the platform changes them; a clinic that needs a change asks AltCare.
+
+One service serves three uses, chosen by who acts and on what:
+- a platform user acting on the platform itself (no `target_tenant_id`): platform staff and platform-level roles;
+- a platform user acting on one clinic (`target_tenant_id`): that clinic's staff and clinic-level roles. The platform
+  is the authority over clinic permissions, so the no-escalation check does not apply to it;
+- a clinic user: read access to their own clinic's staff, roles and audit trail (the routes expose no writes).
 
 Every rule from the ADR's safety section is enforced here, in the service, not left to the UI:
 
 1. No escalation: nobody puts into a role, or hands to a person, a permission they do not hold themselves.
-2. A clinic role holds clinic-level permissions only.
-3. A clinic always keeps someone who can manage the team (`team.manage`).
+2. A role holds permissions of its own level only (clinic roles clinic-level, platform roles platform-level).
+3. Nobody is locked out: the platform always keeps someone who can manage roles (`roles.manage_global`), and a clinic
+   always keeps at least one active practitioner (someone who can issue prescriptions).
 4. Sensitive permissions need an explicit acknowledgement.
 5. Every change is written to `role_audit_log`.
 """
@@ -40,25 +47,49 @@ from app.shared.models.tenant import Tenant, User, UserSession
 
 MAX_CLINIC_ROLES = 20
 INVITE_TOKEN_TTL = timedelta(days=3)
-OWNER_PERMISSION = "team.manage"
+CLINIC_OWNER_PERMISSION = "prescriptions.issue"
+PLATFORM_OWNER_PERMISSION = "roles.manage_global"
 
 
 def _error(code: int, key: str, message: str) -> HTTPException:
     return HTTPException(status_code=code, detail={"code": key, "message": message})
 
 
+async def count_active_owners(db: AsyncSession, tenant_id: str | None, permission: str) -> int:
+    """Active people at this level (one clinic, or the platform when `tenant_id` is None) who hold `permission` right now."""
+    level = User.tenant_id.is_(None) if tenant_id is None else User.tenant_id == tenant_id
+    result = await db.execute(
+        select(func.count(func.distinct(User.id)))
+        .select_from(User)
+        .join(UserRole, UserRole.user_id == User.id)
+        .join(Role, Role.id == UserRole.role_id)
+        .join(RolePermission, RolePermission.role_id == Role.id)
+        .where(level, User.is_active.is_(True), Role.is_active.is_(True), RolePermission.permission_key == permission)
+    )
+    return int(result.scalar_one())
+
+
 class TeamService:
-    def __init__(self, db: AsyncSession, actor: CurrentUser):
+    def __init__(self, db: AsyncSession, actor: CurrentUser, target_tenant_id: str | None = None):
         self.db = db
         self.actor = actor
-        self.tenant_id = actor.tenant_id
+        # A platform user acting on one clinic; clinic users only ever act on their own
+        self.acting_for_clinic = actor.tenant_id is None and target_tenant_id is not None
+        self.tenant_id = target_tenant_id if self.acting_for_clinic else actor.tenant_id
+        self.is_platform = actor.tenant_id is None and target_tenant_id is None
+        self.scope = "platform" if self.is_platform else "tenant"
+        self.owner_permission = PLATFORM_OWNER_PERMISSION if self.is_platform else CLINIC_OWNER_PERMISSION
         self._actor_permissions: frozenset[str] | None = None
 
     # ------------------------------------------------------------------ helpers
 
     async def _held(self) -> frozenset[str]:
         if self._actor_permissions is None:
-            self._actor_permissions = await get_permissions(self.actor, self.db)
+            if self.acting_for_clinic:
+                # The platform decides what a clinic may hold: every clinic-level permission is grantable by it
+                self._actor_permissions = frozenset(k for k, p in BY_KEY.items() if p.scope == "tenant")
+            else:
+                self._actor_permissions = await get_permissions(self.actor, self.db)
         return self._actor_permissions
 
     async def _audit(self, action: str, *, role_id: str | None = None, user_id: str | None = None, before=None, after=None) -> None:
@@ -75,13 +106,15 @@ class TeamService:
             )
         )
 
+    def _member_level(self):
+        """Whose staff this is: the platform's (no clinic) or one clinic's."""
+        return User.tenant_id.is_(None) if self.is_platform else User.tenant_id == self.tenant_id
+
     def _visible_roles(self):
-        """Roles a clinic can see and use: the global clinic-level templates, and its own."""
-        return select(Role).where(
-            Role.scope == "tenant",
-            Role.is_active.is_(True),
-            (Role.tenant_id.is_(None)) | (Role.tenant_id == self.tenant_id),
-        )
+        """Roles that can be seen and used here. A clinic: the global clinic-level templates and its own. The platform:
+        the global platform-level roles."""
+        own = Role.tenant_id.is_(None) if self.is_platform else (Role.tenant_id.is_(None)) | (Role.tenant_id == self.tenant_id)
+        return select(Role).where(Role.scope == self.scope, Role.is_active.is_(True), own)
 
     async def _role_permissions(self, role_ids: list[str]) -> dict[str, set[str]]:
         out: dict[str, set[str]] = {r: set() for r in role_ids}
@@ -98,7 +131,7 @@ class TeamService:
         return role
 
     async def _get_member(self, user_id: str) -> User:
-        user = (await self.db.execute(select(User).where(User.id == user_id, User.tenant_id == self.tenant_id))).scalar_one_or_none()
+        user = (await self.db.execute(select(User).where(User.id == user_id, self._member_level()))).scalar_one_or_none()
         if user is None:
             raise _error(404, "member_not_found", "Team member not found")
         return user
@@ -119,7 +152,7 @@ class TeamService:
     def _check_permissions_input(self, keys: list[str], held: frozenset[str], acknowledge_sensitive: bool, already: set[str] | None = None) -> set[str]:
         wanted = set(keys)
         try:
-            validate_role_permissions("tenant", wanted)
+            validate_role_permissions(self.scope, wanted)
         except PermissionRuleError as exc:
             raise _error(422, "invalid_permissions", str(exc)) from exc
         try:
@@ -136,34 +169,29 @@ class TeamService:
         return wanted
 
     async def _count_owners(self) -> int:
-        """Active people in this clinic who can manage the team right now."""
-        result = await self.db.execute(
-            select(func.count(func.distinct(User.id)))
-            .select_from(User)
-            .join(UserRole, UserRole.user_id == User.id)
-            .join(Role, Role.id == UserRole.role_id)
-            .join(RolePermission, RolePermission.role_id == Role.id)
-            .where(
-                User.tenant_id == self.tenant_id,
-                User.is_active.is_(True),
-                Role.is_active.is_(True),
-                RolePermission.permission_key == OWNER_PERMISSION,
-            )
-        )
-        return int(result.scalar_one())
+        """Active people at this level who can manage the roles right now."""
+        return await count_active_owners(self.db, self.tenant_id, self.owner_permission)
 
     async def _require_an_owner(self) -> None:
         """Rule 3. Called after a change has been flushed, inside the transaction, so a violation rolls everything back."""
         if await self._count_owners() == 0:
             await self.db.rollback()
-            raise _error(409, "last_owner", "The clinic must keep at least one active person who can manage the team.")
+            message = (
+                "The platform must keep at least one active person who can manage roles and staff."
+                if self.is_platform
+                else "The clinic must keep at least one active practitioner (someone who can issue prescriptions)."
+            )
+            raise _error(409, "last_owner", message)
 
     async def _refresh_legacy_role(self, user: User, *, check_seat: bool = True) -> None:
         """`users.role` stays during the transition (ADR 010, Phase 4 retires it). Whoever can issue prescriptions is
         a 'doctor' there, which is also what a practitioner seat counts. Written with a plain UPDATE on purpose: the ORM
         hook that mirrors `users.role` into `user_roles` must not run, or it would replace the roles just chosen."""
         perms = await self._effective_of(user.id)
-        legacy = "doctor" if "prescriptions.issue" in perms else "receptionist"
+        if self.is_platform:
+            legacy = "admin" if PLATFORM_OWNER_PERMISSION in perms else "operator"
+        else:
+            legacy = "doctor" if "prescriptions.issue" in perms else "receptionist"
         if legacy == user.role:
             return
         if legacy == "doctor" and check_seat and user.is_active:
@@ -201,7 +229,7 @@ class TeamService:
 
     async def list_permissions(self) -> list[PermissionItem]:
         held = await self._held()
-        rows = (await self.db.execute(select(PermissionRow).where(PermissionRow.scope == "tenant").order_by(PermissionRow.module, PermissionRow.key))).scalars().all()
+        rows = (await self.db.execute(select(PermissionRow).where(PermissionRow.scope == self.scope).order_by(PermissionRow.module, PermissionRow.key))).scalars().all()
         return [
             PermissionItem(
                 key=p.key,
@@ -226,7 +254,7 @@ class TeamService:
                 await self.db.execute(
                     select(UserRole.role_id, func.count())
                     .join(User, User.id == UserRole.user_id)
-                    .where(UserRole.role_id.in_(ids), User.tenant_id == self.tenant_id, User.is_active.is_(True))
+                    .where(UserRole.role_id.in_(ids), self._member_level(), User.is_active.is_(True))
                     .group_by(UserRole.role_id)
                 )
             ).all()
@@ -254,16 +282,13 @@ class TeamService:
         if data.based_on_role_id:
             await self._get_role(data.based_on_role_id)
 
-        existing = (await self.db.execute(select(func.count()).select_from(Role).where(Role.tenant_id == self.tenant_id))).scalar_one()
+        own = Role.tenant_id.is_(None) if self.is_platform else Role.tenant_id == self.tenant_id
+        existing = (await self.db.execute(select(func.count()).select_from(Role).where(own, Role.is_system.is_(False), Role.scope == self.scope))).scalar_one()
         if existing >= MAX_CLINIC_ROLES:
-            raise _error(409, "too_many_roles", f"A clinic can have at most {MAX_CLINIC_ROLES} custom roles.")
+            raise _error(409, "too_many_roles", f"At most {MAX_CLINIC_ROLES} custom roles are allowed.")
 
         name_en = data.name_en.strip()
-        taken = (
-            await self.db.execute(
-                select(func.count()).select_from(Role).where(func.lower(Role.name_en) == name_en.lower(), Role.is_active.is_(True), (Role.tenant_id.is_(None)) | (Role.tenant_id == self.tenant_id))
-            )
-        ).scalar_one()
+        taken = (await self.db.execute(select(func.count()).select_from(self._visible_roles().where(func.lower(Role.name_en) == name_en.lower()).subquery()))).scalar_one()
         if taken:
             raise _error(409, "role_name_taken", "A role with this name already exists.")
 
@@ -274,7 +299,7 @@ class TeamService:
             key=key,
             name_en=name_en,
             name_bn=(data.name_bn or name_en).strip(),
-            scope="tenant",
+            scope=self.scope,
             tenant_id=self.tenant_id,
             is_system=False,
             based_on_role_id=data.based_on_role_id,
@@ -339,13 +364,13 @@ class TeamService:
 
     async def _members_with_role(self, role_id: str) -> list[User]:
         return list(
-            (await self.db.execute(select(User).join(UserRole, UserRole.user_id == User.id).where(UserRole.role_id == role_id, User.tenant_id == self.tenant_id))).scalars().all()
+            (await self.db.execute(select(User).join(UserRole, UserRole.user_id == User.id).where(UserRole.role_id == role_id, self._member_level()))).scalars().all()
         )
 
     # ------------------------------------------------------------------ members
 
     async def list_members(self) -> list[MemberItem]:
-        users = (await self.db.execute(select(User).where(User.tenant_id == self.tenant_id).order_by(User.is_active.desc(), User.full_name))).scalars().all()
+        users = (await self.db.execute(select(User).where(self._member_level()).order_by(User.is_active.desc(), User.full_name))).scalars().all()
         roles = await self._roles_of([u.id for u in users])
         held = await self._held()
         role_perms = await self._role_permissions(list({r.id for rs in roles.values() for r in rs}))
@@ -375,9 +400,13 @@ class TeamService:
             raise _error(400, "email_taken", "Email already registered")
 
         perms = await self._role_permissions([r.id for r in roles])
-        will_prescribe = any("prescriptions.issue" in p for p in perms.values())
+        will_prescribe = (not self.is_platform) and any("prescriptions.issue" in p for p in perms.values())
         if will_prescribe:
             await EntitlementService(self.db).check_limit(self.tenant_id, "max_seats")
+        if self.is_platform:
+            legacy_role = "admin" if any(PLATFORM_OWNER_PERMISSION in p for p in perms.values()) else "operator"
+        else:
+            legacy_role = "doctor" if will_prescribe else "receptionist"
 
         raw_token = generate_secure_token()
         user = User(
@@ -386,7 +415,7 @@ class TeamService:
             email=email,
             # Nobody knows this password; the person sets their own through the emailed link
             password_hash=get_password_hash(generate_secure_token()),
-            role="doctor" if will_prescribe else "receptionist",
+            role=legacy_role,
             full_name=data.full_name.strip(),
             phone=data.phone,
             language=data.language,
@@ -403,7 +432,10 @@ class TeamService:
         await self._audit("member_invited", user_id=user.id, after={"email": email, "roles": [r.name_en for r in roles]})
         await self.db.commit()
 
-        clinic = (await self.db.execute(select(Tenant.clinic_name).where(Tenant.id == self.tenant_id))).scalar_one_or_none() or "your clinic"
+        if self.is_platform:
+            clinic = "the AltCare platform team"
+        else:
+            clinic = (await self.db.execute(select(Tenant.clinic_name).where(Tenant.id == self.tenant_id))).scalar_one_or_none() or "your clinic"
         link = f"{settings.FRONTEND_URL}/reset-password?token={raw_token}"
         send_system_email_task.delay(
             recipient=user.email,
@@ -458,7 +490,7 @@ class TeamService:
         if not member.can_manage:
             raise _error(403, "cannot_manage_member", "This person holds permissions you do not, so you cannot change their access.")
 
-        if active and "prescriptions.issue" in await self._effective_of(user.id):
+        if active and not self.is_platform and "prescriptions.issue" in await self._effective_of(user.id):
             await EntitlementService(self.db).check_limit(self.tenant_id, "max_seats")
         user.is_active = active
         user.updated_by = self.actor.user_id
@@ -477,10 +509,16 @@ class TeamService:
 
     # ------------------------------------------------------------------ audit
 
-    async def list_audit(self, limit: int = 50, offset: int = 0) -> AuditPage:
-        total = (await self.db.execute(select(func.count()).select_from(RoleAuditLog).where(RoleAuditLog.tenant_id == self.tenant_id))).scalar_one()
+    async def list_audit(self, limit: int = 50, offset: int = 0, level: str = "all") -> AuditPage:
+        """A clinic reads its own trail. The platform reads everything: `level` narrows it to the platform's own changes
+        ("platform") or to those made inside clinics ("clinic")."""
+        if self.is_platform:
+            conditions = {"platform": [RoleAuditLog.tenant_id.is_(None)], "clinic": [RoleAuditLog.tenant_id.is_not(None)]}.get(level, [])
+        else:
+            conditions = [RoleAuditLog.tenant_id == self.tenant_id]
+        total = (await self.db.execute(select(func.count()).select_from(RoleAuditLog).where(*conditions))).scalar_one()
         logs = (
-            (await self.db.execute(select(RoleAuditLog).where(RoleAuditLog.tenant_id == self.tenant_id).order_by(RoleAuditLog.created_at.desc()).limit(limit).offset(offset)))
+            (await self.db.execute(select(RoleAuditLog).where(*conditions).order_by(RoleAuditLog.created_at.desc()).limit(limit).offset(offset)))
             .scalars()
             .all()
         )
@@ -492,6 +530,10 @@ class TeamService:
         role_names = {}
         if role_ids:
             role_names = dict((await self.db.execute(select(Role.id, Role.name_en).where(Role.id.in_(role_ids)))).all())
+        clinic_names = {}
+        tenant_ids = {log.tenant_id for log in logs if log.tenant_id} if self.is_platform else set()
+        if tenant_ids:
+            clinic_names = dict((await self.db.execute(select(Tenant.id, Tenant.clinic_name).where(Tenant.id.in_(tenant_ids)))).all())
         return AuditPage(
             total=int(total),
             items=[
@@ -503,6 +545,7 @@ class TeamService:
                     member_name=names.get(log.user_id),
                     # A deleted role is gone from `roles`; its name survives in the audit entry
                     role_name=role_names.get(log.role_id) or (log.before or {}).get("name"),
+                    clinic_name=clinic_names.get(log.tenant_id),
                     before=log.before,
                     after=log.after,
                 )

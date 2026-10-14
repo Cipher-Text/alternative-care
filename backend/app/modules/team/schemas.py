@@ -85,6 +85,8 @@ class AuditItem(BaseModel):
     actor_name: str | None = None
     member_name: str | None = None
     role_name: str | None = None
+    # Set on the platform's global audit view for a change made inside a clinic
+    clinic_name: str | None = None
     before: dict | None = None
     after: dict | None = None
 

@@ -51,12 +51,12 @@ def test_the_receptionist_is_read_only_on_clinical_records_and_has_no_clinical_o
         "prescriptions.write", "prescriptions.issue", "prescriptions.void", "medicines.write", "symptoms.write", "clinic_profile.write",
     }
     assert not (held & clinical_writes)
-    assert not (held & {"messaging.send", "messaging.read", "ai.use", "doctor_profile.manage", "billing.manage", "team.manage", "team.read"})
+    assert not (held & {"messaging.send", "messaging.read", "ai.use", "doctor_profile.manage", "billing.manage", "team.read"})
 
 
 def test_sensitive_permissions_are_flagged_and_never_in_the_receptionist_role():
     sensitive = {p.key for p in PERMISSIONS if p.sensitive}
-    assert {"patients.delete", "billing.manage", "team.manage", "users.manage", "billing.admin", "roles.manage_global"} <= sensitive
+    assert {"patients.delete", "billing.manage", "users.manage", "billing.admin", "roles.manage_global", "clinic_roles.manage"} <= sensitive
     assert not (SYSTEM_ROLES["receptionist"].permissions & sensitive)
     assert not (SYSTEM_ROLES["operator"].permissions & sensitive)  # read-only staff hold nothing sensitive
 

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useInviteMember } from '@/lib/hooks/useTeam'
+import { useTeamArea } from '@/lib/team/area'
 import { RoleChecklist } from './RoleChecklist'
 import type { TeamRole } from '@/types/team'
 
@@ -15,6 +16,7 @@ import type { TeamRole } from '@/types/team'
 export function InviteMemberDialog({ roles, onClose }: { roles: TeamRole[]; onClose: () => void }) {
   const t = useTranslations('teamUi')
   const locale = useLocale()
+  const { kind } = useTeamArea()
   const invite = useInviteMember()
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
@@ -47,7 +49,7 @@ export function InviteMemberDialog({ roles, onClose }: { roles: TeamRole[]; onCl
         <form onSubmit={submit} className="space-y-4">
           <DialogHeader>
             <DialogTitle>{t('invite.title')}</DialogTitle>
-            <DialogDescription>{t('invite.description')}</DialogDescription>
+            <DialogDescription>{kind === 'platform' ? t('platform.inviteDescription') : t('invite.description')}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">

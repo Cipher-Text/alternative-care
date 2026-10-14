@@ -2,6 +2,7 @@
 
 import { use, useState } from 'react'
 import type { FormEvent } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
@@ -165,7 +166,7 @@ export default function AdminClientDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => router.push('/admin/clients')}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
@@ -178,6 +179,9 @@ export default function AdminClientDetailPage({
             Clinic tenant and doctor account details
           </p>
         </div>
+        <Button asChild variant="outline" className="ml-auto">
+          <Link href={`/admin/clients/${tenantId}/team`}>Team &amp; roles</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

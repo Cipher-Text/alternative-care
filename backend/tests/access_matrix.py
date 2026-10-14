@@ -66,7 +66,7 @@ def matrix(app) -> dict[str, dict]:
 
 # Routes added after the snapshot was frozen (ADR 010, Phase 3). They have no "before" to compare with, so each gets its own
 # explicit test (tests/unit/test_access_matrix.py) instead of a silent skip.
-ADDED_AFTER_FREEZE = ("/api/v1/team",)
+ADDED_AFTER_FREEZE = ("/api/v1/team", "/api/v1/admin/staff", "/api/v1/admin/tenants/{tenant_id}/team")
 
 
 def comparable(golden: dict, now: dict) -> list[str]:

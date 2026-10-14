@@ -1,8 +1,7 @@
 {
   "teamUi": {
     "title": "Team",
-    "subtitleManage": "Add your staff and decide what each person can do. Changes take effect straight away.",
-    "subtitleRead": "The people in your clinic and the roles they hold.",
+    "subtitleRead": "The people in your clinic and the roles they hold. To add staff or change roles, contact AltCare.",
     "noAccess": "You do not have access to the team page.",
     "loading": "Loading",
     "loadFailed": "Could not load this. Please try again.",
@@ -18,7 +17,7 @@
       "activity": "Activity"
     },
     "members": {
-      "intro": "Everyone who can sign in to your clinic. Each person's access is the combination of their roles.",
+      "intro": "Everyone who can sign in to your clinic. Each person's access is the combination of their roles. To add someone or change their access, contact AltCare.",
       "add": "Add staff member",
       "person": "Person",
       "roles": "Roles",
@@ -31,7 +30,7 @@
       "editRoles": "Change roles",
       "deactivate": "Switch off",
       "activate": "Switch on",
-      "cannotManage": "Holds permissions you do not"
+      "cannotManage": "Holds permissions you cannot grant"
     },
     "invite": {
       "title": "Add a staff member",
@@ -49,10 +48,10 @@
       "atLeastOne": "Choose at least one role."
     },
     "roles": {
-      "intro": "A role is a set of things a person is allowed to do. Built-in roles cannot be changed; copy one to make your own.",
+      "intro": "A role is a set of things a person is allowed to do. Built-in roles cannot be changed. To get a new role or change one, contact AltCare.",
       "create": "New role",
       "system": "Built-in",
-      "custom": "Your clinic",
+      "custom": "Custom",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
       "members": "{count, plural, =1 {# person} other {# people}}",
       "showPermissions": "What this role allows",
@@ -76,7 +75,7 @@
       "acknowledge": "{count, plural, =1 {# ticked permission is sensitive.} other {# ticked permissions are sensitive.}} I understand and want to give it to this role."
     },
     "activity": {
-      "intro": "Every change to roles and access in your clinic, newest first.",
+      "intro": "Every change AltCare made to roles and access in your clinic, newest first.",
       "empty": "Nothing has changed yet.",
       "someone": "Someone",
       "newer": "Newer",
@@ -90,7 +89,11 @@
         "member_deactivated": "{actor} switched off {member}",
         "member_activated": "{actor} switched on {member}",
         "other": "{actor} changed access settings"
-      }
+      },
+      "levelAll": "Everything",
+      "levelPlatform": "Platform team",
+      "levelClinic": "Inside clinics",
+      "inClinic": "in {clinic}"
     },
     "modules": {
       "dashboard": "Dashboard",
@@ -109,7 +112,31 @@
       "messaging": "Messaging",
       "billing": "Plan and credits",
       "ai": "AI assistant",
-      "team": "Team"
+      "team": "Team",
+      "tenants": "Clinics",
+      "users": "Users",
+      "plans": "Plans",
+      "catalogue": "Pharmacies, institutions and catalogue",
+      "contact": "Contact messages",
+      "roles": "Platform roles",
+      "audit": "Audit log"
+    },
+    "platform": {
+      "title": "Platform team",
+      "subtitleManage": "Add platform staff and decide what each person can do across AltCare. Changes take effect straight away.",
+      "subtitleRead": "The platform staff and the roles they hold.",
+      "noAccess": "You do not have access to the platform team page.",
+      "membersIntro": "Everyone on the AltCare platform team. Each person's access is the combination of their roles.",
+      "rolesIntro": "A role is a set of things platform staff are allowed to do. Admin and Operator are built in and cannot be changed; copy one to make a role such as Support or Finance.",
+      "inviteDescription": "They get an email with a link to set their own password. You choose what they can do on the platform.",
+      "activityIntro": "Every change to roles and access, on the platform and inside clinics, newest first."
+    },
+    "byPlatform": {
+      "subtitleManage": "Add this clinic's staff and decide what each person can do. The clinic cannot change this itself; it contacts AltCare.",
+      "subtitleRead": "This clinic's staff and the roles they hold.",
+      "membersIntro": "Everyone who can sign in to this clinic. Each person's access is the combination of their roles.",
+      "rolesIntro": "A role is a set of things a person is allowed to do. Built-in roles cannot be changed; copy one, or build a role from scratch, for this clinic.",
+      "activityIntro": "Every change to roles and access in this clinic, newest first."
     }
   }
 }

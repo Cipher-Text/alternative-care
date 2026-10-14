@@ -245,13 +245,15 @@ async def test_tenant_isolation(db_session):
 
 Platform users (`tenant_id = null`) are rejected with **403** from all tenant-scoped service factories.
 
-**Dynamic roles (ADR 010, Phases 1 to 3 built 2026-10-14):** roles and permissions are data — `permissions` (catalogue in
-`app/core/permissions.py`: 43 clinic-level + 15 platform-level), `roles` (global or clinic-specific), `user_roles`, `role_audit_log`. Every
+**Dynamic roles (ADR 010, Phases 1 to 4 built 2026-10-14):** roles and permissions are data — `permissions` (catalogue in
+`app/core/permissions.py`: 41 clinic-level + 16 platform-level), `roles` (global or clinic-specific), `user_roles`, `role_audit_log`. Every
 route is guarded by permission (`require_permission` / `require_any_permission` / `module_guard` / `access_guard` in
 `app/core/dependencies.py`; `ensure_permission` for request-dependent checks); `tests/unit/test_access_matrix.py` fails for any route
 without one. `GET /auth/me/permissions` feeds the frontend's `useCan()`. The four roles above are *system roles* whose permission sets are
-pinned in `tests/unit/test_permissions.py`. Clinics manage staff and their own roles at `/team` (`app/modules/team`, rules in ADR 010
-"Phase 3 as built"). `users.role` is still written (an ORM hook mirrors it into `user_roles`) until Phase 4 retires it.
+pinned in `tests/unit/test_permissions.py`. **Only the platform changes staff and roles** (it is sensitive): a clinic sees its team read-only at `/team` (`app/modules/team`) and contacts AltCare
+for changes; a platform admin manages a clinic at `/admin/clients/{id}/team` (`clinic_roles.manage`) and the platform's own staff and custom roles at
+`/admin/staff` (`app/modules/staff`, same service); rules in ADR 010 "Phase 3/4 as built". `users.role` is still written as a derived label
+(an ORM hook mirrors it into `user_roles`); it is not fully retired, see ADR 010 "Phase 4 as built".
 Plan: `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
 
 **Permission-Based Access:**
@@ -347,7 +349,8 @@ backend/app/
 │   ├── pharmacy/         # ✅ Admin-curated pharmacy/wholesaler directory: list + near-me search, CSV import (6 endpoints) — admin UI at `/admin/pharmacies`, practitioner list/map/near-me at `/pharmacies`, 50 seeded Hamdard (Unani) outlets in `seed_data/pharmacies.json`
 │   ├── plans/            # ✅ Plan & entitlement configuration, public pricing, per-tenant overrides (8 endpoints; enforcement lives in `app/core/entitlements.py`)
 │   ├── library/          # 📋 Models exist (books/chapters/sections/embeddings/progress/bookmarks/highlights), no routes — Phase C
-│   ├── team/             # ✅ Clinic staff, clinic roles and their audit trail (10 endpoints) — UI at `/team`
+│   ├── team/             # ✅ A clinic's read-only view of its staff, roles and audit trail (4 endpoints) — UI at `/team`
+│   ├── staff/            # ✅ Platform changes staff/roles: platform team (10 endpoints, `/admin/staff`) and any clinic's team (10 endpoints, `/admin/tenants/{id}/team`)
 │   └── notification/     # 📋 Placeholder
 └── shared/
     ├── models/           # SQLAlchemy models

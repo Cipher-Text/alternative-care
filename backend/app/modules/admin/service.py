@@ -39,6 +39,7 @@ from app.modules.admin.schemas import (
 )
 from app.shared.models import BillingOrder, ContactMessage, FacebookFeatureRequest, PractitionerListing
 from app.shared.models.tenant import Tenant, User
+from app.modules.team.service import PLATFORM_OWNER_PERMISSION, count_active_owners
 
 VALID_ROLES = {"admin", "operator", "doctor", "receptionist"}
 PLATFORM_ROLES = {"admin", "operator"}
@@ -644,20 +645,13 @@ class AdminService:
                     ),
                 )
 
-            # Prevent removing the last admin
-            if user.role == "admin" and data.role != "admin":
-                admin_count_result = await self.db.execute(
-                    select(func.count()).select_from(User).where(
-                        User.role == "admin",
-                        User.is_active == True,  # noqa: E712
-                    )
+            # Platform staff roles are managed on the Platform team page (ADR 010, Phase 4): custom roles, several roles
+            # per person, the no-escalation rules and the audit trail all live there.
+            if current_is_platform:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Platform staff roles are managed on the Platform team page.",
                 )
-                admin_count = admin_count_result.scalar() or 0
-                if admin_count <= 1:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail="Cannot change role of the last active admin.",
-                    )
 
             user.role = data.role
             # Increment token_version to invalidate all existing JWTs
@@ -665,6 +659,15 @@ class AdminService:
 
         if data.is_active is not None:
             user.is_active = data.is_active
+            # Switching off the last person who can manage platform roles would lock everyone out of them
+            if user.tenant_id is None and not user.is_active:
+                await self.db.flush()
+                if await count_active_owners(self.db, None, PLATFORM_OWNER_PERMISSION) == 0:
+                    await self.db.rollback()
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Cannot switch off the last active person who can manage platform roles.",
+                    )
 
         await self.db.commit()
         await self.db.refresh(user)

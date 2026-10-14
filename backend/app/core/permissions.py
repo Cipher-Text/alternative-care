@@ -77,8 +77,7 @@ TENANT_PERMISSIONS: tuple[Permission, ...] = (
     _t("billing.view", "billing", "View the messaging credit balance and history", "মেসেজিং ক্রেডিটের হিসাব ও ইতিহাস দেখা"),
     _t("billing.manage", "billing", "See the plan and receipts; buy plans and credits", "প্ল্যান ও রসিদ দেখা; প্ল্যান ও ক্রেডিট কেনা", sensitive=True),
     _t("ai.use", "ai", "Use the AI assistant", "এআই সহকারী ব্যবহার"),
-    _t("team.read", "team", "See the clinic's staff and roles", "ক্লিনিকের কর্মী ও ভূমিকা দেখা"),
-    _t("team.manage", "team", "Add staff and manage roles", "কর্মী যোগ ও ভূমিকা পরিচালনা", sensitive=True),
+    _t("team.read", "team", "See the clinic's staff and roles (changes go through AltCare)", "ক্লিনিকের কর্মী ও ভূমিকা দেখা (পরিবর্তন AltCare-এর মাধ্যমে)"),
 )
 
 PLATFORM_PERMISSIONS: tuple[Permission, ...] = (
@@ -95,6 +94,7 @@ PLATFORM_PERMISSIONS: tuple[Permission, ...] = (
     _p("catalogue.global_write", "catalogue", "Edit the global medicine and symptom catalogue", "গ্লোবাল ওষুধ ও উপসর্গ তালিকা সম্পাদনা"),
     _p("contact.manage", "contact", "Read and handle contact messages", "যোগাযোগ বার্তা পড়া ও নিষ্পত্তি"),
     _p("marketing.manage", "marketing", "Draft and post Facebook features", "ফেসবুক প্রচারের খসড়া ও পোস্ট"),
+    _p("clinic_roles.manage", "roles", "Add clinic staff, create clinic roles and assign them", "ক্লিনিকের কর্মী যোগ, ভূমিকা তৈরি ও নির্ধারণ", sensitive=True),
     _p("roles.manage_global", "roles", "Manage global roles and platform staff roles", "গ্লোবাল ও প্ল্যাটফর্ম কর্মীর ভূমিকা পরিচালনা", sensitive=True),
     _p("audit.read", "audit", "View the role and access audit log", "ভূমিকা ও প্রবেশাধিকারের অডিট লগ দেখা"),
 )

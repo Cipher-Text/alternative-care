@@ -61,6 +61,8 @@ export interface MemberInviteInput {
   role_ids: string[]
 }
 
+export type AuditLevel = 'all' | 'platform' | 'clinic'
+
 export interface TeamAuditItem {
   id: string
   created_at: string
@@ -68,6 +70,8 @@ export interface TeamAuditItem {
   actor_name: string | null
   member_name: string | null
   role_name: string | null
+  /** Platform audit view only: the clinic a change was made in */
+  clinic_name?: string | null
   before: Record<string, unknown> | null
   after: Record<string, unknown> | null
 }

@@ -1,7 +1,7 @@
 # ADR 010: Dynamic roles and permissions: a fixed permission catalogue, roles that are global or tenant-specific, and users who hold roles
 
-- Status: **Accepted 2026-10-14 with the recommended answers to the four decisions below. Phases 1 to 3 are built**
-  (see "Phase 1 as built", "Phase 3 as built"); Phase 4 is not.
+- Status: **Accepted 2026-10-14 with the recommended answers to the four decisions below. Phases 1 to 4 are built**
+  (see "Phase 1 as built", "Phase 3 as built", "Phase 4 as built"); `users.role` is not fully retired (see Phase 4).
 - Date: 2026-10-14
 - Related: ADR 002 (platform vs tenant data), `docs/architecture/roles-access.md` (the current, hard-coded model),
   `docs/architecture/multi-tenancy.md`, `backend/app/core/entitlements.py` (the plan/entitlement system, which this
@@ -179,7 +179,24 @@ Phases 1 and 2 are invisible to users. Phase 3 is the first visible change.
   reading shared records, `shared_records.read`); billing uses `TenantStaff` (`billing.view`) and `Buyer`
   (`billing.manage`); content authoring allows a doctor or an admin (`content.author` or `content.manage`).
 
-## Phase 3 as built (2026-10-14)
+## Phase 3 as built (2026-10-14), revised: the platform manages clinic teams
+
+**Revision (2026-10-14):** roles assignment is sensitive and belongs to the platform. The clinic-side write endpoints
+were removed; `team.manage` left the catalogue (migration `j5f1b7e3a9c6` re-syncs it, which also strips it from any
+role that held it); a platform permission `clinic_roles.manage` (sensitive, held by the admin system role) was added.
+What is below describes the same service, now driven from the platform:
+- Clinic side, read only (`/api/v1/team/{permissions,roles,members,audit}`, `team.read`, held by the Doctor role): the
+  page `/team` lists staff, roles and the trail of changes and says "contact AltCare" to change anything.
+- Platform side (`/api/v1/admin/tenants/{id}/team/...`, same 10 endpoints, `tenants.read` to look,
+  `clinic_roles.manage` to change; page `/admin/clients/{id}/team`, linked from the client detail page). The platform is
+  the authority over clinic permissions, so the no-escalation rule is not applied to it (every clinic-level permission is
+  grantable); the scope, sensitive-acknowledgement, audit, role-limit, seat-limit and isolation rules all still apply.
+- Rule 3 for a clinic became "keeps at least one active practitioner" (someone holding `prescriptions.issue`): the clinic
+  can no longer lock itself out of role management, but it must not be left with nobody who can prescribe. The audit
+  trail shows the platform admin as the actor, to the clinic and in the global view.
+- Tests: `tests/integration/test_team.py` (23 tests) and the access-matrix tests assert that a clinic user, even a doctor,
+  has no write endpoint and is refused on the platform routes, and that the read-only operator can look but not change.
+
 
 - Module `app/modules/team` (10 endpoints under `/api/v1/team`, router guard: `team.read` to look, `team.manage` to
   change): `GET /permissions`, `GET|POST /roles`, `PATCH|DELETE /roles/{id}`, `GET|POST /members`,
@@ -205,12 +222,35 @@ Phases 1 and 2 are invisible to users. Phase 3 is the first visible change.
   every request (60 s cache, cleared on change in the process that made it), so a change applies at once. Deactivating
   a member does bump it and revokes their sessions.
 
+## Phase 4 as built (2026-10-14)
+
+- Module `app/modules/staff` (10 endpoints under `/api/v1/admin/staff`, router guard: `users.read` to look,
+  `roles.manage_global` to change, `audit.read` for the audit trail) and the page `/admin/staff` ("Platform team": Staff,
+  Roles, Activity tabs). It is the **same `TeamService` and the same React components** as the clinic Team page; the
+  actor's level (`tenant_id` null) picks platform scope: platform-level permissions and roles, platform staff
+  (`users.tenant_id IS NULL`), and the rule "always an owner" meaning at least one active person holding
+  `roles.manage_global`. Admin and Operator stay locked system roles; custom roles (Support, Finance, ...) are global,
+  platform-scope, `tenant_id` null, and never visible to clinics.
+- The audit view is global: platform changes and every clinic's, filterable (`level=platform|clinic|all`), each clinic
+  entry naming the clinic. Clinics still see only their own trail.
+- `/admin/users` can no longer change a platform user's role (400, pointing to the Platform team page) and refuses to
+  switch off the last person who can manage platform roles. Changing a clinic user's doctor/receptionist role there
+  is unchanged.
+- **`users.role` is not retired.** It is now a derived label kept in step by the services (platform: `admin` if the
+  person holds `roles.manage_global`, else `operator`; clinic: `doctor` if they can issue prescriptions, else
+  `receptionist`), and access never reads it except as the fallback for a user with no `user_roles` rows. It cannot be
+  dropped yet because about ten places still query it for meaning that is not access: seat counting
+  (`entitlements.py`), the admin dashboard's doctor counts and clinic lists (`admin/service.py`), the public
+  directory's doctor list, the identity-request doctor lookup, the JWT's `role` claim, and the "notify all admins"
+  emails (contact, marketing, onboarding). Retiring it means moving each of those to a permission or a flag first.
+
 ## Decisions needed from the product owner (answered 2026-10-14: the recommended answer for each)
 
 1. **One role per user, or several?** Recommended: several (union of permissions). Simpler alternative: exactly one.
-2. **Can clinics create their own roles?** Recommended: yes, by copying a template, limited to their own
-   permissions (rules 1 to 3). Alternative: clinics only choose among global roles, which is much less work and
-   less risk, but does not meet "tenant-specific roles".
+2. **Can clinics create their own roles?** Answered yes (2026-10-14), then **revised the same day: only the platform
+   creates clinic roles and assigns roles.** Assigning roles is sensitive, so a clinic that needs staff added or access
+   changed contacts AltCare, and a platform admin does it on the clinic's behalf. Clinic roles are still
+   tenant-specific data (invisible to other clinics); the clinic itself can only read its team and audit trail.
 3. **Which existing behaviour must stay fixed for everyone?** Recommended: nothing but the safety rules; even
    prescription issuing becomes grantable. Alternative: keep issuing and voiding prescriptions doctor-only for good.
 4. **Platform custom roles in the first release, or later?** Recommended: Phase 4 (after the clinic side).

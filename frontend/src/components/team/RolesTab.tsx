@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useDeleteRole, useTeamPermissions, useTeamRoles } from '@/lib/hooks/useTeam'
+import { useTeamArea } from '@/lib/team/area'
 import { RoleEditorDialog, type RoleEditorMode } from './RoleEditorDialog'
 import { roleName } from './roleNames'
 
@@ -14,6 +15,7 @@ import { roleName } from './roleNames'
 export function RolesTab({ canManage }: { canManage: boolean }) {
   const t = useTranslations('teamUi')
   const locale = useLocale()
+  const { kind, byPlatform } = useTeamArea()
   const roles = useTeamRoles()
   const permissions = useTeamPermissions()
   const remove = useDeleteRole()
@@ -35,7 +37,7 @@ export function RolesTab({ canManage }: { canManage: boolean }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{t('roles.intro')}</p>
+        <p className="text-sm text-muted-foreground">{byPlatform ? t('byPlatform.rolesIntro') : kind === 'platform' ? t('platform.rolesIntro') : t('roles.intro')}</p>
         {canManage && (
           <Button onClick={() => setEditor({ kind: 'create', base: null })} className="shrink-0">
             <Plus className="mr-2 h-4 w-4" aria-hidden="true" />

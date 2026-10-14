@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
 import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { useRouter } from 'next/navigation'
@@ -101,6 +102,18 @@ function EditUserModal({
         </div>
 
         <div className="space-y-4">
+          {isPlatformUser ? (
+            <div className="space-y-1 rounded-lg border bg-muted/40 p-3 text-sm">
+              <p className="font-medium capitalize">Role: {user.role}</p>
+              <p className="text-muted-foreground">
+                Platform staff roles, including custom ones, are managed on the{' '}
+                <Link href="/admin/staff" className="text-emerald-700 underline">
+                  Platform team
+                </Link>{' '}
+                page.
+              </p>
+            </div>
+          ) : (
           <div className="space-y-2">
             <Label>Role</Label>
             <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
@@ -122,6 +135,7 @@ function EditUserModal({
               </p>
             )}
           </div>
+          )}
 
           <div className="space-y-2">
             <Label>Status</Label>

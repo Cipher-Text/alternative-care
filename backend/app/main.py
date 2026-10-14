@@ -114,6 +114,7 @@ from app.modules.medicine import router as medicine_router
 from app.modules.symptom import router as symptom_router
 from app.modules.tenant import router as tenant_router
 from app.modules.team import router as team_router
+from app.modules.staff import clinic_team_router, router as staff_router
 from app.modules.geographic import router as geographic_router
 from app.modules.admin import router as admin_router
 from app.modules.public import router as public_router
@@ -141,7 +142,9 @@ from app.modules.plans.routes import (
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Platform Admin"])
 app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"], dependencies=[Depends(module_guard(read=("clinic_profile.read",), write=("clinic_profile.write",)))])
-app.include_router(team_router, prefix=f"{settings.API_V1_PREFIX}/team", tags=["Team"], dependencies=[Depends(module_guard(read=("team.read",), write=("team.manage",)))])
+app.include_router(team_router, prefix=f"{settings.API_V1_PREFIX}/team", tags=["Team"], dependencies=[Depends(access_guard("team.read"))])
+app.include_router(staff_router, prefix=f"{settings.API_V1_PREFIX}/admin/staff", tags=["Platform Admin"], dependencies=[Depends(module_guard(read=("users.read",), write=("roles.manage_global",)))])
+app.include_router(clinic_team_router, prefix=f"{settings.API_V1_PREFIX}/admin/tenants/{{tenant_id}}/team", tags=["Platform Admin"], dependencies=[Depends(module_guard(read=("tenants.read",), write=("clinic_roles.manage",)))])
 app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"], dependencies=[Depends(access_guard("ai.use"))])
 app.include_router(appointments_router, prefix=f"{settings.API_V1_PREFIX}/appointments", tags=["Appointments"])
 app.include_router(dashboard_router, prefix=f"{settings.API_V1_PREFIX}/dashboard", tags=["Dashboard"], dependencies=[Depends(access_guard("dashboard.view"))])

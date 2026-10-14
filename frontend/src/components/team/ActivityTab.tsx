@@ -6,7 +6,8 @@ import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useTeamAudit } from '@/lib/hooks/useTeam'
-import type { TeamAuditItem } from '@/types/team'
+import { useTeamArea } from '@/lib/team/area'
+import type { AuditLevel, TeamAuditItem } from '@/types/team'
 
 const PAGE = 20
 const KNOWN = ['role_created', 'role_updated', 'role_deleted', 'roles_assigned', 'member_invited', 'member_deactivated', 'member_activated']
@@ -19,8 +20,10 @@ function list(value: unknown): string {
 export function ActivityTab() {
   const t = useTranslations('teamUi')
   const locale = useLocale()
+  const { kind, byPlatform } = useTeamArea()
   const [offset, setOffset] = useState(0)
-  const audit = useTeamAudit({ limit: PAGE, offset })
+  const [level, setLevel] = useState<AuditLevel>('all')
+  const audit = useTeamAudit({ limit: PAGE, offset, level: kind === 'platform' ? level : undefined })
 
   if (audit.isLoading) {
     return (
@@ -60,14 +63,34 @@ export function ActivityTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">{t('activity.intro')}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">{byPlatform ? t('byPlatform.activityIntro') : kind === 'platform' ? t('platform.activityIntro') : t('activity.intro')}</p>
+        {kind === 'platform' && (
+          <select
+            aria-label={t('activity.levelAll')}
+            className="h-9 rounded-md border bg-background px-3 text-sm"
+            value={level}
+            onChange={(e) => {
+              setLevel(e.target.value as AuditLevel)
+              setOffset(0)
+            }}
+          >
+            <option value="all">{t('activity.levelAll')}</option>
+            <option value="platform">{t('activity.levelPlatform')}</option>
+            <option value="clinic">{t('activity.levelClinic')}</option>
+          </select>
+        )}
+      </div>
       <Card>
         <CardContent className="divide-y p-0">
           {items.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">{t('activity.empty')}</p>}
           {items.map((a) => (
             <div key={a.id} className="px-4 py-3">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="text-sm font-medium">{describe(a)}</span>
+                <span className="text-sm font-medium">
+                  {describe(a)}
+                  {a.clinic_name && <span className="ml-1 font-normal text-muted-foreground">{t('activity.inClinic', { clinic: a.clinic_name })}</span>}
+                </span>
                 <time className="text-xs text-muted-foreground" dateTime={a.created_at}>
                   {new Date(a.created_at).toLocaleString(locale === 'bn' ? 'bn-BD' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
                 </time>

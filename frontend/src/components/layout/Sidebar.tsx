@@ -66,6 +66,7 @@ const adminNavigation: NavItem[] = [
   { key: 'adminBilling', href: '/admin/billing', icon: Receipt, any: ['billing.admin'] },
   { key: 'facebookPromotion', href: '/admin/marketing', icon: Megaphone, any: ['marketing.manage'] },
   { key: 'users', href: '/admin/users', icon: UserCog, any: ['users.read'] },
+  { key: 'staff', href: '/admin/staff', icon: ShieldCheck, any: ['users.read'] },
   { key: 'contactMessages', href: '/admin/contact', icon: Inbox, any: ['contact.manage'] },
   { key: 'articles', href: '/content', icon: Newspaper, any: ['content.manage', 'content.author'] },
   { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },

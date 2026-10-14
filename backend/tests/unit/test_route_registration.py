@@ -79,4 +79,7 @@ def test_current_api_route_count_matches_docs():
     # — 248 -> 236.
     # Roles and permissions as data: +1 /auth/me/permissions — 236 -> 237.
     # Clinic team (ADR 010, Phase 3): +10 under /team — 237 -> 247.
-    assert api_method_count == 247
+    # Platform team (ADR 010, Phase 4): +10 under /admin/staff — 247 -> 257.
+    # Only the platform changes staff and roles (ADR 010 revised): -6 clinic write routes under /team, +10 under
+    # /admin/tenants/{id}/team — 257 -> 261.
+    assert api_method_count == 261

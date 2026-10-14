@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useSetMemberActive, useTeamMembers, useTeamRoles } from '@/lib/hooks/useTeam'
+import { useTeamArea } from '@/lib/team/area'
 import { InviteMemberDialog } from './InviteMemberDialog'
 import { MemberRolesDialog } from './MemberRolesDialog'
 import { roleName } from './roleNames'
@@ -17,6 +18,7 @@ import type { TeamMember } from '@/types/team'
 export function MembersTab({ canManage }: { canManage: boolean }) {
   const t = useTranslations('teamUi')
   const locale = useLocale()
+  const { kind, byPlatform } = useTeamArea()
   const members = useTeamMembers()
   const roles = useTeamRoles()
   const setActive = useSetMemberActive()
@@ -39,7 +41,7 @@ export function MembersTab({ canManage }: { canManage: boolean }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{t('members.intro')}</p>
+        <p className="text-sm text-muted-foreground">{byPlatform ? t('byPlatform.membersIntro') : kind === 'platform' ? t('platform.membersIntro') : t('members.intro')}</p>
         {canManage && (
           <Button onClick={() => setInviting(true)} className="shrink-0">
             <UserPlus className="mr-2 h-4 w-4" aria-hidden="true" />

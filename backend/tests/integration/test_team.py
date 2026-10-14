@@ -1,4 +1,4 @@
-"""The clinic Team page's backend: staff, clinic roles, and the safety rules of ADR 010 (Phase 3)."""
+"""A clinic's staff and roles (ADR 010). Only the platform changes them, acting on a clinic; the clinic itself can only look."""
 
 import uuid
 from types import SimpleNamespace
@@ -11,11 +11,15 @@ from app.core.config import settings
 from app.core.permissions import SYSTEM_ROLES, system_role_id
 from app.core.rbac import sync_catalogue_async
 from app.core.security import create_access_token, get_password_hash
-from app.shared.models import Tenant, User
+from app.shared.models import User
 from app.shared.models.rbac import Role, RoleAuditLog, UserRole
 
 H = lambda token: {"Authorization": f"Bearer {token}"}  # noqa: E731
 DOCTOR, RECEPTIONIST = system_role_id("doctor"), system_role_id("receptionist")
+
+
+def base(tenant_id):
+    return f"/api/v1/admin/tenants/{tenant_id}/team"
 
 
 @pytest.fixture(autouse=True)
@@ -33,9 +37,21 @@ async def seeded(db_session):
     await db_session.commit()
 
 
-async def _person(db, tenant, role="doctor", name="Person"):
+async def _person(db, tenant, role="doctor", name="Person", tenant_id=None):
+    """A clinic member: of `tenant`, or of the clinic with id `tenant_id`. A platform user has no clinic: use `_platform`."""
     user = User(
-        id=str(uuid.uuid4()), tenant_id=tenant.id, email=f"{uuid.uuid4().hex[:8]}@team.test", password_hash=get_password_hash("Test@1234"),
+        id=str(uuid.uuid4()), tenant_id=tenant_id or tenant.id, email=f"{uuid.uuid4().hex[:8]}@team.test", password_hash=get_password_hash("Test@1234"),
+        full_name=name, role=role, is_active=True, is_email_verified=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+async def _platform(db, role="admin", name="Platform Admin"):
+    user = User(
+        id=str(uuid.uuid4()), tenant_id=None, email=f"{uuid.uuid4().hex[:8]}@platform.test", password_hash=get_password_hash("Test@1234"),
         full_name=name, role=role, is_active=True, is_email_verified=True,
     )
     db.add(user)
@@ -51,49 +67,83 @@ def _token(user):
     )
 
 
-async def _roles_of(db, user):
-    rows = await db.execute(select(Role.key).join(UserRole, UserRole.role_id == Role.id).where(UserRole.user_id == user.id))
+async def _roles_of(db, user_id):
+    rows = await db.execute(select(Role.key).join(UserRole, UserRole.role_id == Role.id).where(UserRole.user_id == user_id))
     return sorted(rows.scalars().all())
-
-
-async def _role(client, token, name, permissions, **extra):
-    return await client.post("/api/v1/team/roles", json={"name_en": name, "permissions": permissions, **extra}, headers=H(token))
 
 
 @pytest.fixture
 async def clinic(db_session, seeded, test_tenant):
+    """A clinic with one doctor, and the platform admin who manages it. Plain ids and tokens are returned: a refused change
+    rolls the (shared) test session back, which expires ORM objects."""
     test_tenant.plan = "pro"  # several practitioner seats
     await db_session.commit()
-    owner = await _person(db_session, test_tenant, "doctor", "Owner")
-    return test_tenant, owner, _token(owner)
+    doctor = await _person(db_session, test_tenant, "doctor", "Dr Owner")
+    admin = await _platform(db_session, "admin", "Platform Admin")
+    return SimpleNamespace(
+        tenant_id=test_tenant.id, clinic_name=test_tenant.clinic_name, doctor_id=doctor.id, doctor=_token(doctor),
+        admin_id=admin.id, admin=_token(admin), base=base(test_tenant.id),
+    )
+
+
+async def _role(client, c, name, permissions, **extra):
+    return await client.post(f"{c.base}/roles", json={"name_en": name, "permissions": permissions, **extra}, headers=H(c.admin))
+
+
+async def _set_roles(client, c, member_id, role_ids, token=None):
+    return await client.put(f"{c.base}/members/{member_id}/roles", json={"role_ids": role_ids}, headers=H(token or c.admin))
 
 
 # ----- who may look and who may change ---------------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
-async def test_receptionist_and_platform_staff_cannot_use_the_team_api(client, db_session, clinic, platform_admin, admin_access_token):
-    tenant, _, _ = clinic
-    rec = await _person(db_session, tenant, "receptionist")
-    for token in (_token(rec), admin_access_token):
-        assert (await client.get("/api/v1/team/members", headers=H(token))).status_code == 403
-        assert (await client.post("/api/v1/team/roles", json={"name_en": "X", "permissions": ["patients.read"]}, headers=H(token))).status_code == 403
+async def test_a_clinic_can_look_at_its_team_but_has_no_way_to_change_it(client, db_session, clinic):
+    c = clinic
+    for path in ("members", "roles", "permissions", "audit"):
+        assert (await client.get(f"/api/v1/team/{path}", headers=H(c.doctor))).status_code == 200, path
+    # no write endpoint exists on the clinic side: contacting AltCare is the way to change anything
+    for method, path in (("post", "roles"), ("patch", f"roles/{DOCTOR}"), ("delete", f"roles/{DOCTOR}"), ("post", "members"), ("put", f"members/{c.doctor_id}/roles"), ("patch", f"members/{c.doctor_id}/status")):
+        r = await getattr(client, method)(f"/api/v1/team/{path}", json={}, headers=H(c.doctor)) if method != "delete" else await client.delete(f"/api/v1/team/{path}", headers=H(c.doctor))
+        assert r.status_code in (404, 405), (method, path, r.status_code)
+    # and the platform-side endpoints refuse a clinic user, even a doctor
+    assert (await client.get(f"{c.base}/members", headers=H(c.doctor))).status_code == 403
+    assert (await _role(client, c, "Mine", ["patients.read"])).status_code == 201  # the admin can
+    assert (await client.post(f"{c.base}/roles", json={"name_en": "Mine", "permissions": ["patients.read"]}, headers=H(c.doctor))).status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_the_receptionist_and_the_platform_have_no_clinic_team_view(client, db_session, clinic, test_tenant):
+    c = clinic
+    rec = await _person(db_session, test_tenant, "receptionist")
+    assert (await client.get("/api/v1/team/members", headers=H(_token(rec)))).status_code == 403
+    assert (await client.get("/api/v1/team/members", headers=H(c.admin))).status_code == 403  # a platform user has no clinic of their own
     assert (await client.get("/api/v1/team/members")).status_code == 401
 
 
 @pytest.mark.asyncio
-async def test_owner_sees_staff_and_the_roles_they_can_use(client, db_session, clinic):
-    tenant, owner, token = clinic
-    members = (await client.get("/api/v1/team/members", headers=H(token))).json()
-    me = next(m for m in members if m["id"] == owner.id)
-    assert me["is_you"] and [r["key"] for r in me["roles"]] == ["doctor"] and me["can_manage"]
-    roles = (await client.get("/api/v1/team/roles", headers=H(token))).json()
-    keys = {r["key"]: r for r in roles}
-    assert {"doctor", "receptionist"} <= set(keys) and "admin" not in keys and "operator" not in keys
-    assert keys["doctor"]["is_system"] and not keys["doctor"]["can_edit"] and keys["doctor"]["can_assign"]
+async def test_the_read_only_operator_can_look_at_a_clinic_team_but_not_change_it(client, db_session, clinic):
+    c = clinic
+    operator = await _platform(db_session, "operator", "Op")
+    op = _token(operator)
+    assert (await client.get(f"{c.base}/members", headers=H(op))).status_code == 200
+    assert (await client.post(f"{c.base}/roles", json={"name_en": "X", "permissions": ["patients.read"]}, headers=H(op))).status_code == 403
+    assert (await client.post(f"{c.base}/members", json={"email": "x@teamclinic.com", "full_name": "X Y", "role_ids": [RECEPTIONIST]}, headers=H(op))).status_code == 403
+    assert (await client.get(f"{base(str(uuid.uuid4()))}/members", headers=H(c.admin))).status_code == 404  # no such clinic
+
+
+@pytest.mark.asyncio
+async def test_admin_sees_the_clinics_staff_and_the_roles_it_can_use(client, clinic):
+    c = clinic
+    members = (await client.get(f"{c.base}/members", headers=H(c.admin))).json()
+    me = next(m for m in members if m["id"] == c.doctor_id)
+    assert [r["key"] for r in me["roles"]] == ["doctor"] and me["can_manage"] and not me["is_you"]
+    keys = {r["key"]: r for r in (await client.get(f"{c.base}/roles", headers=H(c.admin))).json()}
+    assert {"doctor", "receptionist"} <= set(keys) and "admin" not in keys
+    assert keys["doctor"]["is_system"] and not keys["doctor"]["can_edit"]
     assert sorted(keys["receptionist"]["permissions"]) == sorted(SYSTEM_ROLES["receptionist"].permissions)
-    catalogue = (await client.get("/api/v1/team/permissions", headers=H(token))).json()
-    assert catalogue and all(p["key"] not in ("tenants.read", "roles.manage_global") for p in catalogue)
+    catalogue = {p["key"]: p for p in (await client.get(f"{c.base}/permissions", headers=H(c.admin))).json()}
+    assert "team.manage" not in catalogue and "tenants.read" not in catalogue and all(p["can_grant"] for p in catalogue.values())
 
 
 # ----- clinic roles ----------------------------------------------------------------------------------------------------
@@ -101,161 +151,71 @@ async def test_owner_sees_staff_and_the_roles_they_can_use(client, db_session, c
 
 @pytest.mark.asyncio
 async def test_create_edit_and_delete_a_clinic_role(client, db_session, clinic):
-    tenant, owner, token = clinic
-    created = await _role(client, token, "Accountant", ["payments.read", "payments.write", "invoices.read"], name_bn="হিসাবরক্ষক", based_on_role_id=RECEPTIONIST)
+    c = clinic
+    created = await _role(client, c, "Accountant", ["payments.read", "payments.write", "invoices.read"], name_bn="হিসাবরক্ষক", based_on_role_id=RECEPTIONIST)
     assert created.status_code == 201, created.text
     role = created.json()
     assert role["permissions"] == ["invoices.read", "payments.read", "payments.write"] and role["can_edit"] and not role["is_system"]
 
-    edited = await client.patch(f"/api/v1/team/roles/{role['id']}", json={"permissions": ["payments.read"]}, headers=H(token))
+    edited = await client.patch(f"{c.base}/roles/{role['id']}", json={"permissions": ["payments.read"]}, headers=H(c.admin))
     assert edited.status_code == 200 and edited.json()["permissions"] == ["payments.read"]
-    assert (await client.patch(f"/api/v1/team/roles/{role['id']}", json={"name_en": "Billing"}, headers=H(token))).json()["name_en"] == "Billing"
+    assert (await client.patch(f"{c.base}/roles/{role['id']}", json={"name_en": "Billing"}, headers=H(c.admin))).json()["name_en"] == "Billing"
+    assert (await client.delete(f"{c.base}/roles/{role['id']}", headers=H(c.admin))).status_code == 204
+    assert role["id"] not in [r["id"] for r in (await client.get(f"{c.base}/roles", headers=H(c.admin))).json()]
 
-    assert (await client.delete(f"/api/v1/team/roles/{role['id']}", headers=H(token))).status_code == 204
-    assert role["id"] not in [r["id"] for r in (await client.get("/api/v1/team/roles", headers=H(token))).json()]
-    actions = [a["action"] for a in (await client.get("/api/v1/team/audit", headers=H(token))).json()["items"]]
-    assert {"role_created", "role_updated", "role_deleted"} <= set(actions)
-    # the deleted role's name survives in the audit trail
-    audit = (await client.get("/api/v1/team/audit", headers=H(token))).json()["items"]
+    # the clinic reads the trail of what AltCare did, with who did it; a deleted role keeps its name there
+    audit = (await client.get("/api/v1/team/audit", headers=H(c.doctor))).json()["items"]
+    assert {"role_created", "role_updated", "role_deleted"} <= {a["action"] for a in audit}
+    assert all(a["actor_name"] == "Platform Admin" for a in audit)
     assert next(a for a in audit if a["action"] == "role_deleted")["role_name"] == "Billing"
 
 
 @pytest.mark.asyncio
-async def test_a_role_cannot_carry_a_permission_of_the_wrong_level_or_one_that_does_not_exist(client, clinic):
-    _, _, token = clinic
-    for bad in (["tenants.manage"], ["roles.manage_global"], ["patients.read", "nonsense.key"]):
-        r = await _role(client, token, "Bad", bad)
+async def test_the_platform_may_grant_any_clinic_permission_it_is_not_a_clinic_user(client, clinic):
+    c = clinic
+    r = await _role(client, c, "Assistant doctor", ["patients.read", "prescriptions.issue", "prescriptions.void", "patients.write"])
+    assert r.status_code == 201, r.text
+
+
+@pytest.mark.asyncio
+async def test_a_clinic_role_cannot_carry_a_platform_permission_or_a_removed_one(client, clinic):
+    for bad in (["tenants.manage"], ["roles.manage_global"], ["clinic_roles.manage"], ["team.manage"], ["patients.read", "nonsense.key"]):
+        r = await _role(client, clinic, "Bad", bad)
         assert r.status_code == 422 and r.json()["detail"]["code"] == "invalid_permissions", bad
 
 
 @pytest.mark.asyncio
 async def test_sensitive_permissions_need_an_explicit_acknowledgement(client, clinic):
-    _, _, token = clinic
-    refused = await _role(client, token, "Finance lead", ["billing.manage", "billing.view"])
+    refused = await _role(client, clinic, "Finance lead", ["billing.manage", "billing.view"])
     assert refused.status_code == 422 and refused.json()["detail"]["code"] == "sensitive_not_acknowledged"
-    assert (await _role(client, token, "Finance lead", ["billing.manage", "billing.view"], acknowledge_sensitive=True)).status_code == 201
+    assert (await _role(client, clinic, "Finance lead", ["billing.manage", "billing.view"], acknowledge_sensitive=True)).status_code == 201
 
 
 @pytest.mark.asyncio
-async def test_system_roles_cannot_be_changed_or_deleted_by_a_clinic(client, clinic):
-    _, _, token = clinic
+async def test_system_roles_cannot_be_changed_or_deleted(client, clinic):
     for role_id in (DOCTOR, RECEPTIONIST):
-        assert (await client.patch(f"/api/v1/team/roles/{role_id}", json={"name_en": "Hacked"}, headers=H(token))).status_code == 403
-        assert (await client.delete(f"/api/v1/team/roles/{role_id}", headers=H(token))).status_code == 403
+        assert (await client.patch(f"{clinic.base}/roles/{role_id}", json={"name_en": "Hacked"}, headers=H(clinic.admin))).status_code == 403
+        assert (await client.delete(f"{clinic.base}/roles/{role_id}", headers=H(clinic.admin))).status_code == 403
 
 
 @pytest.mark.asyncio
-async def test_a_role_in_use_cannot_be_deleted(client, db_session, clinic):
-    tenant, _, token = clinic
-    role = (await _role(client, token, "Helper", ["patients.read"])).json()
-    member = await _person(db_session, tenant, "receptionist")
-    assert (await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": [role["id"]]}, headers=H(token))).status_code == 200
-    r = await client.delete(f"/api/v1/team/roles/{role['id']}", headers=H(token))
+async def test_a_role_in_use_cannot_be_deleted(client, db_session, clinic, test_tenant):
+    c = clinic
+    role = (await _role(client, c, "Helper", ["patients.read"])).json()
+    member = await _person(db_session, test_tenant, "receptionist")
+    member_id = member.id
+    assert (await _set_roles(client, c, member_id, [role["id"]])).status_code == 200
+    r = await client.delete(f"{c.base}/roles/{role['id']}", headers=H(c.admin))
     assert r.status_code == 409 and r.json()["detail"]["code"] == "role_in_use"
 
 
 @pytest.mark.asyncio
 async def test_a_clinic_cannot_have_more_than_the_allowed_number_of_roles(client, clinic, monkeypatch):
-    _, _, token = clinic
     monkeypatch.setattr("app.modules.team.service.MAX_CLINIC_ROLES", 2)
-    assert (await _role(client, token, "One", ["patients.read"])).status_code == 201
-    assert (await _role(client, token, "Two", ["patients.read"])).status_code == 201
-    assert (await _role(client, token, "Three", ["patients.read"])).status_code == 409
-    assert (await _role(client, token, "one", ["patients.read"])).status_code == 409  # a duplicate name is refused first or second, never created
-
-
-# ----- rule 1: no escalation -------------------------------------------------------------------------------------------
-
-
-@pytest.fixture
-async def manager(client, db_session, clinic):
-    """A staff member who can manage the team but holds only a few other permissions."""
-    tenant, owner, owner_token = clinic
-    role = (await _role(client, owner_token, "Team lead", ["team.read", "team.manage", "patients.read", "appointments.read"], acknowledge_sensitive=True)).json()
-    person = await _person(db_session, tenant, "receptionist", "Lead")
-    assert (await client.put(f"/api/v1/team/members/{person.id}/roles", json={"role_ids": [role["id"]]}, headers=H(owner_token))).status_code == 200
-    return person, _token(person), role
-
-
-@pytest.mark.asyncio
-async def test_a_manager_cannot_grant_permissions_they_do_not_hold(client, manager, clinic):
-    _, token, _ = manager
-    r = await _role(client, token, "Sneaky", ["patients.read", "prescriptions.issue"])
-    assert r.status_code == 403 and r.json()["detail"]["code"] == "cannot_grant"
-    assert (await _role(client, token, "Fine", ["patients.read"])).status_code == 201
-    catalogue = {p["key"]: p["can_grant"] for p in (await client.get("/api/v1/team/permissions", headers=H(token))).json()}
-    assert catalogue["patients.read"] and not catalogue["prescriptions.issue"]
-
-
-@pytest.mark.asyncio
-async def test_a_manager_cannot_widen_a_role_beyond_their_own_permissions(client, manager, clinic):
-    _, owner_token = clinic[1], clinic[2]
-    _, token, role = manager
-    r = await client.patch(f"/api/v1/team/roles/{role['id']}", json={"permissions": ["team.manage", "team.read", "prescriptions.issue"], "acknowledge_sensitive": True}, headers=H(token))
-    assert r.status_code == 403 and r.json()["detail"]["code"] == "cannot_grant"
-
-
-@pytest.mark.asyncio
-async def test_a_manager_cannot_assign_the_doctor_role_or_touch_someone_who_holds_it(client, db_session, manager, clinic):
-    tenant, owner, owner_token = clinic
-    _, token, _ = manager
-    reader = (await _role(client, owner_token, "Reader", ["patients.read"])).json()
-    helper = await _person(db_session, tenant, "receptionist")
-    assert (await client.put(f"/api/v1/team/members/{helper.id}/roles", json={"role_ids": [reader["id"]]}, headers=H(owner_token))).status_code == 200
-    r = await client.put(f"/api/v1/team/members/{helper.id}/roles", json={"role_ids": [DOCTOR]}, headers=H(token))
-    assert r.status_code == 403 and r.json()["detail"]["code"] == "cannot_assign_role"
-    assert await _roles_of(db_session, helper) == [reader["key"]]
-    # a plain receptionist holds more than the manager does (payments), so the manager cannot manage them either
-    rec = await _person(db_session, tenant, "receptionist")
-    assert (await client.put(f"/api/v1/team/members/{rec.id}/roles", json={"role_ids": [reader["id"]]}, headers=H(token))).status_code == 403
-    # nor can they strip or switch off the owner, whose roles carry more than they hold
-    assert (await client.put(f"/api/v1/team/members/{owner.id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(token))).status_code == 403
-    assert (await client.patch(f"/api/v1/team/members/{owner.id}/status", json={"is_active": False}, headers=H(token))).status_code == 403
-    members = {m["id"]: m for m in (await client.get("/api/v1/team/members", headers=H(token))).json()}
-    assert members[owner.id]["can_manage"] is False and members[helper.id]["can_manage"] is True
-
-
-@pytest.mark.asyncio
-async def test_a_manager_cannot_invite_someone_into_a_role_they_do_not_hold(client, manager):
-    _, token, _ = manager
-    r = await client.post("/api/v1/team/members", json={"email": "new@teamclinic.com", "full_name": "New Person", "role_ids": [DOCTOR]}, headers=H(token))
-    assert r.status_code == 403
-
-
-# ----- rule 3: a clinic always has someone who can manage it ------------------------------------------------------------
-
-
-@pytest.mark.asyncio
-async def test_the_last_person_who_can_manage_the_team_cannot_be_demoted_or_deactivated(client, db_session, clinic):
-    tenant, owner, token = clinic
-    # a refused change rolls the (shared) test session back, which expires ORM objects: keep plain ids and tokens
-    owner_id, tenant_ref = owner.id, SimpleNamespace(id=tenant.id)
-    r = await client.put(f"/api/v1/team/members/{owner_id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(token))
-    assert r.status_code == 409 and r.json()["detail"]["code"] == "last_owner"
-    assert [x["key"] for x in (await client.get("/api/v1/team/members", headers=H(token))).json()[0]["roles"]] == ["doctor"]
-    assert (await client.patch(f"/api/v1/team/members/{owner_id}/status", json={"is_active": False}, headers=H(token))).status_code == 400  # not yourself
-
-    # a role edit that would take team.manage from the only person who has it is refused as well
-    lead = (await _role(client, token, "Lead", ["team.read", "team.manage", "patients.read"], acknowledge_sensitive=True)).json()
-    other = await _person(db_session, tenant_ref, "receptionist")
-    other_token, other_id = _token(other), other.id
-    assert (await client.put(f"/api/v1/team/members/{other_id}/roles", json={"role_ids": [lead["id"]]}, headers=H(token))).status_code == 200
-    assert (await client.put(f"/api/v1/team/members/{owner_id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(token))).status_code == 200  # a second owner exists now
-    r = await client.patch(f"/api/v1/team/roles/{lead['id']}", json={"permissions": ["team.read", "patients.read"]}, headers=H(other_token))
-    assert r.status_code == 409 and r.json()["detail"]["code"] == "last_owner"
-    kept = next(x for x in (await client.get("/api/v1/team/roles", headers=H(other_token))).json() if x["id"] == lead["id"])
-    assert "team.manage" in kept["permissions"]
-    # nor can they drop their own role for one they could not otherwise hold
-    assert (await client.put(f"/api/v1/team/members/{other_id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(other_token))).status_code == 403
-
-
-@pytest.mark.asyncio
-async def test_with_a_second_owner_the_first_can_step_down(client, db_session, clinic):
-    tenant, owner, token = clinic
-    second = await _person(db_session, tenant, "doctor", "Second")
-    r = await client.put(f"/api/v1/team/members/{owner.id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(token))
-    assert r.status_code == 200 and [x["key"] for x in r.json()["roles"]] == ["receptionist"]
-    assert await _roles_of(db_session, second) == ["doctor"]
+    assert (await _role(client, clinic, "One", ["patients.read"])).status_code == 201
+    assert (await _role(client, clinic, "Two", ["patients.read"])).status_code == 201
+    assert (await _role(client, clinic, "Three", ["patients.read"])).status_code == 409
+    assert (await _role(client, clinic, "one", ["patients.read"])).status_code == 409
 
 
 # ----- members ---------------------------------------------------------------------------------------------------------
@@ -263,80 +223,110 @@ async def test_with_a_second_owner_the_first_can_step_down(client, db_session, c
 
 @pytest.mark.asyncio
 async def test_inviting_a_member_creates_the_account_and_emails_a_set_password_link(client, db_session, clinic, _fresh):
-    tenant, owner, token = clinic
+    c = clinic
     r = await client.post(
-        "/api/v1/team/members",
+        f"{c.base}/members",
         json={"email": "Nurse@TeamClinic.com", "full_name": "Nurse Nila", "phone": "+8801700000000", "role_ids": [RECEPTIONIST]},
-        headers=H(token),
+        headers=H(c.admin),
     )
     assert r.status_code == 201, r.text
     body = r.json()
     assert body["email"] == "nurse@teamclinic.com" and [x["key"] for x in body["roles"]] == ["receptionist"] and body["is_active"]
     user = (await db_session.execute(select(User).where(User.id == body["id"]))).scalar_one()
-    assert user.tenant_id == tenant.id and user.role == "receptionist" and user.password_reset_token_hash
+    assert user.tenant_id == c.tenant_id and user.role == "receptionist" and user.password_reset_token_hash
     assert _fresh and _fresh[0]["recipient"] == "nurse@teamclinic.com" and "reset-password?token=" in _fresh[0]["body_text"]
-    assert await _roles_of(db_session, user) == ["receptionist"]
+    assert await _roles_of(db_session, user.id) == ["receptionist"]
 
-    # the same address cannot be added twice, here or anywhere
-    again = await client.post("/api/v1/team/members", json={"email": "nurse@teamclinic.com", "full_name": "Nila Two", "role_ids": [RECEPTIONIST]}, headers=H(token))
+    again = await client.post(f"{c.base}/members", json={"email": "nurse@teamclinic.com", "full_name": "Nila Two", "role_ids": [RECEPTIONIST]}, headers=H(c.admin))
     assert again.status_code == 400
-    # the new member can read the schedule but not the team
+    # the new member can work as a receptionist, but has no say over the team
+    assert (await client.get("/api/v1/patients", headers=H(_token(user)))).status_code == 200
     assert (await client.get("/api/v1/team/members", headers=H(_token(user)))).status_code == 403
 
 
 @pytest.mark.asyncio
-async def test_roles_are_the_union_and_changes_take_effect_at_once(client, db_session, clinic):
-    tenant, owner, token = clinic
-    pay = (await _role(client, token, "Payments clerk", ["payments.write", "payments.read"])).json()
-    member = await _person(db_session, tenant, "receptionist")
-    member_token = _token(member)
-    # the receptionist already writes payments; remove the receptionist role and keep only a role without them
-    only_read = (await _role(client, token, "Reader", ["patients.read"])).json()
-    assert (await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": [only_read["id"]]}, headers=H(token))).status_code == 200
+async def test_roles_are_the_union_and_changes_take_effect_at_once(client, db_session, clinic, test_tenant):
+    c = clinic
+    pay = (await _role(client, c, "Payments clerk", ["payments.write", "payments.read"])).json()
+    only_read = (await _role(client, c, "Reader", ["patients.read"])).json()
+    member = await _person(db_session, test_tenant, "receptionist")
+    member_id, member_token = member.id, _token(member)
+    assert (await _set_roles(client, c, member_id, [only_read["id"]])).status_code == 200
     assert (await client.get("/api/v1/patients", headers=H(member_token))).status_code == 200
     assert (await client.get("/api/v1/appointments", headers=H(member_token))).status_code == 403
-    r = await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": [only_read["id"], pay["id"]]}, headers=H(token))
+    r = await _set_roles(client, c, member_id, [only_read["id"], pay["id"]])
     assert [x["name_en"] for x in r.json()["roles"]] == ["Payments clerk", "Reader"]
     assert (await client.get("/api/v1/payments", headers=H(member_token))).status_code != 403
-    # taking a permission off the role is felt by everyone who holds it, immediately
-    assert (await client.patch(f"/api/v1/team/roles/{pay['id']}", json={"permissions": ["payments.read"]}, headers=H(token))).status_code == 200
+    assert (await client.patch(f"{c.base}/roles/{pay['id']}", json={"permissions": ["payments.read"]}, headers=H(c.admin))).status_code == 200
     assert (await client.post("/api/v1/payments", json={}, headers=H(member_token))).status_code == 403
 
 
 @pytest.mark.asyncio
-async def test_a_member_must_keep_at_least_one_role(client, db_session, clinic):
-    tenant, _, token = clinic
-    member = await _person(db_session, tenant, "receptionist")
-    assert (await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": []}, headers=H(token))).status_code == 422
+async def test_a_member_must_keep_at_least_one_role(client, db_session, clinic, test_tenant):
+    member = await _person(db_session, test_tenant, "receptionist")
+    assert (await _set_roles(client, clinic, member.id, [])).status_code == 422
 
 
 @pytest.mark.asyncio
-async def test_whoever_can_issue_prescriptions_counts_as_a_doctor_seat(client, db_session, clinic):
-    tenant, _, token = clinic
-    prescriber = (await _role(client, token, "Assistant doctor", ["patients.read", "prescriptions.read", "prescriptions.write", "prescriptions.issue"])).json()
-    member = await _person(db_session, tenant, "receptionist")
-    r = await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": [prescriber["id"]]}, headers=H(token))
+async def test_whoever_can_issue_prescriptions_counts_as_a_doctor_seat(client, db_session, clinic, test_tenant):
+    c = clinic
+    prescriber = (await _role(client, c, "Assistant doctor", ["patients.read", "prescriptions.read", "prescriptions.write", "prescriptions.issue"])).json()
+    member = await _person(db_session, test_tenant, "receptionist")
+    member_id = member.id
+    r = await _set_roles(client, c, member_id, [prescriber["id"]])
     assert r.status_code == 200, r.text
-    await db_session.refresh(member)
-    assert member.role == "doctor"
-    assert await _roles_of(db_session, member) == [prescriber["key"]]  # the custom role only: no doctor system role came with it
-    # and back
-    assert (await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(token))).status_code == 200
-    await db_session.refresh(member)
-    assert member.role == "receptionist"
+    user = await db_session.get(User, member_id)
+    await db_session.refresh(user)
+    assert user.role == "doctor"
+    assert await _roles_of(db_session, member_id) == [prescriber["key"]]  # the custom role only: no doctor system role came with it
+    assert (await _set_roles(client, c, member_id, [RECEPTIONIST])).status_code == 200
+    await db_session.refresh(user)
+    assert user.role == "receptionist"
 
 
 @pytest.mark.asyncio
-async def test_deactivating_a_member_locks_them_out_and_reactivating_restores_access(client, db_session, clinic):
-    tenant, _, token = clinic
-    member = await _person(db_session, tenant, "receptionist")
-    member_token = _token(member)
+async def test_a_prescriber_needs_a_practitioner_seat_on_the_plan(client, db_session, clinic, test_tenant):
+    c = clinic
+    test_tenant.plan = "free"  # one practitioner seat, already used by the doctor
+    await db_session.commit()
+    prescriber = (await _role(client, c, "Assistant doctor", ["patients.read", "prescriptions.issue", "prescriptions.read"])).json()
+    r = await client.post(f"{c.base}/members", json={"email": "assistant@teamclinic.com", "full_name": "Assistant Doc", "role_ids": [prescriber["id"]]}, headers=H(c.admin))
+    assert r.status_code == 403 and r.json()["detail"]["code"] == "plan_limit_reached"
+    assert (await client.post(f"{c.base}/members", json={"email": "desk@teamclinic.com", "full_name": "Front Desk", "role_ids": [RECEPTIONIST]}, headers=H(c.admin))).status_code == 201
+
+
+@pytest.mark.asyncio
+async def test_a_clinic_keeps_at_least_one_active_practitioner(client, db_session, clinic, test_tenant):
+    c = clinic
+    r = await _set_roles(client, c, c.doctor_id, [RECEPTIONIST])
+    assert r.status_code == 409 and r.json()["detail"]["code"] == "last_owner"
+    r = await client.patch(f"{c.base}/members/{c.doctor_id}/status", json={"is_active": False}, headers=H(c.admin))
+    assert r.status_code == 409 and r.json()["detail"]["code"] == "last_owner"
+    assert [x["key"] for x in (await client.get(f"{c.base}/members", headers=H(c.admin))).json()[0]["roles"]] == ["doctor"]
+
+    second = await _person(db_session, None, "doctor", "Second doctor", tenant_id=c.tenant_id)  # ids only: the 409 above expired the ORM objects
+    second_id = second.id
+    r = await _set_roles(client, c, c.doctor_id, [RECEPTIONIST])
+    assert r.status_code == 200 and [x["key"] for x in r.json()["roles"]] == ["receptionist"]
+    assert await _roles_of(db_session, second_id) == ["doctor"]
+    # editing a role so nobody can prescribe any more is refused as well
+    prescriber = (await _role(client, c, "Prescriber", ["prescriptions.issue", "patients.read"])).json()
+    assert (await _set_roles(client, c, second_id, [prescriber["id"]])).status_code == 200
+    r = await client.patch(f"{c.base}/roles/{prescriber['id']}", json={"permissions": ["patients.read"]}, headers=H(c.admin))
+    assert r.status_code == 409 and r.json()["detail"]["code"] == "last_owner"
+
+
+@pytest.mark.asyncio
+async def test_deactivating_a_member_locks_them_out_and_reactivating_restores_access(client, db_session, clinic, test_tenant):
+    c = clinic
+    member = await _person(db_session, test_tenant, "receptionist")
+    member_id, member_token = member.id, _token(member)
     assert (await client.get("/api/v1/patients", headers=H(member_token))).status_code == 200
-    r = await client.patch(f"/api/v1/team/members/{member.id}/status", json={"is_active": False}, headers=H(token))
+    r = await client.patch(f"{c.base}/members/{member_id}/status", json={"is_active": False}, headers=H(c.admin))
     assert r.status_code == 200 and r.json()["is_active"] is False
     assert (await client.get("/api/v1/patients", headers=H(member_token))).status_code in (401, 403)
-    assert (await client.patch(f"/api/v1/team/members/{member.id}/status", json={"is_active": True}, headers=H(token))).json()["is_active"] is True
-    actions = [a["action"] for a in (await client.get("/api/v1/team/audit", headers=H(token))).json()["items"]]
+    assert (await client.patch(f"{c.base}/members/{member_id}/status", json={"is_active": True}, headers=H(c.admin))).json()["is_active"] is True
+    actions = [a["action"] for a in (await client.get("/api/v1/team/audit", headers=H(c.doctor))).json()["items"]]
     assert "member_deactivated" in actions and "member_activated" in actions
 
 
@@ -344,45 +334,40 @@ async def test_deactivating_a_member_locks_them_out_and_reactivating_restores_ac
 
 
 @pytest.mark.asyncio
-async def test_one_clinic_cannot_see_or_use_another_clinics_roles_or_staff(client, db_session, clinic, test_tenant_2):
-    tenant, _, token = clinic
-    other_owner = await _person(db_session, test_tenant_2, "doctor", "Other owner")
-    other_token = _token(other_owner)
-    theirs = (await _role(client, other_token, "Their secret role", ["patients.read"])).json()
+async def test_acting_on_one_clinic_never_touches_another(client, db_session, clinic, test_tenant_2):
+    c = clinic
+    other = SimpleNamespace(**{**vars(c), "base": base(test_tenant_2.id), "tenant_id": test_tenant_2.id})
+    theirs = (await _role(client, other, "Their secret role", ["patients.read"])).json()
+    their_member = await _person(db_session, test_tenant_2, "receptionist")
+    their_member_id = their_member.id
 
-    assert theirs["id"] not in [r["id"] for r in (await client.get("/api/v1/team/roles", headers=H(token))).json()]
-    assert other_owner.id not in [m["id"] for m in (await client.get("/api/v1/team/members", headers=H(token))).json()]
-    mine = await _person(db_session, tenant, "receptionist")
-    assert (await client.put(f"/api/v1/team/members/{mine.id}/roles", json={"role_ids": [theirs["id"]]}, headers=H(token))).status_code == 404
-    assert (await client.patch(f"/api/v1/team/roles/{theirs['id']}", json={"name_en": "Mine now"}, headers=H(token))).status_code == 404
-    assert (await client.delete(f"/api/v1/team/roles/{theirs['id']}", headers=H(token))).status_code == 404
-    assert (await client.put(f"/api/v1/team/members/{other_owner.id}/roles", json={"role_ids": [RECEPTIONIST]}, headers=H(token))).status_code == 404
-    assert (await client.patch(f"/api/v1/team/members/{other_owner.id}/status", json={"is_active": False}, headers=H(token))).status_code == 404
-    assert not any(a["role_name"] == "Their secret role" for a in (await client.get("/api/v1/team/audit", headers=H(token))).json()["items"])
+    assert theirs["id"] not in [r["id"] for r in (await client.get(f"{c.base}/roles", headers=H(c.admin))).json()]
+    assert their_member_id not in [m["id"] for m in (await client.get(f"{c.base}/members", headers=H(c.admin))).json()]
+    mine = await _person(db_session, None, "receptionist", tenant_id=c.tenant_id)
+    mine_id = mine.id
+    assert (await _set_roles(client, c, mine_id, [theirs["id"]])).status_code == 404
+    assert (await client.patch(f"{c.base}/roles/{theirs['id']}", json={"name_en": "Mine now"}, headers=H(c.admin))).status_code == 404
+    assert (await client.delete(f"{c.base}/roles/{theirs['id']}", headers=H(c.admin))).status_code == 404
+    assert (await _set_roles(client, c, their_member_id, [RECEPTIONIST])).status_code == 404
+    assert (await client.patch(f"{c.base}/members/{their_member_id}/status", json={"is_active": False}, headers=H(c.admin))).status_code == 404
+    assert not any(a["role_name"] == "Their secret role" for a in (await client.get("/api/v1/team/audit", headers=H(c.doctor))).json()["items"])
 
 
 @pytest.mark.asyncio
-async def test_every_change_is_audited_with_who_and_before_after(client, db_session, clinic):
-    tenant, owner, token = clinic
-    member = await _person(db_session, tenant, "receptionist", "Rina")
-    role = (await _role(client, token, "Reader", ["patients.read"])).json()
-    await client.put(f"/api/v1/team/members/{member.id}/roles", json={"role_ids": [role["id"]]}, headers=H(token))
-    page = (await client.get("/api/v1/team/audit", headers=H(token))).json()
+async def test_every_change_is_audited_in_the_clinics_trail_and_the_global_one(client, db_session, clinic, test_tenant):
+    c = clinic
+    member = await _person(db_session, test_tenant, "receptionist", "Rina")
+    member_id = member.id
+    role = (await _role(client, c, "Reader", ["patients.read"])).json()
+    await _set_roles(client, c, member_id, [role["id"]])
+
+    page = (await client.get("/api/v1/team/audit", headers=H(c.doctor))).json()
     assert page["total"] == 2
     change = next(a for a in page["items"] if a["action"] == "roles_assigned")
-    assert change["actor_name"] == "Owner" and change["member_name"] == "Rina"
+    assert change["actor_name"] == "Platform Admin" and change["member_name"] == "Rina"
     assert change["before"] == {"roles": ["Receptionist"]} and change["after"] == {"roles": ["Reader"]}
-    rows = (await db_session.execute(select(RoleAuditLog).where(RoleAuditLog.tenant_id == tenant.id))).scalars().all()
-    assert len(rows) == 2 and all(r.actor_user_id == owner.id for r in rows)
+    rows = (await db_session.execute(select(RoleAuditLog).where(RoleAuditLog.tenant_id == c.tenant_id))).scalars().all()
+    assert len(rows) == 2 and all(r.actor_user_id == c.admin_id for r in rows)
 
-
-@pytest.mark.asyncio
-async def test_a_prescriber_needs_a_practitioner_seat_on_the_plan(client, db_session, clinic):
-    tenant, _, token = clinic
-    tenant.plan = "free"  # one practitioner seat, already used by the owner
-    await db_session.commit()
-    prescriber = (await _role(client, token, "Assistant doctor", ["patients.read", "prescriptions.issue", "prescriptions.read"])).json()
-    r = await client.post("/api/v1/team/members", json={"email": "assistant@teamclinic.com", "full_name": "Assistant Doc", "role_ids": [prescriber["id"]]}, headers=H(token))
-    assert r.status_code == 403 and r.json()["detail"]["code"] == "plan_limit_reached"
-    # somebody who cannot prescribe is not a seat
-    assert (await client.post("/api/v1/team/members", json={"email": "desk@teamclinic.com", "full_name": "Front Desk", "role_ids": [RECEPTIONIST]}, headers=H(token))).status_code == 201
+    global_trail = (await client.get("/api/v1/admin/staff/audit?level=clinic", headers=H(c.admin))).json()
+    assert global_trail["total"] == 2 and {a["clinic_name"] for a in global_trail["items"]} == {c.clinic_name}

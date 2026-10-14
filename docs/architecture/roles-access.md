@@ -5,11 +5,12 @@ Last updated: 2026-07-11
 
 ---
 
-> **Dynamic roles (ADR 010, Phases 1 to 3 built 2026-10-14).** Roles and permissions are stored as data
+> **Dynamic roles (ADR 010, Phases 1 to 4 built 2026-10-14).** Roles and permissions are stored as data
 > (`roles`, `permissions`, `user_roles`) and every route is guarded by permission, not by role name. The four roles
 > below are the *system roles*: their permission sets reproduce exactly what is described here (pinned by
-> `tests/unit/test_permissions.py`, and route by route by `tests/golden/access_matrix.json`). A clinic can add staff
-> and create its own roles from the Team page (`/team`); a person's access is the union of their roles. Read this
+> `tests/unit/test_permissions.py`, and route by route by `tests/golden/access_matrix.json`). Only the platform
+> adds staff and creates or assigns roles (a clinic sees its team read-only at `/team` and contacts AltCare for changes; a platform
+> admin manages a clinic at `/admin/clients/{id}/team` and the platform's own staff at `/admin/staff`); a person's access is the union of their roles. Read this
 > document as the default each system role starts from. See `docs/architecture/adr/010-dynamic-roles-and-permissions.md`.
 
 ## Role taxonomy
