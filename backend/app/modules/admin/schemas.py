@@ -1,6 +1,7 @@
 """Pydantic schemas for Platform Admin endpoints."""
 
 from datetime import datetime
+from decimal import Decimal
 from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field
@@ -20,6 +21,70 @@ class AdminDashboardResponse(BaseModel):
     total_doctors: int
     total_users: int
     plans: dict[str, int]  # { "free": 6, "plus": 3, "pro": 3, "enterprise": 1 }
+
+
+class QueueTenant(BaseModel):
+    tenant_id: str
+    clinic_name: str
+    doctor_name: str | None = None
+    email: str | None = None
+    since: datetime = Field(..., description="When the clinic registered (approvals) or listed itself (verification)")
+
+
+class QueueContactMessage(BaseModel):
+    id: str
+    topic: str
+    name: str
+    created_at: datetime
+
+
+class ContactQueue(BaseModel):
+    new: int
+    by_topic: dict[str, int]
+    latest: list[QueueContactMessage]
+
+
+class MarketingQueue(BaseModel):
+    needs_draft: int = Field(..., description="Doctor asked; nobody has written the post")
+    waiting_for_doctor: int = Field(..., description="A draft is with the doctor for approval")
+    ready_to_post: int = Field(..., description="Approved; waiting to be posted on Facebook")
+
+
+class RevenueSummary(BaseModel):
+    this_month: Decimal
+    last_month: Decimal
+    paid_orders_this_month: int
+    abandoned_checkouts: int = Field(..., description="Pending for over an hour, last 7 days")
+    failed_last_7_days: int
+
+
+class ExpiringPlan(BaseModel):
+    tenant_id: str
+    clinic_name: str
+    plan: str
+    expires_at: datetime
+    days_left: int
+
+
+class GrowthSummary(BaseModel):
+    new_tenants_this_month: int
+    new_tenants_last_month: int
+
+
+class AdminQueueResponse(BaseModel):
+    """What platform staff need to act on, across every clinic."""
+
+    pending_approvals_total: int
+    pending_approvals: list[QueueTenant]
+    verification_waiting_total: int
+    verification_waiting: list[QueueTenant]
+    contact: ContactQueue
+    marketing: MarketingQueue
+    revenue: RevenueSummary
+    plans_expiring_total: int
+    plans_expiring: list[ExpiringPlan]
+    recently_expired: int = Field(..., description="Paid plans that ended in the last 7 days")
+    growth: GrowthSummary
 
 
 # ============================================================================

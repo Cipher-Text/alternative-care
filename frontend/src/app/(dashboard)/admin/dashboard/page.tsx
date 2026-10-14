@@ -11,8 +11,9 @@ import {
   Users,
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
-import { useAdminDashboard } from '@/lib/hooks/useAdmin'
+import { useAdminDashboard, useAdminQueue } from '@/lib/hooks/useAdmin'
 import { MessagingProvidersCard } from '@/components/admin/MessagingProvidersCard'
+import { AdminQueuePanel } from '@/components/admin/AdminQueuePanel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -61,6 +62,7 @@ export default function AdminDashboardPage() {
   // Dashboard is read-only — admins and operators both see it (backend: RequireAdminOrOperator).
   const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
   const { data, isLoading } = useAdminDashboard(isPlatformRole)
+  const { data: queue } = useAdminQueue(isPlatformRole)
 
   if (!isPlatformRole) {
     return (
@@ -100,8 +102,20 @@ export default function AdminDashboardPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Platform Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          System-wide metrics across all clinics and practitioners.
+          What needs your action today, and how the platform is doing.
         </p>
+      </div>
+
+      {/* The work: approvals, verification, messages, Facebook posts, renewals, billing */}
+      <AdminQueuePanel enabled={isPlatformRole} />
+
+      <div className="flex items-baseline justify-between gap-3 border-t pt-8">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Platform at a glance</h2>
+        {queue && (
+          <p className="text-sm text-muted-foreground">
+            {queue.growth.new_tenants_this_month} new {queue.growth.new_tenants_this_month === 1 ? 'clinic' : 'clinics'} this month, {queue.growth.new_tenants_last_month} last month
+          </p>
+        )}
       </div>
 
       {/* KPI Cards */}

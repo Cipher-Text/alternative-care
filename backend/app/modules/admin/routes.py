@@ -12,6 +12,7 @@ from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
     AdminAddTenantDoctorResponse,
     AdminDashboardResponse,
+    AdminQueueResponse,
     AdminProvisionRequest,
     AdminProvisionResponse,
     AdminTenantDetailResponse,
@@ -45,6 +46,20 @@ async def get_dashboard(
 ):
     service = AdminService(db)
     return await service.get_dashboard()
+
+
+@router.get(
+    "/dashboard/queue",
+    response_model=AdminQueueResponse,
+    summary="Platform work queue",
+    description="What platform staff need to act on: clinic approvals, directory verification, contact messages, "
+    "Facebook posts, plan renewals and billing.",
+)
+async def get_dashboard_queue(
+    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    return await AdminService(db).get_queue()
 
 
 # ============================================================================

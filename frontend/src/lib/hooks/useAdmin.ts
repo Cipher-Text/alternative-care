@@ -27,6 +27,11 @@ export function useAdminDashboard(enabled = true) {
   })
 }
 
+/** The work queue: refreshed every minute and when the window regains focus (this page stays open). */
+export function useAdminQueue(enabled = true) {
+  return useQuery(['admin', 'queue'], () => adminApi.getQueue(), { enabled, staleTime: 30000, refetchInterval: 60000 })
+}
+
 // ============================================================================
 // Tenants
 // ============================================================================

@@ -155,3 +155,39 @@ export interface AdminUpdateUserResponse {
   message: string
   user: AdminUserItem
 }
+
+// ===== Work queue (GET /admin/dashboard/queue) =====
+
+export interface QueueTenant {
+  tenant_id: string
+  clinic_name: string
+  doctor_name: string | null
+  email: string | null
+  /** Registered (approvals) or listed itself (verification) */
+  since: string
+}
+
+export interface AdminQueue {
+  pending_approvals_total: number
+  pending_approvals: QueueTenant[]
+  verification_waiting_total: number
+  verification_waiting: QueueTenant[]
+  contact: {
+    new: number
+    by_topic: Record<string, number>
+    latest: { id: string; topic: string; name: string; created_at: string }[]
+  }
+  marketing: { needs_draft: number; waiting_for_doctor: number; ready_to_post: number }
+  revenue: {
+    /** Decimal serialised as a string */
+    this_month: string
+    last_month: string
+    paid_orders_this_month: number
+    abandoned_checkouts: number
+    failed_last_7_days: number
+  }
+  plans_expiring_total: number
+  plans_expiring: { tenant_id: string; clinic_name: string; plan: string; expires_at: string; days_left: number }[]
+  recently_expired: number
+  growth: { new_tenants_this_month: number; new_tenants_last_month: number }
+}

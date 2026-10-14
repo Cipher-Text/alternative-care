@@ -1,5 +1,6 @@
 import apiClient from './client'
 import type {
+  AdminQueue,
   AdminDashboard,
   AdminTenantListItem,
   AdminTenantDetail,
@@ -27,6 +28,9 @@ export const adminApi = {
     const response = await apiClient.get('/admin/dashboard')
     return response.data
   },
+
+  // What staff need to act on
+  getQueue: async (): Promise<AdminQueue> => (await apiClient.get('/admin/dashboard/queue')).data,
 
   // Tenants
   listTenants: async (params?: AdminListParams): Promise<AdminTenantListItem[]> => {

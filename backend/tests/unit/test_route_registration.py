@@ -74,4 +74,5 @@ def test_current_api_route_count_matches_docs():
     # Health history step 1: +1 /health-options, +2 /patients/{id}/health-profile — 238 -> 241.
     # Case-taking (homeopathy): +1 definitions, +2 patient profile, +2 visit assessment — 241 -> 246.
     # Practitioner dashboard: +1 /dashboard/today — 246 -> 247.
-    assert api_method_count == 247
+    # Platform admin work queue: +1 /admin/dashboard/queue — 247 -> 248.
+    assert api_method_count == 248

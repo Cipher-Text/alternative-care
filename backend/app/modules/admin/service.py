@@ -1,7 +1,8 @@
 """Platform Admin service — business logic for platform-level operations."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, or_, select
@@ -15,6 +16,14 @@ from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
     AdminAddTenantDoctorResponse,
     AdminDashboardResponse,
+    AdminQueueResponse,
+    ContactQueue,
+    ExpiringPlan,
+    GrowthSummary,
+    MarketingQueue,
+    QueueContactMessage,
+    QueueTenant,
+    RevenueSummary,
     AdminProvisionRequest,
     AdminProvisionResponse,
     AdminTenantDetailResponse,
@@ -28,6 +37,7 @@ from app.modules.admin.schemas import (
     AdminUserItem,
     AdminUsersResponse,
 )
+from app.shared.models import BillingOrder, ContactMessage, FacebookFeatureRequest, PractitionerListing
 from app.shared.models.tenant import Tenant, User
 
 VALID_ROLES = {"admin", "operator", "doctor", "receptionist"}
@@ -92,6 +102,139 @@ class AdminService:
             total_doctors=total_doctors,
             total_users=total_users,
             plans=plans,
+        )
+
+    # ========================================================================
+    # Work queue
+    # ========================================================================
+
+    async def get_queue(self, limit: int = 6) -> AdminQueueResponse:
+        """What platform staff need to act on: approvals, verification, messages, Facebook posts, plan renewals."""
+        now = datetime.now(timezone.utc)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_month_start = (month_start - timedelta(days=1)).replace(day=1)
+
+        async def count(query) -> int:
+            return (await self.db.execute(query)).scalar() or 0
+
+        doctor_name = (
+            select(User.full_name).where(User.tenant_id == Tenant.id, User.role == "doctor").order_by(User.created_at).limit(1).scalar_subquery()
+        )
+
+        # Clinics waiting to be approved
+        approvals_total = await count(select(func.count()).select_from(Tenant).where(Tenant.is_approved == False))  # noqa: E712
+        approvals = (
+            await self.db.execute(
+                select(Tenant, doctor_name).where(Tenant.is_approved == False).order_by(Tenant.created_at).limit(limit)  # noqa: E712
+            )
+        ).all()
+
+        # Clinics that listed themselves in the public directory but whose credentials nobody has verified yet
+        waiting_filter = (
+            PractitionerListing.is_listed == True,  # noqa: E712
+            Tenant.is_verified == False,  # noqa: E712
+            Tenant.is_approved == True,  # noqa: E712
+        )
+        verification_total = await count(
+            select(func.count(func.distinct(Tenant.id))).select_from(PractitionerListing).join(Tenant, Tenant.id == PractitionerListing.tenant_id).where(*waiting_filter)
+        )
+        verification = (
+            await self.db.execute(
+                select(Tenant, func.min(PractitionerListing.listed_at))
+                .join(PractitionerListing, PractitionerListing.tenant_id == Tenant.id)
+                .where(*waiting_filter)
+                .group_by(Tenant.id)
+                .order_by(func.min(PractitionerListing.listed_at))
+                .limit(limit)
+            )
+        ).all()
+
+        # Contact form
+        topics = dict(
+            (
+                await self.db.execute(
+                    select(ContactMessage.topic, func.count()).where(ContactMessage.status == "new").group_by(ContactMessage.topic)
+                )
+            ).all()
+        )
+        latest = (
+            await self.db.execute(
+                select(ContactMessage).where(ContactMessage.status == "new").order_by(ContactMessage.created_at.desc()).limit(limit)
+            )
+        ).scalars().all()
+
+        # Facebook promotion
+        by_status = dict(
+            (
+                await self.db.execute(
+                    select(FacebookFeatureRequest.status, func.count()).group_by(FacebookFeatureRequest.status)
+                )
+            ).all()
+        )
+
+        # Billing
+        async def revenue(start: datetime, end: datetime | None = None) -> Decimal:
+            q = select(func.coalesce(func.sum(BillingOrder.amount), 0)).where(BillingOrder.status == "paid", BillingOrder.paid_at >= start)
+            if end is not None:
+                q = q.where(BillingOrder.paid_at < end)
+            return Decimal((await self.db.execute(q)).scalar() or 0)
+
+        week_ago = now - timedelta(days=7)
+        revenue_summary = RevenueSummary(
+            this_month=await revenue(month_start),
+            last_month=await revenue(last_month_start, month_start),
+            paid_orders_this_month=await count(
+                select(func.count()).select_from(BillingOrder).where(BillingOrder.status == "paid", BillingOrder.paid_at >= month_start)
+            ),
+            abandoned_checkouts=await count(
+                select(func.count()).select_from(BillingOrder).where(
+                    BillingOrder.status == "pending", BillingOrder.created_at >= week_ago, BillingOrder.created_at < now - timedelta(hours=1)
+                )
+            ),
+            failed_last_7_days=await count(
+                select(func.count()).select_from(BillingOrder).where(BillingOrder.status == "failed", BillingOrder.created_at >= week_ago)
+            ),
+        )
+
+        # Paid plans that end soon (renewal follow-up) or just ended
+        expiring_filter = (Tenant.plan != "free", Tenant.plan_expires_at.is_not(None), Tenant.plan_expires_at > now, Tenant.plan_expires_at <= now + timedelta(days=14))
+        expiring_total = await count(select(func.count()).select_from(Tenant).where(*expiring_filter))
+        expiring = (await self.db.execute(select(Tenant).where(*expiring_filter).order_by(Tenant.plan_expires_at).limit(limit))).scalars().all()
+        recently_expired = await count(
+            select(func.count()).select_from(Tenant).where(
+                Tenant.plan != "free", Tenant.plan_expires_at.is_not(None), Tenant.plan_expires_at <= now, Tenant.plan_expires_at > week_ago
+            )
+        )
+
+        growth = GrowthSummary(
+            new_tenants_this_month=await count(select(func.count()).select_from(Tenant).where(Tenant.created_at >= month_start)),
+            new_tenants_last_month=await count(
+                select(func.count()).select_from(Tenant).where(Tenant.created_at >= last_month_start, Tenant.created_at < month_start)
+            ),
+        )
+
+        name = lambda t: t.clinic_name or t.name  # noqa: E731
+        return AdminQueueResponse(
+            pending_approvals_total=approvals_total,
+            pending_approvals=[QueueTenant(tenant_id=t.id, clinic_name=name(t), doctor_name=d, email=t.email, since=t.created_at) for t, d in approvals],
+            verification_waiting_total=verification_total,
+            verification_waiting=[QueueTenant(tenant_id=t.id, clinic_name=name(t), email=t.email, since=listed or t.created_at) for t, listed in verification],
+            contact=ContactQueue(
+                new=sum(topics.values()),
+                by_topic=topics,
+                latest=[QueueContactMessage(id=m.id, topic=m.topic, name=m.name, created_at=m.created_at) for m in latest],
+            ),
+            marketing=MarketingQueue(
+                needs_draft=by_status.get("requested", 0), waiting_for_doctor=by_status.get("drafted", 0), ready_to_post=by_status.get("approved", 0)
+            ),
+            revenue=revenue_summary,
+            plans_expiring_total=expiring_total,
+            plans_expiring=[
+                ExpiringPlan(tenant_id=t.id, clinic_name=name(t), plan=t.plan, expires_at=t.plan_expires_at, days_left=max(0, (t.plan_expires_at - now).days))
+                for t in expiring
+            ],
+            recently_expired=recently_expired,
+            growth=growth,
         )
 
     # ========================================================================
