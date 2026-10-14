@@ -50,6 +50,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useCan } from '@/lib/auth/permissions'
 
 type DoctorForm = {
   email: string
@@ -85,8 +86,9 @@ export default function AdminClientDetailPage({
   const user = useAuthStore((state) => state.user)
   // Tenant detail is read-only on the backend (RequireAdminOrOperator) — operators can view
   // it. Adding a doctor is an admin-only write (canEdit below).
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = can('tenants.read')
+  const canEdit = can('tenants.manage')
   const { data, isLoading, error } = useAdminClient(tenantId, isPlatformRole)
   const createDoctor = useCreateTenantDoctor(tenantId)
   const [isDoctorDialogOpen, setIsDoctorDialogOpen] = useState(false)

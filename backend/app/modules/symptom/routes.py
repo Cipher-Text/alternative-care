@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, get_permissions
 from app.modules.symptom.service import SymptomService
 from app.shared.schemas import (
     SymptomAliasCreate,
@@ -31,6 +31,10 @@ def get_symptom_service(
 
 ServiceDep = Annotated[SymptomService, Depends(get_symptom_service)]
 UserDep = Annotated[CurrentUser, Depends(get_current_user)]
+
+
+async def _can_write_global(user: CurrentUser, service) -> bool:
+    return "catalogue.global_write" in await get_permissions(user, service.db)
 
 
 # ===== Symptom CRUD =====
@@ -67,10 +71,10 @@ async def create_symptom(data: SymptomCreate, service: ServiceDep, user: UserDep
     Create symptom.
 
     - Doctors can create tenant-specific symptoms
-    - Only admins can create global symptoms
+    - Only someone with catalogue.global_write can create global symptoms
     - Bilingual support (name_en, name_bn)
     """
-    return await service.create_symptom(data, created_by=user.user_id, role=user.role)
+    return await service.create_symptom(data, created_by=user.user_id, can_write_global=await _can_write_global(user, service))
 
 
 @router.get("/{symptom_id:int}", response_model=SymptomResponse)
@@ -96,7 +100,7 @@ async def update_symptom(
     - Partial updates supported
     """
     return await service.update_symptom(
-        symptom_id, data, updated_by=user.user_id, role=user.role
+        symptom_id, data, updated_by=user.user_id, can_write_global=await _can_write_global(user, service)
     )
 
 
@@ -109,7 +113,7 @@ async def delete_symptom(symptom_id: int, service: ServiceDep, user: UserDep):
     - Admins can also deactivate global symptoms
     - Marks record inactive
     """
-    await service.deactivate_symptom(symptom_id, updated_by=user.user_id, role=user.role)
+    await service.deactivate_symptom(symptom_id, updated_by=user.user_id, can_write_global=await _can_write_global(user, service))
 
 
 # ===== Symptom Search =====

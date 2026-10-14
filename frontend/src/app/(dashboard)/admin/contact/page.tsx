@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { ContactTopic } from '@/types/contact'
+import { useCan } from '@/lib/auth/permissions'
 
 const PAGE_SIZE = 20
 const TOPIC_KEY: Record<ContactTopic, string> = {
@@ -26,6 +27,7 @@ const TOPIC_KEY: Record<ContactTopic, string> = {
 export default function AdminContactPage() {
   const t = useTranslations('publicContactUi.admin')
   const user = useAuthStore((s) => s.user)
+  const { can } = useCan()
   const { fmt } = useDateFormat()
   const [status, setStatus] = useState<'new' | 'handled'>('new')
   const pager = usePager(PAGE_SIZE, status)
@@ -33,7 +35,7 @@ export default function AdminContactPage() {
   const setMessageStatus = useSetContactStatus()
   const { items, hasNext } = serverPage(messages.data, PAGE_SIZE)
 
-  if (user && user.role !== 'admin') {
+  if (user && !can('contact.manage')) {
     return (
       <Card>
         <CardContent className="flex items-center gap-3 p-6">

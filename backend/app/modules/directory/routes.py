@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, require_role
+from app.core.dependencies import CurrentUser, require_permission
 from app.modules.directory.service import DirectoryService
 from app.shared.schemas import (
     ContactRequestResponse,
@@ -20,7 +20,7 @@ router = APIRouter()
 
 # Tenant doctors only: the listing is the doctor's public face. Receptionists and platform users
 # have no access (platform users have no tenant).
-Doctor = Annotated[CurrentUser, Depends(require_role("doctor"))]
+Doctor = Annotated[CurrentUser, Depends(require_permission("directory.manage"))]
 
 
 def get_service(db: Annotated[AsyncSession, Depends(get_db)], user: Doctor) -> DirectoryService:

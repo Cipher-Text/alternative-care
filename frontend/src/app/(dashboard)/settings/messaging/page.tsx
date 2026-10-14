@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl'
 import { AlertTriangle, Loader2, Mail, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
-import { useAuthStore } from '@/store/authStore'
 import { useCredits, useCreditLedger } from '@/lib/hooks/useBilling'
 import { usePacks, useSubscription } from '@/lib/hooks/useCheckout'
 import { useDateFormat } from '@/lib/i18n/date'
@@ -13,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import type { ChannelBalance, CreditChannel } from '@/types/credits'
+import { useCan } from '@/lib/auth/permissions'
 
 const PAGE_SIZE = 20
 
@@ -99,7 +99,8 @@ export default function MessagingPage() {
   const { fmt } = useDateFormat()
   const credits = useCredits()
   // Online purchase is doctors-only, and only offered once packs exist and a payment method is on
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('billing.manage')
   const packs = usePacks(isDoctor)
   const subscription = useSubscription(isDoctor)
   const canBuyOnline = isDoctor && (packs.data?.some((p) => p.is_active) ?? false) && (subscription.data?.gateways.length ?? 0) > 0

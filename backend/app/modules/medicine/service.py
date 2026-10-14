@@ -54,13 +54,13 @@ class MedicineService(GlobalCatalogService[Medicine]):
         return list(result.scalars().all())
 
     async def create_medicine(
-        self, data: MedicineCreate, created_by: str, role: str
+        self, data: MedicineCreate, created_by: str, can_write_global: bool
     ) -> Medicine:
-        """Create a medicine. Only admins can create global ones."""
-        if data.is_global and role != "admin":
+        """Create a medicine. Only someone with catalogue.global_write can create global ones."""
+        if data.is_global and not can_write_global:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Only admins can create global medicines",
+                detail="You do not have permission to create global medicines",
             )
 
         medicine = Medicine(
@@ -80,11 +80,11 @@ class MedicineService(GlobalCatalogService[Medicine]):
         return await self.get_visible_or_404(medicine_id, detail="Medicine not found")
 
     async def update_medicine(
-        self, medicine_id: int, data: MedicineUpdate, updated_by: str, role: str
+        self, medicine_id: int, data: MedicineUpdate, updated_by: str, can_write_global: bool
     ) -> Medicine:
         """Update a tenant-owned medicine, or (admin only) a global one."""
         medicine = await self.get_own_or_404(
-            medicine_id, role=role, detail="Medicine not found or cannot be updated"
+            medicine_id, can_write_global=can_write_global, detail="Medicine not found or cannot be updated"
         )
 
         for field, value in data.model_dump(exclude_unset=True).items():
@@ -97,10 +97,10 @@ class MedicineService(GlobalCatalogService[Medicine]):
 
         return medicine
 
-    async def deactivate_medicine(self, medicine_id: int, updated_by: str, role: str) -> None:
+    async def deactivate_medicine(self, medicine_id: int, updated_by: str, can_write_global: bool) -> None:
         """Deactivate a tenant-owned medicine, or (admin only) a global one."""
         medicine = await self.get_own_or_404(
-            medicine_id, role=role, detail="Medicine not found or cannot be deleted"
+            medicine_id, can_write_global=can_write_global, detail="Medicine not found or cannot be deleted"
         )
 
         medicine.is_active = False

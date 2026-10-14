@@ -1,13 +1,14 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useAuthStore } from '@/store/authStore'
 import { RequestsList } from '@/components/appointment-requests/RequestsList'
+import { useCan } from '@/lib/auth/permissions'
 
 export default function AppointmentRequestsPage() {
   const t = useTranslations('appointmentRequestsUi')
   // Doctors and receptionists; platform staff have no clinic
-  const allowed = useAuthStore((s) => s.user?.role === 'doctor' || s.user?.role === 'receptionist')
+  const { can } = useCan()
+  const allowed = can('appointment_requests.manage')
   if (!allowed) return null
 
   return (

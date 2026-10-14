@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePrescriptions, useViewPrescriptionPdf } from '@/lib/hooks/usePrescriptions'
-import { useCan } from '@/lib/auth/permissions'
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
 import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { Button } from '@/components/ui/button'
@@ -28,6 +27,7 @@ import {
 import { PlusCircle, Search, Loader2, FileText, Eye } from 'lucide-react'
 import { useDateFormat } from '@/lib/i18n/date'
 import type { PrescriptionStatus } from '@/types/prescription'
+import { useCan } from '@/lib/auth/permissions'
 
 const statusColors: Record<PrescriptionStatus, string> = {
   draft: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
@@ -39,7 +39,7 @@ export default function PrescriptionsPage() {
   const tp = useTranslations('pages')
   const t = useTranslations('rxUi')
   const { fmt } = useDateFormat()
-  const can = useCan()
+  const { can } = useCan()
   const viewPdf = useViewPrescriptionPdf()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<string>('')
@@ -84,7 +84,7 @@ export default function PrescriptionsPage() {
             {tp('prescriptionsSubtitle')}
           </p>
         </div>
-        {can.writeClinical && (
+        {can('prescriptions.write') && (
         <Link href="/prescriptions/new">
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -222,7 +222,7 @@ export default function PrescriptionsPage() {
               ? t('emptyFiltered')
               : t('emptyNone')}
           </p>
-          {!search && !status && can.writeClinical && (
+          {!search && !status && can('prescriptions.write') && (
             <Link href="/prescriptions/new">
               <Button className="mt-4">
                 <PlusCircle className="mr-2 h-4 w-4" />

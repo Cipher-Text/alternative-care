@@ -24,7 +24,7 @@ export default function SymptomsPage() {
   const t = useTranslations('symptomsUi');
   const tc = useTranslations('symptomCategoryUi');
   const router = useRouter();
-  const can = useCan();
+  const { can } = useCan()
   const [filters, setFilters] = useState<SymptomFilters>({
     is_active: true,
   });
@@ -98,7 +98,7 @@ export default function SymptomsPage() {
             {tp('symptomsSubtitle')}
           </p>
         </div>
-        {can.writeClinical && (
+        {can('symptoms.write') && (
           <Button onClick={() => router.push('/symptoms/new')}>
             <Plus className="w-4 h-4 mr-2" />
             {t('addSymptom')}
@@ -197,7 +197,7 @@ export default function SymptomsPage() {
       ) : filteredSymptoms.length === 0 ? (
         <Card className="p-12 text-center">
           <p className="text-gray-500">{t('noneFound')}</p>
-          {can.writeClinical && (
+          {can('symptoms.write') && (
           <Button className="mt-4" onClick={() => router.push('/symptoms/new')}>
             <Plus className="w-4 h-4 mr-2" />
             {t('addFirst')}
@@ -240,7 +240,7 @@ export default function SymptomsPage() {
                   <Eye className="w-4 h-4 mr-1" />
                   {t('view')}
                 </Button>
-                {!symptom.is_global && can.writeClinical && (
+                {!symptom.is_global && can('symptoms.write') && (
                   <>
                     <Button
                       variant="outline"

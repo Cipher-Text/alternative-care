@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ProfileForm } from '@/components/doctor/ProfileForm'
 import { ClinicLogoCard } from '@/components/doctor/ClinicLogoCard'
-import { useAuthStore } from '@/store/authStore'
 import { DegreesSection } from '@/components/doctor/DegreesSection'
 import { TrainingsSection } from '@/components/doctor/TrainingsSection'
 import {
@@ -20,6 +19,7 @@ import {
   CheckCircle,
   Edit,
 } from 'lucide-react'
+import { useCan } from '@/lib/auth/permissions'
 
 type Tab = 'profile' | 'degrees' | 'trainings'
 
@@ -27,7 +27,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const { data: profile, isLoading, error } = useDoctorProfile()
-  const role = useAuthStore((state) => state.user?.role)
+  const { can } = useCan()
 
   if (isLoading) {
     return (
@@ -137,7 +137,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'profile' && <ClinicLogoCard canEdit={role === 'doctor'} />}
+      {activeTab === 'profile' && <ClinicLogoCard canEdit={can('clinic_profile.write')} />}
 
       {activeTab === 'profile' && (
         <ProfileForm

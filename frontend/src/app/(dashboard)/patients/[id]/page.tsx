@@ -7,7 +7,6 @@ import { parseISO } from 'date-fns'
 import { useDateFormat } from '@/lib/i18n/date'
 import Link from 'next/link'
 import { usePatient, useDeletePatient, usePatientTags, usePatientDiagnoses } from '@/lib/hooks/usePatients'
-import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -38,6 +37,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useCan } from '@/lib/auth/permissions'
 
 export default function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -46,7 +46,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const tu = useTranslations('patientsUi')
   const { fmt } = useDateFormat()
   const formatDate = (d: string) => fmt(parseISO(d), 'MMM dd, yyyy')
-  const can = useCan()
+  const { can } = useCan()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const { data: patient, isLoading, error } = usePatient(id)
@@ -107,14 +107,17 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <p className="text-muted-foreground">{patient.is_active ? t('active') : t('inactive')}</p>
           </div>
         </div>
-        {can.writeClinical && (
+        {(can('patients.write') || can('patients.delete')) && (
         <div className="flex flex-wrap gap-2">
+          {can('patients.write') && (
           <Link href={`/patients/${id}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
               {t('edit')}
             </Button>
           </Link>
+          )}
+          {can('patients.delete') && (
           <Button
             variant="destructive"
             onClick={() => setShowDeleteDialog(true)}
@@ -122,6 +125,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <Trash2 className="mr-2 h-4 w-4" />
             {t('delete')}
           </Button>
+          )}
         </div>
         )}
       </div>
@@ -203,13 +207,13 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
 
       <PatientIdentityCard patient={patient} />
 
-      <HealthProfileCard patientId={id} canEdit={can.writeClinical} />
+      <HealthProfileCard patientId={id} canEdit={can('health_profile.write')} />
 
       {caseSystems.map((system) => (
         <PatientCaseCard key={system} patientId={id} system={system} />
       ))}
 
-      <VisitsCard patientId={id} canEdit={can.writeClinical} />
+      <VisitsCard patientId={id} canEdit={can('visits.write')} />
 
       {/* Tags */}
       {tags && tags.length > 0 && (

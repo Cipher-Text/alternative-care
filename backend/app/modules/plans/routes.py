@@ -12,12 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import (
-    CurrentUser,
-    RequireAdmin,
-    RequireAdminOrOperator,
-    get_current_user,
-)
+from app.core.dependencies import CurrentUser, get_current_user, require_permission
 from app.core.entitlements import EntitlementService
 from app.modules.plans.schemas import (
     AdminPlansResponse,
@@ -29,6 +24,10 @@ from app.modules.plans.schemas import (
     TenantEntitlementsResponse,
 )
 from app.modules.plans.service import PlansService
+
+
+Needs_plans_manage = Annotated[CurrentUser, Depends(require_permission("plans.manage"))]
+Needs_plans_read = Annotated[CurrentUser, Depends(require_permission("plans.read"))]
 
 DB = Annotated[AsyncSession, Depends(get_db)]
 
@@ -44,13 +43,13 @@ async def list_public_plans(db: DB):
 
 
 @admin_router.get("", response_model=AdminPlansResponse, summary="All plans with entitlements")
-async def admin_list_plans(_: RequireAdminOrOperator, db: DB):
+async def admin_list_plans(_: Needs_plans_read, db: DB):
     return await PlansService(db).admin_plans()
 
 
 @admin_router.get("/audit", response_model=list[PlanAuditEntry], summary="Plan change history")
 async def admin_plan_audit(
-    _: RequireAdminOrOperator,
+    _: Needs_plans_read,
     db: DB,
     limit: int = Query(100, ge=1, le=500),
     plan_key: str | None = None,
@@ -59,7 +58,7 @@ async def admin_plan_audit(
 
 
 @admin_router.put("/{plan_key}", response_model=PlanConfig, summary="Update a plan")
-async def admin_update_plan(plan_key: str, data: PlanUpdateRequest, user: RequireAdmin, db: DB):
+async def admin_update_plan(plan_key: str, data: PlanUpdateRequest, user: Needs_plans_manage, db: DB):
     return await PlansService(db).update_plan(plan_key, data, user.user_id)
 
 
@@ -67,7 +66,7 @@ async def admin_update_plan(plan_key: str, data: PlanUpdateRequest, user: Requir
     "/{tenant_id}/entitlements", response_model=TenantEntitlementsResponse,
     summary="A tenant's effective entitlements and usage",
 )
-async def tenant_entitlements(tenant_id: str, _: RequireAdminOrOperator, db: DB):
+async def tenant_entitlements(tenant_id: str, _: Needs_plans_read, db: DB):
     return await PlansService(db).tenant_entitlements(tenant_id)
 
 
@@ -76,7 +75,7 @@ async def tenant_entitlements(tenant_id: str, _: RequireAdminOrOperator, db: DB)
     summary="Override one entitlement for one tenant",
 )
 async def set_tenant_override(
-    tenant_id: str, key: str, data: OverrideRequest, user: RequireAdmin, db: DB
+    tenant_id: str, key: str, data: OverrideRequest, user: Needs_plans_manage, db: DB
 ):
     return await PlansService(db).set_override(tenant_id, key, data, user.user_id)
 
@@ -85,7 +84,7 @@ async def set_tenant_override(
     "/{tenant_id}/entitlements/{key}", response_model=TenantEntitlementsResponse,
     summary="Remove a tenant override (back to the plan's value)",
 )
-async def delete_tenant_override(tenant_id: str, key: str, user: RequireAdmin, db: DB):
+async def delete_tenant_override(tenant_id: str, key: str, user: Needs_plans_manage, db: DB):
     return await PlansService(db).delete_override(tenant_id, key, user.user_id)
 
 

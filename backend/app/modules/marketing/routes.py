@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, require_role
+from app.core.dependencies import CurrentUser, require_permission
 from app.modules.marketing.service import FacebookService
 from app.shared.schemas import (
     FacebookApprove,
@@ -19,7 +19,7 @@ from app.shared.schemas import (
 router = APIRouter()
 
 # Doctors only: it is their name and profile being promoted
-Doctor = Annotated[CurrentUser, Depends(require_role("doctor"))]
+Doctor = Annotated[CurrentUser, Depends(require_permission("marketing.request"))]
 
 
 def get_service(db: Annotated[AsyncSession, Depends(get_db)], user: Doctor) -> FacebookService:

@@ -50,6 +50,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { MedicalSystem, Medicine, MedicineCreate, MedicineListItem } from '@/types/medicine'
+import { useCan } from '@/lib/auth/permissions'
 
 const medicalSystems: Array<{ value: MedicalSystem; label: string }> = [
   { value: 'homeopathy', label: 'Homeopathy' },
@@ -269,8 +270,9 @@ export default function AdminMedicinesPage() {
   // GET /medicines is visible to any authenticated user, and for a platform
   // caller (tenant_id=null) it narrows to global-only rows automatically —
   // this page is the global catalog, curated by admins, viewable by operators.
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = !user?.tenant_id
+  const canEdit = can('catalogue.global_write')
 
   const [searchTerm, setSearchTerm] = useState('')
   const [systemFilter, setSystemFilter] = useState<string>('all')

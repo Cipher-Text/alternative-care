@@ -39,6 +39,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { AdminCreateTenantDoctorRequest, MedicalSystem, SubscriptionPlan } from '@/types/auth'
+import { useCan } from '@/lib/auth/permissions'
 
 const medicalSystems: Array<{ value: MedicalSystem; label: string }> = [
   { value: 'homeopathy', label: 'Homeopathy' },
@@ -82,8 +83,9 @@ export default function AdminClientsPage() {
   // Listing clients/pending tenants is read-only on the backend (RequireAdminOrOperator) —
   // operators can view the directory. Provisioning, approving, and adding doctors are
   // admin-only writes (canEdit below).
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = can('tenants.read')
+  const canEdit = can('tenants.manage')
 
   const debouncedSearch = useDebouncedValue(searchTerm.trim())
   const clientPager = usePager(undefined, [debouncedSearch])

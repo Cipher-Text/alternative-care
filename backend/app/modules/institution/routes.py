@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, RequireAdmin, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, require_permission
 from app.modules.institution.service import InstitutionService
 from app.shared.schemas import (
     InstitutionCreate,
@@ -16,6 +16,9 @@ from app.shared.schemas import (
 )
 
 router = APIRouter()
+
+Needs_institutions_manage = Annotated[CurrentUser, Depends(require_permission("institutions.manage"))]
+
 
 
 def get_institution_service(db: Annotated[AsyncSession, Depends(get_db)]) -> InstitutionService:
@@ -54,7 +57,7 @@ async def list_institutions(
 
 
 @router.post("/", response_model=InstitutionResponse, status_code=status.HTTP_201_CREATED)
-async def create_institution(data: InstitutionCreate, service: ServiceDep, user: RequireAdmin):
+async def create_institution(data: InstitutionCreate, service: ServiceDep, user: Needs_institutions_manage):
     """Create an institution. Admin-only."""
     return await service.create_institution(data, created_by=user.user_id)
 
@@ -67,7 +70,7 @@ async def get_institution(institution_id: int, service: ServiceDep, _: UserDep):
 
 @router.patch("/{institution_id}", response_model=InstitutionResponse)
 async def update_institution(
-    institution_id: int, data: InstitutionUpdate, service: ServiceDep, user: RequireAdmin
+    institution_id: int, data: InstitutionUpdate, service: ServiceDep, user: Needs_institutions_manage
 ):
     """
     Update an institution. Admin-only.
@@ -78,6 +81,6 @@ async def update_institution(
 
 
 @router.delete("/{institution_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def deactivate_institution(institution_id: int, service: ServiceDep, user: RequireAdmin):
+async def deactivate_institution(institution_id: int, service: ServiceDep, user: Needs_institutions_manage):
     """Deactivate an institution. Admin-only."""
     await service.deactivate_institution(institution_id, updated_by=user.user_id)

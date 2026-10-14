@@ -23,7 +23,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const t = useTranslations('symptomDetailUi');
   const tc = useTranslations('symptomCategoryUi');
-  const can = useCan();
+  const { can } = useCan()
   const { id } = use(params);
   const symptomId = parseInt(id);
 
@@ -154,7 +154,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        {(!symptom.is_global && can.writeClinical) && (
+        {(!symptom.is_global && can('symptoms.write')) && (
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
@@ -277,7 +277,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">{t('aliases')}</h2>
-          {(!symptom.is_global && can.writeClinical) && (
+          {(!symptom.is_global && can('symptoms.write')) && (
             <Button size="sm" onClick={() => setShowAddAlias(!showAddAlias)}>
               <Plus className="w-4 h-4 mr-2" />
               {t('addAlias')}
@@ -285,7 +285,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
           )}
         </div>
 
-        {showAddAlias && (!symptom.is_global && can.writeClinical) && (
+        {showAddAlias && (!symptom.is_global && can('symptoms.write')) && (
           <form onSubmit={handleAddAlias} className="mb-4 p-4 border rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -344,7 +344,7 @@ export default function SymptomDetailPage({ params }: { params: Promise<{ id: st
                     {t.has(`aliasType.${alias.alias_type}`) ? t(`aliasType.${alias.alias_type}`) : alias.alias_type}
                   </Badge>
                 </div>
-                {(!symptom.is_global && can.writeClinical) && (
+                {(!symptom.is_global && can('symptoms.write')) && (
                   <Button
                     variant="ghost"
                     size="sm"

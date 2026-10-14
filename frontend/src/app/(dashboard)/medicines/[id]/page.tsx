@@ -21,7 +21,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
   const router = useRouter();
   const t = useTranslations('libDetailUi');
   const ts = useTranslations('libSystemUi');
-  const can = useCan();
+  const { can } = useCan()
   const { id } = use(params);
   const medicineId = parseInt(id);
 
@@ -136,7 +136,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        {(!medicine.is_global && can.writeClinical) && (
+        {(!medicine.is_global && can('medicines.write')) && (
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
@@ -283,7 +283,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">{t('aliases')}</h2>
-          {(!medicine.is_global && can.writeClinical) && (
+          {(!medicine.is_global && can('medicines.write')) && (
             <Button size="sm" onClick={() => setShowAddAlias(!showAddAlias)}>
               <Plus className="w-4 h-4 mr-2" />
               {t('addAlias')}
@@ -291,7 +291,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
           )}
         </div>
 
-        {showAddAlias && (!medicine.is_global && can.writeClinical) && (
+        {showAddAlias && (!medicine.is_global && can('medicines.write')) && (
           <form onSubmit={handleAddAlias} className="mb-4 p-4 border rounded-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -351,7 +351,7 @@ export default function MedicineDetailPage({ params }: { params: Promise<{ id: s
                     {t.has(`badge.${alias.alias_type}`) ? t(`badge.${alias.alias_type}`) : alias.alias_type}
                   </Badge>
                 </div>
-                {(!medicine.is_global && can.writeClinical) && (
+                {(!medicine.is_global && can('medicines.write')) && (
                   <Button
                     variant="ghost"
                     size="sm"

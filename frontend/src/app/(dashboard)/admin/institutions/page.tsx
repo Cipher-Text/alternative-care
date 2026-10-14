@@ -50,6 +50,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { InstitutionCreate, InstitutionListItem, Discipline } from '@/types/institution'
+import { useCan } from '@/lib/auth/permissions'
 
 const disciplines: Array<{ value: Discipline; label: string }> = [
   { value: 'homeopathy', label: 'Homeopathy' },
@@ -95,8 +96,9 @@ export default function AdminInstitutionsPage() {
   // (app/modules/institution/routes.py) — admin and operator ("moderator") can
   // both view the directory. Write endpoints (create/update/delete) are
   // admin-only there, so canEdit gates the mutating UI separately.
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = !user?.tenant_id
+  const canEdit = can('institutions.manage')
 
   const [searchTerm, setSearchTerm] = useState('')
   const [disciplineFilter, setDisciplineFilter] = useState<string>('all')

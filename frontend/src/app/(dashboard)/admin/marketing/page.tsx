@@ -5,13 +5,15 @@ import { ShieldAlert } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { AdminFacebookQueue } from '@/components/marketing/AdminFacebookQueue'
 import { Card, CardContent } from '@/components/ui/card'
+import { useCan } from '@/lib/auth/permissions'
 
 /** Platform admin: the Facebook promotion queue. Admin only (operators get no access). */
 export default function AdminMarketingPage() {
   const t = useTranslations('marketingUi.admin')
   const user = useAuthStore((s) => s.user)
+  const { can } = useCan()
 
-  if (user && user.role !== 'admin') {
+  if (user && !can('marketing.manage')) {
     return (
       <Card>
         <CardContent className="flex items-center gap-3 p-6">

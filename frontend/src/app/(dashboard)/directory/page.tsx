@@ -1,17 +1,18 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useAuthStore } from '@/store/authStore'
 import { useDirectoryListing, useDirectoryStats } from '@/lib/hooks/useDirectory'
 import { ListingStatusCard } from '@/components/directory/ListingStatusCard'
 import { DirectoryStatsCards } from '@/components/directory/DirectoryStatsCards'
 import { ListingForm } from '@/components/directory/ListingForm'
 import { RequestsInbox } from '@/components/directory/RequestsInbox'
+import { useCan } from '@/lib/auth/permissions'
 
 export default function DirectoryPage() {
   const t = useTranslations('directoryAdminUi')
   // The directory is doctor-only on the backend; receptionists and platform staff get nothing here
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('directory.manage')
   const listing = useDirectoryListing(isDoctor)
   const stats = useDirectoryStats(isDoctor)
 

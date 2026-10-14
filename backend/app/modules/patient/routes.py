@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, require_permission
 from app.modules.patient.service import PatientService
 from app.shared.schemas import (
     PatientCreate,
@@ -52,7 +52,7 @@ async def health_options(current_user: Annotated[CurrentUser, Depends(get_curren
 # ===== Patient Endpoints =====
 
 
-@router.post("", response_model=PatientResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=PatientResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_permission("patients.write"))])
 async def create_patient(
     data: PatientCreate,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -68,7 +68,7 @@ async def create_patient(
     return await service.create_patient(data, created_by=current_user.user_id)
 
 
-@router.get("", response_model=list[PatientListItem])
+@router.get("", response_model=list[PatientListItem], dependencies=[Depends(require_permission("patients.read"))])
 async def list_patients(
     service: Annotated[PatientService, Depends(get_patient_service)],
     search: str | None = Query(None, description="Search by name, phone, or email"),
@@ -97,7 +97,7 @@ async def list_patients(
     )
 
 
-@router.get("/count", response_model=dict)
+@router.get("/count", response_model=dict, dependencies=[Depends(require_permission("patients.read"))])
 async def get_patient_count(
     service: Annotated[PatientService, Depends(get_patient_service)],
 ):
@@ -111,7 +111,7 @@ async def get_patient_count(
     return {"count": count}
 
 
-@router.get("/{patient_id}", response_model=PatientResponse)
+@router.get("/{patient_id}", response_model=PatientResponse, dependencies=[Depends(require_permission("patients.read"))])
 async def get_patient(
     patient_id: str,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -120,7 +120,7 @@ async def get_patient(
     return await service.get_patient(patient_id)
 
 
-@router.patch("/{patient_id}", response_model=PatientResponse)
+@router.patch("/{patient_id}", response_model=PatientResponse, dependencies=[Depends(require_permission("patients.write"))])
 async def update_patient(
     patient_id: str,
     data: PatientUpdate,
@@ -139,7 +139,7 @@ async def update_patient(
     )
 
 
-@router.delete("/{patient_id}", response_model=PatientResponse)
+@router.delete("/{patient_id}", response_model=PatientResponse, dependencies=[Depends(require_permission("patients.delete"))])
 async def delete_patient(
     patient_id: str,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -160,6 +160,7 @@ async def delete_patient(
 
 @router.post(
     "/{patient_id}/tags",
+    dependencies=[Depends(require_permission("patients.write"))],
     response_model=PatientTagResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -181,7 +182,7 @@ async def create_patient_tag(
     return await service.create_patient_tag(data, created_by=current_user.user_id)
 
 
-@router.get("/{patient_id}/tags", response_model=list[PatientTagResponse])
+@router.get("/{patient_id}/tags", response_model=list[PatientTagResponse], dependencies=[Depends(require_permission("patients.read"))])
 async def list_patient_tags(
     patient_id: str,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -195,7 +196,7 @@ async def list_patient_tags(
     return await service.list_patient_tags(patient_id)
 
 
-@router.patch("/tags/{tag_id}", response_model=PatientTagResponse)
+@router.patch("/tags/{tag_id}", response_model=PatientTagResponse, dependencies=[Depends(require_permission("patients.write"))])
 async def update_patient_tag(
     tag_id: int,
     data: PatientTagUpdate,
@@ -208,7 +209,7 @@ async def update_patient_tag(
     )
 
 
-@router.delete("/tags/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/tags/{tag_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(require_permission("patients.write"))])
 async def delete_patient_tag(
     tag_id: int,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -222,6 +223,7 @@ async def delete_patient_tag(
 
 @router.post(
     "/{patient_id}/diagnoses",
+    dependencies=[Depends(require_permission("diagnoses.write"))],
     response_model=PatientDiagnosisResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -245,7 +247,7 @@ async def create_patient_diagnosis(
     )
 
 
-@router.get("/{patient_id}/diagnoses", response_model=list[PatientDiagnosisResponse])
+@router.get("/{patient_id}/diagnoses", response_model=list[PatientDiagnosisResponse], dependencies=[Depends(require_permission("patients.read"))])
 async def list_patient_diagnoses(
     patient_id: str,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -261,7 +263,7 @@ async def list_patient_diagnoses(
     return await service.list_patient_diagnoses(patient_id, active_only=active_only)
 
 
-@router.patch("/diagnoses/{diagnosis_id}", response_model=PatientDiagnosisResponse)
+@router.patch("/diagnoses/{diagnosis_id}", response_model=PatientDiagnosisResponse, dependencies=[Depends(require_permission("diagnoses.write"))])
 async def update_patient_diagnosis(
     diagnosis_id: int,
     data: PatientDiagnosisUpdate,
@@ -279,7 +281,7 @@ async def update_patient_diagnosis(
     )
 
 
-@router.delete("/diagnoses/{diagnosis_id}", response_model=PatientDiagnosisResponse)
+@router.delete("/diagnoses/{diagnosis_id}", response_model=PatientDiagnosisResponse, dependencies=[Depends(require_permission("diagnoses.write"))])
 async def delete_patient_diagnosis(
     diagnosis_id: int,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -300,7 +302,7 @@ async def delete_patient_diagnosis(
 # ===== Health profile =====
 
 
-@router.get("/{patient_id}/health-profile", response_model=HealthProfileResponse)
+@router.get("/{patient_id}/health-profile", response_model=HealthProfileResponse, dependencies=[Depends(require_permission("health_profile.read"))])
 async def get_health_profile(
     patient_id: str,
     service: Annotated[PatientService, Depends(get_patient_service)],
@@ -309,7 +311,7 @@ async def get_health_profile(
     return await service.get_health_profile(patient_id)
 
 
-@router.put("/{patient_id}/health-profile", response_model=HealthProfileResponse)
+@router.put("/{patient_id}/health-profile", response_model=HealthProfileResponse, dependencies=[Depends(require_permission("health_profile.write"))])
 async def save_health_profile(
     patient_id: str,
     data: HealthProfileUpdate,

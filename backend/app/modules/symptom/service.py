@@ -48,13 +48,13 @@ class SymptomService(GlobalCatalogService[Symptom]):
         return list(result.scalars().all())
 
     async def create_symptom(
-        self, data: SymptomCreate, created_by: str, role: str
+        self, data: SymptomCreate, created_by: str, can_write_global: bool
     ) -> Symptom:
-        """Create a symptom. Only admins can create global ones."""
-        if data.is_global and role != "admin":
+        """Create a symptom. Only someone with catalogue.global_write can create global ones."""
+        if data.is_global and not can_write_global:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Only admins can create global symptoms",
+                detail="You do not have permission to create global symptoms",
             )
 
         symptom = Symptom(
@@ -74,11 +74,11 @@ class SymptomService(GlobalCatalogService[Symptom]):
         return await self.get_visible_or_404(symptom_id, detail="Symptom not found")
 
     async def update_symptom(
-        self, symptom_id: int, data: SymptomUpdate, updated_by: str, role: str
+        self, symptom_id: int, data: SymptomUpdate, updated_by: str, can_write_global: bool
     ) -> Symptom:
         """Update a tenant-owned symptom, or (admin only) a global one."""
         symptom = await self.get_own_or_404(
-            symptom_id, role=role, detail="Symptom not found or cannot be updated"
+            symptom_id, can_write_global=can_write_global, detail="Symptom not found or cannot be updated"
         )
 
         for field, value in data.model_dump(exclude_unset=True).items():
@@ -91,10 +91,10 @@ class SymptomService(GlobalCatalogService[Symptom]):
 
         return symptom
 
-    async def deactivate_symptom(self, symptom_id: int, updated_by: str, role: str) -> None:
+    async def deactivate_symptom(self, symptom_id: int, updated_by: str, can_write_global: bool) -> None:
         """Deactivate a tenant-owned symptom, or (admin only) a global one."""
         symptom = await self.get_own_or_404(
-            symptom_id, role=role, detail="Symptom not found or cannot be deleted"
+            symptom_id, can_write_global=can_write_global, detail="Symptom not found or cannot be deleted"
         )
 
         symptom.is_active = False

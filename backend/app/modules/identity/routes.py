@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, require_role
+from app.core.dependencies import CurrentUser, require_permission
 from app.core.rate_limit import enforce_rate_limit
 from app.modules.identity.service import ClaimService, IdentityService
 from app.modules.identity.sharing import ClinicSharingService
@@ -37,8 +37,9 @@ router = APIRouter()
 public_router = APIRouter()
 
 # Receptionists register patients, so they verify and link too; only a doctor revokes a link.
-Staff = Annotated[CurrentUser, Depends(require_role("doctor", "receptionist"))]
-DoctorOnly = Annotated[CurrentUser, Depends(require_role("doctor"))]
+Staff = Annotated[CurrentUser, Depends(require_permission("identity.link"))]
+CanRevoke = Annotated[CurrentUser, Depends(require_permission("identity.revoke"))]
+CanReadShared = Annotated[CurrentUser, Depends(require_permission("shared_records.read"))]
 
 
 def get_service(db: Annotated[AsyncSession, Depends(get_db)], user: Staff) -> IdentityService:
@@ -97,7 +98,7 @@ async def patient_status(patient_id: str, service: Service):
 
 
 @router.post("/patients/{patient_id}/revoke", response_model=PatientIdentityStatus)
-async def revoke_link(patient_id: str, data: RevokeRequest, db: Annotated[AsyncSession, Depends(get_db)], user: DoctorOnly):
+async def revoke_link(patient_id: str, data: RevokeRequest, db: Annotated[AsyncSession, Depends(get_db)], user: CanRevoke):
     """On the patient's request. The clinic keeps its own medical record; only the link is removed."""
     return await IdentityService(db, user.tenant_id, user.user_id).revoke(patient_id, data.note)
 
@@ -109,7 +110,7 @@ async def patient_sharing(patient_id: str, db: Annotated[AsyncSession, Depends(g
 
 
 @router.get("/patients/{patient_id}/shared-records", response_model=SharedRecords)
-async def shared_records(patient_id: str, db: Annotated[AsyncSession, Depends(get_db)], user: DoctorOnly):
+async def shared_records(patient_id: str, db: Annotated[AsyncSession, Depends(get_db)], user: CanReadShared):
     """Records another clinic's patient chose to share with this clinic, read live and read-only. Doctors
     only; every read is logged and visible to the patient."""
     return await ClinicSharingService(db, user.tenant_id, user.user_id).shared_records(patient_id)

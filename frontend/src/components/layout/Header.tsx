@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
-import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -20,11 +19,12 @@ import { authApi } from '@/lib/api/auth'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { LanguageSwitcher } from '@/components/language/LanguageSwitcher'
 import { MobileNav } from '@/components/layout/MobileNav'
+import { useCan } from '@/lib/auth/permissions'
 
 export function Header() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
-  const can = useCan()
+  const { can } = useCan()
   const tAuth = useTranslations('auth')
   const tNav = useTranslations('nav')
 
@@ -86,7 +86,7 @@ export function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-200 dark:bg-slate-700" />
-            {can.manageClinicSettings && (
+            {can('doctor_profile.manage') && (
               <>
             <DropdownMenuItem
               onClick={() => router.push('/profile')}

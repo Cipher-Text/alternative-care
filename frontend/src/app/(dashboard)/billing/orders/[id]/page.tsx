@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation'
 import { useQuery } from 'react-query'
 import { useTranslations } from 'next-intl'
 import { ArrowLeft, Loader2, Printer } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
 import { authApi } from '@/lib/api/auth'
 import { useOrder } from '@/lib/hooks/useCheckout'
 import { useDateFormat } from '@/lib/i18n/date'
@@ -13,6 +12,7 @@ import { formatMoney } from '@/lib/billingFormat'
 import { OrderStatusBadge } from '@/components/billing/OrderStatusBadge'
 import { useGatewayName } from '@/components/billing/GatewayLabel'
 import { Button } from '@/components/ui/button'
+import { useCan } from '@/lib/auth/permissions'
 
 /** A simple printable receipt, issued to the clinic. */
 export default function ReceiptPage() {
@@ -21,7 +21,8 @@ export default function ReceiptPage() {
   const gatewayName = useGatewayName()
   const params = useParams<{ id: string }>()
   const id = typeof params?.id === 'string' ? params.id : null
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('billing.manage')
   const order = useOrder(id, { enabled: isDoctor })
   const profile = useQuery(['auth', 'me'], () => authApi.getCurrentUser(), { enabled: isDoctor, staleTime: 60000, retry: false })
 

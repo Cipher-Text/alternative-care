@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import RequireAdmin
+from app.core.dependencies import CurrentUser, require_permission
 from app.modules.marketing.service import AdminFacebookService
 from app.shared.schemas import (
     AdminFacebookRequest,
@@ -19,7 +19,7 @@ from app.shared.schemas import (
 router = APIRouter()
 
 
-def get_service(db: Annotated[AsyncSession, Depends(get_db)], admin: RequireAdmin) -> AdminFacebookService:
+def get_service(db: Annotated[AsyncSession, Depends(get_db)], admin: Annotated[CurrentUser, Depends(require_permission("marketing.manage"))]) -> AdminFacebookService:
     return AdminFacebookService(db, admin_id=admin.user_id)
 
 

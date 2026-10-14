@@ -58,6 +58,7 @@ import {
   type PharmacyListItem,
   type PharmacyType,
 } from '@/types/pharmacy'
+import { useCan } from '@/lib/auth/permissions'
 
 const typeLabel = (type: string) => PHARMACY_TYPES.find((t) => t.value === type)?.label ?? type
 
@@ -83,8 +84,9 @@ export default function AdminPharmaciesPage() {
   const user = useAuthStore((state) => state.user)
   // Reading is open to every authenticated user; writes are admin-only on the backend, so
   // operators see the directory but not the editing controls.
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = !user?.tenant_id
+  const canEdit = can('pharmacies.manage')
 
   const [searchTerm, setSearchTerm] = useState('')
   const [disciplineFilter, setDisciplineFilter] = useState<string>('all')

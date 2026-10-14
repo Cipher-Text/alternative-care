@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.credits import CreditService
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, require_role
+from app.core.dependencies import CurrentUser, require_permission
 from app.core.messaging import email_configured, sms_configured
 from app.modules.billing.gateways import get_gateway
 from app.modules.billing.gateways.fake import FakeGateway
@@ -28,9 +28,9 @@ router = APIRouter()
 
 # Doctors and receptionists can see the balance (receptionists send reminders); history is the
 # clinic's own. Platform users have no tenant and no balance.
-TenantStaff = Annotated[CurrentUser, Depends(require_role("doctor", "receptionist"))]
+TenantStaff = Annotated[CurrentUser, Depends(require_permission("billing.view"))]
 # Only doctors buy, renew and see receipts: the clinic's money is the doctor's decision
-Buyer = Annotated[CurrentUser, Depends(require_role("doctor"))]
+Buyer = Annotated[CurrentUser, Depends(require_permission("billing.manage"))]
 
 
 @router.get("/credits", response_model=CreditSummary)

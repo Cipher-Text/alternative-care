@@ -6,16 +6,19 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import RequireAdmin
+from app.core.dependencies import CurrentUser, require_permission
 from app.modules.contact.service import ContactService
 from app.shared.schemas import ContactMessageResponse, ContactMessageUpdate
 
 router = APIRouter()
 
+Needs_contact_manage = Annotated[CurrentUser, Depends(require_permission("contact.manage"))]
+
+
 
 @router.get("", response_model=list[ContactMessageResponse])
 async def list_messages(
-    admin: RequireAdmin,  # noqa: ARG001
+    admin: Needs_contact_manage,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
     status_filter: str | None = Query(None, alias="status", pattern="^(new|handled)$"),
     limit: int = Query(50, ge=1, le=200),
@@ -28,7 +31,7 @@ async def list_messages(
 async def update_message(
     message_id: str,
     data: ContactMessageUpdate,
-    admin: RequireAdmin,
+    admin: Needs_contact_manage,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     return await ContactService(db).set_status(message_id, data.status, admin.user_id)

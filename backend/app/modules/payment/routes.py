@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user, RequireDoctor
+from app.core.dependencies import CurrentUser, get_current_user, module_guard, require_permission
 from app.modules.payment.service import PaymentService
 from app.shared.schemas import (
     PaymentCreate,
@@ -21,7 +21,13 @@ from app.shared.schemas import (
     PaymentSummary,
 )
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[
+        Depends(
+            module_guard(read=("payments.read", "invoices.read"), write=("payments.write", "invoices.write"))
+        )
+    ]
+)
 
 
 def get_payment_service(
@@ -40,7 +46,7 @@ def get_payment_service(
 # ===== Payment Endpoints =====
 
 
-@router.post("", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_permission("payments.write"))])
 async def create_payment(
     data: PaymentCreate,
     service: Annotated[PaymentService, Depends(get_payment_service)],
@@ -57,7 +63,7 @@ async def create_payment(
     return await service.create_payment(data, received_by=current_user.user_id)
 
 
-@router.get("", response_model=list[PaymentListItem])
+@router.get("", response_model=list[PaymentListItem], dependencies=[Depends(require_permission("payments.read"))])
 async def list_payments(
     service: Annotated[PaymentService, Depends(get_payment_service)],
     patient_id: str | None = Query(None, description="Filter by patient ID"),
@@ -90,7 +96,7 @@ async def list_payments(
     )
 
 
-@router.get("/summary", response_model=PaymentSummary)
+@router.get("/summary", response_model=PaymentSummary, dependencies=[Depends(require_permission("payments.read"))])
 async def get_payment_summary(
     service: Annotated[PaymentService, Depends(get_payment_service)],
     date_from: date | None = Query(None, description="Start date for summary"),
@@ -115,7 +121,7 @@ async def get_payment_summary(
 # named "invoices" and 404).
 
 
-@router.post("/invoices", response_model=InvoiceResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/invoices", response_model=InvoiceResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_permission("invoices.write"))])
 async def create_invoice(
     data: InvoiceCreate,
     service: Annotated[PaymentService, Depends(get_payment_service)],
@@ -133,7 +139,7 @@ async def create_invoice(
     )
 
 
-@router.get("/invoices", response_model=list[InvoiceListItem])
+@router.get("/invoices", response_model=list[InvoiceListItem], dependencies=[Depends(require_permission("invoices.read"))])
 async def list_invoices(
     service: Annotated[PaymentService, Depends(get_payment_service)],
     status: str | None = Query(None, description="Filter by status"),
@@ -152,7 +158,7 @@ async def list_invoices(
     )
 
 
-@router.get("/invoices/{invoice_id}", response_model=InvoiceResponse)
+@router.get("/invoices/{invoice_id}", response_model=InvoiceResponse, dependencies=[Depends(require_permission("invoices.read"))])
 async def get_invoice(
     invoice_id: str,
     service: Annotated[PaymentService, Depends(get_payment_service)],
@@ -166,7 +172,7 @@ async def get_invoice(
     return await service.invoice_view(await service.get_invoice(invoice_id))
 
 
-@router.patch("/invoices/{invoice_id}", response_model=InvoiceResponse)
+@router.patch("/invoices/{invoice_id}", response_model=InvoiceResponse, dependencies=[Depends(require_permission("invoices.write"))])
 async def update_invoice(
     invoice_id: str,
     data: InvoiceUpdate,
@@ -188,6 +194,7 @@ async def update_invoice(
     "/invoices/{invoice_id}/pdf",
     response_class=Response,
     responses={200: {"content": {"application/pdf": {}}}},
+    dependencies=[Depends(require_permission("invoices.read"))],
 )
 async def get_invoice_pdf(
     invoice_id: str,
@@ -197,7 +204,7 @@ async def get_invoice_pdf(
     Download the printable invoice as a PDF.
 
     - Rendered on demand with bilingual labels
-    - Read-only: available to every tenant role
+    - Read-only: needs the invoices.read permission
     """
     pdf, filename = await service.build_invoice_pdf(invoice_id)
     return Response(
@@ -210,7 +217,7 @@ async def get_invoice_pdf(
     )
 
 
-@router.get("/{payment_id}", response_model=PaymentResponse)
+@router.get("/{payment_id}", response_model=PaymentResponse, dependencies=[Depends(require_permission("payments.read"))])
 async def get_payment(
     payment_id: str,
     service: Annotated[PaymentService, Depends(get_payment_service)],

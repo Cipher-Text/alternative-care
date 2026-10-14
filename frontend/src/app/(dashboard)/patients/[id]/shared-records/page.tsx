@@ -9,17 +9,18 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useDateFormat } from '@/lib/i18n/date'
-import { useAuthStore } from '@/store/authStore'
 import { identityError } from '@/components/identity/identityUtils'
 import { useSharedRecords } from '@/lib/hooks/useSharing'
 import type { SharedDiagnosis, SharedPrescription } from '@/types/sharing'
+import { useCan } from '@/lib/auth/permissions'
 
 /** Read-only, on screen only: no edit, copy, export or print. Opening it is logged and the patient can see it. */
 export default function SharedRecordsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const t = useTranslations('sharingUi')
   const { fmt } = useDateFormat()
-  const isDoctor = useAuthStore((s) => s.user?.role) === 'doctor'
+  const { can } = useCan()
+  const isDoctor = can('shared_records.read')
   const { data, isLoading, isError, error, refetch } = useSharedRecords(id, isDoctor)
 
   const prescriptions = useMemo(

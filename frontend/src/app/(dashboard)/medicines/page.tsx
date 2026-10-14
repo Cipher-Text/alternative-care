@@ -23,7 +23,7 @@ export default function MedicinesPage() {
   const t = useTranslations('libUi');
   const ts = useTranslations('libSystemUi');
   const router = useRouter();
-  const can = useCan();
+  const { can } = useCan()
   const [filters, setFilters] = useState<MedicineFilters>({
     is_active: true,
   });
@@ -99,7 +99,7 @@ export default function MedicinesPage() {
             {tp('medicinesSubtitle')}
           </p>
         </div>
-        {can.writeClinical && (
+        {can('medicines.write') && (
           <Button
             onClick={() => router.push('/medicines/new')}
             className="bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white shadow-lg shadow-slate-900/10"
@@ -202,7 +202,7 @@ export default function MedicinesPage() {
       ) : !filteredMedicines || filteredMedicines.length === 0 ? (
         <Card className="p-12 text-center bg-white dark:bg-slate-800/50 border-gray-200 dark:border-slate-700">
           <p className="text-gray-600 dark:text-gray-400">{t('noneFound')}</p>
-          {can.writeClinical && (
+          {can('medicines.write') && (
           <Button
             className="mt-4 bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white"
             onClick={() => router.push('/medicines/new')}
@@ -269,7 +269,7 @@ export default function MedicinesPage() {
                   <Eye className="w-4 h-4 mr-1" />
                   {t('view')}
                 </Button>
-                {!medicine.is_global && can.writeClinical && (
+                {!medicine.is_global && can('medicines.write') && (
                   <>
                     <Button
                       variant="outline"

@@ -5,13 +5,13 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
 import { useOrder } from '@/lib/hooks/useCheckout'
 import { useDateFormat } from '@/lib/i18n/date'
 import { formatMoney } from '@/lib/billingFormat'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Order } from '@/types/checkout'
+import { useCan } from '@/lib/auth/permissions'
 
 const POLL_MS = 2000
 const GIVE_UP_MS = 30000
@@ -51,7 +51,8 @@ function Return() {
   const t = useTranslations('billingUi.return')
   const search = useSearchParams()
   const id = search.get('order')
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('billing.manage')
   const [timedOut, setTimedOut] = useState(false)
 
   useEffect(() => {

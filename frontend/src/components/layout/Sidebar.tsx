@@ -30,59 +30,59 @@ import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
 import { useCan } from '@/lib/auth/permissions'
 
-const doctorNavigation = [
-  { key: 'dashboard', href: '/dashboard', icon: Home },
-  { key: 'patients', href: '/patients', icon: Users },
-  { key: 'appointments', href: '/appointments', icon: Calendar },
-  { key: 'appointmentRequests', href: '/appointment-requests', icon: CalendarClock },
-  { key: 'prescriptions', href: '/prescriptions', icon: FileText },
-  { key: 'payments', href: '/payments', icon: CreditCard },
-  { key: 'medicines', href: '/medicines', icon: Pill },
+interface NavItem {
+  key: string
+  href: string
+  icon: React.ElementType
+  /** The user sees the item when they hold at least one of these permissions. No list: everyone signed in sees it. */
+  any?: string[]
+}
+
+const doctorNavigation: NavItem[] = [
+  { key: 'dashboard', href: '/dashboard', icon: Home, any: ['dashboard.view'] },
+  { key: 'patients', href: '/patients', icon: Users, any: ['patients.read'] },
+  { key: 'appointments', href: '/appointments', icon: Calendar, any: ['appointments.read'] },
+  { key: 'appointmentRequests', href: '/appointment-requests', icon: CalendarClock, any: ['appointment_requests.manage'] },
+  { key: 'prescriptions', href: '/prescriptions', icon: FileText, any: ['prescriptions.read'] },
+  { key: 'payments', href: '/payments', icon: CreditCard, any: ['payments.read', 'invoices.read'] },
+  { key: 'medicines', href: '/medicines', icon: Pill, any: ['medicines.read'] },
   { key: 'pharmacies', href: '/pharmacies', icon: Store },
-  { key: 'symptoms', href: '/symptoms', icon: Stethoscope },
-  { key: 'articles', href: '/content', icon: Newspaper },
-  { key: 'directory', href: '/directory', icon: BadgeCheck },
-  { key: 'billing', href: '/billing', icon: Receipt },
-  { key: 'facebookPromotion', href: '/marketing', icon: Megaphone },
-  { key: 'settings', href: '/settings', icon: Settings },
-  // Doctors reach Messaging through Settings; receptionists have no Settings, so they get a direct link
-  { key: 'messaging', href: '/settings/messaging', icon: MessageSquare },
+  { key: 'symptoms', href: '/symptoms', icon: Stethoscope, any: ['symptoms.read'] },
+  { key: 'articles', href: '/content', icon: Newspaper, any: ['content.author'] },
+  { key: 'directory', href: '/directory', icon: BadgeCheck, any: ['directory.manage'] },
+  { key: 'billing', href: '/billing', icon: Receipt, any: ['billing.manage'] },
+  { key: 'facebookPromotion', href: '/marketing', icon: Megaphone, any: ['marketing.request'] },
+  // The settings page leads to Messaging. Staff without clinic settings (the front desk) get a direct Messaging link instead.
+  { key: 'settings', href: '/settings', icon: Settings, any: ['doctor_profile.manage'] },
+  { key: 'messaging', href: '/settings/messaging', icon: MessageSquare, any: ['billing.view'] },
 ]
 
-const adminNavigation = [
-  { key: 'platformDashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { key: 'clients', href: '/admin/clients', icon: Building2 },
-  { key: 'plansPricing', href: '/admin/plans', icon: Tags },
-  { key: 'adminBilling', href: '/admin/billing', icon: Receipt },
-  { key: 'facebookPromotion', href: '/admin/marketing', icon: Megaphone },
-  { key: 'users', href: '/admin/users', icon: UserCog },
-  { key: 'contactMessages', href: '/admin/contact', icon: Inbox },
-  { key: 'articles', href: '/content', icon: Newspaper },
+const adminNavigation: NavItem[] = [
+  { key: 'platformDashboard', href: '/admin/dashboard', icon: LayoutDashboard, any: ['tenants.read'] },
+  { key: 'clients', href: '/admin/clients', icon: Building2, any: ['tenants.read'] },
+  { key: 'plansPricing', href: '/admin/plans', icon: Tags, any: ['plans.read'] },
+  { key: 'adminBilling', href: '/admin/billing', icon: Receipt, any: ['billing.admin'] },
+  { key: 'facebookPromotion', href: '/admin/marketing', icon: Megaphone, any: ['marketing.manage'] },
+  { key: 'users', href: '/admin/users', icon: UserCog, any: ['users.read'] },
+  { key: 'contactMessages', href: '/admin/contact', icon: Inbox, any: ['contact.manage'] },
+  { key: 'articles', href: '/content', icon: Newspaper, any: ['content.manage', 'content.author'] },
   { key: 'institutions', href: '/admin/institutions', icon: GraduationCap },
   { key: 'pharmacies', href: '/admin/pharmacies', icon: Store },
   { key: 'medicines', href: '/admin/medicines', icon: Pill },
   { key: 'symptoms', href: '/admin/symptoms', icon: Stethoscope },
 ]
 
-/** The nav items for the signed-in user's role (shared by the sidebar and the phone drawer). */
+/** The nav items for the signed-in user (shared by the sidebar and the phone drawer): platform staff have no clinic,
+ * so they get the admin menu; everyone else gets the clinic menu, each item shown only if they hold its permission. */
 export function useNavItems() {
   const user = useAuthStore((state) => state.user)
-  const can = useCan()
+  const { can, canAny } = useCan()
+  const isPlatform = !user?.tenant_id
 
-  // Platform admins and operators (moderators) share the admin nav — no
-  // patient/appointment/prescription items, since neither role has a
-  // tenant. `operator` has no distinct endpoints yet (RBAC stub per
-  // docs/architecture/roles-access.md), so it sees the same nav as admin
-  // rather than a separate, currently-empty menu.
-  return user?.role === 'admin' || user?.role === 'operator'
-    ? // the content and billing APIs are admin only, so operators don't get those links
-      adminNavigation.filter((item) => user.role === 'admin' || (item.href !== '/content' && item.href !== '/admin/billing' && item.href !== '/admin/marketing' && item.href !== '/admin/contact'))
-    : doctorNavigation.filter(
-        (item) =>
-          (can.manageClinicSettings ? item.href !== '/settings/messaging' : item.href !== '/settings' && item.href !== '/billing') && // billing: doctors only
-          
-          (!can.isReceptionist || (item.href !== '/content' && item.href !== '/directory' && item.href !== '/marketing')) // articles, directory, Facebook promotion: no receptionists
-      )
+  return (isPlatform ? adminNavigation : doctorNavigation).filter((item) => {
+    if (item.key === 'messaging') return can('billing.view') && !can('doctor_profile.manage')
+    return !item.any || canAny(...item.any)
+  })
 }
 
 export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

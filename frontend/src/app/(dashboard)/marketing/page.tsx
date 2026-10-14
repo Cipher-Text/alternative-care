@@ -1,18 +1,19 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useAuthStore } from '@/store/authStore'
 import { useFacebookSummary } from '@/lib/hooks/useMarketing'
 import { BenefitCard } from '@/components/marketing/BenefitCard'
 import { RequestForm } from '@/components/marketing/RequestForm'
 import { RequestTracker } from '@/components/marketing/RequestTracker'
 import { RequestHistory } from '@/components/marketing/RequestHistory'
+import { useCan } from '@/lib/auth/permissions'
 
 /** Doctor: ask to be featured on the AltCare Facebook page, approve the exact text, see the result. */
 export default function MarketingPage() {
   const t = useTranslations('marketingUi')
   // Doctor-only on the backend; receptionists and platform staff get nothing here
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('marketing.request')
   const summary = useFacebookSummary(isDoctor)
 
   if (!isDoctor) return null

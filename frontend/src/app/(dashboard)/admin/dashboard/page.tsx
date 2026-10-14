@@ -17,6 +17,7 @@ import { AdminQueuePanel } from '@/components/admin/AdminQueuePanel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useCan } from '@/lib/auth/permissions'
 
 function StatCard({
   title,
@@ -60,7 +61,8 @@ export default function AdminDashboardPage() {
   const router = useRouter()
   const user = useAuthStore((state) => state.user)
   // Dashboard is read-only — admins and operators both see it (backend: RequireAdminOrOperator).
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
+  const { can } = useCan()
+  const isPlatformRole = can('tenants.read')
   const { data, isLoading } = useAdminDashboard(isPlatformRole)
   const { data: queue } = useAdminQueue(isPlatformRole)
 

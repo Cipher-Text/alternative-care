@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, RequireAdmin, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, require_permission
 from app.modules.pharmacy.service import MAX_IMPORT_BYTES, PharmacyService
 from app.shared.schemas import (
     PharmacyCreate,
@@ -17,6 +17,9 @@ from app.shared.schemas import (
 )
 
 router = APIRouter()
+
+Needs_pharmacies_manage = Annotated[CurrentUser, Depends(require_permission("pharmacies.manage"))]
+
 
 
 def get_pharmacy_service(db: Annotated[AsyncSession, Depends(get_db)]) -> PharmacyService:
@@ -71,7 +74,7 @@ async def list_pharmacies(
 
 
 @router.post("/", response_model=PharmacyResponse, status_code=status.HTTP_201_CREATED)
-async def create_pharmacy(data: PharmacyCreate, service: ServiceDep, user: RequireAdmin):
+async def create_pharmacy(data: PharmacyCreate, service: ServiceDep, user: Needs_pharmacies_manage):
     """Create a pharmacy listing. Admin-only."""
     return await service.create_pharmacy(data, created_by=user.user_id)
 
@@ -79,7 +82,7 @@ async def create_pharmacy(data: PharmacyCreate, service: ServiceDep, user: Requi
 @router.post("/import", response_model=PharmacyImportResult)
 async def import_pharmacies(
     service: ServiceDep,
-    user: RequireAdmin,
+    user: Needs_pharmacies_manage,
     file: Annotated[UploadFile, File(description="UTF-8 CSV with a header row")],
 ):
     """
@@ -101,7 +104,7 @@ async def get_pharmacy(pharmacy_id: int, service: ServiceDep, _: UserDep):
 
 @router.patch("/{pharmacy_id}", response_model=PharmacyResponse)
 async def update_pharmacy(
-    pharmacy_id: int, data: PharmacyUpdate, service: ServiceDep, user: RequireAdmin
+    pharmacy_id: int, data: PharmacyUpdate, service: ServiceDep, user: Needs_pharmacies_manage
 ):
     """
     Update a pharmacy. Admin-only.
@@ -113,6 +116,6 @@ async def update_pharmacy(
 
 
 @router.delete("/{pharmacy_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def deactivate_pharmacy(pharmacy_id: int, service: ServiceDep, user: RequireAdmin):
+async def deactivate_pharmacy(pharmacy_id: int, service: ServiceDep, user: Needs_pharmacies_manage):
     """Deactivate a pharmacy (hidden from lists, kept for history). Admin-only."""
     await service.deactivate_pharmacy(pharmacy_id, updated_by=user.user_id)

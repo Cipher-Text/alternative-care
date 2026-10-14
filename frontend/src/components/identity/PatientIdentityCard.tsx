@@ -20,12 +20,12 @@ import {
 } from '@/components/ui/dialog'
 import { useDateFormat } from '@/lib/i18n/date'
 import { errorMessage } from '@/lib/apiErrors'
-import { useAuthStore } from '@/store/authStore'
 import { useCreateClaimCode, useCreatePortalCode, usePatientIdentity, useRevokeIdentity } from '@/lib/hooks/useIdentity'
 import type { Patient } from '@/types/patient'
 import type { ClaimCode } from '@/types/identity'
 import { PhoneVerificationDialog } from './PhoneVerificationDialog'
 import { SharingBlock } from './SharingBlock'
+import { useCan } from '@/lib/auth/permissions'
 
 /** Everything outside the printed slip is hidden while printing (the slip is portalled to <body>). */
 const PRINT_CSS = '@media print { body > *:not([data-claim-print]) { display: none !important; } }'
@@ -33,7 +33,8 @@ const PRINT_CSS = '@media print { body > *:not([data-claim-print]) { display: no
 export function PatientIdentityCard({ patient }: { patient: Patient }) {
   const t = useTranslations('identityUi')
   const { fmt } = useDateFormat()
-  const isDoctor = useAuthStore((s) => s.user?.role) === 'doctor'
+  const { can } = useCan()
+  const canRevoke = can('identity.revoke')
   const { data: status, isLoading, isError, refetch } = usePatientIdentity(patient.id)
   const createCode = useCreateClaimCode(patient.id)
   const portalCodeMut = useCreatePortalCode(patient.id)
@@ -131,7 +132,7 @@ export function PatientIdentityCard({ patient }: { patient: Patient }) {
                 )}
                 {t('portalCode.give')}
               </Button>
-              {isDoctor && (
+              {canRevoke && (
                 <Button variant="outline" size="sm" onClick={() => setRevokeOpen(true)}>
                   {t('revoke.button')}
                 </Button>

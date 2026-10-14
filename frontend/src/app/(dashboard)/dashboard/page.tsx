@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useCan } from '@/lib/auth/permissions'
 import { useAuthStore } from '@/store/authStore'
 import { useOverviewStats, useFinancialAnalytics, usePatientAnalytics } from '@/lib/hooks/useDashboard'
 import { OnboardingChecklist } from '@/components/dashboard/OnboardingChecklist'
@@ -28,6 +27,7 @@ import {
   UserPlus,
   FilePlus,
 } from 'lucide-react'
+import { useCan } from '@/lib/auth/permissions'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -54,7 +54,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
   const tp = useTranslations('pages')
   const t = useTranslations('homeUi')
   const router = useRouter()
-  const can = useCan()
+  const { can } = useCan()
   const [dateRange, setDateRange] = useState<{
     date_from?: string
     date_to?: string
@@ -89,7 +89,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
       </div>
 
       {/* First-run guide: only on the unfiltered, all-time view and only for roles that write records */}
-      {can.writeClinical && overview && !dateRange.date_from && !dateRange.date_to && (
+      {can('patients.write') && overview && !dateRange.date_from && !dateRange.date_to && (
         <OnboardingChecklist
           totalPatients={overview.total_patients}
           totalAppointments={overview.total_appointments}
@@ -107,7 +107,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {can.writeClinical && (
+            {can('patients.write') && (
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:border-emerald-300 text-gray-700 dark:text-gray-200"
@@ -125,7 +125,7 @@ function TenantDashboardContent({ userName }: { userName?: string }) {
               <Calendar className="h-5 w-5 mb-2 text-green-600 dark:text-green-400" />
               <span className="font-medium text-sm">{t('schedule')}</span>
             </Button>
-            {can.writeClinical && (
+            {can('prescriptions.write') && (
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:bg-purple-50 dark:hover:bg-purple-950 hover:border-purple-300 text-gray-700 dark:text-gray-200"

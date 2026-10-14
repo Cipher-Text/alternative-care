@@ -35,16 +35,12 @@ def to_response(article: Article) -> ArticleResponse:
 
 
 class ContentService:
-    """Authors are doctors or platform staff; only an admin can review, publish or return."""
+    """Anyone with content.author writes; only someone with content.manage (a moderator) can review, publish or return."""
 
-    def __init__(self, db: AsyncSession, user_id: str, role: str):
+    def __init__(self, db: AsyncSession, user_id: str, is_moderator: bool):
         self.db = db
         self.user_id = user_id
-        self.role = role
-
-    @property
-    def is_admin(self) -> bool:
-        return self.role == "admin"
+        self.is_moderator = is_moderator
 
     # ----- helpers --------------------------------------------------------------------------
 
@@ -65,12 +61,12 @@ class ContentService:
             await self.db.execute(select(Article).where(Article.id == article_id))
         ).scalar_one_or_none()
         # An author must not learn that someone else's draft exists
-        if not article or (not self.is_admin and article.author_id != self.user_id):
+        if not article or (not self.is_moderator and article.author_id != self.user_id):
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Article not found")
         return article
 
     def _require_editable(self, article: Article) -> None:
-        if self.is_admin:
+        if self.is_moderator:
             return
         if article.status != "draft":
             raise HTTPException(
@@ -98,7 +94,7 @@ class ContentService:
 
     async def list_items(self, status_filter: str | None, limit: int, offset: int) -> list[Article]:
         query = select(Article)
-        if not self.is_admin:
+        if not self.is_moderator:
             query = query.where(Article.author_id == self.user_id)
         if status_filter:
             query = query.where(Article.status == status_filter)
@@ -135,7 +131,7 @@ class ContentService:
         if "slug" in changes:
             new_slug = changes.pop("slug")
             if new_slug and new_slug != article.slug:
-                if article.status == "published" and not self.is_admin:
+                if article.status == "published" and not self.is_moderator:
                     raise HTTPException(status.HTTP_409_CONFLICT, "A published address cannot be changed")
                 clash = (
                     await self.db.execute(
@@ -159,7 +155,7 @@ class ContentService:
         article = await self.get(article_id)
         if article.status == "published":
             raise HTTPException(status.HTTP_409_CONFLICT, "Unpublish it before deleting")
-        if not self.is_admin and article.status != "draft":
+        if not self.is_moderator and article.status != "draft":
             raise HTTPException(status.HTTP_409_CONFLICT, "Only a draft can be deleted")
         await self.db.delete(article)
         await self.db.commit()
@@ -180,7 +176,7 @@ class ContentService:
         return article
 
     def _require_admin(self) -> None:
-        if not self.is_admin:
+        if not self.is_moderator:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "Only an admin can review content")
 
     async def publish(self, article_id: str, data: ArticlePublish) -> Article:

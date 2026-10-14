@@ -4,12 +4,12 @@ import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { FlaskConical, Loader2 } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
 import { useCompleteFake, useOrder } from '@/lib/hooks/useCheckout'
 import { errorMessage } from '@/lib/apiErrors'
 import { formatMoney } from '@/lib/billingFormat'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useCan } from '@/lib/auth/permissions'
 
 type Outcome = 'success' | 'failed' | 'cancelled'
 
@@ -19,7 +19,8 @@ function FakeGateway() {
   const router = useRouter()
   const search = useSearchParams()
   const id = search.get('order')
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('billing.manage')
   const order = useOrder(id, { enabled: isDoctor })
   const complete = useCompleteFake()
   const status = order.data?.status

@@ -41,15 +41,6 @@ class CurrentUser:
         """Check if user is platform admin/operator."""
         return self.tenant_id is None
 
-    @property
-    def is_admin(self) -> bool:
-        """Check if user is admin."""
-        return self.role == "admin"
-
-    @property
-    def is_doctor(self) -> bool:
-        """Check if user is doctor."""
-        return self.role == "doctor"
 
 
 async def get_current_user(
@@ -146,29 +137,6 @@ async def get_current_user(
         raise credentials_exception
 
 
-def require_role(*allowed_roles: str):
-    """
-    Dependency factory to require specific roles.
-
-    Usage:
-        @router.post("/medicines")
-        async def create_medicine(
-            user: CurrentUser = Depends(require_role("doctor", "admin"))
-        ):
-            ...
-    """
-
-    async def _check_role(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-        if user.role not in allowed_roles:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"User role '{user.role}' not authorized. Required: {allowed_roles}",
-            )
-        return user
-
-    return _check_role
-
-
 def _permission_denied(missing: str) -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
@@ -183,6 +151,13 @@ async def get_permissions(user: CurrentUser, db: AsyncSession) -> frozenset[str]
     if user.permissions is None:
         user.permissions = await effective_permissions(db, user.user_id, user.role, user.tenant_id is None)
     return user.permissions
+
+
+async def ensure_permission(user: CurrentUser, db: AsyncSession, key: str) -> None:
+    """For a check that depends on what the request asks for (issuing a prescription is a different permission from
+    saving a draft), where a plain route guard cannot know yet."""
+    if key not in await get_permissions(user, db):
+        raise _permission_denied(key)
 
 
 def require_permission(*keys: str):
@@ -201,6 +176,7 @@ def require_permission(*keys: str):
                 raise _permission_denied(key)
         return user
 
+    _check.permission_all = keys  # read by tests/access_matrix.py
     return _check
 
 
@@ -213,41 +189,34 @@ def require_any_permission(*keys: str):
             raise _permission_denied(keys[0])
         return user
 
+    _check.permission_any = keys
     return _check
 
 
 _SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
-async def deny_receptionist_writes(
-    request: Request, user: CurrentUser = Depends(get_current_user)
-) -> None:
-    """
-    Router-level guard: receptionists get read-only access (see docs/architecture/roles-access.md).
 
-    Applied with `dependencies=[Depends(deny_receptionist_writes)]` so any write route added to
-    the router later is protected automatically; it never needs to be remembered per endpoint.
-    """
-    if user.role == "receptionist" and request.method not in _SAFE_METHODS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "code": "role_not_permitted",
-                "message": "Your role (receptionist) has read-only access here.",
-            },
-        )
+def module_guard(read: tuple[str, ...], write: tuple[str, ...]):
+    """Router-level guard: reading needs ANY of the `read` permissions, changing anything needs ANY of the `write` ones.
+
+    The replacement for `deny_receptionist_writes` (ADR 010). It sits on the router, so a write route added later is
+    protected automatically: it cannot be reached without at least one of the module's write permissions. Routes that
+    need something finer add `require_permission(...)` on themselves, which is checked in addition."""
+
+    async def _check(request: Request, user: CurrentUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> None:
+        wanted = read if request.method in _SAFE_METHODS else write
+        held = await get_permissions(user, db)
+        if not any(key in held for key in wanted):
+            raise _permission_denied(wanted[0])
+
+    _check.module_read = read
+    _check.module_write = write
+    return _check
 
 
-async def deny_receptionist(user: CurrentUser = Depends(get_current_user)) -> None:
-    """Router-level guard: this area is not available to receptionists at all."""
-    if user.role == "receptionist":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail={
-                "code": "role_not_permitted",
-                "message": "Your role (receptionist) cannot access this area.",
-            },
-        )
-
+def access_guard(*keys: str):
+    """Router-level guard for an area that needs the same permission for every method (reading and changing alike)."""
+    return module_guard(read=keys, write=keys)
 
 async def require_tenant_user(
     user: Annotated[CurrentUser, Depends(get_current_user)],
@@ -316,9 +285,6 @@ def require_plan(*allowed_plans: str):
 
 
 # Common dependency combinations
-RequireDoctor = Annotated[CurrentUser, Depends(require_role("doctor"))]
-RequireAdmin = Annotated[CurrentUser, Depends(require_role("admin"))]
-RequireAdminOrOperator = Annotated[CurrentUser, Depends(require_role("admin", "operator"))]
 
 
 def require_feature(entitlement_key: str):

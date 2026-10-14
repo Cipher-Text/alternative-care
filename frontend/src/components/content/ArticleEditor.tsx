@@ -49,6 +49,7 @@ import {
   type ArticleKind,
   type EvidenceLabel,
 } from '@/types/article'
+import { useCan } from '@/lib/auth/permissions'
 
 interface FormState {
   kind: ArticleKind
@@ -150,7 +151,8 @@ function EditorForm({ article }: { article?: Article }) {
   const router = useRouter()
   const { fmt } = useDateFormat()
   const user = useAuthStore((s) => s.user)
-  const isAdmin = user?.role === 'admin'
+  const { can } = useCan()
+  const isModerator = can('content.manage')
 
   const [form, setForm] = useState<FormState>(article ? fromArticle(article) : EMPTY)
   const [preview, setPreview] = useState(false)
@@ -171,7 +173,7 @@ function EditorForm({ article }: { article?: Article }) {
 
   const status = article?.status
   const isAuthor = !article || article.author_id === user?.id
-  const canEdit = !article || isAdmin || (isAuthor && status === 'draft')
+  const canEdit = !article || isModerator || (isAuthor && status === 'draft')
   const busy =
     create.isLoading || update.isLoading || remove.isLoading || submit.isLoading ||
     publish.isLoading || returnIt.isLoading || unpublish.isLoading
@@ -353,7 +355,7 @@ function EditorForm({ article }: { article?: Article }) {
             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
               <ArticleStatusBadge status={article.status} />
               {article.review_overdue && <OverdueBadge />}
-              {isAdmin && <span>{t('byAuthor', { name: article.author_name })}</span>}
+              {isModerator && <span>{t('byAuthor', { name: article.author_name })}</span>}
               {article.published_at && <span>{t('publishedOn', { date: fmt(article.published_at, 'MMM d, yyyy') })}</span>}
             </div>
           )}
@@ -498,7 +500,7 @@ function EditorForm({ article }: { article?: Article }) {
             {t('actions.submit')}
           </Button>
         )}
-        {article && isAdmin && status === 'in_review' && (
+        {article && isModerator && status === 'in_review' && (
           <>
             <Button onClick={() => setPublishOpen(true)} disabled={busy} className="h-10">
               {t('actions.publish')}
@@ -508,7 +510,7 @@ function EditorForm({ article }: { article?: Article }) {
             </Button>
           </>
         )}
-        {article && isAdmin && status === 'published' && (
+        {article && isModerator && status === 'published' && (
           <Button variant="outline" onClick={() => unpublish.mutate(article.id)} disabled={busy} className="h-10">
             {t('actions.unpublish')}
           </Button>

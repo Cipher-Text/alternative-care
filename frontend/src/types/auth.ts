@@ -174,3 +174,11 @@ export interface VerifyEmailResponse {
 export interface ResendVerificationRequest {
   email: string
 }
+
+/** GET /auth/me/permissions */
+export interface MyPermissions {
+  /** The legacy single role, kept for display */
+  role: string
+  roles: { id: string; key: string; name_en: string; name_bn: string; scope: 'platform' | 'tenant'; is_system: boolean }[]
+  permissions: string[]
+}

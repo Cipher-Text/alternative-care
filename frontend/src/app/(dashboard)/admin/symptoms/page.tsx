@@ -50,6 +50,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { Symptom, SymptomCategory, SymptomCreate, SymptomListItem } from '@/types/symptom'
+import { useCan } from '@/lib/auth/permissions'
 
 const symptomCategories: SymptomCategory[] = [
   'general',
@@ -222,8 +223,9 @@ export default function AdminSymptomsPage() {
   // GET /symptoms is visible to any authenticated user, and for a platform
   // caller (tenant_id=null) it narrows to global-only rows automatically —
   // this page is the global catalog, curated by admins, viewable by operators.
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = !user?.tenant_id
+  const canEdit = can('catalogue.global_write')
 
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')

@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import RequireAdmin
+from app.core.dependencies import CurrentUser, require_permission
 from app.modules.billing.orders import OrderService
 from app.shared.models import BillingOrder, CreditPack, Tenant
 from app.shared.schemas import (
@@ -20,16 +20,19 @@ from app.shared.schemas import (
 
 router = APIRouter()
 
+Needs_billing_admin = Annotated[CurrentUser, Depends(require_permission("billing.admin"))]
+
+
 
 @router.get("/packs", response_model=list[CreditPackResponse])
-async def list_packs(admin: RequireAdmin, db: Annotated[AsyncSession, Depends(get_db)]):  # noqa: ARG001
+async def list_packs(admin: Needs_billing_admin, db: Annotated[AsyncSession, Depends(get_db)]):  # noqa: ARG001
     rows = await db.execute(select(CreditPack).order_by(CreditPack.channel, CreditPack.sort_order))
     return rows.scalars().all()
 
 
 @router.post("/packs", response_model=CreditPackResponse, status_code=status.HTTP_201_CREATED)
 async def create_pack(
-    data: CreditPackCreate, admin: RequireAdmin, db: Annotated[AsyncSession, Depends(get_db)]
+    data: CreditPackCreate, admin: Needs_billing_admin, db: Annotated[AsyncSession, Depends(get_db)]
 ):
     pack = CreditPack(**data.model_dump(), created_by=admin.user_id)
     db.add(pack)
@@ -42,7 +45,7 @@ async def create_pack(
 async def update_pack(
     pack_id: int,
     data: CreditPackUpdate,
-    admin: RequireAdmin,
+    admin: Needs_billing_admin,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Edit price, names, order or active flag. Past orders keep the quantity and price they sold at."""
@@ -61,7 +64,7 @@ async def update_pack(
 async def grant_plan(
     tenant_id: str,
     data: ManualPlanGrant,
-    admin: RequireAdmin,
+    admin: Needs_billing_admin,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """Move a clinic to a plan after a manual payment (cash, bank or mobile transfer). Recorded as a paid
@@ -73,7 +76,7 @@ async def grant_plan(
 
 @router.get("/orders", response_model=list[AdminOrderItem])
 async def list_orders(
-    admin: RequireAdmin,
+    admin: Needs_billing_admin,
     db: Annotated[AsyncSession, Depends(get_db)],
     status_filter: str | None = Query(None, alias="status", pattern="^(pending|paid|failed|cancelled|expired)$"),
     tenant_id: str | None = None,

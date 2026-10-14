@@ -3,8 +3,8 @@ import { toast } from 'react-hot-toast'
 import { useTranslations } from 'next-intl'
 import { caseTakingApi } from '@/lib/api/caseTaking'
 import { errorMessage } from '@/lib/apiErrors'
-import { useAuthStore } from '@/store/authStore'
-import { useDoctorProfile } from '@/lib/hooks/useDoctor'
+import { useCan } from '@/lib/auth/permissions'
+import { useClinicProfile } from '@/lib/hooks/useClinicLogo'
 import type { CaseData } from '@/types/caseTaking'
 
 /** Systems that have case-taking forms (the others are added as their fields are reviewed). */
@@ -17,12 +17,12 @@ export const caseKeys = {
   visit: (visitId: string, system: string) => ['case', 'visit', visitId, system] as const,
 }
 
-/** The systems this clinic practises that have forms. Doctors only: it reads the doctor profile. */
+/** The systems this clinic practises that have forms, for a user who may record case-taking details. */
 export function useCaseSystems(): CaseSystem[] {
-  const role = useAuthStore((s) => s.user?.role)
-  const { data: profile } = useDoctorProfile({ enabled: role === 'doctor' })
-  if (role !== 'doctor' || !profile) return []
-  return CASE_SYSTEMS.filter((s) => profile.specializations.includes(s))
+  const { can } = useCan()
+  const { data: clinic } = useClinicProfile()
+  if (!can('case_taking.write') || !clinic) return []
+  return CASE_SYSTEMS.filter((s) => clinic.specializations.includes(s))
 }
 
 export function useCaseDefinitions(system: string) {

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { Info, Loader2 } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
 import { usePacks, useSubscription } from '@/lib/hooks/useCheckout'
 import { formatMoney, localName, planName } from '@/lib/billingFormat'
 import { CheckoutConfirmDialog } from '@/components/billing/CheckoutConfirmDialog'
@@ -15,6 +14,7 @@ import { PlanCard } from '@/components/billing/PlanCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { BillingPeriod, CreditPack, PlanOption } from '@/types/checkout'
+import { useCan } from '@/lib/auth/permissions'
 
 /** The clinic's plan, credit packs and receipts. Doctors only: the clinic is the payer. */
 export default function BillingPage() {
@@ -25,7 +25,8 @@ export default function BillingPage() {
   const tc = useTranslations('billingUi.channel')
   const tf = useTranslations('billingUi.confirm')
   const locale = useLocale()
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('billing.manage')
   const sub = useSubscription(isDoctor)
   const packs = usePacks(isDoctor)
   const [purchase, setPurchase] = useState<Purchase | null>(null)

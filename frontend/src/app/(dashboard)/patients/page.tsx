@@ -7,7 +7,6 @@ import { usePatients } from '@/lib/hooks/usePatients'
 import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue'
 import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { PatientCard } from '@/components/patients/PatientCard'
-import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -18,12 +17,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { PlusCircle, Search, Loader2 } from 'lucide-react'
+import { useCan } from '@/lib/auth/permissions'
 
 export default function PatientsPage() {
   const t = useTranslations('patients')
   const tp = useTranslations('pages')
   const tu = useTranslations('patientsUi')
-  const can = useCan()
+  const { can } = useCan()
   const [search, setSearch] = useState('')
   const [gender, setGender] = useState<string>('')
 
@@ -68,7 +68,7 @@ export default function PatientsPage() {
             {tp('patientsSubtitle')}
           </p>
         </div>
-        {can.writeClinical && (
+        {can('patients.write') && (
           <Link href="/patients/new">
             <Button className="bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white shadow-lg shadow-slate-900/10">
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -137,7 +137,7 @@ export default function PatientsPage() {
               ? tu('noMatches')
               : tu('noPatients')}
           </p>
-          {!search && !gender && can.writeClinical && (
+          {!search && !gender && can('patients.write') && (
             <Link href="/patients/new">
               <Button className="mt-4 bg-primary hover:bg-slate-950 dark:hover:bg-emerald-800 text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />

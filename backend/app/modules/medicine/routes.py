@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, get_permissions
 from app.modules.medicine.service import MedicineService
 from app.shared.schemas import (
     MedicineAliasCreate,
@@ -35,6 +35,10 @@ def get_medicine_service(
 
 ServiceDep = Annotated[MedicineService, Depends(get_medicine_service)]
 UserDep = Annotated[CurrentUser, Depends(get_current_user)]
+
+
+async def _can_write_global(user: CurrentUser, service) -> bool:
+    return "catalogue.global_write" in await get_permissions(user, service.db)
 
 
 # ===== Medicine CRUD =====
@@ -74,10 +78,10 @@ async def create_medicine(data: MedicineCreate, service: ServiceDep, user: UserD
     Create medicine.
 
     - Doctors can create tenant-specific medicines
-    - Only admins can create global medicines (is_global=true)
+    - Only someone with catalogue.global_write can create global medicines (is_global=true)
     - Bilingual support (name_en, name_bn)
     """
-    return await service.create_medicine(data, created_by=user.user_id, role=user.role)
+    return await service.create_medicine(data, created_by=user.user_id, can_write_global=await _can_write_global(user, service))
 
 
 @router.get("/{medicine_id:int}", response_model=MedicineResponse)
@@ -103,7 +107,7 @@ async def update_medicine(
     - Partial updates supported
     """
     return await service.update_medicine(
-        medicine_id, data, updated_by=user.user_id, role=user.role
+        medicine_id, data, updated_by=user.user_id, can_write_global=await _can_write_global(user, service)
     )
 
 
@@ -116,7 +120,7 @@ async def delete_medicine(medicine_id: int, service: ServiceDep, user: UserDep):
     - Admins can also deactivate global medicines
     - Marks record inactive
     """
-    await service.deactivate_medicine(medicine_id, updated_by=user.user_id, role=user.role)
+    await service.deactivate_medicine(medicine_id, updated_by=user.user_id, can_write_global=await _can_write_global(user, service))
 
 
 # ===== Medicine Search =====

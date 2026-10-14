@@ -368,19 +368,19 @@ class GlobalCatalogService(Generic[ModelType]):
         return entity
 
     async def get_own_or_404(
-        self, id: str | int, *, role: str | None = None, detail: str | None = None
+        self, id: str | int, *, can_write_global: bool = False, detail: str | None = None
     ) -> ModelType:
         """
         Get a row the caller may modify (update/delete), or raise 404: a
-        non-global row their own tenant owns, or — only for role="admin" —
-        a global row. A non-admin can never reach a global row through this
-        path, even by ID.
+        non-global row their own tenant owns, or — only with the
+        catalogue.global_write permission — a global row. Anyone else can
+        never reach a global row through this path, even by ID.
         """
         own_tenant_row = and_(
             self.model.tenant_id == self.tenant_id,
             self.model.is_global == False,  # noqa: E712
         )
-        conditions = own_tenant_row if role != "admin" else or_(
+        conditions = own_tenant_row if not can_write_global else or_(
             own_tenant_row, self.model.is_global == True  # noqa: E712
         )
 

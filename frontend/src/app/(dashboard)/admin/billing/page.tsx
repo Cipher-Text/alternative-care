@@ -6,13 +6,15 @@ import { useAuthStore } from '@/store/authStore'
 import { AdminOrdersSection } from '@/components/admin/AdminOrdersSection'
 import { AdminPacksSection } from '@/components/admin/AdminPacksSection'
 import { Card, CardContent } from '@/components/ui/card'
+import { useCan } from '@/lib/auth/permissions'
 
 /** Platform admin: credit pack catalogue and every clinic's orders. Admin only (operators get no access). */
 export default function AdminBillingPage() {
   const t = useTranslations('billingUi.adminBilling')
   const user = useAuthStore((s) => s.user)
+  const { can } = useCan()
 
-  if (user && user.role !== 'admin') {
+  if (user && !can('billing.admin')) {
     return (
       <Card>
         <CardContent className="flex items-center gap-3 p-6">

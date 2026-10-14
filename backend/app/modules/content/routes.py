@@ -1,4 +1,4 @@
-"""Editorial content authoring API: doctors and admins write, admins review and publish."""
+"""Editorial content authoring API: people with content.author or content.manage write; content.manage reviews and publishes."""
 
 from typing import Annotated
 
@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, require_role
+from app.core.dependencies import CurrentUser, get_permissions, require_any_permission
 from app.modules.content.service import ContentService, to_response
 from app.shared.schemas import (
     ArticleCreate,
@@ -19,12 +19,13 @@ from app.shared.schemas import (
 
 router = APIRouter()
 
-# Receptionists and platform operators do not write public content
-Author = Annotated[CurrentUser, Depends(require_role("doctor", "admin"))]
+# Writing needs content.author (clinic staff); moderating needs content.manage (platform staff). Either one gets in.
+Author = Annotated[CurrentUser, Depends(require_any_permission("content.author", "content.manage"))]
 
 
-def get_service(db: Annotated[AsyncSession, Depends(get_db)], user: Author) -> ContentService:
-    return ContentService(db, user_id=user.user_id, role=user.role)
+async def get_service(db: Annotated[AsyncSession, Depends(get_db)], user: Author) -> ContentService:
+    is_moderator = "content.manage" in await get_permissions(user, db)
+    return ContentService(db, user_id=user.user_id, is_moderator=is_moderator)
 
 
 Service = Annotated[ContentService, Depends(get_service)]

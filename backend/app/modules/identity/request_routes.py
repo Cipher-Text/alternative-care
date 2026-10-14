@@ -6,12 +6,12 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, require_role
+from app.core.dependencies import CurrentUser, require_permission
 from app.modules.identity.requests import ClinicRequestService
 from app.shared.schemas import ClinicRequestItem, ConfirmRequest, DeclineRequest
 
 router = APIRouter()
-Staff = Annotated[CurrentUser, Depends(require_role("doctor", "receptionist"))]
+Staff = Annotated[CurrentUser, Depends(require_permission("appointment_requests.manage"))]
 
 
 def get_service(db: Annotated[AsyncSession, Depends(get_db)], user: Staff) -> ClinicRequestService:

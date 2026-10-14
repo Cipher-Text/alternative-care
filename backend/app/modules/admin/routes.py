@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import RequireAdmin, RequireAdminOrOperator
+from app.core.dependencies import CurrentUser, require_permission
 from app.shared.schemas import CreditAdjustment, DirectoryVerification, MessagingStatus
 from app.modules.admin.schemas import (
     AdminAddTenantDoctorRequest,
@@ -28,6 +28,13 @@ from app.modules.admin.service import AdminService
 
 router = APIRouter()
 
+Needs_billing_admin = Annotated[CurrentUser, Depends(require_permission("billing.admin"))]
+Needs_tenants_manage = Annotated[CurrentUser, Depends(require_permission("tenants.manage"))]
+Needs_tenants_read = Annotated[CurrentUser, Depends(require_permission("tenants.read"))]
+Needs_users_manage = Annotated[CurrentUser, Depends(require_permission("users.manage"))]
+Needs_users_read = Annotated[CurrentUser, Depends(require_permission("users.read"))]
+
+
 
 # ============================================================================
 # Dashboard
@@ -41,7 +48,7 @@ router = APIRouter()
     description="Get platform-level KPIs: tenant counts, user counts, plan breakdown.",
 )
 async def get_dashboard(
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_tenants_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -56,7 +63,7 @@ async def get_dashboard(
     "Facebook posts, plan renewals and billing.",
 )
 async def get_dashboard_queue(
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_tenants_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     return await AdminService(db).get_queue()
@@ -74,7 +81,7 @@ async def get_dashboard_queue(
     description="List all tenant clients with primary doctor summaries.",
 )
 async def list_tenants(
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_tenants_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
     search: str | None = Query(None, description="Match tenant, clinic or doctor name, or email"),
     limit: int = Query(100, ge=1, le=500),
@@ -93,7 +100,7 @@ async def list_tenants(
 )
 async def provision_tenant(
     data: AdminProvisionRequest,
-    current_user: RequireAdmin,
+    current_user: Needs_tenants_manage,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -107,7 +114,7 @@ async def provision_tenant(
     description="List tenants waiting for admin approval.",
 )
 async def list_pending_tenants(
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_tenants_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
@@ -124,7 +131,7 @@ async def list_pending_tenants(
 )
 async def get_tenant_detail(
     tenant_id: str,
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_tenants_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -139,7 +146,7 @@ async def get_tenant_detail(
 )
 async def get_tenant_usage(
     tenant_id: str,
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_tenants_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -154,7 +161,7 @@ async def get_tenant_usage(
 )
 async def approve_tenant(
     tenant_id: str,
-    current_user: RequireAdmin,
+    current_user: Needs_tenants_manage,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -170,7 +177,7 @@ async def approve_tenant(
 async def update_tenant(
     tenant_id: str,
     data: AdminUpdateTenantRequest,
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: Needs_tenants_manage,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -187,7 +194,7 @@ async def update_tenant(
 async def create_tenant_doctor(
     tenant_id: str,
     data: AdminAddTenantDoctorRequest,
-    current_user: RequireAdmin,
+    current_user: Needs_tenants_manage,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -206,7 +213,7 @@ async def create_tenant_doctor(
     description="List users across the platform with a role summary over the whole filtered set. Filter by role, tenant, status or search; paginated.",
 )
 async def list_users(
-    current_user: RequireAdminOrOperator,  # noqa: ARG001
+    current_user: Needs_users_read,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
     role: str | None = None,
     tenant_id: str | None = None,
@@ -235,7 +242,7 @@ async def list_users(
 async def update_user(
     user_id: str,
     data: AdminUpdateUserRequest,
-    current_user: RequireAdmin,  # noqa: ARG001
+    current_user: Needs_users_manage,  # noqa: ARG001
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = AdminService(db)
@@ -258,7 +265,7 @@ async def update_user(
 async def set_tenant_verification(
     tenant_id: str,
     data: DirectoryVerification,
-    current_user: RequireAdmin,
+    current_user: Needs_tenants_manage,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     from app.modules.directory.service import set_verification
@@ -285,7 +292,7 @@ async def set_tenant_verification(
 async def adjust_tenant_credits(
     tenant_id: str,
     data: CreditAdjustment,
-    current_user: RequireAdmin,
+    current_user: Needs_billing_admin,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     from fastapi import HTTPException
@@ -309,7 +316,7 @@ async def adjust_tenant_credits(
     summary="Are the platform SMS and email providers configured",
     description="Reads environment settings only. Never returns credentials.",
 )
-async def get_messaging_status(current_user: RequireAdminOrOperator):  # noqa: ARG001
+async def get_messaging_status(current_user: Needs_tenants_read):  # noqa: ARG001
     from app.core.messaging import messaging_status
 
     return messaging_status()

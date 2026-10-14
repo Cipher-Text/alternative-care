@@ -11,7 +11,6 @@ import {
   useViewPrescriptionPdf,
   useDeletePrescriptionItem,
 } from '@/lib/hooks/usePrescriptions'
-import { useCan } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -45,6 +44,7 @@ import {
 } from 'lucide-react'
 import { useDateFormat } from '@/lib/i18n/date'
 import type { PrescriptionStatus } from '@/types/prescription'
+import { useCan } from '@/lib/auth/permissions'
 
 const statusConfig: Record<
   PrescriptionStatus,
@@ -74,7 +74,7 @@ export default function PrescriptionDetailPage({
   const t = useTranslations('rxDetailUi')
   const ts = useTranslations('rxUi.status')
   const { fmt } = useDateFormat()
-  const can = useCan()
+  const { can } = useCan()
   const [showIssueDialog, setShowIssueDialog] = useState(false)
   const [showVoidDialog, setShowVoidDialog] = useState(false)
 
@@ -128,8 +128,8 @@ export default function PrescriptionDetailPage({
   }
 
   const isDraft = prescription.status === 'draft'
-  // receptionists view and print prescriptions but never edit, issue or void them
-  const canEditRx = can.writeClinical && isDraft
+  // Drafts can be edited by anyone who may write prescriptions; issuing and voiding are their own permissions
+  const canEditRx = can('prescriptions.write') && isDraft
   const isIssued = prescription.status === 'issued'
   const isVoided = prescription.status === 'voided'
   const statusInfo = statusConfig[prescription.status]
@@ -171,10 +171,12 @@ export default function PrescriptionDetailPage({
                   {t('edit')}
                 </Button>
               </Link>
-              <Button onClick={() => setShowIssueDialog(true)}>
-                <CheckCircle className="h-4 w-4 mr-2" />
-                {t('issue')}
-              </Button>
+              {can('prescriptions.issue') && (
+                <Button onClick={() => setShowIssueDialog(true)}>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  {t('issue')}
+                </Button>
+              )}
             </>
           )}
           {isIssued && (
@@ -191,7 +193,7 @@ export default function PrescriptionDetailPage({
                 )}
                 {t('viewPrintPdf')}
               </Button>
-              {can.writeClinical && (
+              {can('prescriptions.void') && (
                 <Button variant="destructive" onClick={() => setShowVoidDialog(true)}>
                   <XCircle className="h-4 w-4 mr-2" />
                   {t('void')}

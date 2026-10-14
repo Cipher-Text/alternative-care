@@ -3,14 +3,15 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { ArrowRight, BadgeCheck } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
 import { useDirectoryStats } from '@/lib/hooks/useDirectory'
 import { Card, CardContent } from '@/components/ui/card'
+import { useCan } from '@/lib/auth/permissions'
 
 /** Compact dashboard link to the directory. Doctors only; renders nothing if the stats fail to load. */
 export function DirectorySummaryCard() {
   const t = useTranslations('directoryAdminUi')
-  const isDoctor = useAuthStore((s) => s.user?.role === 'doctor')
+  const { can } = useCan()
+  const isDoctor = can('directory.manage')
   const { data } = useDirectoryStats(isDoctor)
   if (!isDoctor || !data) return null
 

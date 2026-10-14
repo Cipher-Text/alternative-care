@@ -1,0 +1,1682 @@
+{
+ "DELETE /api/v1/admin/tenants/{tenant_id}/entitlements/{key}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "DELETE /api/v1/appointments/{appointment_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "DELETE /api/v1/articles/{article_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "DELETE /api/v1/doctor/degrees/{degree_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/doctor/trainings/{training_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/institutions/{institution_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "DELETE /api/v1/medicines/aliases/{alias_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/medicines/mappings/{mapping_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/medicines/{medicine_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/patients/diagnoses/{diagnosis_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/patients/tags/{tag_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/patients/{patient_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/pharmacies/{pharmacy_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "DELETE /api/v1/prescriptions/{prescription_id}/items/{item_id}": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "DELETE /api/v1/symptoms/aliases/{alias_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/symptoms/{symptom_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "DELETE /api/v1/tenant/logo": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/admin/billing/orders": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/billing/packs": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/contact": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/dashboard": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/dashboard/queue": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/marketing/facebook": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/messaging/status": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/plans": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/plans/audit": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/tenants": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/tenants/pending": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/tenants/{tenant_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/tenants/{tenant_id}/entitlements": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/tenants/{tenant_id}/usage": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/admin/users": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/appointment-requests": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "GET /api/v1/appointments": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/appointments/visits": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/appointments/visits/{visit_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/appointments/{appointment_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/articles": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/articles/{article_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/auth/me": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/auth/me/permissions": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/billing/credits": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "GET /api/v1/billing/credits/ledger": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "GET /api/v1/billing/gateways/bkash/callback": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/billing/gateways/sslcommerz/{outcome}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/billing/orders": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/billing/orders/{order_id}": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/billing/packs": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/billing/subscription": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/case-taking/patients/{patient_id}/{system}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/case-taking/visits/{visit_id}/{system}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/case-taking/{system}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/appointments": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/financial": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/overview": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/patients": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/prescriptions": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/today": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/dashboard/visits": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/directory/listing": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/directory/requests": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/directory/stats": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/doctor/degrees": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/doctor/degrees/{degree_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/doctor/profile": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/doctor/trainings": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/doctor/trainings/{training_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/entitlements/me": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/geographic/districts/{district_id}/upazilas": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/geographic/divisions": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/geographic/divisions/{division_id}/districts": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/health-options": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/identity/patients/{patient_id}": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "GET /api/v1/identity/patients/{patient_id}/shared-records": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/identity/patients/{patient_id}/sharing": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "GET /api/v1/institutions/": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/institutions/{institution_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/marketing/facebook": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "GET /api/v1/medicines/": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/medicines/mappings/{mapping_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/medicines/search": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/medicines/symptoms/{symptom_id}/medicines": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/medicines/{medicine_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/medicines/{medicine_id:int}/aliases": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/medicines/{medicine_id:int}/symptoms": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/messaging/logs": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "GET /api/v1/patient/appointment-requests": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patient/links/{link_id}/prescriptions/{prescription_id}/pdf": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patient/me": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patient/profiles/{profile_id}/records": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patient/shares": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patients": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patients/count": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patients/{patient_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patients/{patient_id}/diagnoses": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patients/{patient_id}/health-profile": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/patients/{patient_id}/tags": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/payments": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/payments/invoices": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/payments/invoices/{invoice_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/payments/invoices/{invoice_id}/pdf": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/payments/summary": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/payments/{payment_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/pharmacies/": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/pharmacies/{pharmacy_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/plans": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/prescriptions": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/prescriptions/{prescription_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/prescriptions/{prescription_id}/pdf": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/articles": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/articles/{slug}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/institutions": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/institutions/{institution_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/practitioners": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/practitioners/slugs": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/practitioners/{slug}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/public/stats": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/symptoms/": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/symptoms/search": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/symptoms/{symptom_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/symptoms/{symptom_id:int}/aliases": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /api/v1/tenant/profile": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /health": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "GET /metrics": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "PATCH /api/v1/admin/billing/packs/{pack_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/admin/contact/{message_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/admin/tenants/{tenant_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/admin/users/{user_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/appointments/visits/{visit_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/appointments/{appointment_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "PATCH /api/v1/articles/{article_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/auth/me/language": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "PATCH /api/v1/directory/requests/{request_id}": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/doctor/degrees/{degree_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/doctor/profile": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/doctor/trainings/{training_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/institutions/{institution_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/medicines/mappings/{mapping_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/medicines/{medicine_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/patients/diagnoses/{diagnosis_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/patients/tags/{tag_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/patients/{patient_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/payments/invoices/{invoice_id}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "PATCH /api/v1/pharmacies/{pharmacy_id}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/prescriptions/{prescription_id}": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PATCH /api/v1/symptoms/{symptom_id:int}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PATCH /api/v1/tenant/profile": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/billing/packs": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/billing/tenants/{tenant_id}/plan": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/marketing/facebook/{request_id}/draft": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/marketing/facebook/{request_id}/posted": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/marketing/facebook/{request_id}/reject": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/tenants": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/tenants/{tenant_id}/approve": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/tenants/{tenant_id}/credits": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/tenants/{tenant_id}/doctors": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/admin/tenants/{tenant_id}/verification": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/ai/query": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/appointment-requests/{request_id}/confirm": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/appointment-requests/{request_id}/decline": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/appointments": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/appointments/visits": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/appointments/{appointment_id}/cancel": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/articles": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/articles/{article_id}/publish": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/articles/{article_id}/return": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/articles/{article_id}/submit": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/articles/{article_id}/unpublish": {
+  "admin": true,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/auth/2fa/disable": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/2fa/setup": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/2fa/verify": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/email/resend": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/email/verify": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/google": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/google/register": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/login": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/login-2fa": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/logout": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/password/change": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/password/forgot": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/password/reset": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/refresh": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/auth/register": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/billing/checkout": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/billing/fake-gateway/{order_id}/complete": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/billing/gateways/sslcommerz/{outcome}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/doctor/degrees": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/doctor/trainings": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/identity/link": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/identity/patients/{patient_id}/claim-code": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/identity/patients/{patient_id}/portal-code": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/identity/patients/{patient_id}/revoke": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/identity/profiles/prefill": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/identity/profiles/search": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/identity/verify/confirm": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/identity/verify/request": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": true
+ },
+ "POST /api/v1/institutions/": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/marketing/facebook/requests": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/marketing/facebook/requests/{request_id}/approve": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/marketing/facebook/requests/{request_id}/cancel": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/marketing/facebook/requests/{request_id}/changes": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/medicines/": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/medicines/mappings": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/medicines/{medicine_id:int}/aliases": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/messaging/send/email": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/messaging/send/sms": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/patient/appointment-requests": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/appointment-requests/{request_id}/cancel": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/auth/request": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/auth/verify": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/links/activate": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/links/{link_id}/revoke": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/profiles": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/shares": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patient/shares/{share_id}/revoke": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/patients": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/patients/{patient_id}/diagnoses": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/patients/{patient_id}/tags": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/payments": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/payments/invoices": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/pharmacies/": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/pharmacies/import": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/prescriptions": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/prescriptions/{prescription_id}/items": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/prescriptions/{prescription_id}/void": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "POST /api/v1/public/contact": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/public/identity/claim/confirm": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/public/identity/claim/request": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/public/practitioners/{slug}/events": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/public/practitioners/{slug}/requests": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": true
+ },
+ "POST /api/v1/symptoms/": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/symptoms/{symptom_id:int}/aliases": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "POST /api/v1/tenant/logo": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PUT /api/v1/admin/plans/{plan_key}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PUT /api/v1/admin/tenants/{tenant_id}/entitlements/{key}": {
+  "admin": true,
+  "doctor": false,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PUT /api/v1/case-taking/patients/{patient_id}/{system}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PUT /api/v1/case-taking/visits/{visit_id}/{system}": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ },
+ "PUT /api/v1/directory/listing": {
+  "admin": false,
+  "doctor": true,
+  "guarded": true,
+  "operator": false,
+  "receptionist": false
+ },
+ "PUT /api/v1/patients/{patient_id}/health-profile": {
+  "admin": true,
+  "doctor": true,
+  "guarded": false,
+  "operator": true,
+  "receptionist": false
+ }
+}

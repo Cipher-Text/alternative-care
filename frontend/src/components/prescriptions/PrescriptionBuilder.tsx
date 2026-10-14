@@ -14,6 +14,7 @@ import { PatientSelector } from './PatientSelector'
 import { MedicineItemsBuilder } from './MedicineItemsBuilder'
 import type { Prescription, PrescriptionItemCreate } from '@/types/prescription'
 import { Save, CheckCircle, Loader2 } from 'lucide-react'
+import { useCan } from '@/lib/auth/permissions'
 
 interface PrescriptionBuilderProps {
   prescription?: Prescription
@@ -22,6 +23,7 @@ interface PrescriptionBuilderProps {
 
 export function PrescriptionBuilder({ prescription, isEdit = false }: PrescriptionBuilderProps) {
   const router = useRouter()
+  const { can } = useCan()
   const t = useTranslations('rxBuilderUi')
   const createPrescription = useCreatePrescription()
   const updatePrescription = useUpdatePrescription()
@@ -231,14 +233,16 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             )}
             {t('saveDraft')}
           </Button>
-          <Button onClick={handleIssue} disabled={!isValid || isLoading}>
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <CheckCircle className="mr-2 h-4 w-4" />
-            )}
-            {t('issue')}
-          </Button>
+          {can('prescriptions.issue') && (
+            <Button onClick={handleIssue} disabled={!isValid || isLoading}>
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle className="mr-2 h-4 w-4" />
+              )}
+              {t('issue')}
+            </Button>
+          )}
         </div>
       </div>
     </div>

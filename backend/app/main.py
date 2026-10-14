@@ -99,7 +99,7 @@ async def metrics():
 
 
 # API routes
-from app.core.dependencies import deny_receptionist, deny_receptionist_writes
+from app.core.dependencies import access_guard, module_guard
 from app.modules.auth import router as auth_router
 from app.modules.ai import router as ai_router
 from app.modules.appointments import router as appointments_router
@@ -139,19 +139,19 @@ from app.modules.plans.routes import (
 
 app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Platform Admin"])
-app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"], dependencies=[Depends(deny_receptionist_writes)])
-app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"], dependencies=[Depends(deny_receptionist)])
+app.include_router(tenant_router, prefix=f"{settings.API_V1_PREFIX}/tenant", tags=["Tenant/Clinic"], dependencies=[Depends(module_guard(read=("clinic_profile.read",), write=("clinic_profile.write",)))])
+app.include_router(ai_router, prefix=f"{settings.API_V1_PREFIX}/ai", tags=["AI"], dependencies=[Depends(access_guard("ai.use"))])
 app.include_router(appointments_router, prefix=f"{settings.API_V1_PREFIX}/appointments", tags=["Appointments"])
-app.include_router(dashboard_router, prefix=f"{settings.API_V1_PREFIX}/dashboard", tags=["Dashboard"])
-app.include_router(doctor_router, prefix=f"{settings.API_V1_PREFIX}/doctor", tags=["Doctor"], dependencies=[Depends(deny_receptionist)])
-app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", tags=["Patients"], dependencies=[Depends(deny_receptionist_writes)])
-app.include_router(case_taking_router, prefix=f"{settings.API_V1_PREFIX}/case-taking", tags=["Case-taking"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(dashboard_router, prefix=f"{settings.API_V1_PREFIX}/dashboard", tags=["Dashboard"], dependencies=[Depends(access_guard("dashboard.view"))])
+app.include_router(doctor_router, prefix=f"{settings.API_V1_PREFIX}/doctor", tags=["Doctor"], dependencies=[Depends(access_guard("doctor_profile.manage"))])
+app.include_router(patient_router, prefix=f"{settings.API_V1_PREFIX}/patients", tags=["Patients"], dependencies=[Depends(module_guard(read=("patients.read",), write=("patients.write", "patients.delete", "diagnoses.write", "health_profile.write",)))])
+app.include_router(case_taking_router, prefix=f"{settings.API_V1_PREFIX}/case-taking", tags=["Case-taking"], dependencies=[Depends(module_guard(read=("case_taking.read",), write=("case_taking.write",)))])
 app.include_router(health_options_router, prefix=f"{settings.API_V1_PREFIX}/health-options", tags=["Patients"])
-app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"], dependencies=[Depends(module_guard(read=("prescriptions.read",), write=("prescriptions.write", "prescriptions.issue", "prescriptions.void",)))])
 app.include_router(payment_router, prefix=f"{settings.API_V1_PREFIX}/payments", tags=["Payments"])
-app.include_router(messaging_router, prefix=f"{settings.API_V1_PREFIX}/messaging", tags=["Messaging"], dependencies=[Depends(deny_receptionist)])
-app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"], dependencies=[Depends(deny_receptionist_writes)])
-app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"], dependencies=[Depends(deny_receptionist_writes)])
+app.include_router(messaging_router, prefix=f"{settings.API_V1_PREFIX}/messaging", tags=["Messaging"], dependencies=[Depends(module_guard(read=("messaging.read",), write=("messaging.send",)))])
+app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"], dependencies=[Depends(module_guard(read=("medicines.read", "catalogue.global_write"), write=("medicines.write", "catalogue.global_write")))])
+app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"], dependencies=[Depends(module_guard(read=("symptoms.read", "catalogue.global_write"), write=("symptoms.write", "catalogue.global_write")))])
 app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])
 app.include_router(public_router, prefix=f"{settings.API_V1_PREFIX}/public", tags=["Public"])
 app.include_router(institution_router, prefix=f"{settings.API_V1_PREFIX}/institutions", tags=["Institutions"])

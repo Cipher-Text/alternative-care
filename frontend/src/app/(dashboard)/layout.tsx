@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useAuthStore } from '@/store/authStore'
+import { usePermissions } from '@/lib/auth/permissions'
 import { authApi } from '@/lib/api/auth'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
@@ -17,6 +18,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const setAuth = useAuthStore((state) => state.setAuth)
   const setAccessToken = useAuthStore((state) => state.setAccessToken)
   const logout = useAuthStore((state) => state.logout)
+  // Pages decide what to show from the user's permissions, so hold them back until those have loaded
+  const permissions = usePermissions()
 
   useEffect(() => {
     if (!hasHydrated || isAuthenticated) {
@@ -55,6 +58,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   if (!hasHydrated || !isAuthenticated) {
     return null // Don't render anything while checking/redirecting
+  }
+
+  if (permissions.isLoading) {
+    return <div className="min-h-screen bg-background" aria-busy="true" />
   }
 
   return (

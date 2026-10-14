@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, deny_receptionist_writes, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, module_guard
 from app.modules.appointments.service import AppointmentService
 from app.shared.schemas import (
     AppointmentCreate,
@@ -22,6 +22,8 @@ from app.shared.schemas import (
 )
 
 router = APIRouter(tags=["appointments"])
+# Scheduling. Visits (clinical notes) have their own permissions on the visits router below.
+_appointments_access = Depends(module_guard(read=("appointments.read",), write=("appointments.write",)))
 
 
 def get_appointment_service(
@@ -40,7 +42,7 @@ def get_appointment_service(
 # ===== Appointment Endpoints =====
 
 
-@router.post("", response_model=AppointmentResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=AppointmentResponse, status_code=status.HTTP_201_CREATED, dependencies=[_appointments_access])
 async def create_appointment(
     data: AppointmentCreate,
     service: Annotated[AppointmentService, Depends(get_appointment_service)],
@@ -56,7 +58,7 @@ async def create_appointment(
     return await service.create_appointment(data, created_by=current_user.user_id)
 
 
-@router.get("", response_model=list[AppointmentListItem])
+@router.get("", response_model=list[AppointmentListItem], dependencies=[_appointments_access])
 async def list_appointments(
     service: Annotated[AppointmentService, Depends(get_appointment_service)],
     appointment_date: date | None = Query(None, description="Filter by date"),
@@ -91,7 +93,9 @@ async def list_appointments(
 # Visits hold clinical notes (examination, diagnosis, treatment plan): receptionists may
 # read them but not author or change them.
 visits_router = APIRouter(
-    prefix="/visits", tags=["visits"], dependencies=[Depends(deny_receptionist_writes)]
+    prefix="/visits",
+    tags=["visits"],
+    dependencies=[Depends(module_guard(read=("visits.read",), write=("visits.write",)))],
 )
 
 
@@ -175,7 +179,7 @@ async def update_visit(
 router.include_router(visits_router)
 
 
-@router.get("/{appointment_id}", response_model=AppointmentResponse)
+@router.get("/{appointment_id}", response_model=AppointmentResponse, dependencies=[_appointments_access])
 async def get_appointment(
     appointment_id: str,
     service: Annotated[AppointmentService, Depends(get_appointment_service)],
@@ -184,7 +188,7 @@ async def get_appointment(
     return await service.get_appointment(appointment_id)
 
 
-@router.patch("/{appointment_id}", response_model=AppointmentResponse)
+@router.patch("/{appointment_id}", response_model=AppointmentResponse, dependencies=[_appointments_access])
 async def update_appointment(
     appointment_id: str,
     data: AppointmentUpdate,
@@ -203,7 +207,7 @@ async def update_appointment(
     )
 
 
-@router.post("/{appointment_id}/cancel", response_model=AppointmentResponse)
+@router.post("/{appointment_id}/cancel", response_model=AppointmentResponse, dependencies=[_appointments_access])
 async def cancel_appointment(
     appointment_id: str,
     data: AppointmentCancel,
@@ -222,7 +226,7 @@ async def cancel_appointment(
     )
 
 
-@router.delete("/{appointment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{appointment_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[_appointments_access])
 async def delete_appointment(
     appointment_id: str,
     service: Annotated[AppointmentService, Depends(get_appointment_service)],

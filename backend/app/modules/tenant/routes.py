@@ -79,7 +79,7 @@ async def update_clinic_profile(
     """
     Update clinic/tenant profile.
 
-    - **Only doctors can update** (receptionist read-only)
+    - Changing the profile needs clinic_profile.write (a receptionist can only read it)
     - Partial updates supported (only send fields you want to change)
     - All fields are optional
 
@@ -109,14 +109,8 @@ async def update_clinic_profile(
     - Example: 500 BDT = 50000 paisa
     - This ensures precision for fractional amounts
 
-    **Requires:** Doctor role
+    **Requires:** the clinic_profile.write permission (the router guard checks it for every change)
     """
-    if current_user.role != "doctor":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only doctors can update clinic profile"
-        )
-
     return await service.update_tenant_profile(data, updated_by=current_user.user_id)
 
 
@@ -129,10 +123,8 @@ async def upload_clinic_logo(
 ):
     """Set the clinic logo. The image is checked by content, resized (max 512 px) and re-encoded as PNG.
 
-    **Requires:** Doctor role
+    **Requires:** the clinic_profile.write permission (the router guard checks it for every change)
     """
-    if current_user.role != "doctor":
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Only doctors can change the clinic logo")
     raw = await file.read(MAX_UPLOAD_BYTES + 1)  # never read more than the limit plus one byte
     return await service.set_logo(raw, storage, updated_by=current_user.user_id)
 
@@ -143,7 +135,5 @@ async def remove_clinic_logo(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     storage: Annotated[Storage, Depends(get_storage)],
 ):
-    """Remove the clinic logo. **Requires:** Doctor role"""
-    if current_user.role != "doctor":
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Only doctors can change the clinic logo")
+    """Remove the clinic logo. **Requires:** clinic_profile.write"""
     return await service.remove_logo(storage, updated_by=current_user.user_id)

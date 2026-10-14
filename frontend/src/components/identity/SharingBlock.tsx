@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useDateFormat } from '@/lib/i18n/date'
-import { useAuthStore } from '@/store/authStore'
 import { usePatientSharing } from '@/lib/hooks/useSharing'
 import type { ShareSummary } from '@/types/sharing'
+import { useCan } from '@/lib/auth/permissions'
 
 /**
  * "Sharing between clinics" for a linked patient: clinic names, dates and read counts only.
@@ -17,7 +17,8 @@ export function SharingBlock({ patientId }: { patientId: string }) {
   const t = useTranslations('sharingUi')
   const { fmt } = useDateFormat()
   const router = useRouter()
-  const isDoctor = useAuthStore((s) => s.user?.role) === 'doctor'
+  const { can } = useCan()
+  const canRevoke = can('identity.revoke')
   const { data, isLoading, isError, refetch } = usePatientSharing(patientId)
 
   const date = (d: string) => fmt(d, 'MMM d, yyyy')
@@ -54,7 +55,7 @@ export function SharingBlock({ patientId }: { patientId: string }) {
                     ? t('clinic.incomingReads', { count: s.access_count, date: when(s.last_accessed_at) })
                     : t('clinic.incomingNotOpened')}
                 </p>
-                {isDoctor && s.status === 'active' && (
+                {canRevoke && s.status === 'active' && (
                   <Button size="sm" onClick={() => router.push(`/patients/${patientId}/shared-records`)}>
                     {t('clinic.open')}
                   </Button>

@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { CatalogItem, PlanConfig, PlanUpdateRequest } from '@/types/plans'
+import { useCan } from '@/lib/auth/permissions'
 
 interface EntitlementDraft {
   enabled: boolean
@@ -254,11 +255,12 @@ function describe(entry: { old_value: string | null; new_value: string | null })
 
 export default function AdminPlansPage() {
   const user = useAuthStore((state) => state.user)
-  const isAdmin = user?.role === 'admin'
+  const { can } = useCan()
+  const isAdmin = can('plans.manage')
   const { data, isLoading } = useAdminPlans()
   const { data: audit } = usePlanAudit()
 
-  if (user && user.role !== 'admin' && user.role !== 'operator') {
+  if (user && !can('plans.read')) {
     return (
       <Card>
         <CardContent className="flex items-center gap-3 p-6">

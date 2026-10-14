@@ -28,6 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { AdminUserItem, UserRole } from '@/types/admin'
+import { useCan } from '@/lib/auth/permissions'
 
 const ROLES = ['admin', 'operator', 'doctor', 'receptionist'] as const
 
@@ -164,8 +165,9 @@ export default function AdminUsersPage() {
   const user = useAuthStore((state) => state.user)
   // GET /users is read-only on the backend (RequireAdminOrOperator) — operators can view
   // role distribution. Only admins can change a user's role/status (canEdit below).
-  const isPlatformRole = user?.role === 'admin' || user?.role === 'operator'
-  const canEdit = user?.role === 'admin'
+  const { can } = useCan()
+  const isPlatformRole = can('users.read')
+  const canEdit = can('users.manage')
 
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('all')

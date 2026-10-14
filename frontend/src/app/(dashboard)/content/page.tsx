@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Newspaper, Plus, Video } from 'lucide-react'
 import { useArticles } from '@/lib/hooks/useArticles'
-import { useAuthStore } from '@/store/authStore'
 import { useDateFormat } from '@/lib/i18n/date'
 import { Pager, serverPage, usePager } from '@/components/shared/Pager'
 import { ArticleStatusBadge, OverdueBadge } from '@/components/content/ArticleStatusBadge'
@@ -21,6 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { ArticleStatus } from '@/types/article'
+import { useCan } from '@/lib/auth/permissions'
 
 type Filter = 'all' | ArticleStatus
 const FILTERS: Filter[] = ['all', 'draft', 'in_review', 'published']
@@ -29,7 +29,8 @@ export default function ContentPage() {
   const t = useTranslations('contentAdminUi')
   const locale = useLocale()
   const { fmt } = useDateFormat()
-  const isAdmin = useAuthStore((s) => s.user?.role === 'admin')
+  const { can } = useCan()
+  const isAdmin = can('content.manage')
   const [filter, setFilter] = useState<Filter>('all')
   const pager = usePager(undefined, filter)
 

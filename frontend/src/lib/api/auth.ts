@@ -1,5 +1,6 @@
 import apiClient from './client'
 import type {
+  MyPermissions,
   LoginRequest,
   LoginResponse,
   TwoFactorRequest,
@@ -71,6 +72,12 @@ export const authApi = {
 
   getCurrentUser: async (): Promise<UserProfileResponse> => {
     const response = await apiClient.get('/auth/me')
+    return response.data
+  },
+
+  /** The user's roles and effective permissions (ADR 010) */
+  getPermissions: async (): Promise<MyPermissions> => {
+    const response = await apiClient.get('/auth/me/permissions')
     return response.data
   },
 

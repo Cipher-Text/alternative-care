@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user, RequireDoctor
+from app.core.dependencies import CurrentUser, ensure_permission, get_current_user, require_permission
 from app.modules.prescription.service import PrescriptionService
 from app.shared.schemas import (
     PrescriptionCreate,
@@ -18,6 +18,9 @@ from app.shared.schemas import (
 )
 
 router = APIRouter()
+
+WritesPrescriptions = Annotated[CurrentUser, Depends(require_permission("prescriptions.write"))]
+VoidsPrescriptions = Annotated[CurrentUser, Depends(require_permission("prescriptions.void"))]
 
 
 def get_prescription_service(
@@ -40,17 +43,20 @@ def get_prescription_service(
 async def create_prescription(
     data: PrescriptionCreate,
     service: Annotated[PrescriptionService, Depends(get_prescription_service)],
-    current_user: RequireDoctor,
+    current_user: WritesPrescriptions,
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
     Create a new prescription with items.
 
-    - Only doctors can create prescriptions
+    - Needs prescriptions.write (and prescriptions.issue to create one already issued)
     - Automatically scoped to authenticated user's tenant
     - Can create as draft or directly issue
     - Items are included in the request body
     - Returns complete prescription with items
     """
+    if data.status == "issued":
+        await ensure_permission(current_user, db, "prescriptions.issue")
     return await service.create_prescription(data, prescribed_by=current_user.user_id)
 
 
@@ -101,7 +107,8 @@ async def update_prescription(
     prescription_id: str,
     data: PrescriptionUpdate,
     service: Annotated[PrescriptionService, Depends(get_prescription_service)],
-    current_user: RequireDoctor,
+    current_user: WritesPrescriptions,
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     """
     Update a prescription.
@@ -111,6 +118,10 @@ async def update_prescription(
     - All fields are optional
     - Maintains audit trail (updated_by)
     """
+    if data.status == "issued":
+        await ensure_permission(current_user, db, "prescriptions.issue")
+    elif data.status == "voided":
+        await ensure_permission(current_user, db, "prescriptions.void")
     return await service.update_prescription(
         prescription_id, data, updated_by=current_user.user_id
     )
@@ -120,14 +131,14 @@ async def update_prescription(
 async def void_prescription(
     prescription_id: str,
     service: Annotated[PrescriptionService, Depends(get_prescription_service)],
-    current_user: RequireDoctor,
+    current_user: VoidsPrescriptions,
 ):
     """
     Void a prescription.
 
     - Marks prescription as voided (cannot be undone)
     - Voided prescriptions cannot be edited or issued
-    - Only doctors can void prescriptions
+    - Needs the prescriptions.void permission
     """
     return await service.void_prescription(prescription_id, updated_by=current_user.user_id)
 
@@ -171,7 +182,7 @@ async def add_prescription_item(
     prescription_id: str,
     data: PrescriptionItemCreate,
     service: Annotated[PrescriptionService, Depends(get_prescription_service)],
-    current_user: RequireDoctor,
+    current_user: WritesPrescriptions,
 ):
     """
     Add an item to a prescription.
@@ -193,7 +204,7 @@ async def delete_prescription_item(
     prescription_id: str,
     item_id: int,
     service: Annotated[PrescriptionService, Depends(get_prescription_service)],
-    current_user: RequireDoctor,
+    current_user: WritesPrescriptions,
 ):
     """
     Delete an item from a prescription.
