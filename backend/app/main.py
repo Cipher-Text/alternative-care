@@ -109,7 +109,7 @@ from app.modules.case_taking import router as case_taking_router
 from app.modules.patient import options_router as health_options_router, router as patient_router
 from app.modules.prescription import router as prescription_router
 from app.modules.payment import router as payment_router
-from app.modules.integration import router as integration_router
+from app.modules.messaging import router as messaging_router
 from app.modules.medicine import router as medicine_router
 from app.modules.symptom import router as symptom_router
 from app.modules.tenant import router as tenant_router
@@ -149,7 +149,7 @@ app.include_router(case_taking_router, prefix=f"{settings.API_V1_PREFIX}/case-ta
 app.include_router(health_options_router, prefix=f"{settings.API_V1_PREFIX}/health-options", tags=["Patients"])
 app.include_router(prescription_router, prefix=f"{settings.API_V1_PREFIX}/prescriptions", tags=["Prescriptions"], dependencies=[Depends(deny_receptionist_writes)])
 app.include_router(payment_router, prefix=f"{settings.API_V1_PREFIX}/payments", tags=["Payments"])
-app.include_router(integration_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"], dependencies=[Depends(deny_receptionist)])
+app.include_router(messaging_router, prefix=f"{settings.API_V1_PREFIX}/messaging", tags=["Messaging"], dependencies=[Depends(deny_receptionist)])
 app.include_router(medicine_router, prefix=f"{settings.API_V1_PREFIX}/medicines", tags=["Medicines"], dependencies=[Depends(deny_receptionist_writes)])
 app.include_router(symptom_router, prefix=f"{settings.API_V1_PREFIX}/symptoms", tags=["Symptoms"], dependencies=[Depends(deny_receptionist_writes)])
 app.include_router(geographic_router, prefix=f"{settings.API_V1_PREFIX}/geographic", tags=["Geographic"])

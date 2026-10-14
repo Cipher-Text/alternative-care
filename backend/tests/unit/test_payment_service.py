@@ -12,7 +12,6 @@ from app.shared.models import Payment, Invoice
 from app.shared.schemas import (
     PaymentCreate,
     PaymentUpdate,
-    BkashPaymentCreate,
     InvoiceCreate,
     InvoiceUpdate,
 )
@@ -291,52 +290,6 @@ async def test_get_payment_summary(payment_service, test_patient, user_id):
 
 
 # ===== bKash Payment Tests (Mocked) =====
-
-
-@pytest.mark.asyncio
-async def test_create_bkash_payment(payment_service, test_patient, user_id):
-    """Test creating bKash payment."""
-    data = BkashPaymentCreate(
-        patient_id=test_patient.id,
-        amount=1000.00,
-        description="Consultation",
-    )
-
-    # Mock bKash service
-    with patch('app.modules.payment.service.bkash_service.create_payment') as mock_create:
-        mock_create.return_value = {
-            "paymentID": "TR123456",
-            "bkashURL": "https://sandbox.bka.sh/payment/TR123456",
-            "amount": "1000.00",
-            "merchantInvoiceNumber": "INV-202604-0001",
-        }
-
-        result = await payment_service.create_bkash_payment(data, created_by=user_id)
-
-        assert result["payment_id"] is not None
-        assert result["bkash_payment_id"] == "TR123456"
-        assert result["bkash_url"] is not None
-        assert "sandbox.bka.sh" in result["bkash_url"]
-
-
-@pytest.mark.asyncio
-async def test_query_bkash_payment(payment_service):
-    """Test querying bKash payment status."""
-    with patch('app.modules.payment.service.bkash_service.query_payment') as mock_query:
-        mock_query.return_value = {
-            "paymentID": "TR123456",
-            "trxID": "8AG1234567",
-            "transactionStatus": "Completed",
-            "amount": "1000.00",
-        }
-
-        result = await payment_service.query_bkash_payment("TR123456")
-
-        assert result["paymentID"] == "TR123456"
-        assert result["transactionStatus"] == "Completed"
-
-
-# ===== Invoice Tests =====
 
 
 @pytest.mark.asyncio

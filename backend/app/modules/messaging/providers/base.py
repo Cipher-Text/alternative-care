@@ -11,7 +11,7 @@ class BaseProviderService(ABC):
         """Initialize provider with credentials.
 
         Args:
-            credentials: Decrypted credentials dict
+            credentials: Credentials from the server environment
             config: Optional provider configuration
         """
         self.credentials = credentials

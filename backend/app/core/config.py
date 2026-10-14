@@ -54,9 +54,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # Encryption (Fernet)
-    INTEGRATION_ENCRYPTION_KEY: str
-
     # CORS
     CORS_ORIGINS: str = "http://localhost:3000"
 
@@ -80,13 +77,6 @@ class Settings(BaseSettings):
             errors.append(
                 "SECRET_KEY must be set and at least 32 characters long. "
                 "Generate with: python -c 'import secrets; print(secrets.token_urlsafe(32))'"
-            )
-
-        # Validate INTEGRATION_ENCRYPTION_KEY (Fernet requires 32 url-safe base64-encoded bytes)
-        if not self.INTEGRATION_ENCRYPTION_KEY or len(self.INTEGRATION_ENCRYPTION_KEY) < 32:
-            errors.append(
-                "INTEGRATION_ENCRYPTION_KEY must be set and at least 32 characters long. "
-                "Generate with: python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'"
             )
 
         # Validate DATABASE_URL

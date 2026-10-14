@@ -21,7 +21,7 @@ Complete database schema for AltCare with 34 tables organized by domain.
 - [Clinical Tables](#clinical-tables)
 - [Geographic Tables](#geographic-tables)
 - [Medicine & Library](#medicine--library)
-- [Integration Tables](#integration-tables)
+- [Messaging Table](#messaging-table)
 - [System Tables](#system-tables)
 
 ---
@@ -445,90 +445,31 @@ Search uses `pg_trgm` GIN indexes on `name_en`/`name_bn` (no `search_vector`/tsv
 
 ---
 
-## 🔌 Integration Tables (3)
+## 🔌 Messaging Table (1)
 
-### `integration_providers`
-**Purpose:** Global catalog of SMS/Email/Payment providers
+Clinics do not connect their own SMS, email or payment providers (removed 2026-10-14): the platform sends for them
+through its own providers, configured from the server environment, and charges messaging credits.
 
-```sql
--- Reflects app/shared/models/integration.py:IntegrationProvider (platform-level, no tenant_id)
-CREATE TABLE integration_providers (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,       -- e.g., "twilio", "sendgrid"
-    display_name VARCHAR(255) NOT NULL,
-    provider_type VARCHAR(50) NOT NULL,      -- sms, email, payment
-    description TEXT,
-    logo_url VARCHAR(500),
-
-    config_schema JSONB,
-    supported_countries JSONB,
-
-    is_active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-```
-
-**Examples:** Twilio (SMS), SendGrid (Email), bKash (Payment)
-
----
-
-### `tenant_integrations`
-**Purpose:** Tenant-specific integration configs
+### `message_logs`
+**Purpose:** What the platform sent for a clinic: SMS and email, the provider's answer, any error.
 
 ```sql
--- Reflects app/shared/models/integration.py:TenantIntegration
-CREATE TABLE tenant_integrations (
+-- Reflects app/shared/models/message_log.py:MessageLog (tenant-scoped)
+CREATE TABLE message_logs (
     id SERIAL PRIMARY KEY,
-    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
-    provider_id INTEGER NOT NULL REFERENCES integration_providers(id),
-
-    display_name VARCHAR(255),
-    encrypted_credentials TEXT NOT NULL,  -- Fernet-encrypted JSON, not raw JSONB
-    is_primary BOOLEAN NOT NULL DEFAULT false,
-    is_active BOOLEAN NOT NULL DEFAULT true,
-
-    last_tested_at TIMESTAMP,
-    test_status VARCHAR(20),  -- success, failed
-
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP,
-    created_by VARCHAR(36),
-    updated_by VARCHAR(36)
-);
-```
-
----
-
-### `integration_logs`
-**Purpose:** Audit trail for all integration API calls
-
-```sql
--- Reflects app/shared/models/integration.py:IntegrationLog
-CREATE TABLE integration_logs (
-    id SERIAL PRIMARY KEY,
-    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id),
-    tenant_integration_id INTEGER NOT NULL REFERENCES tenant_integrations(id),
-
-    transaction_type VARCHAR(50) NOT NULL,  -- sms_sent, email_sent, payment_initiated, ...
-    request_payload JSONB,
-    response_payload JSONB,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    transaction_type VARCHAR(50) NOT NULL,   -- sms_sent, email_sent
+    request_payload JSON,
+    response_payload JSON,
     response_status_code INTEGER,
-
-    status VARCHAR(20) NOT NULL,  -- pending, success, failed
+    status VARCHAR(20) NOT NULL,             -- success, failed
     error_message TEXT,
-    external_reference VARCHAR(255),
-    recipient VARCHAR(255),
-    amount INTEGER,
-    currency VARCHAR(3),
-
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP,
-    created_by VARCHAR(36),
-    updated_by VARCHAR(36)
+    external_reference VARCHAR(255),         -- the provider's message id
+    recipient VARCHAR(255),                  -- phone or email
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ, created_by VARCHAR(36), updated_by VARCHAR(36)
 );
 ```
-
----
 
 ## ⚙️ System Tables (2)
 
@@ -609,7 +550,7 @@ CREATE INDEX idx_embeddings_vector ON embeddings USING ivfflat (embedding vector
 → `tenant_id` (a `VARCHAR(36)` UUID string, not a native Postgres `UUID` column) on all tenant-scoped tables
 
 **Q: Which tables don't have tenant_id?**
-→ Platform data: `integration_providers`, `divisions`, `districts`, `upazilas`, `translations`, `user_sessions`
+→ Platform data: `divisions`, `districts`, `upazilas`, `translations`, `user_sessions`
 
 **Q: How are soft deletes implemented?**
 → There is no shared `deleted_at` column. Each table uses either an `is_active` boolean (patients, medicines, symptoms, books) or a `status` field (prescriptions, payments, invoices, appointments) instead.

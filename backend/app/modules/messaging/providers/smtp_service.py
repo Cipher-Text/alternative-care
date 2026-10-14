@@ -1,11 +1,11 @@
-"""Generic SMTP email integration service."""
+"""SMTP email provider (the platform's email sender)."""
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Any
 
-from app.modules.integration.providers.base import BaseProviderService
+from app.modules.messaging.providers.base import BaseProviderService
 
 
 class SMTPService(BaseProviderService):

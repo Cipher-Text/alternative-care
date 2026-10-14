@@ -21,7 +21,7 @@ def platform_sms(monkeypatch):
     monkeypatch.setattr(settings, "BULKSMSBD_SENDER_ID", "AltCare")
     sent = []
     stub = SimpleNamespace(delay=lambda **kw: sent.append(kw) or SimpleNamespace(id="task-1"))
-    monkeypatch.setattr("app.modules.integration.routes.send_platform_sms_task", stub)
+    monkeypatch.setattr("app.modules.messaging.routes.send_platform_sms_task", stub)
     return sent
 
 
@@ -31,7 +31,7 @@ def platform_email(monkeypatch):
     monkeypatch.setattr(settings, "RESEND_API_KEY", "re_test")
     sent = []
     stub = SimpleNamespace(delay=lambda **kw: sent.append(kw) or SimpleNamespace(id="task-2"))
-    monkeypatch.setattr("app.modules.integration.routes.send_platform_email_task", stub)
+    monkeypatch.setattr("app.modules.messaging.routes.send_platform_email_task", stub)
     return sent
 
 
@@ -44,10 +44,10 @@ async def _limit(db, tenant, key, value):
 async def test_allowance_is_used_first_then_blocked(client, doctor_token, db_session, test_tenant, platform_sms):
     await _limit(db_session, test_tenant, "monthly_sms", 2)
     for _ in range(2):
-        assert (await client.post("/api/v1/integrations/send/sms", json=SMS, headers=H(doctor_token))).status_code == 200
+        assert (await client.post("/api/v1/messaging/send/sms", json=SMS, headers=H(doctor_token))).status_code == 200
     assert [s["source"] for s in platform_sms] == ["allowance", "allowance"]
 
-    r = await client.post("/api/v1/integrations/send/sms", json=SMS, headers=H(doctor_token))
+    r = await client.post("/api/v1/messaging/send/sms", json=SMS, headers=H(doctor_token))
     assert r.status_code == 403
     detail = r.json()["detail"]
     assert detail["code"] == "credits_exhausted" and detail["channel"] == "sms"
@@ -68,7 +68,7 @@ async def test_purchased_credits_cover_overflow_and_are_ledgered(
     assert r.status_code == 200 and r.json()["purchased"] == 2
 
     results = [
-        (await client.post("/api/v1/integrations/send/sms", json=SMS, headers=H(doctor_token))).status_code
+        (await client.post("/api/v1/messaging/send/sms", json=SMS, headers=H(doctor_token))).status_code
         for _ in range(4)
     ]
     assert results == [200, 200, 200, 403]  # 1 allowance + 2 purchased, then exhausted
@@ -90,9 +90,9 @@ async def test_email_has_its_own_allowance(client, doctor_token, db_session, tes
     await _limit(db_session, test_tenant, "monthly_sms", 0)
     await _limit(db_session, test_tenant, "monthly_email", 1)
     # SMS blocked, email still allowed: separate channels
-    assert (await client.post("/api/v1/integrations/send/sms", json=SMS, headers=H(doctor_token))).status_code == 403
-    assert (await client.post("/api/v1/integrations/send/email", json=EMAIL, headers=H(doctor_token))).status_code == 200
-    assert (await client.post("/api/v1/integrations/send/email", json=EMAIL, headers=H(doctor_token))).status_code == 403
+    assert (await client.post("/api/v1/messaging/send/sms", json=SMS, headers=H(doctor_token))).status_code == 403
+    assert (await client.post("/api/v1/messaging/send/email", json=EMAIL, headers=H(doctor_token))).status_code == 200
+    assert (await client.post("/api/v1/messaging/send/email", json=EMAIL, headers=H(doctor_token))).status_code == 403
     assert platform_email[0]["reply_to"]  # replies go to the clinic, not a platform mailbox
 
 
@@ -115,7 +115,7 @@ async def test_failed_send_is_refunded(db_session, test_tenant):
 async def test_unlimited_plan_never_touches_credits(client, doctor_token, db_session, test_tenant, platform_sms):
     await _limit(db_session, test_tenant, "monthly_sms", None)  # unlimited, e.g. a custom Enterprise deal
     for _ in range(3):
-        assert (await client.post("/api/v1/integrations/send/sms", json=SMS, headers=H(doctor_token))).status_code == 200
+        assert (await client.post("/api/v1/messaging/send/sms", json=SMS, headers=H(doctor_token))).status_code == 200
     assert {s["source"] for s in platform_sms} == {"allowance"}
 
 

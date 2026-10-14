@@ -4,7 +4,6 @@ Seed script for AltCare database.
 
 Populates the database with:
 - Bangladesh geographic data (divisions, districts, upazilas)
-- Integration providers catalog
 - Translation keys (English/Bengali)
 - Sample tenants and users (for testing)
 
@@ -38,7 +37,6 @@ from app.shared.models import (
     Institution,
     District,
     Division,
-    IntegrationProvider,
     Medicine,
     Pharmacy,
     Symptom,
@@ -108,26 +106,6 @@ class SeedData:
 
         await self.session.flush()
         return stats
-
-    async def seed_integration_providers(self) -> int:
-        """Seed integration providers catalog."""
-        data = self.load_json("integration_providers.json")
-        count = 0
-
-        print("\n🔌 Seeding integration providers...")
-        for provider_data in data["providers"]:
-            existing = await self.session.execute(
-                select(IntegrationProvider).where(
-                    IntegrationProvider.name == provider_data["name"]
-                )
-            )
-            if not existing.scalar_one_or_none():
-                provider = IntegrationProvider(**provider_data)
-                self.session.add(provider)
-                count += 1
-
-        await self.session.flush()
-        return count
 
     async def seed_translations(self) -> int:
         """Seed translation keys."""
@@ -345,7 +323,6 @@ async def main():
 
                 # Seed all data
                 geo_stats = await seeder.seed_geographic_data()
-                providers_count = await seeder.seed_integration_providers()
                 sample_stats = await seeder.seed_sample_data()
                 default_tenant_id = await seeder.get_default_tenant_id()
                 medicines_count = await seeder.seed_medicines(default_tenant_id)
@@ -368,7 +345,6 @@ async def main():
         print(f"  • Divisions:     {geo_stats['divisions']:>3} created")
         print(f"  • Districts:     {geo_stats['districts']:>3} created")
         print(f"  • Upazilas:      {geo_stats['upazilas']:>3} created")
-        print(f"  • Providers:     {providers_count:>3} created")
         print(f"  • Medicines:     {medicines_count:>3} created")
         print(f"  • Symptoms:      {symptoms_count:>3} created")
         print(f"  • Institutions:  {institutions_count:>3} created")
@@ -385,10 +361,6 @@ async def main():
         print("  • Patient:    01700000001 or 01700000002, code 123456 (development only)")
         print("\n📚 Geographic data:")
         print("  • 8 divisions, 64 districts, 495 upazilas")
-        print("\n🔌 Integration providers:")
-        print("  • SMS:     Twilio, Banglalink, Robi")
-        print("  • Email:   SendGrid, AWS SES, SMTP")
-        print("  • Payment: bKash, Nagad, Rocket, SSLCommerz, Stripe")
         print("\n💊 Medicines:")
         print("  • Homeopathy: Arnica, Belladonna, Nux Vomica, Pulsatilla, Rhus Tox")
         print("  • Ayurveda:   Ashwagandha, Triphala, Tulsi, Brahmi")

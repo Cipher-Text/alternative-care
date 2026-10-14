@@ -22,7 +22,6 @@ export interface Payment {
   description?: string;
   transaction_id?: string;
   received_by: string;
-  integration_log_id?: number;
   created_at: string;
   updated_at: string;
   deleted_at?: string;
@@ -120,30 +119,6 @@ export interface InvoiceListItem {
   status: InvoiceStatus;
   issue_date?: string | null;
   due_date?: string | null;
-  created_at: string;
-}
-
-// ===== bKash Payment Types =====
-
-export interface BkashPaymentCreate {
-  patient_id: string;
-  amount: number;
-  description?: string;
-  callback_url?: string;
-}
-
-export interface BkashPaymentExecute {
-  payment_id: string;
-}
-
-export interface BkashPaymentResponse {
-  payment_id: string;
-  bkash_payment_id: string;
-  bkash_url: string;
-  merchant_invoice_number: string;
-  status: string;
-  amount: number;
-  currency: string;
   created_at: string;
 }
 

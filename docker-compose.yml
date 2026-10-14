@@ -46,7 +46,6 @@ services:
       STORAGE_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       STORAGE_PUBLIC_BASE_URL: http://localhost:9000/altcare
       SECRET_KEY: ${SECRET_KEY:-local-development-secret-key-change-me-32}
-      INTEGRATION_ENCRYPTION_KEY: ${INTEGRATION_ENCRYPTION_KEY:-MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=}
       CORS_ORIGINS: http://localhost:3000
       FRONTEND_URL: http://localhost:3000
     ports:
@@ -83,7 +82,6 @@ services:
       STORAGE_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       STORAGE_PUBLIC_BASE_URL: http://localhost:9000/altcare
       SECRET_KEY: ${SECRET_KEY:-local-development-secret-key-change-me-32}
-      INTEGRATION_ENCRYPTION_KEY: ${INTEGRATION_ENCRYPTION_KEY:-MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=}
     command: celery -A app.core.celery:celery_app worker --loglevel=info
     volumes:
       - ./backend:/app

@@ -3,7 +3,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { paymentsApi, invoicesApi, bkashApi } from '@/lib/api/payments';
+import { paymentsApi, invoicesApi } from '@/lib/api/payments';
 import { openPdf } from '@/lib/utils/pdf';
 import type {
   PaymentCreate,
@@ -11,8 +11,6 @@ import type {
   InvoiceCreate,
   InvoiceUpdate,
   InvoiceFilters,
-  BkashPaymentCreate,
-  BkashPaymentExecute,
 } from '@/types/payment';
 
 // ===== Query Keys =====
@@ -150,47 +148,5 @@ export function useUpdateInvoice() {
 export function useViewInvoicePdf() {
   return useMutation({
     mutationFn: (id: string) => openPdf(() => invoicesApi.downloadPdf(id), `invoice-${id.slice(0, 8)}.pdf`),
-  });
-}
-
-// ===== bKash Hooks =====
-
-/**
- * Create bKash payment
- */
-export function useCreateBkashPayment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: BkashPaymentCreate) => bkashApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paymentKeys.all });
-    },
-  });
-}
-
-/**
- * Execute bKash payment
- */
-export function useExecuteBkashPayment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: BkashPaymentExecute) => bkashApi.execute(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paymentKeys.all });
-    },
-  });
-}
-
-/**
- * Query bKash payment status
- */
-export function useQueryBkashPayment(paymentId: string) {
-  return useQuery({
-    queryKey: ['bkash', 'payment', paymentId],
-    queryFn: () => bkashApi.query(paymentId),
-    enabled: !!paymentId,
-    refetchInterval: 5000, // Poll every 5 seconds
   });
 }

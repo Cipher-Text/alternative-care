@@ -14,9 +14,6 @@ from app.shared.schemas import (
     PaymentUpdate,
     PaymentResponse,
     PaymentListItem,
-    BkashPaymentCreate,
-    BkashPaymentExecute,
-    BkashPaymentQuery,
     InvoiceCreate,
     InvoiceUpdate,
     InvoiceResponse,
@@ -225,60 +222,3 @@ async def get_payment(
     - Tenant filtering applied automatically
     """
     return await service.get_payment(payment_id)
-
-
-# ===== bKash Payment Endpoints =====
-
-
-@router.post("/bkash/create", response_model=dict, status_code=status.HTTP_201_CREATED)
-async def create_bkash_payment(
-    data: BkashPaymentCreate,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
-):
-    """
-    Create a bKash payment and get payment URL.
-
-    - Creates payment record in 'pending' status
-    - Returns bKash payment URL for user to complete payment
-    - Maximum amount: 25,000 BDT
-    - Returns: payment_id, bkash_payment_id, bkash_url, merchant_invoice_number
-    """
-    return await service.create_bkash_payment(data, created_by=current_user.user_id)
-
-
-@router.post("/bkash/execute", response_model=PaymentResponse)
-async def execute_bkash_payment(
-    data: BkashPaymentExecute,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-):
-    """
-    Execute bKash payment after user completes payment.
-
-    - Call this after user returns from bKash payment page
-    - Updates payment status to 'paid' or 'failed'
-    - Stores transaction ID from bKash
-    - Returns updated payment record
-    """
-    # Note: In production, you'd extract payment_id from callback params
-    # For now, we'll need both payment_id and bkash_payment_id
-    # This is a simplified implementation
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Execute endpoint needs payment_id mapping - implement callback handler",
-    )
-
-
-@router.post("/bkash/query", response_model=dict)
-async def query_bkash_payment(
-    data: BkashPaymentQuery,
-    service: Annotated[PaymentService, Depends(get_payment_service)],
-):
-    """
-    Query bKash payment status.
-
-    - Check status of a bKash payment
-    - Useful for verifying payment completion
-    - Returns: payment status, transaction ID, amount, etc.
-    """
-    return await service.query_bkash_payment(data.payment_id)

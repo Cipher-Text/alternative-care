@@ -66,54 +66,6 @@ class PaymentListItem(BaseModel):
     description: str | None = None
     created_at: datetime
 
-
-# ===== bKash Payment Schemas =====
-
-class BkashPaymentCreate(BaseModel):
-    """Create bKash payment request."""
-
-    patient_id: str
-    visit_id: str | None = None
-    amount: float = Field(..., gt=0, le=25000, description="Amount in BDT (max 25,000)")
-    description: str | None = Field(None, max_length=500)
-    callback_url: str | None = Field(None, description="URL to redirect after payment")
-
-
-class BkashPaymentExecute(BaseModel):
-    """Execute bKash payment request."""
-
-    payment_id: str = Field(..., description="bKash payment ID from create response")
-
-
-class BkashPaymentQuery(BaseModel):
-    """Query bKash payment status."""
-
-    payment_id: str
-
-
-class BkashRefundRequest(BaseModel):
-    """bKash refund request."""
-
-    payment_id: str
-    amount: float = Field(..., gt=0, description="Refund amount in BDT")
-    transaction_id: str = Field(..., description="bKash transaction ID (trxID)")
-    reason: str = Field(..., min_length=1, max_length=500)
-
-
-class BkashPaymentResponse(BaseModel):
-    """bKash payment response."""
-
-    payment_id: str | None = None
-    bkash_url: str | None = Field(None, description="URL to redirect user for payment")
-    transaction_id: str | None = None
-    transaction_status: str | None = None
-    amount: float | None = None
-    merchant_invoice_number: str | None = None
-    customer_msisdn: str | None = None
-    status_code: str | None = None
-    status_message: str | None = None
-
-
 # ===== Invoice Schemas =====
 
 class InvoiceBase(BaseModel):

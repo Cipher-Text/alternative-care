@@ -1,11 +1,11 @@
-"""BulkSMSBD integration service."""
+"""BulkSMSBD SMS provider (the platform's SMS gateway)."""
 
 import httpx
 from typing import Any
 
 from fastapi import HTTPException, status
 
-from app.modules.integration.providers.base import BaseProviderService
+from app.modules.messaging.providers.base import BaseProviderService
 
 
 class BulkSMSBDService(BaseProviderService):

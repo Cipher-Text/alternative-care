@@ -5,7 +5,7 @@ credits (see `app/core/credits.py`). Secrets are read from settings and never lo
 """
 
 from app.core.config import settings
-from app.modules.integration.providers.bulksmsbd_service import BulkSMSBDService
+from app.modules.messaging.providers.bulksmsbd_service import BulkSMSBDService
 
 
 def platform_sms_service() -> BulkSMSBDService | None:
@@ -28,7 +28,7 @@ def sms_configured() -> bool:
 
 
 def email_configured() -> bool:
-    # imported lazily: system_email -> integration providers -> routes -> this module
+    # imported lazily: system_email -> messaging providers -> routes -> this module
     from app.core.system_email import _platform_smtp_service
 
     return _platform_smtp_service() is not None

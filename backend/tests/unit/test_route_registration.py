@@ -75,4 +75,6 @@ def test_current_api_route_count_matches_docs():
     # Case-taking (homeopathy): +1 definitions, +2 patient profile, +2 visit assessment — 241 -> 246.
     # Practitioner dashboard: +1 /dashboard/today — 246 -> 247.
     # Platform admin work queue: +1 /admin/dashboard/queue — 247 -> 248.
-    assert api_method_count == 248
+    # Clinic integrations removed: -9 /integrations endpoints (3 remain as /messaging) and -3 bKash payment endpoints
+    # — 248 -> 236.
+    assert api_method_count == 236

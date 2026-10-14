@@ -49,7 +49,7 @@ An integrated alternative medicine practice platform, expanding in stages into p
 Prerequisites: a local PostgreSQL 16 (+ pgvector) and Redis already running.
 
 ```bash
-cp .env.example .env            # then set DATABASE_URL, REDIS_URL, SECRET_KEY, INTEGRATION_ENCRYPTION_KEY
+cp .env.example .env            # then set DATABASE_URL, REDIS_URL, SECRET_KEY
 cd backend && python3 -m venv venv && venv/bin/pip install -e . && venv/bin/alembic upgrade head && cd ..
 cd frontend && npm install && cd ..
 ./run.sh

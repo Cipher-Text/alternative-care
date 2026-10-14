@@ -164,7 +164,7 @@ psql -U altcare -d altcare_dev -h localhost \
 - Payment: `payments`, `invoices`
 - Medicine: `medicines`, `medicine_aliases`, `symptoms`, `symptom_aliases`, `medicine_symptom_mappings`
 - Library: `books`, `chapters`, `sections`, `embeddings`, `reading_progress`, `bookmarks`, `highlights`
-- Integration: `integration_providers`, `tenant_integrations`, `integration_logs`
+- Messaging: `message_logs`
 - System: `translations`, `usage_tracking`
 
 ---
@@ -178,7 +178,6 @@ psql -U altcare -d altcare_dev -h localhost \
 
 **Seed Data:**
 - Bangladesh geographic data (8 divisions, 64 districts, 495 upazilas)
-- Integration providers (12 providers: SMS, Email, Payment; local logo paths)
 - UI translations (80+ English/Bengali strings)
 - Sample tenants and users for development
 
@@ -380,9 +379,6 @@ alembic downgrade -1
 
 # Rollback to specific revision
 alembic downgrade <revision_id>
-
-# Generate Fernet key (for INTEGRATION_ENCRYPTION_KEY)
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 
 # Access PostgreSQL directly (local instance)
 psql -U altcare -d altcare_dev -h localhost

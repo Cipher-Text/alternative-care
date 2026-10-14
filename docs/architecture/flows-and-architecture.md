@@ -164,7 +164,7 @@ marketing pages (`/`, `/about`, `/pricing`, `/for-practitioners`).
 | Patients, appointments, visits | Built |
 | Prescriptions (builder, issue/void, PDF) | Built |
 | Payments and invoicing (incl. bKash) | Built |
-| Integrations (SMS, email, payment providers) | Built |
+| Messaging (platform SMS and email, charged as clinic credits; no per-clinic providers) | Built |
 | Platform admin (tenants, users, KPIs, usage) | Built |
 | Medicine / symptom libraries, institutions directory | Built |
 | Bilingual UI (EN/BN) | Built |

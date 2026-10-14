@@ -30,7 +30,7 @@ celery_app.conf.update(
     task_default_rate_limit="100/m",
     # Autodiscover tasks
     imports=[
-        "app.modules.integration.tasks",
+        "app.modules.messaging.tasks",
         "app.core.system_email",
         "app.modules.billing.tasks",
     ],
@@ -45,7 +45,7 @@ celery_app.conf.update(
 
 # Task routes (optional - for prioritization)
 celery_app.conf.task_routes = {
-    "app.modules.integration.tasks.send_sms_task": {"queue": "sms"},
-    "app.modules.integration.tasks.send_email_task": {"queue": "email"},
+    "app.modules.messaging.tasks.send_platform_sms_task": {"queue": "sms"},
+    "app.modules.messaging.tasks.send_platform_email_task": {"queue": "email"},
     "app.core.system_email.send_system_email_task": {"queue": "email"},
 }

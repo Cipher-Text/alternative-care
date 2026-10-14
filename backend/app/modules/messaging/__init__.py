@@ -1,8 +1,8 @@
-"""Integration module - SMS, Email, Payment providers."""
+"""Messaging module: SMS and email a clinic sends through the platform's own providers."""
 
 from fastapi import APIRouter
 
-from app.modules.integration import routes
+from app.modules.messaging import routes
 
 router = APIRouter()
 router.include_router(routes.router)

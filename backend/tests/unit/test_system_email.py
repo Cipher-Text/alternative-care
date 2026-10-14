@@ -6,7 +6,7 @@ import pytest
 
 from app.core import system_email
 from app.core.config import settings
-from app.modules.integration.providers.smtp_service import SMTPService
+from app.modules.messaging.providers.smtp_service import SMTPService
 
 
 def _clear_all_provider_settings(monkeypatch):

@@ -80,21 +80,19 @@ class ReminderService:
         """
         Send appointment reminder via SMS/Email.
 
-        This is a placeholder that will integrate with the notification module
-        and tenant integration settings (SMS/Email providers).
+        This is a placeholder: reminders will go out through the platform's SMS and email providers
+        (app/modules/messaging), charged as the clinic's messaging credits.
 
         Args:
             appointment: Appointment to send reminder for
-            tenant_id: Tenant ID for fetching integration settings
+            tenant_id: The clinic the reminder is sent for
 
         Returns:
             True if reminder sent successfully
         """
         # TODO: Integrate with notification module
-        # TODO: Fetch tenant's SMS/Email provider settings
         # TODO: Load patient contact information
-        # TODO: Send SMS/Email using configured provider
-        # TODO: Log to integration_logs table
+        # TODO: Send through app/modules/messaging (spends a messaging credit, logs to message_logs)
 
         # For now, just mark as sent
         await self.mark_reminder_sent(appointment.id)

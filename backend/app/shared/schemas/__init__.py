@@ -70,11 +70,6 @@ from app.shared.schemas.payment import (
     PaymentUpdate,
     PaymentResponse,
     PaymentListItem,
-    BkashPaymentCreate,
-    BkashPaymentExecute,
-    BkashPaymentQuery,
-    BkashRefundRequest,
-    BkashPaymentResponse,
     InvoiceBase,
     InvoiceCreate,
     InvoiceUpdate,
@@ -163,20 +158,12 @@ from app.shared.schemas.institution import (
     InstitutionResponse,
     InstitutionListItem,
 )
-from app.shared.schemas.integration import (
-    IntegrationProviderResponse,
-    IntegrationProviderListItem,
-    TenantIntegrationCreate,
-    TenantIntegrationUpdate,
-    TenantIntegrationResponse,
-    TenantIntegrationListItem,
-    IntegrationTestRequest,
-    IntegrationTestResponse,
-    IntegrationLogResponse,
-    IntegrationLogListItem,
-    SendSMSRequest,
+
+from app.shared.schemas.messaging import (
+    MessageLogListItem,
     SendEmailRequest,
     SendOperationResponse,
+    SendSMSRequest,
 )
 
 __all__ = [
@@ -286,11 +273,6 @@ __all__ = [
     "PaymentResponse",
     "PaymentListItem",
     # bKash
-    "BkashPaymentCreate",
-    "BkashPaymentExecute",
-    "BkashPaymentQuery",
-    "BkashRefundRequest",
-    "BkashPaymentResponse",
     # Invoices
     "InvoiceBase",
     "InvoiceCreate",
@@ -331,21 +313,8 @@ __all__ = [
     "InstitutionUpdate",
     "InstitutionResponse",
     "InstitutionListItem",
-    # Integration Providers
-    "IntegrationProviderResponse",
-    "IntegrationProviderListItem",
-    # Tenant Integrations
-    "TenantIntegrationCreate",
-    "TenantIntegrationUpdate",
-    "TenantIntegrationResponse",
-    "TenantIntegrationListItem",
-    # Integration Tests
-    "IntegrationTestRequest",
-    "IntegrationTestResponse",
-    # Integration Logs
-    "IntegrationLogResponse",
-    "IntegrationLogListItem",
-    # Send Operations
+    # Messaging
+    "MessageLogListItem",
     "SendSMSRequest",
     "SendEmailRequest",
     "SendOperationResponse",

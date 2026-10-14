@@ -2,17 +2,16 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { MessageSquare, Plug } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-/** Settings index: links to Messaging (SMS/email credits) and Integrations. */
+/** Settings index: Messaging (SMS and email credits). */
 export default function SettingsPage() {
   const t = useTranslations('billingUi.settingsIndex')
   const tm = useTranslations('billingUi.messaging')
 
   const items = [
     { href: '/settings/messaging', icon: MessageSquare, title: tm('title'), text: t('messagingText') },
-    { href: '/settings/integrations', icon: Plug, title: 'Integrations', text: t('integrationsText') },
   ]
 
   return (

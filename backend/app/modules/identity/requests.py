@@ -79,7 +79,7 @@ async def _sms(db: AsyncSession, tenant_id: str, phone: str, message: str) -> No
     try:
         from app.core.credits import CreditService
         from app.core.messaging import sms_configured
-        from app.modules.integration.tasks import send_platform_sms_task
+        from app.modules.messaging.tasks import send_platform_sms_task
 
         if not sms_configured():
             return

@@ -16,11 +16,9 @@ from app.shared.models import Invoice, Patient, Payment, Tenant
 from app.shared.schemas import (
     PaymentCreate,
     PaymentUpdate,
-    BkashPaymentCreate,
     InvoiceCreate,
     InvoiceUpdate,
 )
-from app.modules.payment.bkash_service import bkash_service
 
 
 class PaymentService:
@@ -68,117 +66,6 @@ class PaymentService:
 
         return payment
 
-    async def create_bkash_payment(
-        self, data: BkashPaymentCreate, created_by: str
-    ) -> dict:
-        """
-        Create a bKash payment and get payment URL.
-
-        Args:
-            data: bKash payment creation data
-            created_by: User ID creating the payment
-
-        Returns:
-            dict with payment_id, bkash_url, and merchant_invoice_number
-
-        Raises:
-            HTTPException: If bKash API fails
-        """
-        # Generate unique invoice number
-        invoice_number = await self._generate_invoice_number()
-
-        # Create payment in bKash
-        bkash_response = await bkash_service.create_payment(
-            amount=data.amount,
-            invoice_number=invoice_number,
-            callback_url=data.callback_url,
-        )
-
-        # Create pending payment record
-        payment = Payment(
-            id=str(uuid4()),
-            tenant_id=self.tenant_id,
-            patient_id=data.patient_id,
-            visit_id=data.visit_id,
-            amount=data.amount,
-            currency="BDT",
-            payment_method="bkash",
-            status="pending",
-            description=data.description,
-            payment_date=date.today(),
-            received_by=created_by,
-            created_by=created_by,
-            updated_by=created_by,
-        )
-
-        self.db.add(payment)
-        await self.db.commit()
-        await self.db.refresh(payment)
-
-        return {
-            "payment_id": payment.id,
-            "bkash_payment_id": bkash_response["paymentID"],
-            "bkash_url": bkash_response["bkashURL"],
-            "merchant_invoice_number": invoice_number,
-            "amount": bkash_response["amount"],
-        }
-
-    async def execute_bkash_payment(
-        self, payment_id: str, bkash_payment_id: str
-    ) -> Payment:
-        """
-        Execute bKash payment after user completes payment.
-
-        Args:
-            payment_id: Internal payment ID
-            bkash_payment_id: bKash payment ID
-
-        Returns:
-            Updated payment record
-
-        Raises:
-            HTTPException: If payment not found or execution fails
-        """
-        # Get payment
-        payment = await self.get_payment(payment_id)
-
-        if payment.payment_method != "bkash":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Payment is not a bKash payment",
-            )
-
-        if payment.status != "pending":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Payment already {payment.status}",
-            )
-
-        # Execute payment in bKash
-        bkash_response = await bkash_service.execute_payment(bkash_payment_id)
-
-        # Update payment record
-        payment.transaction_id = bkash_response["trxID"]
-        payment.status = "paid" if bkash_response["transactionStatus"] == "Completed" else "failed"
-        payment.updated_at = datetime.utcnow()
-
-        await self.db.commit()
-        await self.db.refresh(payment)
-
-        return payment
-
-    async def query_bkash_payment(self, bkash_payment_id: str) -> dict:
-        """
-        Query bKash payment status.
-
-        Args:
-            bkash_payment_id: bKash payment ID
-
-        Returns:
-            Payment status from bKash
-        """
-        return await bkash_service.query_payment(bkash_payment_id)
-
     async def refund_payment(
         self, payment_id: str, amount: float, reason: str, refunded_by: str
     ) -> Payment:
@@ -211,17 +98,7 @@ class PaymentService:
                 detail="Refund amount cannot exceed payment amount",
             )
 
-        # Process bKash refund if applicable
-        if payment.payment_method == "bkash" and payment.transaction_id:
-            # Get bKash payment ID (stored in description or separate field)
-            # For now, we'll need the bkash_payment_id passed separately
-            # In production, store this in a separate field or integration_log
-            raise HTTPException(
-                status_code=status.HTTP_501_NOT_IMPLEMENTED,
-                detail="bKash refund requires bkash_payment_id - implement storage first",
-            )
-
-        # For cash payments, just mark as refunded
+        # Clinics collect payments themselves (cash or their own wallet): a refund is a record change only
         payment.status = "refunded"
         payment.updated_by = refunded_by
         payment.updated_at = datetime.utcnow()

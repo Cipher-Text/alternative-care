@@ -15,7 +15,7 @@ export function useCan() {
     isReceptionist,
     /** create/edit/delete patients, prescriptions, medicines, symptoms */
     writeClinical: !isReceptionist,
-    /** doctor profile, integrations and other settings */
+    /** doctor profile, messaging and other settings */
     manageClinicSettings: !isReceptionist,
   }
 }

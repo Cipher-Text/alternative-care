@@ -71,7 +71,6 @@ jobs:
         DATABASE_URL: postgresql+asyncpg://altcare:altcare123@localhost:5432/altcare_test
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test-secret-key-for-ci-only
-        INTEGRATION_ENCRYPTION_KEY: 7_xWwRUfL4F2A5fVbA2Jf4fpWM0gR5xJvDzDMegbe7I=
       run: |
         pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=60
 
@@ -131,7 +130,6 @@ jobs:
         DATABASE_URL: postgresql+asyncpg://altcare:altcare123@localhost:5432/altcare_test
         REDIS_URL: redis://localhost:6379/0
         SECRET_KEY: test-secret-key-for-ci-only
-        INTEGRATION_ENCRYPTION_KEY: 7_xWwRUfL4F2A5fVbA2Jf4fpWM0gR5xJvDzDMegbe7I=
       run: |
         alembic upgrade head
         alembic downgrade -1

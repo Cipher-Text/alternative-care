@@ -75,7 +75,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Prescriptions (Builder, Items, Issue/Void workflow) ✅
 - Doctor Profile (Degrees, Trainings) ✅
 - Payments & Invoicing ✅
-- Integrations (SMS/Email/Payment providers) ✅
+- Messaging (platform-owned SMS/email, charged as clinic credits; clinics do **not** connect their own providers) ✅
 - Medicines library (CRUD, Aliases, Search API, Symptom mappings) ✅
 - Symptoms library (CRUD, Aliases, Search API) ✅
 - Geographic data API (Divisions, Districts, Upazilas — Bangladesh) ✅
@@ -112,11 +112,7 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 docker compose up -d redis minio
 # Ensure a local PostgreSQL 16 (+ pgvector) instance is running and DATABASE_URL in backend/.env points to it
 
-# 2. Generate encryption key
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-# Add to backend/.env: INTEGRATION_ENCRYPTION_KEY=<key>
-
-# 3. Backend setup
+# 2. Backend setup
 cd backend && python3 -m venv venv && venv/bin/pip install -e .
 source venv/bin/activate
 alembic upgrade head
@@ -236,7 +232,7 @@ async def test_tenant_isolation(db_session):
 - Libraries: `pyotp`, `qrcode`
 
 **Password:** Bcrypt (12 rounds, passlib)
-**Credentials:** Fernet encrypted (JSONB field: `tenant_integrations.credentials`)
+**Third-party credentials:** server environment variables only (platform SMS, email, payment gateways); clinics never store credentials
 
 **Roles** (see `docs/architecture/roles-access.md` for full reference):
 
@@ -293,7 +289,7 @@ async def ai_query(user: RequireProPlan):  # 'pro' plan only
 **Medicine:** `medicines`, `medicine_aliases`
 **Symptom:** `symptoms`, `symptom_aliases`, `medicine_symptom_mappings`
 **Library:** `books`, `chapters`, `sections`, `embeddings`, `reading_progress`, `bookmarks`, `highlights`
-**Integration:** `integration_providers`, `tenant_integrations`, `integration_logs`
+**Messaging:** `message_logs` (messages the platform sent for a clinic)
 **System:** `translations`, `usage_tracking`
 
 A knowledge-taxonomy expansion (discipline/condition/therapy/references) and content/CMS tables are scoped but not scheduled or migrated — direction only, no table names locked in yet: `docs/planning/future-scope-2026-09.md`. Don't assume any of it exists without checking `alembic/versions/`. (The institution directory itself — `institutions` table — has since landed; see `docs/planning/future-scope-2026-09.md`'s Track D.)
@@ -334,7 +330,7 @@ backend/app/
 │   ├── appointments/     # ✅ Scheduling, visits (10 endpoints)
 │   ├── prescription/     # ✅ CRUD, items, issue, void, PDF (8 endpoints)
 │   ├── payment/          # ✅ Processing, bKash (12 endpoints)
-│   ├── integration/      # ✅ SMS/Email providers (12 endpoints)
+│   ├── messaging/        # ✅ Clinic SMS/email sent through the platform's providers + message log (3 endpoints: `/messaging/send/sms`, `/send/email`, `/logs`)
 │   ├── dashboard/        # ✅ Analytics, stats (6 endpoints)
 │   ├── ai/               # ✅ Stub endpoint, pro-plan gated (1 endpoint)
 │   ├── medicine/         # ✅ CRUD, search, aliases, symptom mappings (15 endpoints)
@@ -368,7 +364,7 @@ frontend/src/
 │   │   ├── payments/     # ✅ Payment dashboard, transactions, invoices
 │   │   ├── medicines/    # ✅ Medicine library CRUD with autocomplete (⚠️ list uses client-side filter, not /search API)
 │   │   ├── symptoms/     # ✅ Symptom library CRUD (⚠️ no symptom→medicine lookup page yet)
-│   │   ├── settings/     # ✅ Integrations management
+│   │   ├── settings/     # ✅ Messaging (SMS/email credits)
 │   │   └── admin/        # ✅ Dashboard, clients (directory/provision/pending), users (role management)
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing
@@ -445,13 +441,11 @@ async def list_patients(db: AsyncSession = Depends(get_db)):
 # Intended behavior once built: WHERE system IN tenant.specializations OR is_global = true
 ```
 
-**Integration Framework:**
-- Providers: `integration_providers` (global catalog)
-- Configs: `tenant_integrations` (credentials encrypted)
-- Audit: `integration_logs` (request/response)
-- Types: `sms`, `email`, `payment`
-- Factory: BaseProviderService → BkashIntegrationService, BulkSMSBDService, SMTPService
-- Logos: provider `logo_url` values use local `/integrations/*` frontend assets, with `frontend/src/lib/integration-logos.ts` as a fallback for existing seeded DB rows
+**Messaging and payments (platform-owned):**
+- Doctors collect cash from patients and record it; there is no per-clinic payment gateway, SMS or email provider setup (removed 2026-10-14)
+- SMS/email go out through the platform's own providers (`app/core/messaging.py`, `app/modules/messaging/providers`: BulkSMSBD, SMTP), configured from the server environment and charged to the clinic as messaging credits
+- Audit: `message_logs` (what was sent, to whom, the provider's answer)
+- The only payment gateways are the platform's own, for subscriptions and credit packs (`app/modules/billing/gateways`: SSLCommerz, bKash)
 
 **Prescription Workflow:**
 ```python
@@ -488,8 +482,8 @@ if (response.requires_2fa) {
 2. **Use async/await** - all DB ops are async (`AsyncSession`)
 3. **Soft-deactivate clinical data** - set the table's `is_active=False`, don't hard delete (some child records are intentionally hard-deleted — check the service method)
 4. **Validate plan limits** - check `usage_tracking` before creating records
-5. **Encrypt sensitive data** - Fernet for API keys/credentials
-6. **Log integrations** - all SMS/email/payment logged with full payload
+5. **Keep secrets out of the database** - provider credentials live in environment variables, never in tables
+6. **Log messages** - every SMS/email sent for a clinic is written to `message_logs`
 7. **Bilingual by default** - provide `_en` and `_bn` fields
 8. **Immutable clinical records** - prescriptions/payments are append-only
 9. **Enforce password security** - use `_validate_password_strength()` for all password inputs

@@ -46,7 +46,6 @@ jobs:
       DATABASE_URL: postgresql+asyncpg://altcare:altcare123@localhost:5432/altcare_dev
       REDIS_URL: redis://localhost:6379/0
       SECRET_KEY: test-secret-key-for-ci-only
-      INTEGRATION_ENCRYPTION_KEY: 7_xWwRUfL4F2A5fVbA2Jf4fpWM0gR5xJvDzDMegbe7I=
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
 
     steps:

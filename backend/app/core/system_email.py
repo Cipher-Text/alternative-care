@@ -1,12 +1,10 @@
 """Platform-level system emails (password reset, email verification).
 
-Distinct from app/modules/integration/tasks.py's send_email_task, which
-sends on behalf of a *tenant's* configured SMTP integration
-(TenantIntegration row + decrypted credentials). System emails have no
-tenant integration to read from — a doctor resetting a forgotten password
-hasn't logged in yet, let alone configured SMTP — so this sends via the
-platform's own credentials instead, picking one provider by
-`settings.EMAIL_PROVIDER`.
+Distinct from app/modules/messaging/tasks.py's send_platform_email_task, which
+sends a clinic's own emails to its patients (charged as messaging credits).
+System emails belong to no clinic and no signed-in user — a doctor resetting
+a forgotten password hasn't logged in yet — so they send via the platform's
+own credentials, picking one provider by `settings.EMAIL_PROVIDER`.
 
 SendGrid, Resend, Mailgun, and SMTP2GO all offer an SMTP relay alongside
 their HTTP APIs, so this sends over SMTP uniformly via the existing
@@ -25,7 +23,7 @@ from celery import Task
 
 from app.core.celery import celery_app
 from app.core.config import settings
-from app.modules.integration.providers.smtp_service import SMTPService
+from app.modules.messaging.providers.smtp_service import SMTPService
 
 logger = structlog.get_logger(__name__)
 

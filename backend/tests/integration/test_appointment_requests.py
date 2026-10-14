@@ -46,7 +46,7 @@ def clinic_sms(monkeypatch):
     monkeypatch.setattr(settings, "BULKSMSBD_SENDER_ID", "AltCare")
     texts = []
     stub = SimpleNamespace(delay=lambda **kw: texts.append(kw) or SimpleNamespace(id="t"))
-    monkeypatch.setattr("app.modules.integration.tasks.send_platform_sms_task", stub)
+    monkeypatch.setattr("app.modules.messaging.tasks.send_platform_sms_task", stub)
     return texts
 
 

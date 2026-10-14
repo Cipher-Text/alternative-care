@@ -35,7 +35,6 @@ Full platform control. Created manually by seeding or by another admin.
 | Change tenant plan | ✅ Write *(planned)* |
 | Platform KPI dashboard | ✅ Read *(planned)* |
 | Global medicine catalog | ✅ Write *(planned)* |
-| Integration provider catalog | ✅ Write *(planned)* |
 | Manage platform operators | ✅ Write *(planned)* |
 | View audit / activity log | ✅ Read *(planned)* |
 
@@ -74,7 +73,7 @@ Primary practitioner. Full access to all clinical data within their tenant.
 | Own profile, degrees, trainings | ✅ |
 | Clinic/tenant profile | ✅ Read + Write |
 | Medicines / Symptoms library | ✅ |
-| Integrations | ✅ |
+| Messaging (SMS/email credits, send, log) | ✅ |
 
 Backend guard: `RequireDoctor` or `CurrentUser` (any authenticated tenant user).
 
@@ -92,7 +91,7 @@ Front-desk / administrative role. Clinical records are read-only; scheduling and
 | Clinic profile (`/tenant`) | Read | writes blocked |
 | Dashboard | Read | — |
 | Doctor profile, degrees, trainings | None | blocked entirely |
-| Integrations (SMS/email/payment providers) | None | blocked entirely |
+| Messaging (send SMS/email, message log) | None | blocked entirely |
 | AI assistant | None | blocked entirely |
 
 Errors are `403` with `detail = {"code": "role_not_permitted", "message": ...}`. A receptionist
@@ -108,7 +107,7 @@ the matching controls via `useCan()` (`src/lib/auth/permissions.ts`); the server
 - Patient creation is blocked for receptionists, per this document's original matrix. Many clinics
   want the front desk to register walk-ins; allowing it is one change (move `patient_router` from
   `deny_receptionist_writes` to no guard, or carve out `POST /patients`).
-- SMS/email sending is blocked together with integrations; reminders are a front-desk task.
+- SMS/email sending is blocked together with messaging; reminders are a front-desk task.
 - There is no endpoint yet to create a receptionist (only the seed). A doctor-side "invite staff"
   flow is the missing piece.
 
@@ -149,7 +148,7 @@ def get_patient_service(
 ```
 
 This pattern is applied in: `patient/routes.py`.  
-**Must be applied to:** appointments, prescriptions, payments, integrations, dashboard — all tenant-scoped service factories.
+**Must be applied to:** appointments, prescriptions, payments, messaging, dashboard — all tenant-scoped service factories.
 
 ---
 

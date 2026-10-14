@@ -1,13 +1,11 @@
-"""Integration provider service implementations."""
+"""The platform's SMS and email provider implementations (configured from the server environment)."""
 
-from app.modules.integration.providers.base import BaseProviderService
-from app.modules.integration.providers.bkash_service import BkashIntegrationService
-from app.modules.integration.providers.bulksmsbd_service import BulkSMSBDService
-from app.modules.integration.providers.smtp_service import SMTPService
+from app.modules.messaging.providers.base import BaseProviderService
+from app.modules.messaging.providers.bulksmsbd_service import BulkSMSBDService
+from app.modules.messaging.providers.smtp_service import SMTPService
 
 __all__ = [
     "BaseProviderService",
-    "BkashIntegrationService",
     "BulkSMSBDService",
     "SMTPService",
 ]

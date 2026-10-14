@@ -15,9 +15,6 @@ import type {
   InvoiceUpdate,
   InvoiceListItem,
   InvoiceFilters,
-  BkashPaymentCreate,
-  BkashPaymentExecute,
-  BkashPaymentResponse,
 } from '@/types/payment';
 
 const BASE_PATH = '/payments';
@@ -62,43 +59,6 @@ export const paymentsApi = {
    */
   get: async (id: string): Promise<Payment> => {
     const response = await apiClient.get<Payment>(`${BASE_PATH}/${id}`);
-    return response.data;
-  },
-};
-
-// ===== bKash Payment APIs =====
-
-export const bkashApi = {
-  /**
-   * Create bKash payment and get payment URL
-   * POST /api/v1/payments/bkash/create
-   */
-  create: async (data: BkashPaymentCreate): Promise<BkashPaymentResponse> => {
-    const response = await apiClient.post<BkashPaymentResponse>(
-      `${BASE_PATH}/bkash/create`,
-      data
-    );
-    return response.data;
-  },
-
-  /**
-   * Execute bKash payment after user completes payment
-   * POST /api/v1/payments/bkash/execute
-   */
-  execute: async (data: BkashPaymentExecute): Promise<Payment> => {
-    const response = await apiClient.post<Payment>(`${BASE_PATH}/bkash/execute`, data);
-    return response.data;
-  },
-
-  /**
-   * Query bKash payment status
-   * POST /api/v1/payments/bkash/query
-   */
-  query: async (paymentId: string): Promise<BkashPaymentResponse> => {
-    const response = await apiClient.post<BkashPaymentResponse>(
-      `${BASE_PATH}/bkash/query`,
-      { payment_id: paymentId }
-    );
     return response.data;
   },
 };

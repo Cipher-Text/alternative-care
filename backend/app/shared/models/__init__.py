@@ -43,11 +43,7 @@ from app.shared.models.library import (
     Bookmark,
     Highlight,
 )
-from app.shared.models.integration import (
-    IntegrationProvider,
-    TenantIntegration,
-    IntegrationLog,
-)
+from app.shared.models.message_log import MessageLog
 from app.shared.models.translation import Translation
 from app.shared.models.usage import UsageTracking
 from app.shared.models.plan import (
@@ -119,9 +115,7 @@ __all__ = [
     "ReadingProgress",
     "Bookmark",
     "Highlight",
-    "IntegrationProvider",
-    "TenantIntegration",
-    "IntegrationLog",
+    "MessageLog",
     "Translation",
     "UsageTracking",
 ]

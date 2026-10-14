@@ -11,7 +11,7 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy import select
 
-from app.shared.models import IntegrationProvider, UsageTracking
+from app.shared.models import UsageTracking
 
 
 @pytest.fixture(autouse=True)
@@ -30,20 +30,6 @@ async def _usage_row(db_session, tenant_id):
         )
     )
     return result.scalar_one_or_none()
-
-
-@pytest.fixture
-async def integration_providers(db_session):
-    sms = IntegrationProvider(
-        name="bulksmsbd",
-        display_name="BulkSMSBD",
-        provider_type="sms",
-        is_active=True,
-    )
-    db_session.add(sms)
-    await db_session.commit()
-    await db_session.refresh(sms)
-    return {"sms": sms}
 
 
 @pytest.mark.asyncio
@@ -110,33 +96,15 @@ class TestPrescriptionUsage:
 
 @pytest.mark.asyncio
 class TestSmsUsage:
-    async def test_send_sms_increments_counter(
-        self,
-        authenticated_client,
-        integration_providers,
-        test_tenant,
-        db_session,
-        monkeypatch,
-    ):
-        create_response = await authenticated_client.post(
-            "/api/v1/integrations/",
-            json={
-                "provider_id": integration_providers["sms"].id,
-                "display_name": "SMS Primary",
-                "credentials": {"api_key": "key", "sender_id": "ALT"},
-                "is_active": True,
-            },
-        )
-        integration_id = create_response.json()["id"]
-        await authenticated_client.post(f"/api/v1/integrations/{integration_id}/set-primary")
-
+    async def test_send_sms_increments_counter(self, authenticated_client, test_tenant, db_session, monkeypatch):
+        monkeypatch.setattr("app.modules.messaging.routes.sms_configured", lambda: True)
         monkeypatch.setattr(
-            "app.modules.integration.routes.send_sms_task.delay",
+            "app.modules.messaging.routes.send_platform_sms_task.delay",
             lambda **kwargs: SimpleNamespace(id="task-123"),
         )
 
         response = await authenticated_client.post(
-            "/api/v1/integrations/send/sms",
+            "/api/v1/messaging/send/sms",
             json={"recipient": "+8801700000000", "message": "ping"},
         )
         assert response.status_code == 200

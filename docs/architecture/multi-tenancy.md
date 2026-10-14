@@ -78,7 +78,6 @@ CREATE INDEX idx_example_tenant_id ON example(tenant_id);
 **Note:** There is no shared `deleted_at` column (`app/shared/models/base.py:BaseAuditModel` doesn't define one). Soft-delete semantics are implemented per-table instead — an `is_active` boolean (e.g. `patients`, `medicines`) or a `status` field (e.g. `prescriptions`, `payments`) — see `database-schema.md` for the per-table pattern.
 
 **Tables WITHOUT tenant_id (global data):**
-- `integration_providers`
 - `divisions`, `districts`, `upazilas`
 - `translations`
 

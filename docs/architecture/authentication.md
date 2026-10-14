@@ -36,7 +36,6 @@ JWT-based authentication with 2FA support and comprehensive security measures.
 2. JWT token signing (HS256)
 3. Token expiration (30 min access, 7 day refresh)
 4. Optional 2FA (TOTP)
-5. Integration credential encryption (Fernet)
 
 ---
 
@@ -345,8 +344,8 @@ async def ai_query(
 ):
     ...
 
-@router.post("/integrations")
-async def add_integration(
+@router.post("/directory/listing")
+async def list_in_directory(
     user: CurrentUser = Depends(require_plan("plus", "pro"))
 ):
     ...

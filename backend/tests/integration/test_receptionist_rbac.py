@@ -1,5 +1,5 @@
 """Receptionist RBAC: read-only on clinical areas, full on appointments/payments, no access to
-doctor-profile / integrations / AI. Matrix: docs/architecture/roles-access.md."""
+doctor-profile / messaging / AI. Matrix: docs/architecture/roles-access.md."""
 
 import uuid
 
@@ -96,7 +96,7 @@ class TestReceptionistWriteRestrictions:
         assert response.status_code == 404, response.text
 
     @pytest.mark.parametrize(
-        "path", ["/api/v1/doctor/profile", "/api/v1/doctor/degrees", "/api/v1/integrations/"]
+        "path", ["/api/v1/doctor/profile", "/api/v1/doctor/degrees", "/api/v1/messaging/logs"]
     )
     async def test_no_access_to_doctor_only_areas(self, desk: AsyncClient, path: str):
         _denied(await desk.get(path))
@@ -121,7 +121,7 @@ class TestDoctorIsUnaffected:
         for path in (
             "/api/v1/patients",
             "/api/v1/doctor/profile",
-            "/api/v1/integrations/",
+            "/api/v1/messaging/logs",
             "/api/v1/appointments/visits",  # regression: was shadowed by /appointments/{id}
         ):
             response = await authenticated_client.get(path)

@@ -93,7 +93,7 @@ async def test_get_profile_without_auth(client):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "path",
-    ["/api/v1/doctor/profile", "/api/v1/patients", "/api/v1/integrations/"],
+    ["/api/v1/doctor/profile", "/api/v1/patients", "/api/v1/messaging/logs"],
 )
 async def test_platform_admin_cannot_access_tenant_clinical_endpoints(
     client, admin_access_token, path

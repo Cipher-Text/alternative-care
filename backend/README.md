@@ -115,13 +115,6 @@ uvicorn app.main:app --reload --port 8001   # Different port
 celery -A app.core.celery:celery_app worker --loglevel=info
 ```
 
-### Generate Encryption Key
-
-```bash
-# For INTEGRATION_ENCRYPTION_KEY in .env
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-```
-
 ---
 
 ## Adding Features
@@ -147,7 +140,6 @@ python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().d
 ```bash
 # Security
 SECRET_KEY=<generate-random-string>
-INTEGRATION_ENCRYPTION_KEY=<fernet-key>
 
 # Database
 DATABASE_URL=postgresql+asyncpg://altcare:altcare@localhost:5432/altcare_dev

@@ -125,9 +125,8 @@
     },
     "settingsIndex": {
       "title": "Settings",
-      "subtitle": "Manage your clinic's messaging and integrations.",
-      "messagingText": "SMS and email credits: your monthly allowance, purchased credits and history.",
-      "integrationsText": "Payment providers and other connections."
+      "subtitle": "Manage your clinic's messaging.",
+      "messagingText": "SMS and email credits: your monthly allowance, purchased credits and history."
     },
     "status": {
       "pending": "Pending",

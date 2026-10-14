@@ -11,7 +11,6 @@ Before deploying to production, ensure ALL items are completed:
 ### Required Environment Variables
 
 - [ ] `SECRET_KEY` - Generate with: `python -c "import secrets; print(secrets.token_urlsafe(32))"`
-- [ ] `INTEGRATION_ENCRYPTION_KEY` - Generate with: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`
 - [ ] `DATABASE_URL` - Use strong password, never default
 - [ ] `MINIO_ROOT_USER` - Change from default `minioadmin`
 - [ ] `MINIO_ROOT_PASSWORD` - Use strong random password (min 32 chars)
@@ -179,13 +178,11 @@ All clinical data uses soft deletes:
 ```bash
 # 1. Generate strong secrets
 export SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
-export INTEGRATION_ENCRYPTION_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
 export MINIO_ROOT_USER=$(openssl rand -base64 16)
 export MINIO_ROOT_PASSWORD=$(openssl rand -base64 32)
 
 # 2. Update .env files (NEVER commit to git!)
 echo "SECRET_KEY=$SECRET_KEY" >> backend/.env
-echo "INTEGRATION_ENCRYPTION_KEY=$INTEGRATION_ENCRYPTION_KEY" >> backend/.env
 echo "MINIO_ROOT_USER=$MINIO_ROOT_USER" >> backend/.env
 echo "MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD" >> backend/.env
 
