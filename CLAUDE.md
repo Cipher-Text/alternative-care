@@ -246,7 +246,7 @@ async def test_tenant_isolation(db_session):
 Platform users (`tenant_id = null`) are rejected with **403** from all tenant-scoped service factories.
 
 **Dynamic roles (ADR 010, Phases 1 to 4 built 2026-10-14):** roles and permissions are data — `permissions` (catalogue in
-`app/core/permissions.py`: 41 clinic-level + 16 platform-level), `roles` (global or clinic-specific), `user_roles`, `role_audit_log`. Every
+`app/core/permissions.py`: 42 clinic-level + 16 platform-level), `roles` (global or clinic-specific), `user_roles`, `role_audit_log`. Every
 route is guarded by permission (`require_permission` / `require_any_permission` / `module_guard` / `access_guard` in
 `app/core/dependencies.py`; `ensure_permission` for request-dependent checks); `tests/unit/test_access_matrix.py` fails for any route
 without one. `GET /auth/me/permissions` feeds the frontend's `useCan()`. The four roles above are *system roles* whose permission sets are

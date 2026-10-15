@@ -11,6 +11,8 @@ export interface CaseFieldDef {
   units?: string[]
   columns?: CaseFieldDef[]
   max_length?: number
+  /** Tables: how many rows the form allows */
+  max_rows?: number
 }
 
 export interface CaseDefinitions {

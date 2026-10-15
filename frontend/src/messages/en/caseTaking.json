@@ -5,7 +5,10 @@
       "groups": {
         "complaint": "Complaint in detail",
         "generals": "Physical generals",
+        "body": "Body functions and physical findings",
         "mind": "Mind",
+        "women": "Women",
+        "children": "Children",
         "history": "History and constitution",
         "prescription": "Prescription and follow-up"
       },
@@ -322,8 +325,8 @@
             "worse": "Worse"
           }
         },
-        "dominant_miasm": {
-          "label": "Dominant miasm (optional)",
+        "miasms": {
+          "label": "Miasms (tick all that apply, optional)",
           "options": {
             "psora": "Psora",
             "sycosis": "Sycosis",
@@ -391,6 +394,295 @@
             "change_potency": "Change the potency",
             "change_remedy": "Change the remedy",
             "wait": "Wait"
+          }
+        },
+        "build": {
+          "label": "Physique and build",
+          "options": {
+            "lean": "Lean",
+            "medium": "Medium",
+            "stout": "Stout"
+          }
+        },
+        "sexual_desire": {
+          "label": "Sexual desire",
+          "options": {
+            "increased": "Increased",
+            "normal": "Normal",
+            "diminished": "Diminished",
+            "absent": "Absent"
+          }
+        },
+        "burning": {
+          "label": "Burning (where and when)"
+        },
+        "skin_marks": {
+          "label": "Warts, moles and freckles (as written on the form)"
+        },
+        "skin_marks_type": {
+          "label": "Type of these skin marks"
+        },
+        "urine_colour": {
+          "label": "Urine colour"
+        },
+        "urine_quantity": {
+          "label": "Urine quantity"
+        },
+        "stool_colour": {
+          "label": "Stool colour"
+        },
+        "stool_type": {
+          "label": "Stool type"
+        },
+        "offensive_odour": {
+          "label": "Offensive smell of",
+          "options": {
+            "sweat": "Sweat",
+            "stool": "Stool",
+            "urine": "Urine",
+            "mouth": "Mouth"
+          }
+        },
+        "acidity": {
+          "label": "Acidity"
+        },
+        "catches_cold_easily": {
+          "label": "Catches cold easily",
+          "options": {
+            "yes": "Yes",
+            "no": "No"
+          }
+        },
+        "worm_symptoms": {
+          "label": "Worm symptoms"
+        },
+        "intolerances": {
+          "label": "Intolerances (things that cannot be borne)"
+        },
+        "appetite": {
+          "label": "Appetite"
+        },
+        "tongue": {
+          "label": "Tongue"
+        },
+        "tongue_colour": {
+          "label": "Tongue colour"
+        },
+        "saliva": {
+          "label": "Saliva"
+        },
+        "saliva_type": {
+          "label": "Type of saliva"
+        },
+        "bathing": {
+          "label": "Bathing"
+        },
+        "sleep": {
+          "label": "Sleep"
+        },
+        "head_sweat_in_sleep": {
+          "label": "Sweat on the head during sleep",
+          "options": {
+            "yes": "Yes",
+            "no": "No"
+          }
+        },
+        "temperament": {
+          "label": "Temperament and nature"
+        },
+        "worries": {
+          "label": "Emotions and worries"
+        },
+        "dream_setting": {
+          "label": "Setting of dreams (surroundings)"
+        },
+        "anger": {
+          "label": "Anger"
+        },
+        "compassion": {
+          "label": "Compassion"
+        },
+        "weeping": {
+          "label": "Weeping"
+        },
+        "memory": {
+          "label": "Memory"
+        },
+        "own_decision": {
+          "label": "Own decision (self-reliance)"
+        },
+        "company_manner": {
+          "label": "Manner in company",
+          "options": {
+            "timid": "Timid",
+            "brave": "Brave"
+          }
+        },
+        "suicidal_tendency": {
+          "label": "Suicidal tendency",
+          "options": {
+            "yes": "Present",
+            "no": "Absent"
+          }
+        },
+        "patience": {
+          "label": "Patience"
+        },
+        "talkativeness": {
+          "label": "Talkativeness"
+        },
+        "noise_sensitivity": {
+          "label": "Sensitivity to noise and commotion"
+        },
+        "hurry": {
+          "label": "Tendency to hurry"
+        },
+        "self_importance": {
+          "label": "Considers self great"
+        },
+        "easily_startled": {
+          "label": "Easily startled"
+        },
+        "cleanliness": {
+          "label": "Cleanliness"
+        },
+        "religious_fanaticism": {
+          "label": "Religious fanaticism"
+        },
+        "shyness": {
+          "label": "Shyness"
+        },
+        "obstinacy": {
+          "label": "Obstinacy"
+        },
+        "someone_behind": {
+          "label": "Feeling that someone is behind"
+        },
+        "travel": {
+          "label": "Travel"
+        },
+        "public_speaking": {
+          "label": "Speaking before people",
+          "options": {
+            "shyness": "Shyness",
+            "fear": "Fear",
+            "normal": "Normal"
+          }
+        },
+        "indecision": {
+          "label": "Indecision"
+        },
+        "cleverness": {
+          "label": "Cleverness",
+          "options": {
+            "simple": "Simple",
+            "foolish": "Foolish",
+            "clever": "Clever"
+          }
+        },
+        "labour": {
+          "label": "Physical work",
+          "options": {
+            "likes": "Likes",
+            "dislikes": "Dislikes",
+            "lazy": "Lazy"
+          }
+        },
+        "criticism": {
+          "label": "Criticism",
+          "options": {
+            "likes": "Likes",
+            "dislikes": "Dislikes"
+          }
+        },
+        "menses_colour": {
+          "label": "Colour of menses"
+        },
+        "menstrual_flow_type": {
+          "label": "Quantity and type of menstrual flow"
+        },
+        "menstrual_symptoms": {
+          "label": "Symptoms during menses"
+        },
+        "leucorrhoea_colour": {
+          "label": "Colour of white discharge"
+        },
+        "leucorrhoea_type": {
+          "label": "Quantity and type of white discharge"
+        },
+        "discharge_odour": {
+          "label": "Smell of blood or white discharge"
+        },
+        "pregnancy_months": {
+          "label": "Pregnant (months)",
+          "options": {
+            "months": "Months"
+          }
+        },
+        "abortion_count": {
+          "label": "Miscarriages (number of times)",
+          "options": {
+            "times": "Times"
+          }
+        },
+        "abortion_month": {
+          "label": "Miscarriage at month"
+        },
+        "vaginal_passage": {
+          "label": "Vaginal passage"
+        },
+        "teething": {
+          "label": "Teething"
+        },
+        "walking_talking": {
+          "label": "Walking and talking",
+          "options": {
+            "on_time": "On time",
+            "late": "Late"
+          }
+        },
+        "feeding": {
+          "label": "Breast milk and feeding"
+        },
+        "bedwetting": {
+          "label": "Bed-wetting"
+        },
+        "past_illnesses": {
+          "label": "Past illnesses"
+        },
+        "vaccination_animal_bite": {
+          "label": "Vaccination and animal bites"
+        },
+        "lab_report": {
+          "label": "Lab reports"
+        },
+        "chief_complaints": {
+          "label": "Chief complaints (up to 12)",
+          "columns": {
+            "complaint": "Complaint"
+          }
+        },
+        "prescribed": {
+          "label": "Medicines prescribed",
+          "columns": {
+            "kind": "Kind",
+            "name": "Medicine",
+            "potency": "Dilution / potency"
+          },
+          "options": {
+            "dilution": "Dilution",
+            "mother_tincture": "Mother Q (tincture)",
+            "biochemic": "Biochemic",
+            "other": "Others"
+          }
+        },
+        "new_symptoms": {
+          "label": "New symptoms"
+        },
+        "next_remedies": {
+          "label": "Next medicines (in order)",
+          "columns": {
+            "remedy": "Medicine"
           }
         }
       }

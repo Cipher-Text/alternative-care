@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.dependencies import CurrentUser, get_current_user
+from app.core.dependencies import CurrentUser, get_current_user, get_permissions
 from app.modules.case_taking.service import CaseTakingService, get_system
 from app.shared.case_taking import definitions
 
@@ -31,13 +31,14 @@ class CaseRecord(BaseModel):
     visit_id: str | None = None
 
 
-def get_service(
+async def get_service(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
 ) -> CaseTakingService:
     if not current_user.tenant_id:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Platform users cannot manage patient records.")
-    return CaseTakingService(db, current_user.tenant_id)
+    held = await get_permissions(current_user, db)
+    return CaseTakingService(db, current_user.tenant_id, can_see_sensitive="case_taking.sensitive" in held)
 
 
 Service = Annotated[CaseTakingService, Depends(get_service)]
@@ -45,9 +46,11 @@ User = Annotated[CurrentUser, Depends(get_current_user)]
 
 
 @router.get("/{system}")
-async def get_definitions(system: str, user: User):  # noqa: ARG001
-    """The fields, their groups and choices for one system (labels are the frontend's translations)."""
-    return definitions(get_system(system))
+async def get_definitions(system: str, user: User, db: Annotated[AsyncSession, Depends(get_db)]):
+    """The fields, their groups and choices for one system (labels are the frontend's translations). Sensitive fields
+    are listed only for people who hold `case_taking.sensitive`."""
+    held = await get_permissions(user, db)
+    return definitions(get_system(system), include_sensitive="case_taking.sensitive" in held)
 
 
 @router.get("/patients/{patient_id}/{system}", response_model=CaseRecord)

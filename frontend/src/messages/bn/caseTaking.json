@@ -5,7 +5,10 @@
       "groups": {
         "complaint": "অভিযোগের বিস্তারিত",
         "generals": "শারীরিক সাধারণ লক্ষণ",
+        "body": "শারীরিক লক্ষণ ও শরীরের কার্যকারিতা",
         "mind": "মন",
+        "women": "নারীদের ক্ষেত্রে",
+        "children": "শিশুদের ক্ষেত্রে",
         "history": "ইতিহাস ও গঠন",
         "prescription": "প্রেসক্রিপশন ও ফলো-আপ"
       },
@@ -322,8 +325,8 @@
             "worse": "খারাপ"
           }
         },
-        "dominant_miasm": {
-          "label": "প্রধান মায়াজম (ঐচ্ছিক)",
+        "miasms": {
+          "label": "মায়াজম (যেগুলো প্রযোজ্য সবগুলোতে টিক দিন, ঐচ্ছিক)",
           "options": {
             "psora": "সোরা",
             "sycosis": "সাইকোসিস",
@@ -391,6 +394,295 @@
             "change_potency": "শক্তি বদলান",
             "change_remedy": "ওষুধ বদলান",
             "wait": "অপেক্ষা করুন"
+          }
+        },
+        "build": {
+          "label": "শারীরিক গঠন ও স্বভাব",
+          "options": {
+            "lean": "রোগা",
+            "medium": "মাঝারি",
+            "stout": "স্থূল"
+          }
+        },
+        "sexual_desire": {
+          "label": "যৌন চাহিদা",
+          "options": {
+            "increased": "বেশি",
+            "normal": "স্বাভাবিক",
+            "diminished": "কম",
+            "absent": "নেই"
+          }
+        },
+        "burning": {
+          "label": "জ্বালা"
+        },
+        "skin_marks": {
+          "label": "আঁচিল / মেস্তা"
+        },
+        "skin_marks_type": {
+          "label": "আঁচিল / মেস্তার ধরণ"
+        },
+        "urine_colour": {
+          "label": "প্রস্রাবের রং"
+        },
+        "urine_quantity": {
+          "label": "প্রস্রাবের পরিমাণ"
+        },
+        "stool_colour": {
+          "label": "মলের রং"
+        },
+        "stool_type": {
+          "label": "মলের ধরণ"
+        },
+        "offensive_odour": {
+          "label": "দুর্গন্ধ",
+          "options": {
+            "sweat": "ঘাম",
+            "stool": "মল",
+            "urine": "প্রস্রাব",
+            "mouth": "মুখ"
+          }
+        },
+        "acidity": {
+          "label": "এসিডিটি"
+        },
+        "catches_cold_easily": {
+          "label": "সহজে ঠান্ডা লাগার প্রবণতা",
+          "options": {
+            "yes": "আছে",
+            "no": "নেই"
+          }
+        },
+        "worm_symptoms": {
+          "label": "কৃমির লক্ষণ"
+        },
+        "intolerances": {
+          "label": "অসহ্য"
+        },
+        "appetite": {
+          "label": "ক্ষুধা"
+        },
+        "tongue": {
+          "label": "জিহ্বা"
+        },
+        "tongue_colour": {
+          "label": "জিহ্বার বর্ণ"
+        },
+        "saliva": {
+          "label": "লালা"
+        },
+        "saliva_type": {
+          "label": "লালার ধরণ"
+        },
+        "bathing": {
+          "label": "গোসল"
+        },
+        "sleep": {
+          "label": "ঘুম"
+        },
+        "head_sweat_in_sleep": {
+          "label": "ঘুমালে মাথায় ঘাম",
+          "options": {
+            "yes": "হ্যাঁ",
+            "no": "না"
+          }
+        },
+        "temperament": {
+          "label": "মেজাজ / স্বভাব"
+        },
+        "worries": {
+          "label": "আবেগ / চিন্তা"
+        },
+        "dream_setting": {
+          "label": "স্বপ্নের পরিবেশ"
+        },
+        "anger": {
+          "label": "রাগ"
+        },
+        "compassion": {
+          "label": "দয়া মায়া"
+        },
+        "weeping": {
+          "label": "কান্না"
+        },
+        "memory": {
+          "label": "স্মৃতি শক্তি"
+        },
+        "own_decision": {
+          "label": "নিজের সিদ্ধান্ত"
+        },
+        "company_manner": {
+          "label": "সঙ্গে আচরণ",
+          "options": {
+            "timid": "ভীতু",
+            "brave": "সাহসী"
+          }
+        },
+        "suicidal_tendency": {
+          "label": "আত্মহত্যা প্রবণতা",
+          "options": {
+            "yes": "আছে",
+            "no": "নেই"
+          }
+        },
+        "patience": {
+          "label": "ধৈর্য্য শক্তি"
+        },
+        "talkativeness": {
+          "label": "বাচালতা"
+        },
+        "noise_sensitivity": {
+          "label": "শব্দ / গণ্ডগোল"
+        },
+        "hurry": {
+          "label": "তাড়াহুড়ার প্রবণতা"
+        },
+        "self_importance": {
+          "label": "নিজেকে বড় মনে করে"
+        },
+        "easily_startled": {
+          "label": "সহজে চমকে ওঠে"
+        },
+        "cleanliness": {
+          "label": "পরিচ্ছন্নতা"
+        },
+        "religious_fanaticism": {
+          "label": "ধর্মীয় উন্মাদনা"
+        },
+        "shyness": {
+          "label": "লাজুক"
+        },
+        "obstinacy": {
+          "label": "জেদি"
+        },
+        "someone_behind": {
+          "label": "পেছনে কেউ আছে"
+        },
+        "travel": {
+          "label": "ভ্রমণ"
+        },
+        "public_speaking": {
+          "label": "লোক সম্মুখে কথা",
+          "options": {
+            "shyness": "লজ্জা",
+            "fear": "ভয়",
+            "normal": "স্বাভাবিক"
+          }
+        },
+        "indecision": {
+          "label": "সিদ্ধান্তহীনতা"
+        },
+        "cleverness": {
+          "label": "চতুরতা",
+          "options": {
+            "simple": "সরল",
+            "foolish": "বোকা",
+            "clever": "চালাক"
+          }
+        },
+        "labour": {
+          "label": "পরিশ্রম",
+          "options": {
+            "likes": "পছন্দ",
+            "dislikes": "অপছন্দ",
+            "lazy": "অলস"
+          }
+        },
+        "criticism": {
+          "label": "সমালোচনা",
+          "options": {
+            "likes": "পছন্দ",
+            "dislikes": "অপছন্দ"
+          }
+        },
+        "menses_colour": {
+          "label": "মাসিকের রং"
+        },
+        "menstrual_flow_type": {
+          "label": "রক্ত স্রাবের পরিমাণ / ধরণ"
+        },
+        "menstrual_symptoms": {
+          "label": "মাসিককালীন লক্ষণ"
+        },
+        "leucorrhoea_colour": {
+          "label": "সাদা স্রাবের রং"
+        },
+        "leucorrhoea_type": {
+          "label": "সাদা স্রাবের পরিমাণ / ধরণ"
+        },
+        "discharge_odour": {
+          "label": "রক্ত / সাদা স্রাবের দুর্গন্ধ"
+        },
+        "pregnancy_months": {
+          "label": "গর্ভবর্তী (মাস)",
+          "options": {
+            "months": "মাস"
+          }
+        },
+        "abortion_count": {
+          "label": "গর্ভপাত (বার)",
+          "options": {
+            "times": "বার"
+          }
+        },
+        "abortion_month": {
+          "label": "গর্ভপাত কত মাসে"
+        },
+        "vaginal_passage": {
+          "label": "যোনি পথ"
+        },
+        "teething": {
+          "label": "দাঁত ওঠা"
+        },
+        "walking_talking": {
+          "label": "হাঁটা / কথা বলা",
+          "options": {
+            "on_time": "সময়মত",
+            "late": "দেরীতে"
+          }
+        },
+        "feeding": {
+          "label": "দুগ্ধপান / খাদ্য"
+        },
+        "bedwetting": {
+          "label": "বিছানায় প্রস্রাব"
+        },
+        "past_illnesses": {
+          "label": "অতীত রোগ"
+        },
+        "vaccination_animal_bite": {
+          "label": "টিকা / প্রাণির কামড়"
+        },
+        "lab_report": {
+          "label": "ল্যাব রিপোর্ট"
+        },
+        "chief_complaints": {
+          "label": "মূল সমস্যা / প্রধান লক্ষণসমূহ (সর্বোচ্চ ১২টি)",
+          "columns": {
+            "complaint": "সমস্যা"
+          }
+        },
+        "prescribed": {
+          "label": "নির্বাচিত ঔষধ",
+          "columns": {
+            "kind": "ধরন",
+            "name": "ঔষধ",
+            "potency": "ডাইলিউশন / শক্তি"
+          },
+          "options": {
+            "dilution": "ডাইলিউশন",
+            "mother_tincture": "মাদার কিউ",
+            "biochemic": "বায়োকেমিক",
+            "other": "অন্যান্য"
+          }
+        },
+        "new_symptoms": {
+          "label": "নতুন লক্ষণ"
+        },
+        "next_remedies": {
+          "label": "পরবর্তী ঔষধ (ক্রমানুসারে)",
+          "columns": {
+            "remedy": "ঔষধ"
           }
         }
       }

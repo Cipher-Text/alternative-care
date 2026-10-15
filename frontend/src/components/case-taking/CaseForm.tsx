@@ -71,6 +71,17 @@ export function CaseForm({ system, scope, value, onChange, errors }: Props) {
         </div>
       )
     }
+    if (f.type === 'text' && (f.max_length ?? 500) <= 100) {
+      // The short lines of the paper form (a colour, a yes-or-no kind of note) are one line, not a box
+      return (
+        <Input
+          maxLength={f.max_length}
+          aria-label={t(`fields.${f.key}.label`)}
+          value={typeof current === 'string' ? current : ''}
+          onChange={(e) => set(f.key, e.target.value || undefined)}
+        />
+      )
+    }
     if (f.type === 'text') {
       return (
         <Textarea
@@ -106,10 +117,13 @@ export function CaseForm({ system, scope, value, onChange, errors }: Props) {
     // table
     const rows = Array.isArray(current) ? (current as Record<string, string>[]) : []
     const setRows = (next: Record<string, string>[]) => set(f.key, next.length > 0 ? next : undefined)
+    const maxRows = f.max_rows ?? 20
+    // One track per column: a choice is narrow, a long text takes the rest, then the remove button
+    const tracks = [...(f.columns ?? []).map((c) => (c.type === 'one' ? '10rem' : (c.max_length ?? 100) > 50 ? '1fr' : '9rem')), 'auto'].join(' ')
     return (
       <div className="space-y-2">
         {rows.map((row, i) => (
-          <div key={i} className="grid grid-cols-1 gap-2 rounded-md border p-2 sm:grid-cols-[1fr_8rem_9rem_auto]">
+          <div key={i} className="grid grid-cols-1 gap-2 rounded-md border p-2 sm:[grid-template-columns:var(--cols)]" style={{ '--cols': tracks } as React.CSSProperties}>
             {(f.columns ?? []).map((c) =>
               c.type === 'one' ? (
                 <Select key={c.key} value={row[c.key] ?? NONE} onValueChange={(v) => setRows(rows.map((r, j) => (j === i ? { ...r, [c.key]: v === NONE ? '' : v } : r)))}>
@@ -135,7 +149,7 @@ export function CaseForm({ system, scope, value, onChange, errors }: Props) {
             </Button>
           </div>
         ))}
-        <Button type="button" variant="outline" size="sm" disabled={rows.length >= 20} onClick={() => setRows([...rows, {}])}>
+        <Button type="button" variant="outline" size="sm" disabled={rows.length >= maxRows} onClick={() => setRows([...rows, {}])}>
           <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
           {tp('addRow')}
         </Button>
@@ -146,18 +160,28 @@ export function CaseForm({ system, scope, value, onChange, errors }: Props) {
   const groups = defs.groups.filter((g) => g.scope === scope)
   return (
     <div className="space-y-6">
-      {groups.map((g) => (
-        <section key={g.key} className="space-y-4">
-          <h3 className="border-b pb-1 text-sm font-semibold">{t(`groups.${g.key}`)}</h3>
-          {defs.fields.filter((f) => f.group === g.key && f.scope === scope).map((f) => (
-            <div key={f.key} className="space-y-1.5">
-              <Label>{t(`fields.${f.key}.label`)}</Label>
-              {control(f)}
-              {errors?.[f.key] && <p role="alert" className="text-xs text-red-600">{errors[f.key]}</p>}
+      {groups.map((g, index) => {
+        const fields = defs.fields.filter((f) => f.group === g.key && f.scope === scope)
+        // A long form is easier in sections: the first is open, and any section with an answer or a problem is open too
+        const needsAttention = fields.some((f) => value[f.key] !== undefined || errors?.[f.key])
+        return (
+          <details key={g.key} open={index === 0 || needsAttention} className="group rounded-lg border">
+            <summary className="flex cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold">
+              {t(`groups.${g.key}`)}
+              <span className="text-xs font-normal text-muted-foreground">{fields.length}</span>
+            </summary>
+            <div className="space-y-4 border-t p-3">
+              {fields.map((f) => (
+                <div key={f.key} className="space-y-1.5">
+                  <Label>{t(`fields.${f.key}.label`)}</Label>
+                  {control(f)}
+                  {errors?.[f.key] && <p role="alert" className="text-xs text-red-600">{errors[f.key]}</p>}
+                </div>
+              ))}
             </div>
-          ))}
-        </section>
-      ))}
+          </details>
+        )
+      })}
     </div>
   )
 }

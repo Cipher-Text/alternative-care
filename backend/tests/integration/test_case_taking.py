@@ -83,7 +83,7 @@ def test_validate_cleans_and_refuses():
 def test_definitions_describe_the_forms():
     d = definitions(HOMEO)
     assert d["system"] == "homeopathy" and d["schema_version"] == 1
-    assert [g["key"] for g in d["groups"]] == ["complaint", "generals", "mind", "history", "prescription"]
+    assert [g["key"] for g in d["groups"]] == ["complaint", "generals", "body", "mind", "women", "children", "history", "prescription"]
     by_key = {f["key"]: f for f in d["fields"]}
     assert by_key["thermal_state"]["options"] == ["chilly", "hot", "ambithermal"] and by_key["thermal_state"]["scope"] == "patient"
     assert by_key["duration"]["type"] == "quantity" and by_key["duration"]["units"] == ["days", "weeks", "months", "years"]
@@ -94,7 +94,7 @@ def test_definitions_describe_the_forms():
 @pytest.mark.asyncio
 async def test_definitions_endpoint(client, doctor_token):
     r = await client.get("/api/v1/case-taking/homeopathy", headers=H(doctor_token))
-    assert r.status_code == 200 and r.json()["system"] == "homeopathy" and len(r.json()["fields"]) == 38
+    assert r.status_code == 200 and r.json()["system"] == "homeopathy" and len(r.json()["fields"]) == 108
     assert (await client.get("/api/v1/case-taking/herbal", headers=H(doctor_token))).status_code == 404  # no form yet
     assert (await client.get("/api/v1/case-taking/ayurveda", headers=H(doctor_token))).json()["system"] == "ayurveda"
     assert (await client.get("/api/v1/case-taking/homeopathy")).status_code == 401
@@ -109,7 +109,7 @@ async def test_patient_case_profile_round_trip(client, doctor_token, test_patien
     body = {"data": {
         "thermal_state": "chilly", "thirst": "large", "food_desires": ["sweet", "salty"], "fears": ["dark"],
         "previous_remedies": [{"remedy": "Nux vomica", "potency": "30C", "response": "better"}, {}],
-        "dominant_miasm": "psora",
+        "miasms": ["psora", "tubercular"],
     }}
     r = await client.put(url, json=body, headers=H(doctor_token))
     assert r.status_code == 200, r.text
@@ -227,3 +227,139 @@ async def test_unani_forms_use_the_same_endpoints(client, doctor_token, test_pat
     assert (await client.get(v_url, headers=H(doctor_token))).json()["data"]["nabz_rate"] == {"value": 82, "unit": "per_minute"}
     assert (await client.put(v_url, json={"data": {"mizaj": "safravi"}}, headers=H(doctor_token))).status_code == 422
     assert (await client.put(v_url, json={"data": {"nabz_rate": {"value": 82, "unit": "per_second"}}}, headers=H(doctor_token))).status_code == 422
+
+
+# ----- the paper-form fields (108 in all), the cross-field rules and the sensitive answers ---------------------------------
+
+SENSITIVE = {"sexual_desire", "suicidal_tendency", "abortion_count", "abortion_month", "vaginal_passage"}
+
+
+def test_the_paper_form_fields_are_in_the_registry_with_the_right_scope_and_flags():
+    by_key = {f.key: f for f in HOMEO.fields}
+    assert len(by_key) == 108 and {k for k, f in by_key.items() if f.sensitive} == SENSITIVE
+    assert by_key["miasms"].type == "many"
+    for key in ("chief_complaints", "prescribed", "new_symptoms", "next_remedies"):
+        assert by_key[key].scope == "visit"
+    assert by_key["chief_complaints"].max_rows == 12 and by_key["next_remedies"].max_rows == 3
+    assert [c.key for c in by_key["prescribed"].columns] == ["kind", "name", "potency"]
+    for key in ("build", "suicidal_tendency", "temperament", "menses_colour", "teething", "past_illnesses"):
+        assert by_key[key].scope == "patient"
+
+
+def test_new_fields_validate():
+    ok = validate(HOMEO, "patient", {
+        "build": "lean", "catches_cold_easily": "yes", "offensive_odour": ["sweat", "mouth"], "company_manner": ["timid"],
+        "public_speaking": "fear", "cleverness": "clever", "labour": "lazy", "criticism": "dislikes", "walking_talking": "late",
+        "pregnancy_months": {"value": 5, "unit": "months"}, "tongue": " coated ", "head_sweat_in_sleep": "no",
+    })
+    assert ok["tongue"] == "coated" and ok["offensive_odour"] == ["sweat", "mouth"] and ok["pregnancy_months"] == {"value": 5, "unit": "months"}
+    for bad in ({"build": "huge"}, {"catches_cold_easily": "maybe"}, {"offensive_odour": ["feet"]}, {"public_speaking": "loud"}, {"tongue": "x" * 101}):
+        with pytest.raises(CaseValidationError):
+            validate(HOMEO, "patient", bad)
+
+
+def test_table_row_limits_follow_the_paper_form():
+    validate(HOMEO, "visit", {"chief_complaints": [{"complaint": f"c{i}"} for i in range(12)]})
+    validate(HOMEO, "visit", {"next_remedies": [{"remedy": "Nux vomica"}] * 3})
+    with pytest.raises(CaseValidationError) as e:
+        validate(HOMEO, "visit", {"chief_complaints": [{"complaint": "x"}] * 13})
+    assert "at most 12 rows" in e.value.errors["chief_complaints"]
+    with pytest.raises(CaseValidationError):
+        validate(HOMEO, "visit", {"next_remedies": [{"remedy": "x"}] * 4})
+    ok = validate(HOMEO, "visit", {"prescribed": [{"kind": "biochemic", "name": "Nat mur", "potency": "6x"}, {"kind": "mother_tincture", "name": "Thuja Q"}, {}]})
+    assert ok["prescribed"] == [{"kind": "biochemic", "name": "Nat mur", "potency": "6x"}, {"kind": "mother_tincture", "name": "Thuja Q"}]
+    with pytest.raises(CaseValidationError):
+        validate(HOMEO, "visit", {"prescribed": [{"kind": "syrup", "name": "x"}]})
+
+
+def test_answers_that_contradict_each_other_are_refused_with_the_field_named():
+    with pytest.raises(CaseValidationError) as e:
+        validate(HOMEO, "patient", {"food_desires": ["sweet", "meat"], "food_aversions": ["sweet", "fish"]})
+    assert set(e.value.errors) == {"food_aversions"} and "sweet" in e.value.errors["food_aversions"]
+    with pytest.raises(CaseValidationError) as e:
+        validate(HOMEO, "patient", {"perspiration": "none", "perspiration_odour": "offensive", "offensive_odour": ["sweat", "mouth"]})
+    assert set(e.value.errors) == {"perspiration_odour", "offensive_odour"}
+    # the same answers are fine when they do not clash
+    validate(HOMEO, "patient", {"food_desires": ["sweet"], "food_aversions": ["fish"], "perspiration": "profuse", "perspiration_odour": "offensive", "offensive_odour": ["sweat"]})
+    validate(HOMEO, "patient", {"perspiration": "none", "offensive_odour": ["mouth"]})
+
+
+def test_sensitive_fields_are_refused_to_someone_without_the_permission_and_hidden_from_the_definitions():
+    with pytest.raises(CaseValidationError) as e:
+        validate(HOMEO, "patient", {"suicidal_tendency": "yes", "build": "lean"}, allow_sensitive=False)
+    assert set(e.value.errors) == {"suicidal_tendency"}
+    assert validate(HOMEO, "patient", {"suicidal_tendency": "yes", "build": "lean"}) == {"suicidal_tendency": "yes", "build": "lean"}
+    shown = {f["key"] for f in definitions(HOMEO, include_sensitive=False)["fields"]}
+    assert not (shown & SENSITIVE) and len(shown) == 103
+    assert SENSITIVE <= {f["key"] for f in definitions(HOMEO)["fields"]}
+
+
+@pytest.fixture
+async def clinician_without_sensitive(db_session, test_tenant):
+    """Someone who may read and write case profiles but does not hold `case_taking.sensitive` (a clinic role the platform made)."""
+    from sqlalchemy import delete
+
+    from app.core.rbac import sync_catalogue_async
+    from app.shared.models.rbac import Role, RolePermission, UserRole
+
+    await sync_catalogue_async(db_session)
+    role = Role(id=str(uuid.uuid4()), key="case-no-sensitive", name_en="Case taker", name_bn="Case taker", scope="tenant", tenant_id=test_tenant.id, is_system=False, is_active=True)
+    db_session.add(role)
+    await db_session.flush()
+    for key in ("case_taking.read", "case_taking.write", "patients.read"):
+        db_session.add(RolePermission(role_id=role.id, permission_key=key))
+    user = User(id=str(uuid.uuid4()), tenant_id=test_tenant.id, email="nosens@example.com", full_name="No Sens", role="receptionist",
+                password_hash=get_password_hash("Test@1234"), is_active=True)
+    db_session.add(user)
+    await db_session.flush()
+    await db_session.execute(delete(UserRole).where(UserRole.user_id == user.id))
+    db_session.add(UserRole(user_id=user.id, role_id=role.id))
+    await db_session.commit()
+    return create_access_token({"sub": user.id, "tenant_id": test_tenant.id, "role": "receptionist", "email": user.email, "plan": "pro"})
+
+
+@pytest.mark.asyncio
+async def test_sensitive_answers_stay_with_those_who_hold_the_permission(client, doctor_token, clinician_without_sensitive, test_patient):
+    url = f"/api/v1/case-taking/patients/{test_patient.id}/homeopathy"
+    limited = clinician_without_sensitive
+
+    # the doctor (who holds it) records everything, sensitive answers included
+    r = await client.put(url, json={"data": {"build": "lean", "suicidal_tendency": "no", "sexual_desire": "normal", "abortion_count": {"value": 2, "unit": "times"}, "vaginal_passage": "dryness"}}, headers=H(doctor_token))
+    assert r.status_code == 200, r.text
+    assert r.json()["data"]["suicidal_tendency"] == "no"
+
+    # the other clinician does not see them, in the form or in the answers
+    d = (await client.get("/api/v1/case-taking/homeopathy", headers=H(limited))).json()
+    assert len(d["fields"]) == 103 and not ({f["key"] for f in d["fields"]} & SENSITIVE)
+    assert (await client.get("/api/v1/case-taking/homeopathy", headers=H(doctor_token))).json()["fields"].__len__() == 108
+    seen = (await client.get(url, headers=H(limited))).json()["data"]
+    assert seen == {"build": "lean"}
+
+    # they cannot write one ...
+    refused = await client.put(url, json={"data": {"build": "stout", "suicidal_tendency": "yes"}}, headers=H(limited))
+    assert refused.status_code == 422 and set(refused.json()["detail"]["errors"]) == {"suicidal_tendency"}
+    # ... and saving the rest of the form (a replace) does not wipe what they cannot see
+    ok = await client.put(url, json={"data": {"build": "stout", "thermal_state": "hot"}}, headers=H(limited))
+    assert ok.status_code == 200 and ok.json()["data"] == {"build": "stout", "thermal_state": "hot"}
+    kept = (await client.get(url, headers=H(doctor_token))).json()["data"]
+    assert kept["suicidal_tendency"] == "no" and kept["sexual_desire"] == "normal" and kept["abortion_count"] == {"value": 2, "unit": "times"} and kept["build"] == "stout"
+
+
+@pytest.mark.asyncio
+async def test_the_doctor_role_holds_the_sensitive_permission_and_the_receptionist_does_not():
+    from app.core.permissions import SYSTEM_ROLES
+
+    assert "case_taking.sensitive" in SYSTEM_ROLES["doctor"].permissions
+    assert "case_taking.sensitive" not in SYSTEM_ROLES["receptionist"].permissions
+
+
+@pytest.mark.asyncio
+async def test_receptionist_never_sees_sensitive_answers(client, doctor_token, test_patient, db_session, test_tenant):
+    url = f"/api/v1/case-taking/patients/{test_patient.id}/homeopathy"
+    assert (await client.put(url, json={"data": {"build": "lean", "suicidal_tendency": "yes"}}, headers=H(doctor_token))).status_code == 200
+    rec = User(id=str(uuid.uuid4()), tenant_id=test_tenant.id, email="rec.sens@example.com", full_name="Rec", role="receptionist",
+               password_hash=get_password_hash("Test@1234"), is_active=True)
+    db_session.add(rec)
+    await db_session.commit()
+    token = create_access_token({"sub": rec.id, "tenant_id": test_tenant.id, "role": "receptionist", "email": rec.email, "plan": "pro"})
+    assert (await client.get(url, headers=H(token))).json()["data"] == {"build": "lean"}

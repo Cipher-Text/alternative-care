@@ -46,6 +46,7 @@ TENANT_PERMISSIONS: tuple[Permission, ...] = (
     _t("health_profile.write", "health", "Edit a patient's health background", "রোগীর স্বাস্থ্যের পটভূমি সম্পাদনা"),
     _t("case_taking.read", "health", "View case-taking details", "কেস-টেকিংয়ের তথ্য দেখা"),
     _t("case_taking.write", "health", "Record case-taking details", "কেস-টেকিংয়ের তথ্য লেখা"),
+    _t("case_taking.sensitive", "health", "See and record sensitive case-taking answers (suicidal tendency, sexual and reproductive history)", "সংবেদনশীল কেস-টেকিং তথ্য দেখা ও লেখা (আত্মহত্যার প্রবণতা, যৌন ও প্রজনন ইতিহাস)", sensitive=True),
     _t("appointments.read", "appointments", "View appointments", "অ্যাপয়েন্টমেন্ট দেখা"),
     _t("appointments.write", "appointments", "Schedule and change appointments", "অ্যাপয়েন্টমেন্ট দেওয়া ও পাল্টানো"),
     _t("appointment_requests.manage", "appointments", "Answer patients' appointment requests", "রোগীদের অ্যাপয়েন্টমেন্ট অনুরোধের উত্তর দেওয়া"),

@@ -9,6 +9,7 @@ the forms from `definitions()` and takes the labels (English and Bengali) from i
 adding or changing a field means editing the registry file and the labels, never a database migration.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -30,6 +31,9 @@ class Field:
     units: tuple[str, ...] = ()  # quantity
     columns: tuple["Field", ...] = ()  # table
     max_length: int = 500  # text
+    max_rows: int = MAX_TABLE_ROWS  # table
+    # Shown and saved only to people who hold `case_taking.sensitive` (suicidal tendency, sexual and reproductive history)
+    sensitive: bool = False
 
 
 @dataclass(frozen=True)
@@ -37,6 +41,8 @@ class System:
     key: str
     fields: tuple[Field, ...]
     groups: tuple[tuple[str, Scope], ...] = field(default=())
+    # Cross-field checks run on the cleaned answers of one scope: rule(scope, answers) -> {field key: message}
+    rules: tuple[Callable[[Scope, dict[str, Any]], dict[str, str]], ...] = field(default=())
 
     def scoped(self, scope: Scope) -> dict[str, Field]:
         return {f.key: f for f in self.fields if f.scope == scope}
@@ -82,8 +88,9 @@ def _clean_value(f: Field, value: Any) -> Any:
             raise ValueError("needs a valid unit")
         return {"value": number, "unit": unit}
     if f.type == "table":
-        if not isinstance(value, list) or len(value) > MAX_TABLE_ROWS:
-            raise ValueError(f"must be a list of at most {MAX_TABLE_ROWS} rows")
+        limit = min(f.max_rows, MAX_TABLE_ROWS)
+        if not isinstance(value, list) or len(value) > limit:
+            raise ValueError(f"must be a list of at most {limit} rows")
         rows = []
         for row in value:
             if not isinstance(row, dict) or set(row) - {c.key for c in f.columns}:
@@ -102,8 +109,11 @@ def _clean_value(f: Field, value: Any) -> Any:
     raise ValueError("unsupported field type")  # pragma: no cover
 
 
-def validate(system: System, scope: Scope, data: dict[str, Any]) -> dict[str, Any]:
-    """The cleaned answers for `scope`: unknown keys and bad values are refused, empty ones dropped."""
+def validate(system: System, scope: Scope, data: dict[str, Any], allow_sensitive: bool = True) -> dict[str, Any]:
+    """The cleaned answers for `scope`: unknown keys and bad values are refused, empty ones dropped, and answers that
+    contradict each other (a food both craved and disliked) are refused with the field named.
+
+    `allow_sensitive` is false for someone without `case_taking.sensitive`: those fields are not theirs to write."""
     fields = system.scoped(scope)
     errors: dict[str, str] = {}
     cleaned: dict[str, Any] = {}
@@ -112,6 +122,9 @@ def validate(system: System, scope: Scope, data: dict[str, Any]) -> dict[str, An
         if f is None:
             errors[key] = "is not a field of this form"
             continue
+        if f.sensitive and not allow_sensitive:
+            errors[key] = "is not available to you"
+            continue
         try:
             v = _clean_value(f, value)
         except ValueError as exc:
@@ -119,13 +132,21 @@ def validate(system: System, scope: Scope, data: dict[str, Any]) -> dict[str, An
             continue
         if v is not None:
             cleaned[key] = v
+    if not errors:
+        for rule in system.rules:
+            errors.update(rule(scope, cleaned))
     if errors:
         raise CaseValidationError(errors)
     return cleaned
 
 
-def definitions(system: System) -> dict[str, Any]:
-    """What the frontend needs to draw the forms (no labels: those are translations)."""
+def sensitive_keys(system: System, scope: Scope) -> set[str]:
+    return {f.key for f in system.fields if f.scope == scope and f.sensitive}
+
+
+def definitions(system: System, include_sensitive: bool = True) -> dict[str, Any]:
+    """What the frontend needs to draw the forms (no labels: those are translations). Sensitive fields are left out
+    for someone who may not see them."""
 
     def one(f: Field) -> dict[str, Any]:
         out: dict[str, Any] = {"key": f.key, "group": f.group, "scope": f.scope, "type": f.type}
@@ -137,11 +158,13 @@ def definitions(system: System) -> dict[str, Any]:
             out["columns"] = [one(c) for c in f.columns]
         if f.type == "text":
             out["max_length"] = min(f.max_length, MAX_TEXT)
+        if f.type == "table":
+            out["max_rows"] = min(f.max_rows, MAX_TABLE_ROWS)
         return out
 
     return {
         "system": system.key,
         "schema_version": SCHEMA_VERSION,
         "groups": [{"key": g, "scope": s} for g, s in system.groups],
-        "fields": [one(f) for f in system.fields],
+        "fields": [one(f) for f in system.fields if include_sensitive or not f.sensitive],
     }
