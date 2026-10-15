@@ -162,14 +162,24 @@ async def test_create_prescription_with_items(prescription_service, test_patient
     assert prescription.items[1].display_order == 1
 
 
+async def _visit(db_session, tenant_id, patient_id, doctor_id, complaint="Headache"):
+    from app.shared.models import Visit
+
+    visit = Visit(id=str(uuid4()), tenant_id=tenant_id, patient_id=patient_id, doctor_id=doctor_id, visit_date=date.today(),
+                  visit_type="consultation", chief_complaint=complaint, created_by=doctor_id, updated_by=doctor_id)
+    db_session.add(visit)
+    await db_session.commit()
+    return visit
+
+
 @pytest.mark.asyncio
-async def test_create_prescription_with_visit(prescription_service, test_patient, doctor_id):
+async def test_create_prescription_with_visit(prescription_service, test_patient, doctor_id, db_session, tenant_id):
     """Test creating prescription linked to a visit."""
-    visit_id = str(uuid4())  # Mock visit ID
+    visit = await _visit(db_session, tenant_id, test_patient.id, doctor_id)
 
     data = PrescriptionCreate(
         patient_id=test_patient.id,
-        visit_id=visit_id,
+        visit_id=visit.id,
         diagnosis="Chronic condition follow-up",
         status="draft",
     )
@@ -178,7 +188,65 @@ async def test_create_prescription_with_visit(prescription_service, test_patient
         data, prescribed_by=doctor_id
     )
 
-    assert prescription.visit_id == visit_id
+    assert prescription.visit_id == visit.id
+    [with_context] = await prescription_service.with_context([prescription])
+    assert with_context.prescribed_by_name == "Dr. Test" and with_context.patient_name == "Test Patient" and with_context.visit_complaint == "Headache" and with_context.visit_date == date.today()
+
+
+@pytest.mark.asyncio
+async def test_a_prescription_cannot_point_at_another_patients_visit_or_another_clinics_patient(prescription_service, test_patient, doctor_id, db_session, tenant_id):
+    other_patient = Patient(id=str(uuid4()), tenant_id=tenant_id, full_name="Someone Else", is_active=True, created_by=doctor_id)
+    db_session.add(other_patient)
+    await db_session.commit()
+    others_visit = await _visit(db_session, tenant_id, other_patient.id, doctor_id)
+
+    with pytest.raises(HTTPException) as e:
+        await prescription_service.create_prescription(PrescriptionCreate(patient_id=test_patient.id, visit_id=others_visit.id), prescribed_by=doctor_id)
+    assert e.value.status_code == 422
+    with pytest.raises(HTTPException) as e:
+        await prescription_service.create_prescription(PrescriptionCreate(patient_id=test_patient.id, visit_id=str(uuid4())), prescribed_by=doctor_id)
+    assert e.value.status_code == 422  # a visit that does not exist
+    with pytest.raises(HTTPException) as e:
+        await prescription_service.create_prescription(PrescriptionCreate(patient_id=str(uuid4())), prescribed_by=doctor_id)
+    assert e.value.status_code == 404  # a patient that is not this clinic's
+
+
+@pytest.mark.asyncio
+async def test_search_finds_a_prescription_by_the_patients_name_or_phone(prescription_service, test_patient, doctor_id, db_session):
+    test_patient.phone = "01711223344"
+    await db_session.commit()
+    await prescription_service.create_prescription(PrescriptionCreate(patient_id=test_patient.id, diagnosis="Cold"), prescribed_by=doctor_id)
+    for term in ("test patient", "Test Pat", "01711223344", "711223"):
+        found = await prescription_service.list_prescriptions(search=term)
+        assert len(found) == 1 and found[0].patient_name == "Test Patient", term
+    assert await prescription_service.list_prescriptions(search="nobody-by-this-name") == []
+
+
+@pytest.mark.asyncio
+async def test_updating_a_draft_replaces_its_medicines(prescription_service, test_patient, doctor_id):
+    created = await prescription_service.create_prescription(
+        PrescriptionCreate(
+            patient_id=test_patient.id,
+            items=[
+                PrescriptionItemCreate(medicine_name="Arnica 30C", dosage="2 drops", frequency="3 times daily"),
+                PrescriptionItemCreate(medicine_name="Nux vomica 200C", dosage="4 pills", frequency="Night"),
+            ],
+        ),
+        prescribed_by=doctor_id,
+    )
+    updated = await prescription_service.update_prescription(
+        created.id,
+        PrescriptionUpdate(items=[PrescriptionItemCreate(medicine_name="Arnica 200C", dosage="1 dose", frequency="Weekly", duration="4 weeks")]),
+        updated_by=doctor_id,
+    )
+    assert [(i.medicine_name, i.dosage, i.duration, i.display_order) for i in updated.items] == [("Arnica 200C", "1 dose", "4 weeks", 0)]
+    # leaving items out of an update leaves the medicines alone
+    again = await prescription_service.update_prescription(created.id, PrescriptionUpdate(advice="Rest"), updated_by=doctor_id)
+    assert [i.medicine_name for i in again.items] == ["Arnica 200C"] and again.advice == "Rest"
+    # and an issued prescription is still immutable, medicines included
+    await prescription_service.update_prescription(created.id, PrescriptionUpdate(status="issued"), updated_by=doctor_id)
+    with pytest.raises(HTTPException):
+        await prescription_service.update_prescription(created.id, PrescriptionUpdate(items=[]), updated_by=doctor_id)
 
 
 # ===== Get Prescription Tests =====

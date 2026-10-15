@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCreatePrescription, useUpdatePrescription } from '@/lib/hooks/usePrescriptions'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SafetyBanner } from '@/components/health/SafetyBanner'
 import { PatientSelector } from './PatientSelector'
+import { VisitPicker } from './VisitPicker'
+import { useVisits } from '@/lib/hooks/useHealth'
+import { CASE_SYSTEMS, useCaseSystems, useVisitCase, type CaseSystem } from '@/lib/hooks/useCaseTaking'
+import { medicineRowsFromCase } from '@/lib/prescriptions/medicineRowsFromCase'
+import type { VisitListItem } from '@/types/health'
 import { MedicineItemsBuilder, blankMedicineRow, isRowComplete, isRowStarted } from './MedicineItemsBuilder'
 import type { Prescription, PrescriptionItemCreate } from '@/types/prescription'
 import { Save, CheckCircle, Loader2 } from 'lucide-react'
@@ -29,11 +34,28 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
   const updatePrescription = useUpdatePrescription()
 
   // Form state
-  const [patientId, setPatientId] = useState<string>(prescription?.patient_id || '')
-  const [visitId, setVisitId] = useState<string>(prescription?.visit_id || '')
+  // Coming from a patient or a visit ("Write prescription"): /prescriptions/new?patient=..&visit=..
+  const params = useSearchParams()
+  const fromVisit = isEdit ? '' : params.get('visit') || ''
+  const [patientId, setPatientId] = useState<string>(prescription?.patient_id || (isEdit ? '' : params.get('patient') || ''))
+  const [visitId, setVisitId] = useState<string>(prescription?.visit_id || fromVisit)
   const [diagnosis, setDiagnosis] = useState<string>(prescription?.diagnosis || '')
   const [doctorsNotes, setDoctorsNotes] = useState<string>(prescription?.doctors_notes || '')
   const [advice, setAdvice] = useState<string>(prescription?.advice || '')
+
+  // Choosing a visit fills the diagnosis and advice from it, only into boxes that are still empty
+  const prefillFrom = (visit?: VisitListItem) => {
+    if (!visit) return
+    if (!diagnosis.trim() && visit.provisional_diagnosis) setDiagnosis(visit.provisional_diagnosis)
+    if (!advice.trim() && visit.treatment_plan) setAdvice(visit.treatment_plan)
+  }
+  const { data: patientVisits } = useVisits(patientId || undefined)
+  const [prefilledFromUrl, setPrefilledFromUrl] = useState(false)
+  if (fromVisit && !prefilledFromUrl && patientVisits) {
+    setPrefilledFromUrl(true)
+    prefillFrom(patientVisits.find((v) => v.id === fromVisit))
+  }
+
   const [items, setItems] = useState<PrescriptionItemCreate[]>(
     prescription?.items.map((item) => ({
       medicine_id: item.medicine_id,
@@ -46,6 +68,38 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       display_order: item.display_order,
     })) || [blankMedicineRow()]
   )
+
+  // The medicines named in the visit's case details (homeopathy, Ayurveda, Unani) become the first rows
+  const clinicSystems = useCaseSystems()
+  const th = useTranslations('caseTakingUi.homeopathy')
+  const ta = useTranslations('caseTakingUi.ayurveda')
+  const tu = useTranslations('caseTakingUi.unani')
+  const caseLabels: Record<CaseSystem, typeof th> = { homeopathy: th, ayurveda: ta, unani: tu }
+  const homeoCase = useVisitCase(fromVisit, 'homeopathy', Boolean(fromVisit) && clinicSystems.includes('homeopathy'))
+  const ayurvedaCase = useVisitCase(fromVisit, 'ayurveda', Boolean(fromVisit) && clinicSystems.includes('ayurveda'))
+  const unaniCase = useVisitCase(fromVisit, 'unani', Boolean(fromVisit) && clinicSystems.includes('unani'))
+  const caseQueries = { homeopathy: homeoCase, ayurveda: ayurvedaCase, unani: unaniCase }
+  const caseSettled = CASE_SYSTEMS.every((s) => !clinicSystems.includes(s) || !caseQueries[s].isLoading)
+  const [rowsFromCase, setRowsFromCase] = useState(0)
+  // Rows replaced from outside the row editor start the editor afresh, so each medicine box shows its row's text
+  const [rowsVersion, setRowsVersion] = useState(0)
+  const [rowsPrefilled, setRowsPrefilled] = useState(false)
+  if (fromVisit && !isEdit && !rowsPrefilled && clinicSystems.length > 0 && caseSettled) {
+    setRowsPrefilled(true)
+    const rows = CASE_SYSTEMS.flatMap((s) => {
+      const data = caseQueries[s].data?.data
+      const t = caseLabels[s]
+      return data
+        ? medicineRowsFromCase(s, data, (key, code) => (code ? t(`fields.${key}.options.${code}`) : t(`fields.${key}.label`)))
+        : []
+    }).map((r, i) => ({ ...r, display_order: i }))
+    // Only into a form that is still untouched
+    if (rows.length > 0 && items.length === 1 && !isRowStarted(items[0])) {
+      setItems(rows)
+      setRowsFromCase(rows.length)
+      setRowsVersion((v) => v + 1)
+    }
+  }
 
   // Rows are typed in place. Untouched blank rows are left out; a row that was started but not finished blocks saving
   const finishedItems = items.filter(isRowComplete)
@@ -75,6 +129,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
           diagnosis: diagnosis || null,
           doctors_notes: doctorsNotes || null,
           advice: advice || null,
+          items: finishedItems,
         },
       })
       router.push(`/prescriptions/${prescription.id}`)
@@ -106,6 +161,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
           diagnosis: diagnosis || null,
           doctors_notes: doctorsNotes || null,
           advice: advice || null,
+          items: finishedItems,
           status: 'issued',
         },
       })
@@ -133,7 +189,10 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             </Label>
             <PatientSelector
               value={patientId}
-              onChange={setPatientId}
+              onChange={(id) => {
+                setPatientId(id)
+                setVisitId('') // a visit belongs to one patient
+              }}
               disabled={isEdit}
             />
             {isEdit && (
@@ -147,13 +206,16 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
 
           <div className="space-y-2">
             <Label htmlFor="visit_id">{t('visitId')}</Label>
-            <Input
-              id="visit_id"
-              placeholder={t('visitIdPlaceholder')}
+            <VisitPicker
+              patientId={patientId}
               value={visitId}
-              onChange={(e) => setVisitId(e.target.value)}
               disabled={isEdit}
+              onChange={(id, visit) => {
+                setVisitId(id)
+                prefillFrom(visit)
+              }}
             />
+            <p className="text-xs text-muted-foreground">{t('visitHint')}</p>
           </div>
         </CardContent>
       </Card>
@@ -205,8 +267,10 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
             {t('medicines')} <span className="text-red-500">*</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          {rowsFromCase > 0 && <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">{t('prefilledFromVisit', { count: rowsFromCase })}</p>}
           <MedicineItemsBuilder
+            key={rowsVersion}
             items={items}
             onChange={setItems}
             prescriptionId={prescription?.id}

@@ -255,6 +255,54 @@ async def test_create_visit_with_appointment(
 
 
 @pytest.mark.asyncio
+async def test_a_visit_started_from_an_appointment_is_one_per_appointment_and_completing_it_completes_the_appointment(
+    authenticated_client, test_user, test_patient
+):
+    appointment_id = (
+        await authenticated_client.post(
+            "/api/v1/appointments", json=appointment_payload(test_user, test_patient, appointment_date=str(date.today()))
+        )
+    ).json()["id"]
+    body = {"patient_id": test_patient.id, "doctor_id": test_user.id, "visit_date": str(date.today()), "appointment_id": appointment_id}
+
+    first = await authenticated_client.post("/api/v1/appointments/visits", json=body)
+    assert first.status_code == 201
+    visit_id = first.json()["id"]
+
+    # starting it again does not make a second visit: it says which one is already there
+    again = await authenticated_client.post("/api/v1/appointments/visits", json=body)
+    assert again.status_code == 409
+    assert again.json()["detail"]["code"] == "visit_exists" and again.json()["detail"]["visit_id"] == visit_id
+
+    # the appointment can be looked up to its visit
+    found = await authenticated_client.get("/api/v1/appointments/visits", params={"appointment_id": appointment_id})
+    assert [v["id"] for v in found.json()] == [visit_id] and found.json()[0]["appointment_id"] == appointment_id
+    assert (await authenticated_client.get("/api/v1/appointments/visits", params={"appointment_id": str(uuid4())})).json() == []
+
+    done = await authenticated_client.patch(f"/api/v1/appointments/visits/{visit_id}", json={"status": "completed"})
+    assert done.status_code == 200
+    assert (await authenticated_client.get(f"/api/v1/appointments/{appointment_id}")).json()["status"] == "completed"
+
+
+@pytest.mark.asyncio
+async def test_a_visit_cannot_be_tied_to_an_appointment_of_another_patient_or_one_that_does_not_exist(
+    authenticated_client, test_user, test_patient, test_patient_2
+):
+    appointment_id = (
+        await authenticated_client.post("/api/v1/appointments", json=appointment_payload(test_user, test_patient))
+    ).json()["id"]
+    base = {"doctor_id": test_user.id, "visit_date": str(date.today())}
+    wrong_patient = await authenticated_client.post(
+        "/api/v1/appointments/visits", json={**base, "patient_id": test_patient_2.id, "appointment_id": appointment_id}
+    )
+    assert wrong_patient.status_code == 422
+    missing = await authenticated_client.post(
+        "/api/v1/appointments/visits", json={**base, "patient_id": test_patient.id, "appointment_id": str(uuid4())}
+    )
+    assert missing.status_code == 422
+
+
+@pytest.mark.asyncio
 async def test_update_visit(authenticated_client, test_user, test_patient):
     create_response = await authenticated_client.post(
         "/api/v1/appointments/visits",

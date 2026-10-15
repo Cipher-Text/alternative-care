@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, Clock, FileText, Loader2, User } from 'lucide-reac
 import { Button } from '@/components/ui/button'
 import { useAppointment } from '@/lib/hooks/useAppointments'
 import { usePatients } from '@/lib/hooks/usePatients'
+import { StartConsultationButton } from '@/components/health/StartConsultationButton'
 
 export default function AppointmentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const t = useTranslations('apptDetailUi')
@@ -50,9 +51,14 @@ export default function AppointmentDetailPage({ params }: { params: Promise<{ id
             <p className="text-muted-foreground">{t('subtitle')}</p>
           </div>
         </div>
-        <Link href={`/appointments/${appointment.id}/edit`}>
-          <Button>{t('edit')}</Button>
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {['scheduled', 'confirmed', 'in_progress'].includes(appointment.status) && (
+            <StartConsultationButton appointmentId={appointment.id} patientId={appointment.patient_id} reason={appointment.reason} size="default" />
+          )}
+          <Link href={`/appointments/${appointment.id}/edit`}>
+            <Button variant="outline">{t('edit')}</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 border rounded-lg p-6 space-y-4">

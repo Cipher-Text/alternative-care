@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { parseISO } from 'date-fns'
-import { Loader2, Plus, Stethoscope } from 'lucide-react'
+import { CheckCircle, FileText, Loader2, Plus, Stethoscope } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +18,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { useAuthStore } from '@/store/authStore'
 import { errorMessage } from '@/lib/apiErrors'
 import { toast } from 'react-hot-toast'
-import { useCreateVisit, useHealthOptions, useVisits } from '@/lib/hooks/useHealth'
+import { useCreateVisit, useFinishVisit, useHealthOptions, useVisits } from '@/lib/hooks/useHealth'
+import { useCan } from '@/lib/auth/permissions'
+import { usePrescriptions } from '@/lib/hooks/usePrescriptions'
+import type { PrescriptionListItem } from '@/types/prescription'
 import { useCaseSystems, useSaveVisitCase } from '@/lib/hooks/useCaseTaking'
 import { CaseForm } from '@/components/case-taking/CaseForm'
 import { VisitCaseDetails } from '@/components/case-taking/VisitCaseDetails'
@@ -51,9 +56,13 @@ export function VisitsCard({ patientId, canEdit }: { patientId: string; canEdit:
   const { data: visits, isLoading } = useVisits(patientId)
   const [open, setOpen] = useState(false)
   const systems = useCaseSystems()
+  const { can } = useCan()
+  // One request for all the patient's prescriptions; each visit shows the ones written for it
+  const { data: prescriptions } = usePrescriptions(can('prescriptions.read') ? { patient_id: patientId, limit: 100 } : undefined)
+  const byVisit = (visitId: string) => (can('prescriptions.read') ? (prescriptions ?? []).filter((p) => p.visit_id === visitId) : [])
 
   return (
-    <Card>
+    <Card id="visits">
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -74,7 +83,7 @@ export function VisitsCard({ patientId, canEdit }: { patientId: string; canEdit:
       <CardContent className="space-y-3">
         {isLoading && <Loader2 className="h-5 w-5 animate-spin text-emerald-600" aria-hidden="true" />}
         {visits && visits.length === 0 && <p className="text-sm text-muted-foreground">{t('empty')}</p>}
-        {visits?.map((v) => <VisitRow key={v.id} visit={v} systems={systems} canEdit={canEdit} />)}
+        {visits?.map((v) => <VisitRow key={v.id} visit={v} systems={systems} canEdit={canEdit} prescriptions={byVisit(v.id)} />)}
         {!canEdit && <Badge variant="outline">{t('readOnly')}</Badge>}
       </CardContent>
       {open && <VisitDialog patientId={patientId} systems={systems} onClose={() => setOpen(false)} />}
@@ -82,12 +91,17 @@ export function VisitsCard({ patientId, canEdit }: { patientId: string; canEdit:
   )
 }
 
-function VisitRow({ visit, systems, canEdit }: { visit: VisitListItem; systems: readonly string[]; canEdit: boolean }) {
+function VisitRow({ visit, systems, canEdit, prescriptions }: { visit: VisitListItem; systems: readonly string[]; canEdit: boolean; prescriptions: PrescriptionListItem[] }) {
   const t = useTranslations('healthUi.visits')
   const locale = useLocale()
   const typeLabel = useCodeLabel('visitType')
   const flagLabel = useCodeLabel('redFlag')
   const referralLabel = useCodeLabel('referral')
+  const { can } = useCan()
+  const draft = prescriptions.find((p) => p.status === 'draft')
+  const finish = useFinishVisit(visit.patient_id)
+  // Arriving from "Start consultation" (or a prescription's visit link) marks this visit
+  const isCurrent = useSearchParams().get('visit') === visit.id
   const bmi = bmiOf(visit.weight_kg, visit.height_cm)
   const vitals = [
     visit.temperature_c != null && `${t('short.temperature')} ${visit.temperature_c}°C`,
@@ -103,12 +117,13 @@ function VisitRow({ visit, systems, canEdit }: { visit: VisitListItem; systems: 
   ].filter(Boolean) as string[]
 
   return (
-    <div className="space-y-2 rounded-md border p-3">
+    <div id={`visit-${visit.id}`} className={`space-y-2 rounded-md border p-3 ${isCurrent ? 'ring-2 ring-emerald-500' : ''}`}>
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-medium">
           {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(parseISO(visit.visit_date))}
         </span>
         <Badge variant="outline">{typeLabel(visit.visit_type)}</Badge>
+        <Badge variant={visit.status === 'completed' ? 'secondary' : 'default'}>{visit.status === 'completed' ? t('completed') : t('inProgress')}</Badge>
         {visit.referral_urgency && visit.referral_urgency !== 'none' && (
           <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">{referralLabel(visit.referral_urgency)}</Badge>
         )}
@@ -130,6 +145,42 @@ function VisitRow({ visit, systems, canEdit }: { visit: VisitListItem; systems: 
       {systems.map((system) => (
         <VisitCaseDetails key={system} visitId={visit.id} system={system} canEdit={canEdit} />
       ))}
+      {prescriptions.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 border-t pt-2 text-sm">
+          <span className="text-muted-foreground">{t('prescriptions')}</span>
+          {prescriptions.map((p) => (
+            <Link key={p.id} href={`/prescriptions/${p.id}`} className="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs hover:bg-accent">
+              {t(`rxStatus.${p.status}`)} · {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(p.created_at))}
+            </Link>
+          ))}
+        </div>
+      )}
+      {(can('prescriptions.write') || (canEdit && visit.status !== 'completed')) && (
+        <div className={`flex flex-wrap gap-2 pt-2 ${prescriptions.length > 0 ? '' : 'border-t'}`}>
+          {can('prescriptions.write') && draft && (
+            <Button asChild size="sm">
+              <Link href={`/prescriptions/${draft.id}/edit`}>
+                <FileText className="mr-2 h-4 w-4" aria-hidden="true" />
+                {t('continueDraft')}
+              </Link>
+            </Button>
+          )}
+          {can('prescriptions.write') && (
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/prescriptions/new?patient=${visit.patient_id}&visit=${visit.id}`}>
+                <FileText className="mr-2 h-4 w-4" aria-hidden="true" />
+                {t('writePrescription')}
+              </Link>
+            </Button>
+          )}
+          {canEdit && visit.status !== 'completed' && (
+            <Button type="button" size="sm" variant="outline" disabled={finish.isLoading} onClick={() => finish.mutate(visit.id)}>
+              {finish.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : <CheckCircle className="mr-2 h-4 w-4" aria-hidden="true" />}
+              {t('finish')}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -192,6 +192,8 @@ class VisitListItem(VitalsFields):
     visit_type: str
     chief_complaint: str | None
     provisional_diagnosis: str | None = None
+    treatment_plan: str | None = None
+    appointment_id: str | None = None
     red_flags: list[str] | None = None
     referral_urgency: str | None = None
     status: str

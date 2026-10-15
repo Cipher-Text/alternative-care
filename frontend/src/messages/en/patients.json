@@ -44,7 +44,10 @@
     "icd": "ICD: {code}",
     "deleteTitle": "Delete Patient",
     "deleteConfirm": "Are you sure you want to delete {name}? This action cannot be undone.",
-    "occupation": "Occupation"
+    "occupation": "Occupation",
+    "newPrescription": "New prescription",
+    "addDiagnosis": "Add diagnosis",
+    "noDiagnoses": "No diagnosis recorded yet."
   },
   "patientEditUi": {
     "notFound": "Patient not found",
@@ -98,5 +101,28 @@
     "create": "Create Patient",
     "occupation": "Occupation",
     "occupationPlaceholder": "e.g. Teacher, farmer, driver"
+  },
+  "patientRxCardUi": {
+    "title": "Prescriptions",
+    "description": "Everything prescribed for this patient, newest first.",
+    "new": "New prescription",
+    "empty": "No prescriptions yet.",
+    "noDiagnosis": "No diagnosis written",
+    "status": {
+      "draft": "Draft",
+      "issued": "Issued",
+      "voided": "Voided"
+    }
+  },
+  "patientDiagnosisUi": {
+    "title": "Add a diagnosis",
+    "description": "It is added to this patient's diagnosis history.",
+    "name": "Diagnosis",
+    "icd": "ICD code (optional)",
+    "date": "Date",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Diagnosis added",
+    "failed": "Could not add the diagnosis."
   }
 }

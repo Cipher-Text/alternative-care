@@ -130,6 +130,7 @@ async def list_visits(
     patient_id: str | None = Query(None, description="Filter by patient"),
     doctor_id: str | None = Query(None, description="Filter by doctor"),
     visit_date: date | None = Query(None, description="Filter by date"),
+    appointment_id: str | None = Query(None, description="The visit started from this appointment"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
 ):
@@ -144,6 +145,7 @@ async def list_visits(
         patient_id=patient_id,
         doctor_id=doctor_id,
         visit_date=visit_date,
+        appointment_id=appointment_id,
         limit=limit,
         offset=offset,
     )

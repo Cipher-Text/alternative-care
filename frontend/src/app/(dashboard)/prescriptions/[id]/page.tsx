@@ -227,13 +227,18 @@ export default function PrescriptionDetailPage({
           </CardHeader>
           <CardContent className="space-y-2">
             <div>
-              <p className="text-sm text-muted-foreground">{t('patientId')}</p>
-              <p className="font-mono">{prescription.patient_id}</p>
+              <p className="text-sm text-muted-foreground">{t('patient')}</p>
+              <Link href={`/patients/${prescription.patient_id}`} className="font-medium hover:underline">
+                {prescription.patient_name || t('unknownPatient')}
+              </Link>
             </div>
             {prescription.visit_id && (
               <div>
-                <p className="text-sm text-muted-foreground">{t('visitId')}</p>
-                <p className="font-mono">{prescription.visit_id}</p>
+                <p className="text-sm text-muted-foreground">{t('visit')}</p>
+                <Link href={`/patients/${prescription.patient_id}?visit=${prescription.visit_id}#visits`} className="hover:underline">
+                  {prescription.visit_date ? fmt(prescription.visit_date, 'PPP') : t('visit')}
+                  {prescription.visit_complaint ? ` · ${prescription.visit_complaint.slice(0, 80)}` : ''}
+                </Link>
               </div>
             )}
           </CardContent>
@@ -246,7 +251,7 @@ export default function PrescriptionDetailPage({
           <CardContent className="space-y-2">
             <div>
               <p className="text-sm text-muted-foreground">{t('prescribedBy')}</p>
-              <p className="font-mono">{prescription.prescribed_by}</p>
+              <p>{prescription.prescribed_by_name || t('unknownDoctor')}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t('created')}</p>

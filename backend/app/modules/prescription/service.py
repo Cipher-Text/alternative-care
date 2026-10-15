@@ -6,7 +6,7 @@ from typing import Optional
 from uuid import uuid4
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select, and_, delete, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -21,6 +21,7 @@ from app.shared.models import (
     PrescriptionItem,
     Tenant,
     User,
+    Visit,
 )
 from app.shared.schemas import (
     PrescriptionCreate,
@@ -52,6 +53,8 @@ class PrescriptionService:
         Returns:
             Created prescription with items
         """
+        await self._check_links(data.patient_id, data.visit_id)
+
         # Create prescription
         prescription = Prescription(
             id=str(uuid4()),
@@ -97,6 +100,47 @@ class PrescriptionService:
             await UsageService(self.db, self.tenant_id).increment("prescriptions_created")
 
         return prescription
+
+    async def _check_links(self, patient_id: str, visit_id: Optional[str]) -> None:
+        """The patient must be this clinic's, and a visit (if given) must be that patient's: a prescription cannot point at
+        another clinic's records, and cannot be tied to somebody else's visit."""
+        patient = (
+            await self.db.execute(select(Patient.id).where(Patient.id == patient_id, Patient.tenant_id == self.tenant_id))
+        ).scalar_one_or_none()
+        if patient is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+        if visit_id:
+            visit = (
+                await self.db.execute(
+                    select(Visit.id).where(Visit.id == visit_id, Visit.tenant_id == self.tenant_id, Visit.patient_id == patient_id)
+                )
+            ).scalar_one_or_none()
+            if visit is None:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="That visit does not belong to this patient")
+
+    async def with_context(self, prescriptions: list[Prescription]) -> list[Prescription]:
+        """Attach the patient's and prescriber's names and the linked visit's date and complaint, so screens never show raw ids."""
+        if not prescriptions:
+            return prescriptions
+        patient_ids = {p.patient_id for p in prescriptions}
+        names = dict(
+            (await self.db.execute(select(Patient.id, Patient.full_name).where(Patient.id.in_(patient_ids), Patient.tenant_id == self.tenant_id))).all()
+        )
+        visit_ids = {p.visit_id for p in prescriptions if p.visit_id}
+        visits = {}
+        if visit_ids:
+            rows = await self.db.execute(
+                select(Visit.id, Visit.visit_date, Visit.chief_complaint).where(Visit.id.in_(visit_ids), Visit.tenant_id == self.tenant_id)
+            )
+            visits = {vid: (vdate, complaint) for vid, vdate, complaint in rows.all()}
+        doctor_names = dict(
+            (await self.db.execute(select(User.id, User.full_name).where(User.id.in_({p.prescribed_by for p in prescriptions}), User.tenant_id == self.tenant_id))).all()
+        )
+        for p in prescriptions:
+            p.patient_name = names.get(p.patient_id)
+            p.prescribed_by_name = doctor_names.get(p.prescribed_by)
+            p.visit_date, p.visit_complaint = visits.get(p.visit_id, (None, None))
+        return prescriptions
 
     async def get_prescription(self, prescription_id: str) -> Prescription:
         """
@@ -167,11 +211,17 @@ class PrescriptionService:
             query = query.where(Prescription.status == status)
         if search and search.strip():
             pattern = f"%{search.strip()}%"
+            # A doctor looks for a person, not an id: match the patient's name or phone too
+            people = select(Patient.id).where(
+                Patient.tenant_id == self.tenant_id,
+                or_(Patient.full_name.ilike(pattern), Patient.phone.ilike(pattern)),
+            )
             query = query.where(
                 or_(
                     Prescription.id.ilike(pattern),
                     Prescription.patient_id.ilike(pattern),
                     Prescription.diagnosis.ilike(pattern),
+                    Prescription.patient_id.in_(people),
                 )
             )
 
@@ -182,7 +232,7 @@ class PrescriptionService:
         query = query.limit(limit).offset(offset)
 
         result = await self.db.execute(query)
-        return list(result.scalars().all())
+        return await self.with_context(list(result.scalars().all()))
 
     async def update_prescription(
         self, prescription_id: str, data: PrescriptionUpdate, updated_by: str
@@ -212,6 +262,27 @@ class PrescriptionService:
 
         # Update fields
         update_data = data.model_dump(exclude_unset=True)
+        new_items = update_data.pop("items", None)
+        if new_items is not None:
+            # Replace the draft's medicines with exactly the list sent (what the builder shows)
+            await self.db.execute(delete(PrescriptionItem).where(PrescriptionItem.prescription_id == prescription_id))
+            for idx, item_data in enumerate(new_items):
+                self.db.add(
+                    PrescriptionItem(
+                        prescription_id=prescription_id,
+                        tenant_id=self.tenant_id,
+                        medicine_id=item_data.get("medicine_id"),
+                        medicine_name=item_data.get("medicine_name"),
+                        dosage=item_data["dosage"],
+                        frequency=item_data["frequency"],
+                        duration=item_data.get("duration"),
+                        quantity=item_data.get("quantity"),
+                        instructions=item_data.get("instructions"),
+                        display_order=idx,
+                        created_by=updated_by,
+                        updated_by=updated_by,
+                    )
+                )
         for field, value in update_data.items():
             setattr(prescription, field, value)
 

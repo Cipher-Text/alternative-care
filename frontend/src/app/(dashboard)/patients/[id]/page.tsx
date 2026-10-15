@@ -20,12 +20,16 @@ import {
   Calendar,
   MapPin,
   AlertCircle,
+  FileText,
   Loader2,
+  Plus,
 } from 'lucide-react'
 import { PatientIdentityCard } from '@/components/identity/PatientIdentityCard'
 import { SafetyBanner } from '@/components/health/SafetyBanner'
 import { HealthProfileCard } from '@/components/health/HealthProfileCard'
 import { VisitsCard } from '@/components/health/VisitsCard'
+import { PatientPrescriptionsCard } from '@/components/patients/PatientPrescriptionsCard'
+import { AddDiagnosisDialog } from '@/components/patients/AddDiagnosisDialog'
 import { PatientCaseCard } from '@/components/case-taking/PatientCaseCard'
 import { useCaseSystems } from '@/lib/hooks/useCaseTaking'
 import { calculateAge, formatPhone } from '@/lib/utils/format'
@@ -48,6 +52,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
   const formatDate = (d: string) => fmt(parseISO(d), 'MMM dd, yyyy')
   const { can } = useCan()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showDiagnosisDialog, setShowDiagnosisDialog] = useState(false)
 
   const { data: patient, isLoading, error } = usePatient(id)
   const { data: tags } = usePatientTags(id)
@@ -107,8 +112,16 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             <p className="text-muted-foreground">{patient.is_active ? t('active') : t('inactive')}</p>
           </div>
         </div>
-        {(can('patients.write') || can('patients.delete')) && (
+        {(can('patients.write') || can('patients.delete') || can('prescriptions.write')) && (
         <div className="flex flex-wrap gap-2">
+          {can('prescriptions.write') && (
+          <Button asChild>
+            <Link href={`/prescriptions/new?patient=${id}`}>
+              <FileText className="mr-2 h-4 w-4" />
+              {t('newPrescription')}
+            </Link>
+          </Button>
+          )}
           {can('patients.write') && (
           <Link href={`/patients/${id}/edit`}>
             <Button variant="outline">
@@ -225,6 +238,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
 
       <VisitsCard patientId={id} canEdit={can('visits.write')} />
 
+      <PatientPrescriptionsCard patientId={id} />
+
       {/* Tags */}
       {tags && tags.length > 0 && (
         <Card>
@@ -244,14 +259,23 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
       )}
 
       {/* Diagnoses */}
-      {diagnoses && diagnoses.length > 0 && (
+      {((diagnoses && diagnoses.length > 0) || can('diagnoses.write')) && (
         <Card>
           <CardHeader>
-            <CardTitle>{t('diagnosesHistory')}</CardTitle>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <CardTitle>{t('diagnosesHistory')}</CardTitle>
+              {can('diagnoses.write') && (
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowDiagnosisDialog(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t('addDiagnosis')}
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
+            {diagnoses && diagnoses.length === 0 && <p className="text-sm text-muted-foreground">{t('noDiagnoses')}</p>}
             <div className="space-y-4">
-              {diagnoses.map((diagnosis) => (
+              {(diagnoses ?? []).map((diagnosis) => (
                 <div
                   key={diagnosis.id}
                   className="border-l-4 border-emerald-500 pl-4 py-2"
@@ -269,6 +293,8 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
           </CardContent>
         </Card>
       )}
+
+      {showDiagnosisDialog && <AddDiagnosisDialog patientId={id} onClose={() => setShowDiagnosisDialog(false)} />}
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

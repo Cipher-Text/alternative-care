@@ -187,7 +187,21 @@
       },
       "readOnly": "Only the doctor can record visits.",
       "followUpDate": "Follow-up date",
-      "followUpNote": "What to check at the follow-up"
+      "followUpNote": "What to check at the follow-up",
+      "start": "Start consultation",
+      "startFailed": "Could not start the consultation.",
+      "finish": "Finish visit",
+      "finished": "Visit finished",
+      "completed": "Completed",
+      "inProgress": "In progress",
+      "writePrescription": "Write prescription",
+      "prescriptions": "Prescriptions:",
+      "continueDraft": "Continue draft prescription",
+      "rxStatus": {
+        "draft": "Draft",
+        "issued": "Issued",
+        "voided": "Voided"
+      }
     }
   }
 }

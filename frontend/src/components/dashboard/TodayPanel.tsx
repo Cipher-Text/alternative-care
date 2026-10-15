@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { AlertTriangle, CalendarClock, CalendarPlus, CheckCircle2, ClipboardList, Loader2, Receipt } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { StartConsultationButton } from '@/components/health/StartConsultationButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTodayOverview } from '@/lib/hooks/useDashboard'
 import { useCodeLabel } from '@/components/health/useCodeLabel'
@@ -89,13 +90,16 @@ function ScheduleCard({ appointments, className }: { appointments: TodayOverview
             {appointments.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3">
                 <span className="w-20 shrink-0 text-sm font-semibold tabular-nums">{timeLabel(a.appointment_time)}</span>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-[9rem] flex-1">
                   <Link href={`/patients/${a.patient_id}`} className="font-medium hover:underline">{a.patient_name}</Link>
                   <p className="truncate text-sm text-muted-foreground">
                     {[a.reason, t('minutes', { count: a.duration_minutes })].filter(Boolean).join(' · ')}
                   </p>
                 </div>
                 <Badge variant="outline">{statusLabel(a.status)}</Badge>
+                {['scheduled', 'confirmed', 'in_progress'].includes(a.status) && (
+                  <StartConsultationButton appointmentId={a.id} patientId={a.patient_id} reason={a.reason} variant="outline" />
+                )}
               </li>
             ))}
           </ul>

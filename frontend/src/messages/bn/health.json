@@ -187,7 +187,21 @@
       },
       "readOnly": "শুধু ডাক্তার ভিজিট লিখতে পারেন।",
       "followUpDate": "ফলো-আপের তারিখ",
-      "followUpNote": "ফলো-আপে কী দেখতে হবে"
+      "followUpNote": "ফলো-আপে কী দেখতে হবে",
+      "start": "পরামর্শ শুরু করুন",
+      "startFailed": "পরামর্শ শুরু করা যায়নি।",
+      "finish": "ভিজিট শেষ করুন",
+      "finished": "ভিজিট শেষ হয়েছে",
+      "completed": "সম্পন্ন",
+      "inProgress": "চলছে",
+      "writePrescription": "প্রেসক্রিপশন লিখুন",
+      "prescriptions": "প্রেসক্রিপশন:",
+      "continueDraft": "খসড়া প্রেসক্রিপশন চালিয়ে যান",
+      "rxStatus": {
+        "draft": "খসড়া",
+        "issued": "ইস্যু করা",
+        "voided": "বাতিল"
+      }
     }
   }
 }

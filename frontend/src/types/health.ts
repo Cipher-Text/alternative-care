@@ -67,6 +67,8 @@ export interface VisitListItem extends Vitals {
   visit_type: string
   chief_complaint: string | null
   provisional_diagnosis: string | null
+  treatment_plan?: string | null
+  appointment_id?: string | null
   red_flags: string[] | null
   referral_urgency: string | null
   status: string

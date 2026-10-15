@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useTranslations } from 'next-intl'
 import { PrescriptionBuilder } from '@/components/prescriptions/PrescriptionBuilder'
 
@@ -12,7 +13,10 @@ export default function NewPrescriptionPage() {
         <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
-      <PrescriptionBuilder />
+      {/* The builder reads ?patient= and ?visit= (a prescription started from a patient or a visit) */}
+      <Suspense fallback={null}>
+        <PrescriptionBuilder />
+      </Suspense>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 """Prescription Pydantic schemas."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -80,6 +80,8 @@ class PrescriptionUpdate(BaseModel):
     doctors_notes: str | None = None
     advice: str | None = None
     status: Literal["draft", "issued", "voided"] | None = None
+    # When given, the draft's medicines are replaced by exactly this list (so the builder can save its edited rows)
+    items: list[PrescriptionItemCreate] | None = None
 
 
 class PrescriptionResponse(PrescriptionBase):
@@ -101,6 +103,12 @@ class PrescriptionResponse(PrescriptionBase):
     # Include items in response
     items: list[PrescriptionItemResponse] = Field(default_factory=list)
 
+    # Context for screens, so they can show names instead of ids (filled by the service when it is cheap to)
+    patient_name: str | None = None
+    prescribed_by_name: str | None = None
+    visit_date: date | None = None
+    visit_complaint: str | None = None
+
 
 class PrescriptionListItem(BaseModel):
     """Lightweight prescription list item."""
@@ -115,6 +123,9 @@ class PrescriptionListItem(BaseModel):
     status: str
     pdf_url: str | None
     created_at: datetime
+    patient_name: str | None = None
+    prescribed_by_name: str | None = None
+    visit_date: date | None = None
 
 
 class PrescriptionWithItemsCreate(PrescriptionCreate):

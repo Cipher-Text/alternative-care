@@ -154,7 +154,6 @@ export default function PrescriptionsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('colId')}</TableHead>
                 <TableHead>{t('colPatientId')}</TableHead>
                 <TableHead>{t('colDiagnosis')}</TableHead>
                 <TableHead>{t('colStatus')}</TableHead>
@@ -166,11 +165,11 @@ export default function PrescriptionsPage() {
             <TableBody>
               {filteredPrescriptions.map((prescription) => (
                 <TableRow key={prescription.id}>
-                  <TableCell className="font-mono text-sm">
-                    {prescription.id.substring(0, 8)}...
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {prescription.patient_id.substring(0, 8)}...
+                  <TableCell>
+                    <Link href={`/patients/${prescription.patient_id}`} className="font-medium hover:underline">
+                      {prescription.patient_name || t('unknownPatient')}
+                    </Link>
+                    <p className="font-mono text-xs text-muted-foreground">#{prescription.id.substring(0, 8)}</p>
                   </TableCell>
                   <TableCell>
                     {prescription.diagnosis || (

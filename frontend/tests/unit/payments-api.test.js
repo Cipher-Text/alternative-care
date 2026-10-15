@@ -10,8 +10,9 @@ test('payments API client uses API-version-relative base path', () => {
   assert.doesNotMatch(source, /const BASE_PATH = ['"]\/api\/v1\/payments['"]/)
 })
 
-test('payments API client builds invoice and bKash paths from the shared base path', () => {
-  assert.match(source, /\`\$\{BASE_PATH\}\/bkash\/create\`/)
+test('payments API client builds invoice paths from the shared base path, and has no per-clinic gateway calls', () => {
+  // Clinics take cash and record it; the platform's own gateways are in the billing API (per-clinic bKash was removed)
+  assert.doesNotMatch(source, /bkash/i)
   assert.match(source, /\`\$\{BASE_PATH\}\/invoices\`/)
   assert.doesNotMatch(source, /\/api\/v1\/api\/v1\/payments/)
 })

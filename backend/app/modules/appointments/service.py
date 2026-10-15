@@ -280,6 +280,24 @@ class AppointmentService(BaseTenantService[Appointment, AppointmentCreate, Appoi
         Returns:
             Created visit
         """
+        if data.appointment_id:
+            appointment = (
+                await self.db.execute(
+                    select(Appointment).where(Appointment.id == data.appointment_id, Appointment.tenant_id == self.tenant_id)
+                )
+            ).scalar_one_or_none()
+            if appointment is None or appointment.patient_id != data.patient_id:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="That appointment is not for this patient")
+            existing = (
+                await self.db.execute(select(Visit.id).where(Visit.appointment_id == data.appointment_id, Visit.tenant_id == self.tenant_id))
+            ).scalar_one_or_none()
+            if existing is not None:
+                # One consultation per appointment: the caller should open the one that is already there
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail={"code": "visit_exists", "message": "This appointment already has a visit.", "visit_id": existing},
+                )
+
         visit = Visit(
             id=str(uuid4()),
             tenant_id=self.tenant_id,
@@ -349,12 +367,15 @@ class AppointmentService(BaseTenantService[Appointment, AppointmentCreate, Appoi
         patient_id: Optional[str] = None,
         doctor_id: Optional[str] = None,
         visit_date: Optional[date] = None,
+        appointment_id: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
     ) -> List[Visit]:
         """List visits with filters."""
         query = select(Visit).where(Visit.tenant_id == self.tenant_id)
 
+        if appointment_id:
+            query = query.where(Visit.appointment_id == appointment_id)
         if patient_id:
             query = query.where(Visit.patient_id == patient_id)
         if doctor_id:

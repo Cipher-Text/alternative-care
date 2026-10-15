@@ -52,6 +52,8 @@ export interface PrescriptionUpdateRequest {
   doctors_notes?: string | null
   advice?: string | null
   status?: PrescriptionStatus
+  /** When given, the draft's medicines become exactly this list */
+  items?: PrescriptionItemCreate[]
 }
 
 export interface Prescription extends PrescriptionBase {
@@ -66,6 +68,11 @@ export interface Prescription extends PrescriptionBase {
   created_by?: string | null
   updated_by?: string | null
   items: PrescriptionItem[]
+  /** Names and the linked visit, so screens never show raw ids */
+  patient_name?: string | null
+  prescribed_by_name?: string | null
+  visit_date?: string | null
+  visit_complaint?: string | null
 }
 
 export interface PrescriptionListItem {
@@ -77,6 +84,9 @@ export interface PrescriptionListItem {
   status: PrescriptionStatus
   pdf_url?: string | null
   created_at: string
+  patient_name?: string | null
+  prescribed_by_name?: string | null
+  visit_date?: string | null
 }
 
 // API Query Parameters

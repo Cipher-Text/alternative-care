@@ -57,7 +57,8 @@ async def create_prescription(
     """
     if data.status == "issued":
         await ensure_permission(current_user, db, "prescriptions.issue")
-    return await service.create_prescription(data, prescribed_by=current_user.user_id)
+    created = await service.create_prescription(data, prescribed_by=current_user.user_id)
+    return (await service.with_context([created]))[0]
 
 
 @router.get("", response_model=list[PrescriptionListItem])
@@ -99,7 +100,7 @@ async def get_prescription(
     - Returns complete prescription with all items
     - Tenant filtering applied automatically
     """
-    return await service.get_prescription(prescription_id)
+    return (await service.with_context([await service.get_prescription(prescription_id)]))[0]
 
 
 @router.patch("/{prescription_id}", response_model=PrescriptionResponse)
@@ -122,9 +123,8 @@ async def update_prescription(
         await ensure_permission(current_user, db, "prescriptions.issue")
     elif data.status == "voided":
         await ensure_permission(current_user, db, "prescriptions.void")
-    return await service.update_prescription(
-        prescription_id, data, updated_by=current_user.user_id
-    )
+    updated = await service.update_prescription(prescription_id, data, updated_by=current_user.user_id)
+    return (await service.with_context([updated]))[0]
 
 
 @router.post("/{prescription_id}/void", response_model=PrescriptionResponse)
@@ -140,7 +140,8 @@ async def void_prescription(
     - Voided prescriptions cannot be edited or issued
     - Needs the prescriptions.void permission
     """
-    return await service.void_prescription(prescription_id, updated_by=current_user.user_id)
+    voided = await service.void_prescription(prescription_id, updated_by=current_user.user_id)
+    return (await service.with_context([voided]))[0]
 
 
 @router.get(

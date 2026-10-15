@@ -12,4 +12,9 @@ export const healthApi = {
     (await apiClient.get('/appointments/visits', { params: { patient_id: patientId, limit: 50 } })).data,
   createVisit: async (data: VisitInput): Promise<VisitListItem> =>
     (await apiClient.post('/appointments/visits', data)).data,
+  /** The visit started from an appointment, if any */
+  visitForAppointment: async (appointmentId: string): Promise<VisitListItem | null> =>
+    ((await apiClient.get('/appointments/visits', { params: { appointment_id: appointmentId, limit: 1 } })).data as VisitListItem[])[0] ?? null,
+  updateVisit: async (visitId: string, data: { status?: 'in_progress' | 'completed' }): Promise<VisitListItem> =>
+    (await apiClient.patch(`/appointments/visits/${visitId}`, data)).data,
 }

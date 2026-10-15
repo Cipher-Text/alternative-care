@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-hot-toast'
 import { useTranslations } from 'next-intl'
 import { healthApi } from '@/lib/api/health'
+import { patientsApi } from '@/lib/api/patients'
 import { errorMessage } from '@/lib/apiErrors'
 import type { HealthProfileInput, VisitInput } from '@/types/health'
 
@@ -37,8 +38,11 @@ export function useSaveHealthProfile(patientId: string) {
   })
 }
 
-export function useVisits(patientId: string) {
-  return useQuery(healthKeys.visits(patientId), () => healthApi.visits(patientId), { staleTime: 30000 })
+export function useVisits(patientId: string | undefined) {
+  return useQuery(healthKeys.visits(patientId ?? ''), () => healthApi.visits(patientId as string), {
+    enabled: Boolean(patientId),
+    staleTime: 30000,
+  })
 }
 
 export function useCreateVisit(patientId: string) {
@@ -51,6 +55,38 @@ export function useCreateVisit(patientId: string) {
     },
     onError: (error) => {
       toast.error(errorMessage(error, t('saveFailed')))
+    },
+  })
+}
+
+/** Finish a visit: marks it completed, which also completes the appointment it was started from. */
+export function useFinishVisit(patientId: string) {
+  const t = useTranslations('healthUi.visits')
+  const queryClient = useQueryClient()
+  return useMutation((visitId: string) => healthApi.updateVisit(visitId, { status: 'completed' }), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(healthKeys.visits(patientId))
+      queryClient.invalidateQueries('appointments')
+      queryClient.invalidateQueries(['dashboard'])
+      toast.success(t('finished'))
+    },
+    onError: (error) => {
+      toast.error(errorMessage(error, t('saveFailed')))
+    },
+  })
+}
+
+/** Add a diagnosis to a patient's history. */
+export function useAddDiagnosis(patientId: string) {
+  const t = useTranslations('patientDiagnosisUi')
+  const queryClient = useQueryClient()
+  return useMutation((data: { description: string; icd_code?: string; diagnosed_at: string }) => patientsApi.addDiagnosis(patientId, data), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['patient', patientId, 'diagnoses'])
+      toast.success(t('saved'))
+    },
+    onError: (error) => {
+      toast.error(errorMessage(error, t('failed')))
     },
   })
 }
