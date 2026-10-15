@@ -105,6 +105,31 @@ async def test_create_patient_success(client, auth_headers):
 
 
 @pytest.mark.asyncio
+async def test_patient_occupation_can_be_set_changed_and_cleared(client, auth_headers):
+    """The paper case form's first page asks for the patient's occupation (পেশা)."""
+    created = await client.post("/api/v1/patients", json={"full_name": "Rafiq Mia", "occupation": "  Rickshaw puller "}, headers=auth_headers)
+    assert created.status_code == 201
+    patient = created.json()
+    assert patient["occupation"] == "Rickshaw puller"  # trimmed
+
+    updated = await client.patch(f"/api/v1/patients/{patient['id']}", json={"occupation": "Day labourer"}, headers=auth_headers)
+    assert updated.status_code == 200 and updated.json()["occupation"] == "Day labourer"
+    # an update that does not mention it leaves it alone
+    other = await client.patch(f"/api/v1/patients/{patient['id']}", json={"gender": "male"}, headers=auth_headers)
+    assert other.json()["occupation"] == "Day labourer"
+    # an empty value (what the form sends when the box is cleared) removes it
+    cleared = await client.patch(f"/api/v1/patients/{patient['id']}", json={"occupation": "  "}, headers=auth_headers)
+    assert cleared.status_code == 200 and cleared.json()["occupation"] is None
+    assert (await client.get(f"/api/v1/patients/{patient['id']}", headers=auth_headers)).json()["occupation"] is None
+
+    too_long = await client.post("/api/v1/patients", json={"full_name": "Long Job", "occupation": "x" * 101}, headers=auth_headers)
+    assert too_long.status_code == 422
+    # a patient made without one has none
+    plain = await client.post("/api/v1/patients", json={"full_name": "No Job"}, headers=auth_headers)
+    assert plain.json()["occupation"] is None
+
+
+@pytest.mark.asyncio
 async def test_create_patient_minimal(client, auth_headers):
     """Test creating patient with only required field."""
     response = await client.post(

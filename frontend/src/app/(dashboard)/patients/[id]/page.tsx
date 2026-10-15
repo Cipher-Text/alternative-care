@@ -192,6 +192,16 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </div>
 
+            {patient.occupation && (
+              <div className="flex items-start gap-3">
+                <User className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm text-muted-foreground">{t('occupation')}</p>
+                  <p className="font-medium">{patient.occupation}</p>
+                </div>
+              </div>
+            )}
+
             {patient.address && (
               <div className="flex items-start gap-3 md:col-span-2">
                 <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />

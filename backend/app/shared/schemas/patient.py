@@ -3,7 +3,7 @@
 from datetime import date, datetime
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 # ===== Patient Schemas =====
@@ -15,6 +15,7 @@ class PatientBase(BaseModel):
     date_of_birth: date | None = None
     gender: Literal["male", "female", "other"] | None = None
     blood_group: Literal["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] | None = None
+    occupation: str | None = Field(None, max_length=100)
 
     # Contact
     phone: str | None = Field(None, max_length=20)
@@ -37,6 +38,12 @@ class PatientBase(BaseModel):
     # Follow-up
     next_visit_date: date | None = None
 
+    @field_validator("occupation", mode="before")
+    @classmethod
+    def _blank_occupation_is_none(cls, value):
+        """A form clears the occupation by sending an empty value; store that as none, not as an empty string."""
+        return (value.strip() or None) if isinstance(value, str) else value
+
 
 class PatientCreate(PatientBase):
     """Create patient request."""
@@ -50,6 +57,7 @@ class PatientUpdate(BaseModel):
     date_of_birth: date | None = None
     gender: Literal["male", "female", "other"] | None = None
     blood_group: Literal["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] | None = None
+    occupation: str | None = Field(None, max_length=100)
 
     phone: str | None = Field(None, max_length=20)
     email: EmailStr | None = None
@@ -65,6 +73,12 @@ class PatientUpdate(BaseModel):
     photo_url: str | None = Field(None, max_length=500)
     next_visit_date: date | None = None
     is_active: bool | None = None
+
+    @field_validator("occupation", mode="before")
+    @classmethod
+    def _blank_occupation_is_none(cls, value):
+        """A form clears the occupation by sending an empty value; store that as none, not as an empty string."""
+        return (value.strip() or None) if isinstance(value, str) else value
 
 
 class PatientResponse(PatientBase):

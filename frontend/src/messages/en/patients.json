@@ -43,7 +43,8 @@
     "diagnosesHistory": "Diagnoses History",
     "icd": "ICD: {code}",
     "deleteTitle": "Delete Patient",
-    "deleteConfirm": "Are you sure you want to delete {name}? This action cannot be undone."
+    "deleteConfirm": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "occupation": "Occupation"
   },
   "patientEditUi": {
     "notFound": "Patient not found",
@@ -94,6 +95,8 @@
     "selectUpazila": "Select upazila",
     "cancel": "Cancel",
     "update": "Update Patient",
-    "create": "Create Patient"
+    "create": "Create Patient",
+    "occupation": "Occupation",
+    "occupationPlaceholder": "e.g. Teacher, farmer, driver"
   }
 }

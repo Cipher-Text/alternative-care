@@ -28,6 +28,8 @@ class Patient(TenantScopedModel):
     blood_group: Mapped[str | None] = mapped_column(String(10), nullable=True)
     # A+, A-, B+, B-, AB+, AB-, O+, O-
 
+    occupation: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
     # Contact
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)

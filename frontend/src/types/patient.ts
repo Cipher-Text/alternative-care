@@ -17,6 +17,7 @@ export interface Patient {
   date_of_birth: string | null
   gender: 'male' | 'female' | 'other' | null
   blood_group: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' | null
+  occupation?: string | null
   phone: string | null
   email: string | null
   whatsapp: string | null
@@ -41,6 +42,8 @@ export interface PatientCreateRequest {
   date_of_birth?: string
   gender?: 'male' | 'female' | 'other'
   blood_group?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-'
+  /** An empty string clears it */
+  occupation?: string
   phone?: string
   email?: string
   whatsapp?: string

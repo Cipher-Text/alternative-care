@@ -27,6 +27,7 @@ const buildPatientSchema = (msgs: { fullNameRequired: string; invalidEmail: stri
   phone: z.string().max(20).optional().or(z.literal('')),
   email: z.string().email(msgs.invalidEmail).optional().or(z.literal('')),
   blood_group: z.string().optional(),
+  occupation: z.string().max(100).optional(),
   address: z.string().optional(),
   division_id: z.string().optional(),
   district_id: z.string().optional(),
@@ -81,6 +82,7 @@ export function PatientForm({ patient, prefill, onSubmit, isSubmitting }: Patien
           phone: patient.phone || '',
           email: patient.email || '',
           blood_group: patient.blood_group || '',
+          occupation: patient.occupation || '',
           address: patient.address || '',
           division_id: patient.division_id?.toString() || '',
           district_id: patient.district_id?.toString() || '',
@@ -142,6 +144,8 @@ export function PatientForm({ patient, prefill, onSubmit, isSubmitting }: Patien
     if (data.phone) payload.phone = data.phone
     if (data.email) payload.email = data.email
     if (data.blood_group) payload.blood_group = data.blood_group as PatientCreateRequest['blood_group']
+    // Sent even when empty, so that editing a patient can clear it
+    payload.occupation = (data.occupation ?? '').trim()
     if (data.address) payload.address = data.address
     if (data.division_id) payload.division_id = Number(data.division_id)
     if (data.district_id) payload.district_id = Number(data.district_id)
@@ -251,6 +255,11 @@ export function PatientForm({ patient, prefill, onSubmit, isSubmitting }: Patien
                   <SelectItem value="AB-">AB-</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="occupation">{t('occupation')}</Label>
+              <Input id="occupation" maxLength={100} placeholder={t('occupationPlaceholder')} {...register('occupation')} disabled={isSubmitting} />
             </div>
           </div>
         </CardContent>
