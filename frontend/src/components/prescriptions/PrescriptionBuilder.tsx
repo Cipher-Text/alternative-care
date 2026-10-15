@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCreatePrescription, useUpdatePrescription } from '@/lib/hooks/usePrescriptions'
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SafetyBanner } from '@/components/health/SafetyBanner'
 import { PatientSelector } from './PatientSelector'
-import { MedicineItemsBuilder } from './MedicineItemsBuilder'
+import { MedicineItemsBuilder, blankMedicineRow, isRowComplete, isRowStarted } from './MedicineItemsBuilder'
 import type { Prescription, PrescriptionItemCreate } from '@/types/prescription'
 import { Save, CheckCircle, Loader2 } from 'lucide-react'
 import { useCan } from '@/lib/auth/permissions'
@@ -44,14 +44,18 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       quantity: item.quantity,
       instructions: item.instructions,
       display_order: item.display_order,
-    })) || []
+    })) || [blankMedicineRow()]
   )
 
+  // Rows are typed in place. Untouched blank rows are left out; a row that was started but not finished blocks saving
+  const finishedItems = items.filter(isRowComplete)
+  const hasUnfinishedRow = items.some((item) => isRowStarted(item) && !isRowComplete(item))
+
   // Validation
-  const isValid = patientId && items.length > 0
+  const isValid = Boolean(patientId) && finishedItems.length > 0 && !hasUnfinishedRow
 
   const handleSaveDraft = async () => {
-    if (!patientId) return
+    if (!patientId || hasUnfinishedRow) return
 
     const data = {
       patient_id: patientId,
@@ -59,7 +63,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       diagnosis: diagnosis || null,
       doctors_notes: doctorsNotes || null,
       advice: advice || null,
-      items,
+      items: finishedItems,
       status: 'draft' as const,
     }
 
@@ -90,7 +94,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
       diagnosis: diagnosis || null,
       doctors_notes: doctorsNotes || null,
       advice: advice || null,
-      items,
+      items: finishedItems,
       status: 'issued' as const,
     }
 
@@ -216,7 +220,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
         <div className="text-sm text-muted-foreground">
           {!isValid && (
             <p className="text-amber-600">
-              {t('validationHint')}
+              {hasUnfinishedRow ? t('unfinishedRowHint') : t('validationHint')}
             </p>
           )}
         </div>
@@ -224,7 +228,7 @@ export function PrescriptionBuilder({ prescription, isEdit = false }: Prescripti
           <Button
             variant="outline"
             onClick={handleSaveDraft}
-            disabled={!patientId || isLoading}
+            disabled={!patientId || hasUnfinishedRow || isLoading}
           >
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

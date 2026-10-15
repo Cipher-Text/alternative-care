@@ -5,29 +5,10 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { MedicineAutocomplete } from '@/components/medicines/MedicineAutocomplete'
 import type { PrescriptionItemCreate } from '@/types/prescription'
 import type { MedicineSearchResult } from '@/types/medicine'
-import { PlusCircle, Trash2, Edit2, Pill, Info } from 'lucide-react'
+import { PlusCircle, Trash2 } from 'lucide-react'
 
 interface MedicineItemsBuilderProps {
   items: PrescriptionItemCreate[]
@@ -36,354 +17,153 @@ interface MedicineItemsBuilderProps {
   isEdit?: boolean
 }
 
-interface MedicineFormData {
-  medicine_name: string
-  dosage: string
-  frequency: string
-  duration: string
-  quantity: string
-  instructions: string
-}
-
-const emptyFormData: MedicineFormData = {
+export const blankMedicineRow = (displayOrder = 0): PrescriptionItemCreate => ({
   medicine_name: '',
   dosage: '',
   frequency: '',
-  duration: '',
-  quantity: '',
-  instructions: '',
-}
+  duration: null,
+  quantity: null,
+  instructions: null,
+  display_order: displayOrder,
+})
 
-export function MedicineItemsBuilder({
-  items,
-  onChange,
-  prescriptionId,
-  isEdit = false,
-}: MedicineItemsBuilderProps) {
+/** A row is complete when the three required cells are filled in. */
+export const isRowComplete = (item: PrescriptionItemCreate) =>
+  Boolean(item.medicine_name?.trim() && item.dosage.trim() && item.frequency.trim())
+
+/** A row somebody has started typing in (so it must not be silently dropped when it is unfinished). */
+export const isRowStarted = (item: PrescriptionItemCreate) =>
+  Boolean(item.medicine_name?.trim() || item.dosage.trim() || item.frequency.trim() || item.duration || item.quantity || item.instructions)
+
+// The columns of one row on a wide screen: number, medicine, dosage, frequency, duration, quantity, instructions, remove
+const ROW_GRID = 'xl:grid-cols-[2rem_minmax(13rem,2.2fr)_minmax(7rem,1fr)_minmax(8rem,1.2fr)_minmax(6rem,0.9fr)_5rem_minmax(9rem,1.6fr)_2.5rem]'
+
+/**
+ * The medicines of a prescription as rows you type into: no pop-up. "Add new row" adds a blank one under the last; the
+ * medicine cell searches the medicine database as you type, or keeps what you typed when it is not in the database.
+ * Dosage guidance from the database fills the dosage cell when it is empty.
+ */
+export function MedicineItemsBuilder({ items, onChange }: MedicineItemsBuilderProps) {
   const t = useTranslations('rxItemsUi')
-  const [showDialog, setShowDialog] = useState(false)
-  const [editIndex, setEditIndex] = useState<number | null>(null)
-  const [formData, setFormData] = useState<MedicineFormData>(emptyFormData)
-  const [selectedMedicine, setSelectedMedicine] = useState<MedicineSearchResult | null>(null)
-  const [useAutocomplete, setUseAutocomplete] = useState(true)
+  // Rows have no id of their own; a stable key per row keeps each medicine box's text with its row when a row above is removed
+  const [rowKeys, setRowKeys] = useState<string[]>(() => items.map(() => crypto.randomUUID()))
+  const [focusKey, setFocusKey] = useState<string | null>(null)
 
-  const handleAddNew = () => {
-    setEditIndex(null)
-    setFormData(emptyFormData)
-    setSelectedMedicine(null)
-    setUseAutocomplete(true)
-    setShowDialog(true)
+  const update = (index: number, patch: Partial<PrescriptionItemCreate>) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)))
+
+  const addRow = () => {
+    const key = crypto.randomUUID()
+    setRowKeys((keys) => [...keys, key])
+    setFocusKey(key)
+    onChange([...items, blankMedicineRow(items.length)])
   }
 
-  const handleEdit = (index: number) => {
-    const item = items[index]
-    setEditIndex(index)
-    setFormData({
-      medicine_name: item.medicine_name || '',
-      dosage: item.dosage,
-      frequency: item.frequency,
-      duration: item.duration || '',
-      quantity: item.quantity?.toString() || '',
-      instructions: item.instructions || '',
+  const removeRow = (index: number) => {
+    setRowKeys((keys) => keys.filter((_, i) => i !== index))
+    onChange(items.filter((_, i) => i !== index).map((item, i) => ({ ...item, display_order: i })))
+  }
+
+  const pick = (index: number, medicine: MedicineSearchResult) =>
+    update(index, {
+      medicine_name: medicine.potency ? `${medicine.name_en} ${medicine.potency}` : medicine.name_en,
+      // Guidance fills an empty dosage; it never overwrites what the doctor already typed
+      dosage: items[index].dosage.trim() ? items[index].dosage : medicine.dosage_guidance_en || '',
     })
-    setSelectedMedicine(null)
-    setUseAutocomplete(false)
-    setShowDialog(true)
-  }
-
-  const handleMedicineSelect = (medicine: MedicineSearchResult) => {
-    setSelectedMedicine(medicine)
-    setFormData({
-      ...formData,
-      medicine_name: medicine.potency
-        ? `${medicine.name_en} ${medicine.potency}`
-        : medicine.name_en,
-      dosage: medicine.dosage_guidance_en || formData.dosage,
-    })
-  }
-
-  const handleDelete = (index: number) => {
-    const newItems = items.filter((_, i) => i !== index)
-    onChange(newItems)
-  }
-
-  const handleSave = () => {
-    if (!formData.medicine_name || !formData.dosage || !formData.frequency) {
-      return
-    }
-
-    const newItem: PrescriptionItemCreate = {
-      medicine_name: formData.medicine_name,
-      dosage: formData.dosage,
-      frequency: formData.frequency,
-      duration: formData.duration || null,
-      quantity: formData.quantity ? parseInt(formData.quantity) : null,
-      instructions: formData.instructions || null,
-      display_order: editIndex !== null ? items[editIndex].display_order : items.length,
-    }
-
-    if (editIndex !== null) {
-      // Edit existing
-      const newItems = [...items]
-      newItems[editIndex] = newItem
-      onChange(newItems)
-    } else {
-      // Add new
-      onChange([...items, newItem])
-    }
-
-    setShowDialog(false)
-    setFormData(emptyFormData)
-    setEditIndex(null)
-  }
-
-  const isFormValid = formData.medicine_name && formData.dosage && formData.frequency
 
   return (
-    <div className="space-y-4">
-      {items.length > 0 ? (
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">#</TableHead>
-                <TableHead>{t('colMedicine')}</TableHead>
-                <TableHead>{t('colDosage')}</TableHead>
-                <TableHead>{t('colFrequency')}</TableHead>
-                <TableHead>{t('colDuration')}</TableHead>
-                <TableHead>{t('colQty')}</TableHead>
-                <TableHead>{t('colInstructions')}</TableHead>
-                <TableHead className="w-24 text-right">{t('colActions')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell className="font-medium">
-                    {item.medicine_name || t('medicineIdFallback', { id: String(item.medicine_id) })}
-                  </TableCell>
-                  <TableCell>{item.dosage}</TableCell>
-                  <TableCell>{item.frequency}</TableCell>
-                  <TableCell>{item.duration || '-'}</TableCell>
-                  <TableCell>{item.quantity || '-'}</TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {item.instructions || '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        aria-label={t('editAria')}
-                        onClick={() => handleEdit(index)}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        aria-label={t('deleteAria')}
-                        onClick={() => handleDelete(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      ) : (
-        <Card className="p-8 text-center">
-          <Pill className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground mb-4">{t('noMedicines')}</p>
-          <Button onClick={handleAddNew} variant="outline">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            {t('addFirst')}
-          </Button>
-        </Card>
-      )}
-
+    <div className="space-y-3">
       {items.length > 0 && (
-        <Button onClick={handleAddNew} variant="outline" className="w-full">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          {t('addMedicine')}
-        </Button>
+        <div className="hidden gap-2 px-1 text-xs font-medium text-muted-foreground xl:grid xl:[grid-template-columns:var(--cols)]" style={{ '--cols': '2rem minmax(13rem,2.2fr) minmax(7rem,1fr) minmax(8rem,1.2fr) minmax(6rem,0.9fr) 5rem minmax(9rem,1.6fr) 2.5rem' } as React.CSSProperties}>
+          <span>#</span>
+          <span>{t('colMedicine')} *</span>
+          <span>{t('colDosage')} *</span>
+          <span>{t('colFrequency')} *</span>
+          <span>{t('colDuration')}</span>
+          <span>{t('colQty')}</span>
+          <span>{t('colInstructions')}</span>
+          <span />
+        </div>
       )}
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editIndex !== null ? t('editMedicine') : t('addMedicine')}
-            </DialogTitle>
-            <DialogDescription>
-              {editIndex !== null
-                ? t('updateDesc')
-                : t('enterDesc')}
-            </DialogDescription>
-          </DialogHeader>
+      {items.map((item, index) => {
+        const started = isRowStarted(item)
+        const missing = (value: string | null | undefined) => started && !(value ?? '').trim()
+        const key = rowKeys[index] ?? String(index)
+        return (
+          <div key={key} className={`grid grid-cols-2 items-start gap-2 rounded-lg border p-3 md:grid-cols-4 xl:border-0 xl:p-0 ${ROW_GRID}`}>
+            <span className="col-span-full text-sm font-medium text-muted-foreground xl:col-span-1 xl:pt-2">{index + 1}</span>
 
-          <div className="space-y-4 py-4">
-            {/* Medicine Name */}
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <Label htmlFor="medicine_name">
-                  {t('medicineName')} <span className="text-red-500">*</span>
-                </Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setUseAutocomplete(!useAutocomplete)}
-                  className="text-xs"
-                >
-                  {useAutocomplete ? t('useFreeText') : t('searchDatabase')}
-                </Button>
-              </div>
-
-              {useAutocomplete ? (
-                <>
-                  <MedicineAutocomplete
-                    onSelect={handleMedicineSelect}
-                    placeholder={t('autocompletePlaceholder')}
-                    defaultValue={formData.medicine_name}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('autocompleteHint')}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <Input
-                    id="medicine_name"
-                    placeholder={t('namePlaceholder')}
-                    value={formData.medicine_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, medicine_name: e.target.value })
-                    }
-                    autoFocus
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('nameHint')}
-                  </p>
-                </>
-              )}
-
-              {/* Show selected medicine details */}
-              {selectedMedicine && (
-                <Card className="p-3 bg-blue-50 border-blue-200">
-                  <div className="flex items-start gap-3">
-                    <Info className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-medium">{selectedMedicine.name_en}</span>
-                        {selectedMedicine.potency && (
-                          <Badge variant="outline" className="text-xs">
-                            {selectedMedicine.potency}
-                          </Badge>
-                        )}
-                      </div>
-                      {selectedMedicine.dosage_guidance_en && (
-                        <p className="text-xs text-gray-700">
-                          <span className="font-medium">{t('suggestedDosage')}</span>
-                          {selectedMedicine.dosage_guidance_en}
-                        </p>
-                      )}
-                      {selectedMedicine.indications_en && (
-                        <p className="text-xs text-gray-600 mt-1">
-                          <span className="font-medium">{t('usedFor')}</span>
-                          {selectedMedicine.indications_en.slice(0, 150)}
-                          {selectedMedicine.indications_en.length > 150 ? '...' : ''}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              )}
-            </div>
-
-            {/* Dosage and Frequency */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="dosage">
-                  {t('dosage')} <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="dosage"
-                  placeholder={t('dosagePlaceholder')}
-                  value={formData.dosage}
-                  onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="frequency">
-                  {t('frequency')} <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="frequency"
-                  placeholder={t('frequencyPlaceholder')}
-                  value={formData.frequency}
-                  onChange={(e) =>
-                    setFormData({ ...formData, frequency: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Duration and Quantity */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="duration">{t('durationOptional')}</Label>
-                <Input
-                  id="duration"
-                  placeholder={t('durationPlaceholder')}
-                  value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="quantity">{t('quantityOptional')}</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  placeholder={t('quantityPlaceholder')}
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Instructions */}
-            <div className="space-y-2">
-              <Label htmlFor="instructions">{t('instructionsOptional')}</Label>
-              <Textarea
-                id="instructions"
-                placeholder={t('instructionsPlaceholder')}
-                value={formData.instructions}
-                onChange={(e) =>
-                  setFormData({ ...formData, instructions: e.target.value })
-                }
-                rows={3}
+            <div className="col-span-full space-y-1 xl:col-span-1">
+              <Label className="text-xs xl:sr-only">{t('colMedicine')} *</Label>
+              <MedicineAutocomplete
+                defaultValue={item.medicine_name ?? ''}
+                placeholder={t('autocompletePlaceholder')}
+                autoFocus={focusKey === key}
+                invalid={missing(item.medicine_name)}
+                formatSelected={(m) => (m.potency ? `${m.name_en} ${m.potency}` : m.name_en)}
+                onTextChange={(text) => update(index, { medicine_name: text })}
+                onSelect={(medicine) => pick(index, medicine)}
               />
             </div>
-          </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDialog(false)}>
-              {t('cancel')}
+            <div className="space-y-1 md:col-span-2 xl:col-span-1">
+              <Label className="text-xs xl:sr-only">{t('colDosage')} *</Label>
+              <Input aria-label={t('colDosage')} aria-invalid={missing(item.dosage) || undefined} placeholder={t('dosagePlaceholder')} value={item.dosage} onChange={(e) => update(index, { dosage: e.target.value })} />
+            </div>
+
+            <div className="space-y-1 md:col-span-2 xl:col-span-1">
+              <Label className="text-xs xl:sr-only">{t('colFrequency')} *</Label>
+              <Input aria-label={t('colFrequency')} aria-invalid={missing(item.frequency) || undefined} placeholder={t('frequencyPlaceholder')} value={item.frequency} onChange={(e) => update(index, { frequency: e.target.value })} />
+            </div>
+
+            <div className="space-y-1 md:col-span-2 xl:col-span-1">
+              <Label className="text-xs xl:sr-only">{t('colDuration')}</Label>
+              <Input aria-label={t('colDuration')} placeholder={t('durationPlaceholder')} value={item.duration ?? ''} onChange={(e) => update(index, { duration: e.target.value || null })} />
+            </div>
+
+            <div className="space-y-1 md:col-span-2 xl:col-span-1">
+              <Label className="text-xs xl:sr-only">{t('colQty')}</Label>
+              <Input
+                aria-label={t('colQty')}
+                type="number"
+                min={0}
+                placeholder={t('quantityPlaceholder')}
+                value={item.quantity ?? ''}
+                onChange={(e) => update(index, { quantity: e.target.value ? Number(e.target.value) : null })}
+              />
+            </div>
+
+            <div className="col-span-full space-y-1 xl:col-span-1">
+              <Label className="text-xs xl:sr-only">{t('colInstructions')}</Label>
+              <Input
+                aria-label={t('colInstructions')}
+                placeholder={t('instructionsPlaceholder')}
+                value={item.instructions ?? ''}
+                onChange={(e) => update(index, { instructions: e.target.value || null })}
+                // Enter in the last cell of the last row starts the next row, so a long prescription can be typed without the mouse
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (index === items.length - 1 && isRowComplete(item)) addRow()
+                  }
+                }}
+              />
+            </div>
+
+            <Button type="button" variant="ghost" size="icon" className="col-span-full justify-self-end xl:col-span-1 xl:justify-self-auto" aria-label={t('deleteAria')} onClick={() => removeRow(index)}>
+              <Trash2 className="h-4 w-4 text-red-500" />
             </Button>
-            <Button onClick={handleSave} disabled={!isFormValid}>
-              {editIndex !== null ? t('updateMedicine') : t('addMedicineBtn')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        )
+      })}
+
+      {items.length === 0 && <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t('noMedicines')}</p>}
+
+      <Button type="button" onClick={addRow} variant="outline" className="w-full">
+        <PlusCircle className="mr-2 h-4 w-4" />
+        {t('addRow')}
+      </Button>
     </div>
   )
 }

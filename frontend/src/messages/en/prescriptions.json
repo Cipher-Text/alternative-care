@@ -110,7 +110,8 @@
     "medicines": "Medicines",
     "validationHint": "Please select a patient and add at least one medicine",
     "saveDraft": "Save as Draft",
-    "issue": "Issue Prescription"
+    "issue": "Issue Prescription",
+    "unfinishedRowHint": "Finish or remove the medicine row you started: it needs a medicine, a dosage and a frequency"
   },
   "rxItemsUi": {
     "colMedicine": "Medicine",
@@ -119,38 +120,15 @@
     "colDuration": "Duration",
     "colQty": "Qty",
     "colInstructions": "Instructions",
-    "colActions": "Actions",
-    "medicineIdFallback": "Medicine ID: {id}",
-    "editAria": "Edit medicine",
     "deleteAria": "Remove medicine",
     "noMedicines": "No medicines added yet",
-    "addFirst": "Add First Medicine",
-    "addMedicine": "Add Medicine",
-    "editMedicine": "Edit Medicine",
-    "updateDesc": "Update the medicine details below",
-    "enterDesc": "Enter the medicine details below",
-    "medicineName": "Medicine Name",
-    "useFreeText": "Use free text",
-    "searchDatabase": "Search database",
     "autocompletePlaceholder": "Search medicines by name or alias...",
-    "autocompleteHint": "Start typing to search from the medicine database. Select a medicine to auto-fill dosage guidance.",
-    "namePlaceholder": "e.g., Arnica Montana 30C",
-    "nameHint": "Enter the full medicine name including potency if applicable",
-    "suggestedDosage": "Suggested dosage: ",
-    "usedFor": "Used for: ",
-    "dosage": "Dosage",
     "dosagePlaceholder": "e.g., 2 drops, 5 pills",
-    "frequency": "Frequency",
     "frequencyPlaceholder": "e.g., 3 times daily, Every 4 hours",
-    "durationOptional": "Duration (Optional)",
     "durationPlaceholder": "e.g., 7 days, 2 weeks",
-    "quantityOptional": "Quantity (Optional)",
     "quantityPlaceholder": "e.g., 30",
-    "instructionsOptional": "Instructions (Optional)",
     "instructionsPlaceholder": "e.g., Take before meals, Avoid spicy food while taking this medicine",
-    "cancel": "Cancel",
-    "updateMedicine": "Update Medicine",
-    "addMedicineBtn": "Add Medicine"
+    "addRow": "Add new row"
   },
   "rxPatientSelectorUi": {
     "unknownAge": "Unknown age",
@@ -164,7 +142,11 @@
     "searchPlaceholder": "Search by name or phone...",
     "searchAria": "Search by name or phone",
     "searching": "Searching...",
-    "noneFound": "No patients found matching \"{query}\""
+    "noneFound": "No patients found matching \"{query}\"",
+    "browseHint": "Recent patients. Type a name or phone to search.",
+    "results": "{count, plural, =1 {# patient found} other {# patients found}}",
+    "noPatients": "No patients yet",
+    "toggleAria": "Show the patient list"
   },
   "medicineAutocompleteUi": {
     "defaultPlaceholder": "Search medicines...",
@@ -177,7 +159,9 @@
     },
     "alsoKnownAs": "Also known as: ",
     "dosage": "Dosage: ",
-    "noResults": "No medicines found"
+    "noResults": "No medicine in the database matches. What you typed will be used as written.",
+    "browseHint": "Medicines A to Z (first {count}). Type to search by name or alias.",
+    "toggleAria": "Show the medicine list"
   },
   "rxToastUi": {
     "created": "Prescription created successfully",

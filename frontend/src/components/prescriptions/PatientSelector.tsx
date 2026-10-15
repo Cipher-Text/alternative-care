@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { usePatient, usePatients } from '@/lib/hooks/usePatients'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Search, User, Loader2, X } from 'lucide-react'
+import { ChevronDown, Search, User, Loader2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface PatientSelectorProps {
@@ -21,8 +21,10 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   const { data: selectedPatient } = usePatient(value)
+  // Opening the box lists the most recent patients (so a doctor can just pick one); typing narrows it by name or phone
+  const searching = searchQuery.trim().length >= 2
   const { data: searchResults, isLoading } = usePatients(
-    searchQuery.length >= 2 ? { search: searchQuery, limit: 20 } : undefined
+    searching ? { search: searchQuery.trim(), limit: 50 } : { limit: 50 }
   )
 
   // Close dropdown when clicking outside
@@ -90,6 +92,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
             </div>
             {!disabled && (
               <Button
+                type="button"
                 variant="ghost"
                 size="sm"
                 onClick={handleClearSelection}
@@ -111,15 +114,30 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
               value={searchQuery}
               onChange={handleInputChange}
               onFocus={() => setShowDropdown(true)}
+              onKeyDown={(e) => e.key === 'Escape' && setShowDropdown(false)}
               disabled={disabled}
-              className="pl-10"
+              role="combobox"
+              aria-expanded={showDropdown}
+              aria-haspopup="listbox"
+              className="pl-10 pr-10"
             />
-            {isLoading && (
+            {isLoading ? (
               <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+            ) : (
+              <button
+                type="button"
+                tabIndex={-1}
+                disabled={disabled}
+                aria-label={t('toggleAria')}
+                onClick={() => setShowDropdown((open) => !open)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </button>
             )}
           </div>
 
-          {showDropdown && searchQuery.length >= 2 && (
+          {showDropdown && (
             <Card className="absolute z-50 w-full mt-2 max-h-80 overflow-y-auto shadow-lg">
               {isLoading ? (
                 <div className="p-8 text-center">
@@ -127,9 +145,13 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                   <p className="text-sm text-muted-foreground mt-2">{t('searching')}</p>
                 </div>
               ) : searchResults && searchResults.length > 0 ? (
-                <div className="py-2">
+                <div className="py-2" role="listbox">
+                  <p className="px-4 pb-1 text-xs text-muted-foreground">{searching ? t('results', { count: searchResults.length }) : t('browseHint')}</p>
                   {searchResults.map((patient) => (
                     <button
+                      type="button"
+                      role="option"
+                      aria-selected={false}
                       key={patient.id}
                       onClick={() => handleSelectPatient(patient.id)}
                       className="w-full px-4 py-3 hover:bg-accent text-left transition-colors"
@@ -149,7 +171,7 @@ export function PatientSelector({ value, onChange, disabled = false }: PatientSe
                 <div className="p-8 text-center">
                   <User className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
                   <p className="text-muted-foreground">
-                    {t('noneFound', { query: searchQuery })}
+                    {searching ? t('noneFound', { query: searchQuery }) : t('noPatients')}
                   </p>
                 </div>
               )}

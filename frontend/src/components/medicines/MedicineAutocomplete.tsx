@@ -7,18 +7,41 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { useQuery } from 'react-query';
+import { medicinesApi } from '@/lib/api/medicines';
 import { useSearchMedicines } from '@/lib/hooks/useMedicines';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Search, Loader2 } from 'lucide-react';
-import type { MedicalSystem, MedicineSearchResult } from '@/types/medicine';
+import { ChevronDown, Search, Loader2 } from 'lucide-react';
+import type { MedicalSystem, MedicineListItem, MedicineSearchResult } from '@/types/medicine';
+
+const BROWSE_LIMIT = 50;
+
+/** A plain list row, shown in the shape of a search result */
+const asResult = (m: MedicineListItem): MedicineSearchResult => ({
+  id: m.id,
+  name_en: m.name_en,
+  name_bn: m.name_bn,
+  system: m.system,
+  potency: m.potency,
+  category: m.category,
+  matched_alias: null,
+  rank: 0,
+  is_global: m.is_global,
+});
 
 interface MedicineAutocompleteProps {
   onSelect: (medicine: MedicineSearchResult) => void;
   placeholder?: string;
   defaultValue?: string;
   disabled?: boolean;
+  /** Called on every keystroke, so a name that is not in the database can still be typed (free text) */
+  onTextChange?: (text: string) => void;
+  /** What the box shows after a pick (default: the English name); a prescription row shows name and potency */
+  formatSelected?: (medicine: MedicineSearchResult) => string;
+  autoFocus?: boolean;
+  invalid?: boolean;
 }
 
 export function MedicineAutocomplete({
@@ -26,6 +49,10 @@ export function MedicineAutocomplete({
   placeholder: placeholderProp,
   defaultValue = '',
   disabled = false,
+  onTextChange,
+  formatSelected,
+  autoFocus = false,
+  invalid = false,
 }: MedicineAutocompleteProps) {
   const t = useTranslations('medicineAutocompleteUi');
   const placeholder = placeholderProp ?? t('defaultPlaceholder');
@@ -36,10 +63,19 @@ export function MedicineAutocomplete({
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { data: results = [], isLoading } = useSearchMedicines({
+  // Nothing typed: the box is a plain dropdown of the medicine list (A to Z). Typing searches by name or alias.
+  const browsing = debouncedTerm.trim() === '';
+  const { data: found = [], isLoading: searching } = useSearchMedicines({
     q: debouncedTerm,
     limit: 10,
   });
+  const { data: browseList = [], isLoading: loadingList } = useQuery(
+    ['medicines', 'browse', BROWSE_LIMIT],
+    () => medicinesApi.list({ limit: BROWSE_LIMIT }),
+    { enabled: showResults && browsing, staleTime: 60000 }
+  );
+  const results = browsing ? browseList.map(asResult) : found;
+  const isLoading = browsing ? loadingList && showResults : searching;
 
   // Debounce search term
   useEffect(() => {
@@ -49,13 +85,6 @@ export function MedicineAutocomplete({
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
-
-  // Show results when search returns data
-  useEffect(() => {
-    if (debouncedTerm && results.length > 0) {
-      setShowResults(true);
-    }
-  }, [debouncedTerm, results]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -71,12 +100,17 @@ export function MedicineAutocomplete({
 
   const handleSelect = (medicine: MedicineSearchResult) => {
     onSelect(medicine);
-    setSearchTerm(medicine.name_en);
+    setSearchTerm(formatSelected ? formatSelected(medicine) : medicine.name_en);
     setShowResults(false);
     setSelectedIndex(-1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown' && !showResults) {
+      e.preventDefault();
+      setShowResults(true);
+      return;
+    }
     if (!showResults || results.length === 0) return;
 
     switch (e.key) {
@@ -124,18 +158,18 @@ export function MedicineAutocomplete({
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
+            onTextChange?.(e.target.value);
             setShowResults(true);
             setSelectedIndex(-1);
           }}
           onKeyDown={handleKeyDown}
-          onFocus={() => {
-            if (debouncedTerm && results.length > 0) {
-              setShowResults(true);
-            }
-          }}
+          onFocus={() => setShowResults(true)}
+          onClick={() => setShowResults(true)}
           placeholder={placeholder}
           className="pl-10 pr-10"
           disabled={disabled}
+          autoFocus={autoFocus}
+          aria-invalid={invalid || undefined}
           role="combobox"
           aria-label={placeholder ? placeholder.replace(/\.{3}$/, '') : 'Search medicines'}
           aria-autocomplete="list"
@@ -143,14 +177,26 @@ export function MedicineAutocomplete({
           aria-controls="medicine-results"
           aria-activedescendant={selectedIndex >= 0 ? `medicine-option-${selectedIndex}` : undefined}
         />
-        {isLoading && (
+        {isLoading ? (
           <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
+        ) : (
+          <button
+            type="button"
+            tabIndex={-1}
+            disabled={disabled}
+            aria-label={t('toggleAria')}
+            onClick={() => setShowResults((open) => !open)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
         )}
       </div>
 
       {/* Results Dropdown */}
       {showResults && results.length > 0 && (
         <Card id="medicine-results" role="listbox" className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto shadow-lg">
+          {browsing && <p className="border-b px-4 py-2 text-xs text-gray-500">{t('browseHint', { count: BROWSE_LIMIT })}</p>}
           {results.map((medicine, index) => (
             <div
               key={medicine.id}
@@ -220,7 +266,7 @@ export function MedicineAutocomplete({
       )}
 
       {/* No results message */}
-      {showResults && debouncedTerm && !isLoading && results.length === 0 && (
+      {showResults && !browsing && !isLoading && results.length === 0 && (
         <Card className="absolute z-50 w-full mt-2 p-4 shadow-lg">
           <p className="text-sm text-gray-500 text-center">{t('noResults')}</p>
         </Card>

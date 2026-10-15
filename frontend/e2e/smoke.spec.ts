@@ -40,14 +40,11 @@ test('login, create patient, issue prescription, view PDF', async ({ page }) => 
     await page.getByPlaceholder('Search by name or phone...').fill(patientName)
     await page.locator('button', { hasText: patientName }).first().click()
 
-    // Add one medicine item via free text (autocomplete needs seeded global
-    // medicines, which Stage 2 hasn't populated yet)
-    await page.getByRole('button', { name: 'Add First Medicine' }).click()
-    await page.getByRole('button', { name: 'Use free text' }).click()
-    await page.locator('#medicine_name').fill('Arnica Montana 30C')
-    await page.locator('#dosage').fill('2 drops')
-    await page.locator('#frequency').fill('3 times daily')
-    await page.getByRole('button', { name: 'Add Medicine' }).click()
+    // The first medicine row is already on the page: type the medicine as free text (the autocomplete needs seeded
+    // global medicines, which Stage 2 hasn't populated yet) and its dosage and frequency in place. No pop-up.
+    await page.getByRole('combobox', { name: /Search medicines/ }).first().fill('Arnica Montana 30C')
+    await page.getByRole('textbox', { name: 'Dosage' }).first().fill('2 drops')
+    await page.getByRole('textbox', { name: 'Frequency' }).first().fill('3 times daily')
 
     const [issueResponse] = await Promise.all([
       page.waitForResponse(

@@ -110,7 +110,8 @@
     "medicines": "ঔষধ",
     "validationHint": "অনুগ্রহ করে একজন রোগী নির্বাচন করুন এবং অন্তত একটি ঔষধ যোগ করুন",
     "saveDraft": "খসড়া হিসেবে সংরক্ষণ করুন",
-    "issue": "প্রেসক্রিপশন ইস্যু করুন"
+    "issue": "প্রেসক্রিপশন ইস্যু করুন",
+    "unfinishedRowHint": "শুরু করা ঔষধের সারিটি শেষ করুন বা মুছে দিন: ঔষধ, মাত্রা ও কতবার লাগবে"
   },
   "rxItemsUi": {
     "colMedicine": "ঔষধ",
@@ -119,38 +120,15 @@
     "colDuration": "মেয়াদ",
     "colQty": "পরিমাণ",
     "colInstructions": "নির্দেশনা",
-    "colActions": "কার্যক্রম",
-    "medicineIdFallback": "ঔষধের আইডি: {id}",
-    "editAria": "ঔষধ সম্পাদনা করুন",
     "deleteAria": "ঔষধ সরিয়ে ফেলুন",
     "noMedicines": "এখনও কোনো ঔষধ যোগ করা হয়নি",
-    "addFirst": "প্রথম ঔষধ যোগ করুন",
-    "addMedicine": "ঔষধ যোগ করুন",
-    "editMedicine": "ঔষধ সম্পাদনা করুন",
-    "updateDesc": "নিচে ঔষধের বিবরণ হালনাগাদ করুন",
-    "enterDesc": "নিচে ঔষধের বিবরণ লিখুন",
-    "medicineName": "ঔষধের নাম",
-    "useFreeText": "নিজে লিখুন",
-    "searchDatabase": "ডেটাবেস থেকে খুঁজুন",
     "autocompletePlaceholder": "নাম বা বিকল্প নাম দিয়ে ঔষধ খুঁজুন...",
-    "autocompleteHint": "ঔষধ ডেটাবেস থেকে খুঁজতে টাইপ করুন। একটি ঔষধ নির্বাচন করলে মাত্রার নির্দেশনা নিজে থেকে পূরণ হবে।",
-    "namePlaceholder": "যেমন, Arnica Montana 30C",
-    "nameHint": "প্রযোজ্য হলে পটেন্সিসহ ঔষধের পূর্ণ নাম লিখুন",
-    "suggestedDosage": "প্রস্তাবিত মাত্রা: ",
-    "usedFor": "ব্যবহার: ",
-    "dosage": "মাত্রা",
     "dosagePlaceholder": "যেমন, ২ ফোঁটা, ৫টি বড়ি",
-    "frequency": "কতবার / নিয়ম",
     "frequencyPlaceholder": "যেমন, দিনে ৩ বার, প্রতি ৪ ঘণ্টায়",
-    "durationOptional": "মেয়াদ (ঐচ্ছিক)",
     "durationPlaceholder": "যেমন, ৭ দিন, ২ সপ্তাহ",
-    "quantityOptional": "পরিমাণ (ঐচ্ছিক)",
     "quantityPlaceholder": "যেমন, ৩০",
-    "instructionsOptional": "নির্দেশনা (ঐচ্ছিক)",
     "instructionsPlaceholder": "যেমন, খাবারের আগে সেবন করুন, এই ঔষধ সেবনের সময় ঝাল খাবার এড়িয়ে চলুন",
-    "cancel": "বাতিল করুন",
-    "updateMedicine": "ঔষধ হালনাগাদ করুন",
-    "addMedicineBtn": "ঔষধ যোগ করুন"
+    "addRow": "নতুন সারি যোগ করুন"
   },
   "rxPatientSelectorUi": {
     "unknownAge": "বয়স অজানা",
@@ -164,7 +142,11 @@
     "searchPlaceholder": "নাম বা ফোন দিয়ে অনুসন্ধান করুন...",
     "searchAria": "নাম বা ফোন দিয়ে অনুসন্ধান করুন",
     "searching": "অনুসন্ধান চলছে...",
-    "noneFound": "\"{query}\" এর সাথে মিলে এমন কোনো রোগী পাওয়া যায়নি"
+    "noneFound": "\"{query}\" এর সাথে মিলে এমন কোনো রোগী পাওয়া যায়নি",
+    "browseHint": "সাম্প্রতিক রোগী। খুঁজতে নাম বা ফোন লিখুন।",
+    "results": "{count, plural, =1 {# জন রোগী পাওয়া গেছে} other {# জন রোগী পাওয়া গেছে}}",
+    "noPatients": "এখনও কোনো রোগী নেই",
+    "toggleAria": "রোগীর তালিকা দেখান"
   },
   "medicineAutocompleteUi": {
     "defaultPlaceholder": "ঔষধ খুঁজুন...",
@@ -177,7 +159,9 @@
     },
     "alsoKnownAs": "বিকল্প নাম: ",
     "dosage": "মাত্রা: ",
-    "noResults": "কোনো ঔষধ পাওয়া যায়নি"
+    "noResults": "ডাটাবেসে মেলে এমন কোনো ঔষধ নেই। আপনি যা লিখেছেন তা-ই ব্যবহার করা হবে।",
+    "browseHint": "ঔষধের তালিকা (A–Z, প্রথম {count}টি)। নাম বা বিকল্প নাম লিখে খুঁজুন।",
+    "toggleAria": "ঔষধের তালিকা দেখান"
   },
   "rxToastUi": {
     "created": "প্রেসক্রিপশন সফলভাবে তৈরি হয়েছে",
