@@ -347,6 +347,26 @@ async def test_search_medicines_by_name(client, headers_a, global_medicine):
 
 
 @pytest.mark.asyncio
+async def test_search_medicines_by_bengali_name(client, headers_a, db_session):
+    belladonna = Medicine(tenant_id=None, name_en="Belladonna", name_bn="বেলাডোনা", system="homeopathy", is_global=True, is_active=True)
+    arnica = Medicine(tenant_id=None, name_en="Arnica Montana", name_bn="আর্নিকা মন্টানা", system="homeopathy", is_global=True, is_active=True)
+    db_session.add_all([belladonna, arnica])
+    await db_session.commit()
+
+    async def found(q):
+        r = await client.get("/api/v1/medicines/search", params={"q": q}, headers=headers_a)
+        assert r.status_code == 200
+        return [x["name_en"] for x in r.json()]
+
+    assert await found("বেলাডোনা") == ["Belladonna"]  # the whole Bengali name
+    assert await found("বেলা") == ["Belladonna"]  # a prefix, as typed so far
+    assert await found("আর্নিকা মন্টানা") == ["Arnica Montana"]  # two words
+    assert await found("মন্টা") == ["Arnica Montana"]
+    assert await found("belladonna") == ["Belladonna"]  # English still works
+    assert await found("কিছুনেই") == []
+
+
+@pytest.mark.asyncio
 async def test_search_medicines_by_alias(client, headers_a, db_session, global_medicine):
     alias = MedicineAlias(
         medicine_id=global_medicine.id,

@@ -89,7 +89,6 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 
 **Partially built (backend done, frontend missing):**
 - Symptom → Medicine lookup UI — `GET /medicines/symptoms/{id}/medicines` exists, no dedicated page
-- Medicine search page uses client-side filter on 100 rows instead of calling `GET /medicines/search`
 
 **Planned (future phases — see `docs/planning/revision-2026-09.md` for the authoritative Stage 0–4 sequencing; `docs/ROADMAP.md`'s Phase letters are background):**
 - Book library reader — DB models exist (`books`, `chapters`, `sections`, `reading_progress`, `bookmarks`, `highlights`, `embeddings`), no routes or UI yet — Stage 3

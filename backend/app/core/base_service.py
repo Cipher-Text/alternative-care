@@ -1,6 +1,6 @@
 """Base service class for tenant-scoped business logic."""
 
-import re
+import unicodedata
 from typing import Any, Generic, Type, TypeVar
 from uuid import uuid4
 
@@ -17,7 +17,28 @@ ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
-_TSQUERY_TOKEN_RE = re.compile(r"[^\w]+", re.UNICODE)
+_ZERO_WIDTH_JOINERS = "\u200c\u200d"  # inside Bengali words (e.g. the ZWJ in র‍্যাব); Postgres keeps them in the word
+
+
+def _is_word_char(ch: str) -> bool:
+    """A character that belongs inside a search word. Letters and digits, and also the combining marks (vowel signs, the
+    hasanta, chandrabindu) that Bengali words are made of: a `\\w` test counts those as punctuation and tears a word
+    such as আর্নিকা into the fragments আর, ন, ক, so the search never matched any Bengali text."""
+    return ch.isalnum() or ch == "_" or ch in _ZERO_WIDTH_JOINERS or unicodedata.category(ch).startswith("M")
+
+
+def _search_tokens(text: str) -> list[str]:
+    tokens: list[str] = []
+    current: list[str] = []
+    for ch in text.strip().lower():
+        if _is_word_char(ch):
+            current.append(ch)
+        elif current:
+            tokens.append("".join(current))
+            current = []
+    if current:
+        tokens.append("".join(current))
+    return tokens
 
 
 def _prefix_tsquery(query_text: str) -> str | None:
@@ -30,7 +51,7 @@ def _prefix_tsquery(query_text: str) -> str | None:
 
     Returns None for input with no usable tokens (e.g. only punctuation).
     """
-    tokens = [t for t in _TSQUERY_TOKEN_RE.split(query_text.strip().lower()) if t]
+    tokens = _search_tokens(query_text)
     if not tokens:
         return None
     return " & ".join(f"{token}:*" for token in tokens)

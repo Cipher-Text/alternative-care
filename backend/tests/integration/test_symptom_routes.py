@@ -345,6 +345,28 @@ async def test_search_symptoms_by_name(client, headers_a, global_symptom):
 
 
 @pytest.mark.asyncio
+async def test_search_symptoms_by_bengali_name(client, headers_a, db_session):
+    db_session.add_all(
+        [
+            Symptom(tenant_id=None, name_en="Headache", name_bn="মাথাব্যথা", category="neurological", is_global=True, is_active=True),
+            Symptom(tenant_id=None, name_en="Fever", name_bn="জ্বর", category="general", is_global=True, is_active=True),
+        ]
+    )
+    await db_session.commit()
+
+    async def found(q):
+        r = await client.get("/api/v1/symptoms/search", params={"q": q}, headers=headers_a)
+        assert r.status_code == 200
+        return [x["symptom"]["name_en"] for x in r.json()]
+
+    assert await found("মাথাব্যথা") == ["Headache"]
+    assert await found("মাথা") == ["Headache"]  # a prefix
+    assert await found("জ্বর") == ["Fever"]
+    assert await found("headache") == ["Headache"]
+    assert await found("কিছুনেই") == []
+
+
+@pytest.mark.asyncio
 async def test_search_symptoms_by_alias(client, headers_a, db_session, global_symptom):
     alias = SymptomAlias(
         symptom_id=global_symptom.id,
