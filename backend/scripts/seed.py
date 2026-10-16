@@ -25,6 +25,8 @@ from pathlib import Path
 # Add parent directory to path so we can import app modules
 sys.path.append(str(Path(__file__).parent.parent))
 
+import uuid
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -35,6 +37,7 @@ from scripts.demo_directory import seed_demo_directory
 from scripts.demo_patients import seed_demo_patients
 from scripts.demo_platform import seed_demo_platform
 from app.shared.models import (
+    Article,
     Institution,
     District,
     Division,
@@ -260,6 +263,30 @@ class SeedData:
         await self.session.flush()
         return count
 
+    async def seed_articles(self) -> int:
+        """Seed the starter blog posts and videos (backend/seed_data/articles.json), published and credited to the editorial team.
+
+        They are written by the platform, not by a named clinician, so no reviewer is recorded: the public page shows a
+        "reviewed by" line only when an admin signs an item off, and these have not been. An admin can open one, put it
+        in review and publish it again with a reviewer's name once a practitioner has read it. Needs a platform admin
+        user to own them; skipped (0) if there is none. Existing slugs are left alone.
+        """
+        admin = (await self.session.execute(select(User).where(User.role == "admin").order_by(User.created_at))).scalars().first()
+        if admin is None:
+            return 0
+        have = set((await self.session.execute(select(Article.slug))).scalars())
+        now = datetime.now(timezone.utc)
+        count = 0
+        print("\n📰 Seeding articles and videos...")
+        for item in self.load_json("articles.json")["articles"]:
+            if item["slug"] in have:
+                continue
+            self.session.add(Article(id=str(uuid.uuid4()), status="published", author_id=admin.id, author_name="AltCare সম্পাদকীয় দল",
+                                     published_at=now, created_by=admin.id, updated_by=admin.id, **item))
+            count += 1
+        await self.session.flush()
+        return count
+
     async def seed_catalogue_links(self) -> dict[str, int]:
         """Seed medicine/symptom aliases and the medicine<->symptom mappings, all global (tenant_id NULL).
 
@@ -407,6 +434,7 @@ async def main():
                 medicines_count = await seeder.seed_medicines(default_tenant_id)
                 symptoms_count = await seeder.seed_symptoms(default_tenant_id)
                 link_stats = await seeder.seed_catalogue_links()
+                articles_count = await seeder.seed_articles()
                 institutions_count = await seeder.seed_institutions()
                 demo_stats = await seed_demo_patients(session) if settings.ENVIRONMENT == "development" else None
                 if settings.ENVIRONMENT == "development":
@@ -430,6 +458,7 @@ async def main():
         print(f"  • Symptoms:      {symptoms_count:>3} created")
         print(f"  • Completed:     {seeder.medicines_completed} medicines, {seeder.symptoms_completed} symptoms already there")
         print(f"  • Aliases:       {link_stats['medicine_aliases']} medicine, {link_stats['symptom_aliases']} symptom created")
+        print(f"  • Articles:      {articles_count:>3} created (blogs and videos)")
         print(f"  • Mappings:      {link_stats['mappings']:>3} created ({link_stats['skipped']} skipped)")
         print(f"  • Institutions:  {institutions_count:>3} created")
         print(f"  • Pharmacies:    {pharmacies_count:>3} created")

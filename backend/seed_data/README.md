@@ -233,3 +233,11 @@ The links record *traditional associations from the source text, not evidence of
 `scripts/seed.py` seeds all five files: rows that already exist are **completed** (empty columns filled, old placeholders cleared)
 but never overwritten, and an existing alias or link (including a strength an admin changed) is left alone, so it is safe to rerun.
 Symptoms with no medicine yet: Conjunctivitis, Croup, Frequent Urination, Herpes, Laryngitis, Migraine, Vertigo.
+
+## Articles and videos (`articles.json`)
+
+10 Bangla blog posts and 5 Bangla videos/podcasts for the public `/articles` section, seeded by `seed.py` as **published**, owned by the
+first platform admin, credited to "AltCare সম্পাদকীয় দল". The posts were written for the platform and **no practitioner has reviewed them**,
+so no reviewer is recorded and the public page shows no "reviewed by" line; have a clinician read them, then put each in review and
+publish with their name. The five videos are real YouTube videos by third-party channels (checked embeddable via oEmbed on 2026-10-17);
+their views are the channels' own, which each video's text says. Existing slugs are never overwritten.
