@@ -5,4 +5,7 @@ export interface ClinicProfile {
   logo_url: string | null
   /** The systems the clinic practises, e.g. ['homeopathy', 'unani'] */
   specializations: string[]
+  /** The usual fees, in paisa (100 paisa = 1 taka); null when not set */
+  consultation_fee?: number | null
+  follow_up_fee?: number | null
 }

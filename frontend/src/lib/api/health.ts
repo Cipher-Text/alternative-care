@@ -1,5 +1,5 @@
 import apiClient from './client'
-import type { HealthOptions, HealthProfile, HealthProfileInput, VisitInput, VisitListItem } from '@/types/health'
+import type { HealthOptions, HealthProfile, HealthProfileInput, VisitDetail, VisitInput, VisitListItem } from '@/types/health'
 
 export const healthApi = {
   options: async (): Promise<HealthOptions> => (await apiClient.get('/health-options')).data,
@@ -15,6 +15,8 @@ export const healthApi = {
   /** The visit started from an appointment, if any */
   visitForAppointment: async (appointmentId: string): Promise<VisitListItem | null> =>
     ((await apiClient.get('/appointments/visits', { params: { appointment_id: appointmentId, limit: 1 } })).data as VisitListItem[])[0] ?? null,
-  updateVisit: async (visitId: string, data: { status?: 'in_progress' | 'completed' }): Promise<VisitListItem> =>
+  visit: async (visitId: string): Promise<VisitDetail> => (await apiClient.get(`/appointments/visits/${visitId}`)).data,
+  /** Any of the visit's fields; an empty one as null clears it. */
+  updateVisit: async (visitId: string, data: Record<string, unknown>): Promise<VisitDetail> =>
     (await apiClient.patch(`/appointments/visits/${visitId}`, data)).data,
 }

@@ -12,7 +12,7 @@ from app.core.entitlements import EntitlementService
 from app.core.pdf import render_pdf
 from app.core.usage_tracking import UsageService
 from app.modules.payment.pdf import build_invoice_html
-from app.shared.models import Invoice, Patient, Payment, Tenant
+from app.shared.models import Invoice, Patient, Payment, Tenant, Visit
 from app.shared.schemas import (
     PaymentCreate,
     PaymentUpdate,
@@ -29,6 +29,22 @@ class PaymentService:
         self.db = db
         self.tenant_id = tenant_id
 
+    async def _check_links(self, patient_id: str, visit_id: Optional[str]) -> None:
+        """A payment is for one of this clinic's patients, and a visit (if given) must be that patient's."""
+        patient = (
+            await self.db.execute(select(Patient.id).where(Patient.id == patient_id, Patient.tenant_id == self.tenant_id))
+        ).scalar_one_or_none()
+        if patient is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+        if visit_id:
+            visit = (
+                await self.db.execute(
+                    select(Visit.id).where(Visit.id == visit_id, Visit.tenant_id == self.tenant_id, Visit.patient_id == patient_id)
+                )
+            ).scalar_one_or_none()
+            if visit is None:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="That visit does not belong to this patient")
+
     # ===== Payment Methods =====
 
     async def create_payment(
@@ -44,6 +60,8 @@ class PaymentService:
         Returns:
             Created payment record
         """
+        await self._check_links(data.patient_id, data.visit_id)
+
         payment = Payment(
             id=str(uuid4()),
             tenant_id=self.tenant_id,
@@ -369,7 +387,7 @@ class PaymentService:
                 **{
                     c: getattr(p, c)
                     for c in (
-                        "id", "patient_id", "amount", "currency", "payment_method", "status",
+                        "id", "patient_id", "visit_id", "amount", "currency", "payment_method", "status",
                         "payment_date", "description", "created_at",
                     )
                 },

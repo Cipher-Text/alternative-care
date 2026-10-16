@@ -1,6 +1,6 @@
 # Doctor workflow analysis: patient, visit, prescription (2026-10-15)
 
-Status: analysis and proposal. **Phase 1 (section 7) was built on 2026-10-16**; phases 2 to 4 are not. The proposal still needs a review by
+Status: analysis and proposal. **All four phases (section 7) were built on 2026-10-16.** The proposal still needs a review by
 practising doctors before the one-screen design is built.
 
 ### Phase 1 as built (2026-10-16)
@@ -25,8 +25,7 @@ practising doctors before the one-screen design is built.
 - **A visit shows its prescriptions:** a chip per prescription (draft / issued / voided, date, linked), and "Continue draft prescription"
   when a draft exists.
 - Already from phase 1 and counted here: diagnosis and advice prefilled from the visit; a prescription shows its visit.
-- Not done from section 7 phase 2: nothing outstanding. The case form's own "remedy / potency" entry is still there; removing the
-  duplicate is phase 3.
+- Not done from section 7 phase 2: nothing outstanding.
 
 ## 1. What was checked
 
@@ -131,6 +130,43 @@ the database; existing visits and prescriptions are untouched.
 3. **One consultation screen.** Medicines and Issue inside the visit; remove the duplicated "remedy and potency" entry from the case form;
    one place for diagnosis and plan.
 4. **Close the loop.** Follow-up date creates the next appointment; payment started from the visit.
+
+### Phase 3 as built (2026-10-16): the consultation screen
+
+- **New screen `/consultations/{visitId}`** (`frontend/src/components/consultation/`): one page per visit, top to bottom: complaint and
+  history (complaint, history of the present illness, examination), vitals and warning signs, case details for each system the clinic
+  practises, **diagnosis, plan and follow-up entered once**, **medicines**, then a sticky bar with **Save**, **Issue prescription** and
+  **Finish consultation** (with an "unsaved changes" indicator and a leave-page guard). Read-only for people who may not write visits.
+- **Visits can now be edited.** Before this, a visit could only be created (a create-only pop-up), so a visit started from an
+  appointment could not be filled in. Every field is sent on save, an emptied box as null.
+- **One Save does everything:** it updates the visit, saves the case-detail answers that changed, and creates or updates the draft
+  prescription linked to the visit, with the **diagnosis taken from the visit's diagnosis and the advice from its plan** (no second
+  entry). **Issue** saves, then issues that prescription (an issued prescription is permanent, so the editor then starts a fresh one,
+  and the issued one shows with its PDF button). **Finish** saves and completes the visit and its appointment.
+- **The duplicate medicine entry is gone from the screen.** The case-form fields the Medicines section replaces (homeopathy: medicines
+  list, remedy, potency, dose form, repetition; Unani: drug and form; Ayurveda: formulation and anupana) are not drawn, and their saved
+  values are kept. A visit that only has medicines in those older fields gets them as the first medicine rows, once.
+- **Entry points:** "Start consultation" (dashboard, appointment page) opens this screen; "Record a visit" on the patient page starts a
+  blank walk-in visit for today and opens it; each visit on the patient page has "Open consultation" and still shows its prescriptions.
+  The old visit pop-up is removed. The separate prescription form (`/prescriptions/new`) remains for a quick repeat prescription.
+- Tests: the form-to-payload logic is unit-tested (`tests/unit/visit-draft.test.js`); the flow was walked in the browser.
+- Not done: the follow-up date does not yet create the next appointment, and payment is not started from the screen (phase 4).
+
+### Phase 4 as built (2026-10-16): closing the loop
+
+- **Follow-up appointment from the consultation.** A "Follow-up appointment" card under the consultation takes the follow-up date the
+  doctor set and books it with a time and one click (30 minutes, the diary's own clash check refuses a taken time). If an appointment
+  already exists on that date it says so and links to it. No new data model: the dashboard's "follow-ups due" list already leaves out
+  a patient who has an upcoming appointment, so booking the follow-up removes them from it (checked against the real list).
+- **Payment from the visit.** A "Payment" card shows the clinic's usual fee (consultation fee, or the follow-up fee for a follow-up
+  visit; the profile stores paisa), what has been paid for this visit, anything still due, and "Record payment" (amount prefilled with the
+  fee, cash or bKash, optional note). It is also visible to the front desk (`payments.read` / `payments.write`), who can record the
+  payment after the doctor finishes.
+- **Backend:** a payment must now belong to this clinic's patient and a visit (if given) must be that patient's (404 / 422, like
+  prescriptions); the payment list carries `visit_id` and can already be filtered by it.
+- Tests: fee and follow-up-date logic unit-tested (`tests/unit/visit-draft.test.js`); the payment checks have service and route tests.
+- Not done: an invoice is still created separately from the Payments page; the appointment's reason is written in the doctor's
+  interface language ("Follow-up: ..."); slot suggestions (free times) are not offered, only the clash refusal.
 
 ## 8. Risks and open questions
 

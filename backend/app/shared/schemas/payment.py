@@ -56,6 +56,7 @@ class PaymentListItem(BaseModel):
 
     id: str
     patient_id: str
+    visit_id: str | None = None
     patient_name: str | None = None
     patient_phone: str | None = None
     amount: float

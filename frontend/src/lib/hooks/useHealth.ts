@@ -38,6 +38,11 @@ export function useSaveHealthProfile(patientId: string) {
   })
 }
 
+/** One visit in full, for the consultation screen. */
+export function useVisit(visitId: string) {
+  return useQuery(['health', 'visit', visitId], () => healthApi.visit(visitId), { enabled: Boolean(visitId), staleTime: 30000 })
+}
+
 export function useVisits(patientId: string | undefined) {
   return useQuery(healthKeys.visits(patientId ?? ''), () => healthApi.visits(patientId as string), {
     enabled: Boolean(patientId),

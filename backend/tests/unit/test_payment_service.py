@@ -121,20 +121,28 @@ async def test_create_cash_payment(payment_service, test_patient, user_id):
 
 
 @pytest.mark.asyncio
-async def test_create_payment_with_visit(payment_service, test_patient, user_id):
-    """Test creating payment linked to a visit."""
-    visit_id = str(uuid4())
+async def test_create_payment_with_visit(payment_service, test_patient, user_id, db_session, tenant_id):
+    """Test creating payment linked to a visit (a real visit of that patient: an invented one is refused)."""
+    from datetime import date
 
-    data = PaymentCreate(
-        patient_id=test_patient.id,
-        visit_id=visit_id,
-        amount=1000.00,
-        payment_method="cash",
-    )
+    from fastapi import HTTPException
 
+    from app.shared.models import Visit
+
+    visit = Visit(id=str(uuid4()), tenant_id=tenant_id, patient_id=test_patient.id, doctor_id=user_id, visit_date=date.today(),
+                  visit_type="consultation", created_by=user_id, updated_by=user_id)
+    db_session.add(visit)
+    await db_session.commit()
+
+    data = PaymentCreate(patient_id=test_patient.id, visit_id=visit.id, amount=1000.00, payment_method="cash")
     payment = await payment_service.create_payment(data, received_by=user_id)
+    assert payment.visit_id == visit.id
 
-    assert payment.visit_id == visit_id
+    with pytest.raises(HTTPException) as e:
+        await payment_service.create_payment(
+            PaymentCreate(patient_id=test_patient.id, visit_id=str(uuid4()), amount=10.0, payment_method="cash"), received_by=user_id
+        )
+    assert e.value.status_code == 422
 
 
 @pytest.mark.asyncio

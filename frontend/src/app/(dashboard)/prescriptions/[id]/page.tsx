@@ -235,7 +235,7 @@ export default function PrescriptionDetailPage({
             {prescription.visit_id && (
               <div>
                 <p className="text-sm text-muted-foreground">{t('visit')}</p>
-                <Link href={`/patients/${prescription.patient_id}?visit=${prescription.visit_id}#visits`} className="hover:underline">
+                <Link href={`/consultations/${prescription.visit_id}`} className="hover:underline">
                   {prescription.visit_date ? fmt(prescription.visit_date, 'PPP') : t('visit')}
                   {prescription.visit_complaint ? ` · ${prescription.visit_complaint.slice(0, 80)}` : ''}
                 </Link>

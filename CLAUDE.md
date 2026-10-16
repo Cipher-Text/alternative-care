@@ -367,6 +367,7 @@ frontend/src/
 │   │   ├── dashboard/    # ✅ Analytics charts
 │   │   ├── patients/     # ✅ Patient CRUD
 │   │   ├── appointments/ # ✅ Appointment scheduling & views
+│   │   ├── consultations/# ✅ One screen per visit (`/consultations/{visitId}`): complaint, vitals, case details, diagnosis and plan, medicines, Save / Issue prescription / Finish — see docs/planning/doctor-workflow-analysis-2026-10.md
 │   │   ├── prescriptions/# ✅ List, detail, create/edit builder
 │   │   ├── profile/      # ✅ Doctor profile with degrees & trainings
 │   │   ├── payments/     # ✅ Payment dashboard, transactions, invoices

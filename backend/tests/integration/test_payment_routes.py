@@ -1,6 +1,7 @@
 """Integration tests for payment and invoice API routes."""
 
 from datetime import date, timedelta
+from uuid import uuid4
 from decimal import Decimal
 from unittest.mock import patch, AsyncMock
 import pytest
@@ -69,6 +70,28 @@ class TestPaymentRoutes:
         data = response.json()
         assert data["visit_id"] == test_visit.id
         assert data["amount"] == 1500.0
+
+    async def test_a_payment_must_be_for_this_clinics_patient_and_that_patients_visit(
+        self, client: AsyncClient, doctor_token: str, test_patient: Patient, test_patient_2: Patient, test_visit: Visit, db_session
+    ):
+        h = {"Authorization": f"Bearer {doctor_token}"}
+        base = {"amount": 500.0, "payment_method": "cash", "payment_date": str(date.today())}
+        # another clinic's patient
+        r = await client.post("/api/v1/payments", json={**base, "patient_id": test_patient_2.id}, headers=h)
+        assert r.status_code == 404
+        # a visit that is not this patient's (an invented one, and one that belongs to someone else)
+        r = await client.post("/api/v1/payments", json={**base, "patient_id": test_patient.id, "visit_id": str(uuid4())}, headers=h)
+        assert r.status_code == 422
+        other = Patient(id=str(uuid4()), tenant_id=test_patient.tenant_id, full_name="Someone Else", is_active=True)
+        db_session.add(other)
+        await db_session.commit()
+        r = await client.post("/api/v1/payments", json={**base, "patient_id": other.id, "visit_id": test_visit.id}, headers=h)
+        assert r.status_code == 422
+        # the right pair works, and the list can be narrowed to the visit and carries its id
+        ok = await client.post("/api/v1/payments", json={**base, "patient_id": test_patient.id, "visit_id": test_visit.id}, headers=h)
+        assert ok.status_code == 201
+        listed = (await client.get("/api/v1/payments", params={"visit_id": test_visit.id}, headers=h)).json()
+        assert [p["id"] for p in listed] == [ok.json()["id"]] and listed[0]["visit_id"] == test_visit.id
 
     async def test_get_payment(
         self, client: AsyncClient, doctor_token: str, test_payment: Payment

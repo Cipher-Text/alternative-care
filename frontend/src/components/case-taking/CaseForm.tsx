@@ -19,11 +19,13 @@ interface Props {
   onChange: (next: CaseData) => void
   /** Field key -> reason, from the server's 422 */
   errors?: Record<string, string>
+  /** Fields not to draw (another part of the screen replaces them); their saved values are kept untouched */
+  exclude?: string[]
 }
 
 /** Draws the fields of one system's form for one scope, from the server's definitions. Labels come from the
  * translations (caseTakingUi.<system>), so a new field needs no change here. */
-export function CaseForm({ system, scope, value, onChange, errors }: Props) {
+export function CaseForm({ system, scope, value, onChange, errors, exclude = [] }: Props) {
   const t = useTranslations(`caseTakingUi.${system}`)
   const tp = useTranslations('caseTakingUi.panel')
   const { data: defs } = useCaseDefinitions(system)
@@ -161,9 +163,10 @@ export function CaseForm({ system, scope, value, onChange, errors }: Props) {
   return (
     <div className="space-y-6">
       {groups.map((g, index) => {
-        const fields = defs.fields.filter((f) => f.group === g.key && f.scope === scope)
+        const fields = defs.fields.filter((f) => f.group === g.key && f.scope === scope && !exclude.includes(f.key))
         // A long form is easier in sections: the first is open, and any section with an answer or a problem is open too
         const needsAttention = fields.some((f) => value[f.key] !== undefined || errors?.[f.key])
+        if (fields.length === 0) return null
         return (
           <details key={g.key} open={index === 0 || needsAttention} className="group rounded-lg border">
             <summary className="flex cursor-pointer select-none items-center justify-between px-3 py-2 text-sm font-semibold">

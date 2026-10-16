@@ -74,6 +74,16 @@ export interface VisitListItem extends Vitals {
   status: string
 }
 
+/** One visit in full (the consultation screen). */
+export interface VisitDetail extends VisitListItem {
+  history_of_present_illness: string | null
+  examination_notes: string | null
+  treatment_plan: string | null
+  follow_up_date: string | null
+  follow_up_notes: string | null
+  blood_sugar_type: string | null
+}
+
 export type VisitInput = Partial<Vitals> & {
   patient_id: string
   doctor_id: string

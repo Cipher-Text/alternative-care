@@ -40,7 +40,7 @@ export function StartConsultationButton({
 
   if (!can('visits.write') || !doctorId) return null
 
-  const open = (visitId: string) => router.push(`/patients/${patientId}?visit=${visitId}#visits`)
+  const open = (visitId: string) => router.push(`/consultations/${visitId}`)
 
   const start = async () => {
     setBusy(true)
