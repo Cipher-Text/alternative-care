@@ -212,3 +212,24 @@ The sample users and passwords are for development and testing only. Always:
 
 **Last Updated:** May 29, 2026  
 **Maintained By:** AltCare Development Team
+
+## Catalogue (medicines, symptoms, aliases, mappings)
+
+`medicines.json`, `symptoms.json`, `medicine_aliases.json`, `symptom_aliases.json` and `medicine_symptom_mappings.json` are
+**generated** from `raw/` plus the human decisions in `backend/scripts/catalogue/curation.py`. Do not edit them by hand:
+
+```bash
+cd backend && venv/bin/python -m scripts.catalogue.build          # rewrite seed_data/ and print what changed vs raw/
+venv/bin/python -m scripts.catalogue.build --check                # fail if seed_data/ is stale
+```
+
+What the build changes from `raw/`: potency `"Not specified"` becomes null; the "no evidence-based dose" text is dropped from the
+dosage field (it stays in the description, so nothing can be copied into a prescription as a dose); raw `aliases_*` become alias
+rows alongside the curated common names; medicine to symptom links are regenerated from the indication text by whole-word match
+inside a clause, skipping negated and look-alike phrases ("croup-like", "no thirst during fever", "diabetic carbuncle"), with a
+`strength` of 2 to 5 (2 = only a very general word matched; higher = named early in the text or by several terms).
+The links record *traditional associations from the source text, not evidence of efficacy*; the UI must keep saying so.
+
+`scripts/seed.py` seeds all five files: rows that already exist are **completed** (empty columns filled, old placeholders cleared)
+but never overwritten, and an existing alias or link (including a strength an admin changed) is left alone, so it is safe to rerun.
+Symptoms with no medicine yet: Conjunctivitis, Croup, Frequent Urination, Herpes, Laryngitis, Migraine, Vertigo.

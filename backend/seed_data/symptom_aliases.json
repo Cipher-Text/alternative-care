@@ -1,0 +1,872 @@
+{
+  "aliases": [
+    {
+      "symptom_name_en": "Headache",
+      "alias_en": "Head pain",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Headache",
+      "alias_en": null,
+      "alias_bn": "মাথা ব্যথা",
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Fever",
+      "alias_en": "Pyrexia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Fever",
+      "alias_en": "High temperature",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Cold",
+      "alias_en": "Common cold",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Cold",
+      "alias_en": "Runny nose",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Cold",
+      "alias_en": "Coryza",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Cold",
+      "alias_en": null,
+      "alias_bn": "ঠান্ডা লাগা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Indigestion",
+      "alias_en": "Dyspepsia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Indigestion",
+      "alias_en": null,
+      "alias_bn": "অজীর্ণ",
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Constipation",
+      "alias_en": null,
+      "alias_bn": "কোষ্ঠবদ্ধতা",
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Diarrhea",
+      "alias_en": "Loose motion",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Diarrhea",
+      "alias_en": "Loose stools",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Diarrhea",
+      "alias_en": "Diarrhoea",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Diarrhea",
+      "alias_en": null,
+      "alias_bn": "পাতলা পায়খানা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Nausea",
+      "alias_en": "Feeling sick",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Nausea",
+      "alias_en": null,
+      "alias_bn": "বমিভাব",
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Anxiety",
+      "alias_en": "Nervousness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Anxiety",
+      "alias_en": "Worry",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Insomnia",
+      "alias_en": "Sleeplessness",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Insomnia",
+      "alias_en": null,
+      "alias_bn": "ঘুম না আসা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Fatigue",
+      "alias_en": "Tiredness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Fatigue",
+      "alias_en": "Exhaustion",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Fatigue",
+      "alias_en": null,
+      "alias_bn": "অবসাদ",
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Joint Pain",
+      "alias_en": "Arthralgia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Joint Pain",
+      "alias_en": null,
+      "alias_bn": "জোড়ায় ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Back Pain",
+      "alias_en": "Backache",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Back Pain",
+      "alias_en": null,
+      "alias_bn": "কোমর ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Skin Rash",
+      "alias_en": "Rash",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Skin Rash",
+      "alias_en": null,
+      "alias_bn": "ফুসকুড়ি",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Acne",
+      "alias_en": "Pimples",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Acne",
+      "alias_en": null,
+      "alias_bn": "পিম্পল",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Allergies",
+      "alias_en": "Allergy",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "High Blood Pressure",
+      "alias_en": "Hypertension",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "High Blood Pressure",
+      "alias_en": "High BP",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Diabetes Symptoms",
+      "alias_en": "High blood sugar",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Diabetes Symptoms",
+      "alias_en": null,
+      "alias_bn": "ডায়াবেটিস",
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Menstrual Cramps",
+      "alias_en": "Period pain",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Menstrual Cramps",
+      "alias_en": "Dysmenorrhoea",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Menstrual Cramps",
+      "alias_en": null,
+      "alias_bn": "পিরিয়ডের ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Sore Throat",
+      "alias_en": "Throat pain",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Sore Throat",
+      "alias_en": "Pharyngitis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Sore Throat",
+      "alias_en": null,
+      "alias_bn": "গলায় ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Ear Infection",
+      "alias_en": "Otitis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Ear Infection",
+      "alias_en": "Earache",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Ear Infection",
+      "alias_en": null,
+      "alias_bn": "কান ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Sinusitis",
+      "alias_en": "Sinus",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Sinusitis",
+      "alias_en": null,
+      "alias_bn": "সাইনাস",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Stress",
+      "alias_en": "Tension",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Stress",
+      "alias_en": "Mental stress",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Stress",
+      "alias_en": null,
+      "alias_bn": "টেনশন",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Vertigo",
+      "alias_en": "Spinning sensation",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Itching",
+      "alias_en": "Pruritus",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Toothache",
+      "alias_en": "Dental pain",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Toothache",
+      "alias_en": null,
+      "alias_bn": "দাঁত ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Depression",
+      "alias_en": "Low mood",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Depression",
+      "alias_en": "Sadness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Depression",
+      "alias_en": null,
+      "alias_bn": "মন খারাপ",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Leucorrhea",
+      "alias_en": "White discharge",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Leucorrhea",
+      "alias_en": "Vaginal discharge",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Leucorrhea",
+      "alias_en": null,
+      "alias_bn": "সাদা স্রাব",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Dyspnea",
+      "alias_en": "Shortness of breath",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Dyspnea",
+      "alias_en": "Breathlessness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Dyspnea",
+      "alias_en": "Difficulty breathing",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hemorrhoids",
+      "alias_en": "Piles",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hemorrhoids",
+      "alias_en": null,
+      "alias_bn": "পাইলস",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Heartburn",
+      "alias_en": "Acid reflux",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Sciatica",
+      "alias_en": "Sciatic pain",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Urticaria",
+      "alias_en": "Hives",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Urticaria",
+      "alias_en": "Nettle rash",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Grief",
+      "alias_en": "Bereavement",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Grief",
+      "alias_en": "Sorrow",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Night Sweats",
+      "alias_en": "Sweating at night",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Conjunctivitis",
+      "alias_en": "Pink eye",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Conjunctivitis",
+      "alias_en": "Red eye",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Conjunctivitis",
+      "alias_en": null,
+      "alias_bn": "চোখ লাল",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hoarseness",
+      "alias_en": null,
+      "alias_bn": "গলা বসে যাওয়া",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Migraine",
+      "alias_en": null,
+      "alias_bn": "আধকপালে মাথাব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hyperacidity",
+      "alias_en": "Acidity",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hyperacidity",
+      "alias_en": "Gastritis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hyperacidity",
+      "alias_en": null,
+      "alias_bn": "অ্যাসিডিটি",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hiccough",
+      "alias_en": "Hiccup",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Hiccough",
+      "alias_en": "Hiccups",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Loss of Appetite",
+      "alias_en": "Anorexia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Loss of Appetite",
+      "alias_en": "Poor appetite",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Loss of Appetite",
+      "alias_en": null,
+      "alias_bn": "খিদে না লাগা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Burning Palms and Soles",
+      "alias_en": "Burning feet",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Burning Palms and Soles",
+      "alias_en": null,
+      "alias_bn": "পায়ে জ্বালা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Tremors",
+      "alias_en": "Shaking",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Tremors",
+      "alias_en": "Trembling",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Abdominal Pain",
+      "alias_en": "Stomach ache",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Abdominal Pain",
+      "alias_en": "Stomach pain",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Abdominal Pain",
+      "alias_en": "Belly pain",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Abdominal Pain",
+      "alias_en": null,
+      "alias_bn": "পেটে ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Chest Pain",
+      "alias_en": "Pain in the chest",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Chest Pain",
+      "alias_en": null,
+      "alias_bn": "বুক ব্যথা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Dizziness",
+      "alias_en": "Giddiness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Dizziness",
+      "alias_en": "Light-headedness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Chills",
+      "alias_en": "Shivering",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Chills",
+      "alias_en": "Rigors",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Chills",
+      "alias_en": null,
+      "alias_bn": "শীত শীত ভাব",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Weakness",
+      "alias_en": "Debility",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Painful Urination",
+      "alias_en": "Dysuria",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Painful Urination",
+      "alias_en": "Burning urination",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Painful Urination",
+      "alias_en": null,
+      "alias_bn": "প্রস্রাবে জ্বালা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Frequent Urination",
+      "alias_en": "Polyuria",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Frequent Urination",
+      "alias_en": null,
+      "alias_bn": "বারবার প্রস্রাব",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Swelling (Edema)",
+      "alias_en": "Edema",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Swelling (Edema)",
+      "alias_en": "Oedema",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Swelling (Edema)",
+      "alias_en": "Fluid retention",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Blood in Urine",
+      "alias_en": "Hematuria",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Blood in Urine",
+      "alias_en": "Haematuria",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Excessive Thirst",
+      "alias_en": "Polydipsia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Excessive Thirst",
+      "alias_en": null,
+      "alias_bn": "অতিরিক্ত পিপাসা",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Paralysis",
+      "alias_en": "Palsy",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Memory Difficulty",
+      "alias_en": "Forgetfulness",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Memory Difficulty",
+      "alias_en": "Memory loss",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Memory Difficulty",
+      "alias_en": null,
+      "alias_bn": "ভুলে যাওয়া",
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Difficulty Concentrating",
+      "alias_en": "Poor concentration",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Difficulty Concentrating",
+      "alias_en": "Lack of focus",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Heavy Menstrual Bleeding",
+      "alias_en": "Menorrhagia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Heavy Menstrual Bleeding",
+      "alias_en": "Heavy periods",
+      "alias_bn": null,
+      "alias_type": "colloquial",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Bad Breath",
+      "alias_en": "Halitosis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "symptom_name_en": "Bad Breath",
+      "alias_en": null,
+      "alias_bn": "মুখে গন্ধ",
+      "alias_type": "colloquial",
+      "priority": 5
+    }
+  ]
+}

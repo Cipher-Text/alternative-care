@@ -39,8 +39,11 @@ from app.shared.models import (
     District,
     Division,
     Medicine,
+    MedicineAlias,
+    MedicineSymptomMapping,
     Pharmacy,
     Symptom,
+    SymptomAlias,
     Tenant,
     Translation,
     Upazila,
@@ -184,20 +187,43 @@ class SeedData:
         await self.session.flush()
         return stats
 
+    @staticmethod
+    def _fill_gaps(row, data: dict) -> bool:
+        """Complete an existing catalogue row from the seed file without overwriting what an admin edited: only empty columns
+        are filled, and the two placeholders earlier seed files wrote (potency "Not specified", the "no evidence-based dose"
+        text in the dosage field) are cleared."""
+        changed = False
+        for key, value in data.items():
+            if key in ("is_global", "is_active") or value is None:
+                continue
+            if getattr(row, key, None) in (None, ""):
+                setattr(row, key, value)
+                changed = True
+        if getattr(row, "potency", None) == "Not specified":
+            row.potency = None
+            changed = True
+        if (getattr(row, "dosage_guidance_en", None) or "").startswith("No evidence-based dose"):
+            row.dosage_guidance_en = row.dosage_guidance_bn = None
+            changed = True
+        return changed
+
     async def seed_medicines(self, tenant_id: str) -> int:
-        """Seed medicines catalog."""
+        """Seed medicines catalog; rows that exist are completed, not replaced."""
         data = self.load_json("medicines.json")
         count = 0
+        self.medicines_completed = 0
 
         print("\n💊 Seeding medicines...")
         for medicine_data in data["medicines"]:
-            existing = await self.session.execute(
+            existing = (await self.session.execute(
                 select(Medicine).where(
                     Medicine.name_en == medicine_data["name_en"],
                     Medicine.system == medicine_data["system"]
                 )
-            )
-            if not existing.scalar_one_or_none():
+            )).scalar_one_or_none()
+            if existing:
+                self.medicines_completed += self._fill_gaps(existing, medicine_data)
+            else:
                 # is_global rows must have tenant_id=NULL (ck_medicines_tenant_global) —
                 # only tenant-owned rows get the default tenant's id.
                 row_tenant_id = None if medicine_data.get("is_global") else tenant_id
@@ -209,18 +235,21 @@ class SeedData:
         return count
 
     async def seed_symptoms(self, tenant_id: str) -> int:
-        """Seed symptoms catalog."""
+        """Seed symptoms catalog; rows that exist are completed, not replaced."""
         data = self.load_json("symptoms.json")
         count = 0
+        self.symptoms_completed = 0
 
         print("\n🩺 Seeding symptoms...")
         for symptom_data in data["symptoms"]:
-            existing = await self.session.execute(
+            existing = (await self.session.execute(
                 select(Symptom).where(
                     Symptom.name_en == symptom_data["name_en"]
                 )
-            )
-            if not existing.scalar_one_or_none():
+            )).scalar_one_or_none()
+            if existing:
+                self.symptoms_completed += self._fill_gaps(existing, symptom_data)
+            else:
                 # is_global rows must have tenant_id=NULL (ck_symptoms_tenant_global) —
                 # only tenant-owned rows get the default tenant's id.
                 row_tenant_id = None if symptom_data.get("is_global") else tenant_id
@@ -230,6 +259,55 @@ class SeedData:
 
         await self.session.flush()
         return count
+
+    async def seed_catalogue_links(self) -> dict[str, int]:
+        """Seed medicine/symptom aliases and the medicine<->symptom mappings, all global (tenant_id NULL).
+
+        Needs the medicines and symptoms to exist already. Built by `python -m scripts.catalogue.build` from raw/. A link or
+        alias that is already there is left exactly as it is, so a strength a platform admin changed is never reset.
+        """
+        medicines = {(m.name_en, m.system): m.id for m in (await self.session.execute(select(Medicine).where(Medicine.tenant_id.is_(None)))).scalars()}
+        symptoms = {x.name_en: x.id for x in (await self.session.execute(select(Symptom).where(Symptom.tenant_id.is_(None)))).scalars()}
+        stats = {"medicine_aliases": 0, "symptom_aliases": 0, "mappings": 0, "skipped": 0}
+
+        print("\n🔗 Seeding aliases and medicine-symptom mappings...")
+        have = {(a.medicine_id, (a.alias_en or "").lower(), a.alias_bn) for a in (await self.session.execute(select(MedicineAlias))).scalars()}
+        for a in self.load_json("medicine_aliases.json")["aliases"]:
+            medicine_id = medicines.get((a["medicine_name_en"], a["system"]))
+            key = (medicine_id, (a["alias_en"] or "").lower(), a["alias_bn"])
+            if medicine_id is None:
+                stats["skipped"] += 1
+            elif key not in have:
+                have.add(key)
+                self.session.add(MedicineAlias(medicine_id=medicine_id, tenant_id=None, alias_en=a["alias_en"], alias_bn=a["alias_bn"],
+                                               alias_type=a["alias_type"], priority=a["priority"]))
+                stats["medicine_aliases"] += 1
+
+        have = {(a.symptom_id, (a.alias_en or "").lower(), a.alias_bn) for a in (await self.session.execute(select(SymptomAlias))).scalars()}
+        for a in self.load_json("symptom_aliases.json")["aliases"]:
+            symptom_id = symptoms.get(a["symptom_name_en"])
+            key = (symptom_id, (a["alias_en"] or "").lower(), a["alias_bn"])
+            if symptom_id is None:
+                stats["skipped"] += 1
+            elif key not in have:
+                have.add(key)
+                self.session.add(SymptomAlias(symptom_id=symptom_id, tenant_id=None, alias_en=a["alias_en"], alias_bn=a["alias_bn"],
+                                              alias_type=a["alias_type"], priority=a["priority"]))
+                stats["symptom_aliases"] += 1
+
+        have = {(m.medicine_id, m.symptom_id) for m in (await self.session.execute(select(MedicineSymptomMapping))).scalars()}
+        for link in self.load_json("medicine_symptom_mappings.json")["mappings"]:
+            medicine_id = medicines.get((link["medicine_name_en"], link["system"]))
+            symptom_id = symptoms.get(link["symptom_name_en"])
+            if medicine_id is None or symptom_id is None:
+                stats["skipped"] += 1
+            elif (medicine_id, symptom_id) not in have:
+                have.add((medicine_id, symptom_id))
+                self.session.add(MedicineSymptomMapping(medicine_id=medicine_id, symptom_id=symptom_id, tenant_id=None, strength=link["strength"]))
+                stats["mappings"] += 1
+
+        await self.session.flush()
+        return stats
 
     async def seed_pharmacies(self) -> int:
         """
@@ -328,6 +406,7 @@ async def main():
                 default_tenant_id = await seeder.get_default_tenant_id()
                 medicines_count = await seeder.seed_medicines(default_tenant_id)
                 symptoms_count = await seeder.seed_symptoms(default_tenant_id)
+                link_stats = await seeder.seed_catalogue_links()
                 institutions_count = await seeder.seed_institutions()
                 demo_stats = await seed_demo_patients(session) if settings.ENVIRONMENT == "development" else None
                 if settings.ENVIRONMENT == "development":
@@ -349,6 +428,9 @@ async def main():
         print(f"  • Upazilas:      {geo_stats['upazilas']:>3} created")
         print(f"  • Medicines:     {medicines_count:>3} created")
         print(f"  • Symptoms:      {symptoms_count:>3} created")
+        print(f"  • Completed:     {seeder.medicines_completed} medicines, {seeder.symptoms_completed} symptoms already there")
+        print(f"  • Aliases:       {link_stats['medicine_aliases']} medicine, {link_stats['symptom_aliases']} symptom created")
+        print(f"  • Mappings:      {link_stats['mappings']:>3} created ({link_stats['skipped']} skipped)")
         print(f"  • Institutions:  {institutions_count:>3} created")
         print(f"  • Pharmacies:    {pharmacies_count:>3} created")
         print(f"  • Translations:  {translations_count:>3} created")

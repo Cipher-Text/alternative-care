@@ -1,0 +1,1412 @@
+{
+  "aliases": [
+    {
+      "medicine_name_en": "Arnica Montana",
+      "system": "homeopathy",
+      "alias_en": "Arnica",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Arnica Montana",
+      "system": "homeopathy",
+      "alias_en": "Arnika",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Arnica Montana",
+      "system": "homeopathy",
+      "alias_en": "Leopard's bane",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Belladonna",
+      "system": "homeopathy",
+      "alias_en": "Deadly nightshade",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "alias_en": "Nux vom",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "alias_en": "Poison nut",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Pulsatilla",
+      "system": "homeopathy",
+      "alias_en": "Puls",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Pulsatilla",
+      "system": "homeopathy",
+      "alias_en": "Windflower",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "alias_en": "Rhus tox",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "alias_en": "Poison ivy",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "alias_en": "Indian ginseng",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "alias_en": "Winter cherry",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "alias_en": "Ashvagandha",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "alias_en": "Aswagandha",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Tulsi",
+      "system": "ayurveda",
+      "alias_en": "Holy basil",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Tulsi",
+      "system": "ayurveda",
+      "alias_en": "Sacred basil",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Brahmi",
+      "system": "ayurveda",
+      "alias_en": "Bacopa",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Brahmi",
+      "system": "ayurveda",
+      "alias_en": "Water hyssop",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Brahmi",
+      "system": "ayurveda",
+      "alias_en": "Bramhi",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "alias_en": "Black seed",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "alias_en": "Black cumin",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "alias_en": "Nigella",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Senna",
+      "system": "unani",
+      "alias_en": "Sana makki",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Senna",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "সোনামুখী",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Turmeric",
+      "system": "herbal",
+      "alias_en": "Haldi",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ginger",
+      "system": "herbal",
+      "alias_en": "Adrak",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Mercurius Solubilis",
+      "system": "homeopathy",
+      "alias_en": "Merc sol",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Argentum Nitricum",
+      "system": "homeopathy",
+      "alias_en": "Arg nit",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Thuja Occidentalis",
+      "system": "homeopathy",
+      "alias_en": "Thuja",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Thuja Occidentalis",
+      "system": "homeopathy",
+      "alias_en": "Arbor vitae",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Sulphur",
+      "system": "homeopathy",
+      "alias_en": "Sulph",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ipecacuanha",
+      "system": "homeopathy",
+      "alias_en": "Ipecac",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ipecacuanha",
+      "system": "homeopathy",
+      "alias_en": "Ipec",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Causticum",
+      "system": "homeopathy",
+      "alias_en": "Caust",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Cantharis",
+      "system": "homeopathy",
+      "alias_en": "Spanish fly",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Hepar Sulphuris",
+      "system": "homeopathy",
+      "alias_en": "Hepar sulph",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Hepar Sulphuris",
+      "system": "homeopathy",
+      "alias_en": "Hepar sulphur",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Magnesia Phosphorica",
+      "system": "homeopathy",
+      "alias_en": "Mag phos",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Aconitum Napellus",
+      "system": "homeopathy",
+      "alias_en": "Aconite",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Aconitum Napellus",
+      "system": "homeopathy",
+      "alias_en": "Monkshood",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Arsenicum Album",
+      "system": "homeopathy",
+      "alias_en": "Ars alb",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Arsenicum Album",
+      "system": "homeopathy",
+      "alias_en": "Arsenic album",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Apis Mellifica",
+      "system": "homeopathy",
+      "alias_en": "Apis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Apis Mellifica",
+      "system": "homeopathy",
+      "alias_en": "Honey bee",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Calcarea Carbonica",
+      "system": "homeopathy",
+      "alias_en": "Calc carb",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ferrum Phosphoricum",
+      "system": "homeopathy",
+      "alias_en": "Ferrum phos",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "alias_en": "Gels",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "alias_en": "Yellow jasmine",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Colocynthis",
+      "system": "homeopathy",
+      "alias_en": "Coloc",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Colocynthis",
+      "system": "homeopathy",
+      "alias_en": "Bitter apple",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Veratrum Album",
+      "system": "homeopathy",
+      "alias_en": "Verat alb",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Veratrum Album",
+      "system": "homeopathy",
+      "alias_en": "White hellebore",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Coffea Cruda",
+      "system": "homeopathy",
+      "alias_en": "Coffea",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ignatia",
+      "system": "homeopathy",
+      "alias_en": "Ignatia amara",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ignatia",
+      "system": "homeopathy",
+      "alias_en": "St Ignatius bean",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Lycopodium",
+      "system": "homeopathy",
+      "alias_en": "Lyc",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Lycopodium",
+      "system": "homeopathy",
+      "alias_en": "Club moss",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Phosphorus",
+      "system": "homeopathy",
+      "alias_en": "Phos",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Conium",
+      "system": "homeopathy",
+      "alias_en": "Hemlock",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Graphites",
+      "system": "homeopathy",
+      "alias_en": "Graph",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Silicea",
+      "system": "homeopathy",
+      "alias_en": "Silica",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Drosera",
+      "system": "homeopathy",
+      "alias_en": "Sundew",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Euphrasia",
+      "system": "homeopathy",
+      "alias_en": "Eyebright",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ledum",
+      "system": "homeopathy",
+      "alias_en": "Ledum palustre",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ledum",
+      "system": "homeopathy",
+      "alias_en": "Marsh tea",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Podophyllum",
+      "system": "homeopathy",
+      "alias_en": "May apple",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Phytolacca",
+      "system": "homeopathy",
+      "alias_en": "Poke root",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Staphisagria",
+      "system": "homeopathy",
+      "alias_en": "Staph",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Staphisagria",
+      "system": "homeopathy",
+      "alias_en": "Stavesacre",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Valeriana",
+      "system": "homeopathy",
+      "alias_en": "Valerian",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Symphytum",
+      "system": "homeopathy",
+      "alias_en": "Comfrey",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Chyavanaprasha",
+      "system": "ayurveda",
+      "alias_en": "Chyawanprash",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Chyavanaprasha",
+      "system": "ayurveda",
+      "alias_en": "Chyavanprash",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Gokshura Churna",
+      "system": "ayurveda",
+      "alias_en": "Gokhru",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Gokshura Churna",
+      "system": "ayurveda",
+      "alias_en": "Tribulus",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "alias_en": "Giloy",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "alias_en": null,
+      "alias_bn": "গুলঞ্চ",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Vacha Churna",
+      "system": "ayurveda",
+      "alias_en": "Sweet flag",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Vacha Churna",
+      "system": "ayurveda",
+      "alias_en": "Bach",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Vacha Churna",
+      "system": "ayurveda",
+      "alias_en": null,
+      "alias_bn": "বচ",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Yashtimadhu Churna",
+      "system": "ayurveda",
+      "alias_en": "Licorice",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Yashtimadhu Churna",
+      "system": "ayurveda",
+      "alias_en": "Mulethi",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Yashtimadhu Churna",
+      "system": "ayurveda",
+      "alias_en": null,
+      "alias_bn": "যষ্টিমধু",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Sarpagandha Churna",
+      "system": "ayurveda",
+      "alias_en": "Rauwolfia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Sarpagandha Churna",
+      "system": "ayurveda",
+      "alias_en": "Indian snakeroot",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Musta Churna",
+      "system": "ayurveda",
+      "alias_en": "Nagarmotha",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Musta Churna",
+      "system": "ayurveda",
+      "alias_en": "Nut grass",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Pippali Churna",
+      "system": "ayurveda",
+      "alias_en": "Long pepper",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Pippali Churna",
+      "system": "ayurveda",
+      "alias_en": null,
+      "alias_bn": "পিপুল",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Basal",
+      "system": "unani",
+      "alias_en": "Onion",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Basal",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "পেঁয়াজ",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "alias_en": "Cinnamon",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "দারুচিনি",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Funduq",
+      "system": "unani",
+      "alias_en": "Hazelnut",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "alias_en": "Cardamom",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "alias_en": "Green cardamom",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "alias_en": "Elaichi",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "এলাচ",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kababchini",
+      "system": "unani",
+      "alias_en": "Cubeb",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kababchini",
+      "system": "unani",
+      "alias_en": "Tailed pepper",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kaner",
+      "system": "unani",
+      "alias_en": "Oleander",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khar-e-Khasak Khurd",
+      "system": "unani",
+      "alias_en": "Gokhru",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khar-e-Khasak Khurd",
+      "system": "unani",
+      "alias_en": "Puncture vine",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khar-e-Khasak Khurd",
+      "system": "unani",
+      "alias_en": "Caltrops",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "alias_en": "Amaltas",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "alias_en": "Indian laburnum",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "alias_en": "Golden shower",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "সোনালু",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khubbazi",
+      "system": "unani",
+      "alias_en": "Mallow",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Khubbazi",
+      "system": "unani",
+      "alias_en": "Common mallow",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kishmish",
+      "system": "unani",
+      "alias_en": "Raisin",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kishmish",
+      "system": "unani",
+      "alias_en": "Dried grapes",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kulthi",
+      "system": "unani",
+      "alias_en": "Horse gram",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Mauz",
+      "system": "unani",
+      "alias_en": "Banana",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Mauz",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "কলা",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Mazoo",
+      "system": "unani",
+      "alias_en": "Oak gall",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Mulsari",
+      "system": "unani",
+      "alias_en": "Bakul",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Mulsari",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "বকুল",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Muqil",
+      "system": "unani",
+      "alias_en": "Guggul",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Muqil",
+      "system": "unani",
+      "alias_en": "Indian bdellium",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Pista",
+      "system": "unani",
+      "alias_en": "Pistachio",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Pista",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "পেস্তা বাদাম",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "alias_en": "Clove",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "alias_en": "Laung",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "alias_en": null,
+      "alias_bn": "লবঙ্গ",
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Qurtum",
+      "system": "unani",
+      "alias_en": "Safflower",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Shalgum",
+      "system": "unani",
+      "alias_en": "Turnip",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Sumbul-ut-Teeb",
+      "system": "unani",
+      "alias_en": "Spikenard",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Sumbul-ut-Teeb",
+      "system": "unani",
+      "alias_en": "Jatamansi",
+      "alias_bn": null,
+      "alias_type": "regional",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Tagar",
+      "system": "unani",
+      "alias_en": "Indian valerian",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Turanj",
+      "system": "unani",
+      "alias_en": "Citron",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Bryonia Alba",
+      "system": "homeopathy",
+      "alias_en": "Bryonia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Bryonia Alba",
+      "system": "homeopathy",
+      "alias_en": "Bry",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Chamomilla",
+      "system": "homeopathy",
+      "alias_en": "Cham",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Hypericum Perforatum",
+      "system": "homeopathy",
+      "alias_en": "Hypericum",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Hypericum Perforatum",
+      "system": "homeopathy",
+      "alias_en": "St John's wort",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Allium Cepa",
+      "system": "homeopathy",
+      "alias_en": "Allium cep",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Allium Cepa",
+      "system": "homeopathy",
+      "alias_en": "Red onion",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Carbo Vegetabilis",
+      "system": "homeopathy",
+      "alias_en": "Carbo veg",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Amla (Amalaki)",
+      "system": "ayurveda",
+      "alias_en": "Amalaki",
+      "alias_bn": "আমলকি",
+      "alias_type": "common_name",
+      "priority": 6
+    },
+    {
+      "medicine_name_en": "Amla (Amalaki)",
+      "system": "ayurveda",
+      "alias_en": "Indian gooseberry",
+      "alias_bn": "ধাত্রী",
+      "alias_type": "common_name",
+      "priority": 6
+    },
+    {
+      "medicine_name_en": "Shilajit",
+      "system": "ayurveda",
+      "alias_en": "Mineral pitch",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Shilajit",
+      "system": "ayurveda",
+      "alias_en": "Silajit",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Isabgol (Psyllium)",
+      "system": "unani",
+      "alias_en": "Psyllium",
+      "alias_bn": "ভুসি ইসবগুল",
+      "alias_type": "common_name",
+      "priority": 6
+    },
+    {
+      "medicine_name_en": "Isabgol (Psyllium)",
+      "system": "unani",
+      "alias_en": "Psyllium husk",
+      "alias_bn": "ইসপগুল",
+      "alias_type": "common_name",
+      "priority": 6
+    },
+    {
+      "medicine_name_en": "Moringa (Sajna)",
+      "system": "herbal",
+      "alias_en": "Sajna",
+      "alias_bn": "সজনে",
+      "alias_type": "common_name",
+      "priority": 6
+    },
+    {
+      "medicine_name_en": "Moringa (Sajna)",
+      "system": "herbal",
+      "alias_en": "Drumstick tree",
+      "alias_bn": "সজনে পাতা",
+      "alias_type": "common_name",
+      "priority": 6
+    },
+    {
+      "medicine_name_en": "Neem",
+      "system": "herbal",
+      "alias_en": "Margosa",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Neem",
+      "system": "herbal",
+      "alias_en": "Nimba",
+      "alias_bn": null,
+      "alias_type": "transliteration",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Calcarea Phosphorica",
+      "system": "homeopathy",
+      "alias_en": "Calc phos",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "China Officinalis",
+      "system": "homeopathy",
+      "alias_en": "China",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "China Officinalis",
+      "system": "homeopathy",
+      "alias_en": "Cinchona",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "China Officinalis",
+      "system": "homeopathy",
+      "alias_en": "Peruvian bark",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Cimicifuga",
+      "system": "homeopathy",
+      "alias_en": "Actaea racemosa",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Cimicifuga",
+      "system": "homeopathy",
+      "alias_en": "Black cohosh",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Dulcamara",
+      "system": "homeopathy",
+      "alias_en": "Bittersweet",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kali Bichromicum",
+      "system": "homeopathy",
+      "alias_en": "Kali bich",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kali Bichromicum",
+      "system": "homeopathy",
+      "alias_en": "Kali bichrom",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Medorrhinum",
+      "system": "homeopathy",
+      "alias_en": "Medorrhin",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ruta Graveolens",
+      "system": "homeopathy",
+      "alias_en": "Ruta",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Ruta Graveolens",
+      "system": "homeopathy",
+      "alias_en": "Rue",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Secale Cornutum",
+      "system": "homeopathy",
+      "alias_en": "Ergot",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Tuberculinum",
+      "system": "homeopathy",
+      "alias_en": "Tub",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Natrum Muriaticum",
+      "system": "homeopathy",
+      "alias_en": "Nat mur",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Natrum Muriaticum",
+      "system": "homeopathy",
+      "alias_en": "Common salt",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Natrum Sulphuricum",
+      "system": "homeopathy",
+      "alias_en": "Nat sulph",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Natrum Phosphoricum",
+      "system": "homeopathy",
+      "alias_en": "Nat phos",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kali Phosphoricum",
+      "system": "homeopathy",
+      "alias_en": "Kali phos",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kali Muriaticum",
+      "system": "homeopathy",
+      "alias_en": "Kali mur",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Kali Sulphuricum",
+      "system": "homeopathy",
+      "alias_en": "Kali sulph",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Berberis Vulgaris",
+      "system": "homeopathy",
+      "alias_en": "Berberis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Berberis Vulgaris",
+      "system": "homeopathy",
+      "alias_en": "Barberry",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Cina",
+      "system": "homeopathy",
+      "alias_en": "Wormseed",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Hamamelis Virginiana",
+      "system": "homeopathy",
+      "alias_en": "Hamamelis",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Hamamelis Virginiana",
+      "system": "homeopathy",
+      "alias_en": "Witch hazel",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    },
+    {
+      "medicine_name_en": "Spongia Tosta",
+      "system": "homeopathy",
+      "alias_en": "Spongia",
+      "alias_bn": null,
+      "alias_type": "common_name",
+      "priority": 5
+    }
+  ]
+}

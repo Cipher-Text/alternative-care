@@ -1,0 +1,877 @@
+{
+  "symptoms": [
+    {
+      "name_en": "Headache",
+      "name_bn": "মাথাব্যথা",
+      "description_en": "Pain in the head region",
+      "description_bn": "মাথার অঞ্চলে ব্যথা",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Fever",
+      "name_bn": "জ্বর",
+      "description_en": "Elevated body temperature",
+      "description_bn": "উচ্চ শরীরের তাপমাত্রা",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Cough",
+      "name_bn": "কাশি",
+      "description_en": "Forceful expulsion of air from lungs",
+      "description_bn": "ফুসফুস থেকে বায়ুর জোরপূর্বক বহিষ্কার",
+      "category": "respiratory",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Cold",
+      "name_bn": "সর্দি",
+      "description_en": "Common cold with runny nose",
+      "description_bn": "নাক দিয়ে পানি পড়া সহ সাধারণ সর্দি",
+      "category": "respiratory",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Indigestion",
+      "name_bn": "বদহজম",
+      "description_en": "Difficulty digesting food",
+      "description_bn": "খাবার হজম করতে অসুবিধা",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Constipation",
+      "name_bn": "কোষ্ঠকাঠিন্য",
+      "description_en": "Difficulty passing stools",
+      "description_bn": "মল ত্যাগ করতে অসুবিধা",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Diarrhea",
+      "name_bn": "ডায়রিয়া",
+      "description_en": "Loose or watery stools",
+      "description_bn": "আলগা বা জলীয় মল",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Nausea",
+      "name_bn": "বমি বমি ভাব",
+      "description_en": "Feeling of wanting to vomit",
+      "description_bn": "বমি করতে চাওয়ার অনুভূতি",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Anxiety",
+      "name_bn": "উদ্বেগ",
+      "description_en": "Feeling of worry or nervousness",
+      "description_bn": "চিন্তা বা স্নায়বিকতার অনুভূতি",
+      "category": "mental",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Insomnia",
+      "name_bn": "অনিদ্রা",
+      "description_en": "Difficulty falling or staying asleep",
+      "description_bn": "ঘুমিয়ে পড়তে বা ঘুমিয়ে থাকতে অসুবিধা",
+      "category": "mental",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Fatigue",
+      "name_bn": "ক্লান্তি",
+      "description_en": "Extreme tiredness or exhaustion",
+      "description_bn": "চরম ক্লান্তি বা অবসাদ",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Joint Pain",
+      "name_bn": "জয়েন্ট ব্যথা",
+      "description_en": "Pain in the joints",
+      "description_bn": "জয়েন্টে ব্যথা",
+      "category": "musculoskeletal",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Back Pain",
+      "name_bn": "পিঠ ব্যথা",
+      "description_en": "Pain in the back region",
+      "description_bn": "পিঠের অঞ্চলে ব্যথা",
+      "category": "musculoskeletal",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Muscle Soreness",
+      "name_bn": "পেশী ব্যথা",
+      "description_en": "Soreness or pain in muscles",
+      "description_bn": "পেশীতে ব্যথা বা কালশিটে ভাব",
+      "category": "musculoskeletal",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Skin Rash",
+      "name_bn": "ত্বকের ফুসকুড়ি",
+      "description_en": "Red, itchy skin eruptions",
+      "description_bn": "লাল, চুলকানি ত্বকের বিস্ফোরণ",
+      "category": "skin",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Acne",
+      "name_bn": "ব্রণ",
+      "description_en": "Inflammatory skin condition with pimples",
+      "description_bn": "ব্রণ সহ প্রদাহজনক ত্বকের অবস্থা",
+      "category": "skin",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Asthma",
+      "name_bn": "হাঁপানি",
+      "description_en": "Breathing difficulty with wheezing",
+      "description_bn": "শ্বাসকষ্ট এবং হাঁপানি",
+      "category": "respiratory",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Allergies",
+      "name_bn": "এলার্জি",
+      "description_en": "Immune system reaction to substances",
+      "description_bn": "পদার্থের প্রতি ইমিউন সিস্টেমের প্রতিক্রিয়া",
+      "category": "immune",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "High Blood Pressure",
+      "name_bn": "উচ্চ রক্তচাপ",
+      "description_en": "Elevated blood pressure",
+      "description_bn": "উচ্চ রক্তচাপ",
+      "category": "cardiovascular",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Diabetes Symptoms",
+      "name_bn": "ডায়াবেটিসের লক্ষণ",
+      "description_en": "Symptoms related to high blood sugar",
+      "description_bn": "উচ্চ রক্তে শর্করা সম্পর্কিত লক্ষণ",
+      "category": "metabolic",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Menstrual Cramps",
+      "name_bn": "মাসিকের ব্যথা",
+      "description_en": "Painful cramps during menstruation",
+      "description_bn": "মাসিকের সময় বেদনাদায়ক ক্র্যাম্প",
+      "category": "reproductive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Sore Throat",
+      "name_bn": "গলা ব্যথা",
+      "description_en": "Pain or irritation in the throat",
+      "description_bn": "গলায় ব্যথা বা জ্বালা",
+      "category": "respiratory",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Ear Infection",
+      "name_bn": "কানের সংক্রমণ",
+      "description_en": "Infection of the ear canal",
+      "description_bn": "কানের খালের সংক্রমণ",
+      "category": "ear_nose_throat",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Sinusitis",
+      "name_bn": "সাইনোসাইটিস",
+      "description_en": "Inflammation of the sinuses",
+      "description_bn": "সাইনাসের প্রদাহ",
+      "category": "respiratory",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Stress",
+      "name_bn": "মানসিক চাপ",
+      "description_en": "Mental or emotional strain",
+      "description_bn": "মানসিক বা আবেগগত চাপ",
+      "category": "mental",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Jaundice",
+      "name_bn": "জন্ডিস",
+      "description_en": "Yellowing of the skin and eyes due to liver dysfunction",
+      "description_bn": "যকৃতের কার্যক্ষমতা হ্রাসের কারণে ত্বক ও চোখ হলুদ হয়ে যাওয়া",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Vertigo",
+      "name_bn": "মাথা ঘোরা (ভার্টিগো)",
+      "description_en": "Sensation of spinning or dizziness",
+      "description_bn": "ঘোরার বা মাথা ঘোরার অনুভূতি",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Motion Sickness",
+      "name_bn": "মোশন সিকনেস",
+      "description_en": "Nausea and dizziness caused by the motion of travel",
+      "description_bn": "ভ্রমণের নড়াচড়ার কারণে সৃষ্ট বমি বমি ভাব ও মাথা ঘোরা",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Nosebleed",
+      "name_bn": "নাক দিয়ে রক্তপাত",
+      "description_en": "Bleeding from the nasal passages",
+      "description_bn": "নাসারন্ধ্র দিয়ে রক্তপাত",
+      "category": "ear_nose_throat",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Gout",
+      "name_bn": "গেঁটেবাত",
+      "description_en": "Joint pain and swelling from uric acid buildup, often in the big toe",
+      "description_bn": "ইউরিক অ্যাসিড জমার কারণে সন্ধিব্যথা ও ফোলাভাব, প্রায়ই পায়ের বুড়ো আঙুলে",
+      "category": "musculoskeletal",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Warts",
+      "name_bn": "আঁচিল",
+      "description_en": "Small rough skin growths caused by viral infection",
+      "description_bn": "ভাইরাস সংক্রমণের কারণে সৃষ্ট ত্বকের ছোট রুক্ষ বৃদ্ধি",
+      "category": "skin",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Glandular Swelling",
+      "name_bn": "গ্রন্থি ফোলা",
+      "description_en": "Swelling of lymph glands or tonsils, often with throat discomfort",
+      "description_bn": "লসিকা গ্রন্থি বা টনসিলের ফোলাভাব, প্রায়ই গলার অস্বস্তির সাথে",
+      "category": "ear_nose_throat",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Bronchitis",
+      "name_bn": "ব্রংকাইটিস",
+      "description_en": "Inflammation of the bronchial tubes causing cough and mucus",
+      "description_bn": "ব্রঙ্কিয়াল নালীর প্রদাহ যা কাশি ও শ্লেষ্মা সৃষ্টি করে",
+      "category": "respiratory",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Colic",
+      "description_en": "Episodes of cramping abdominal pain, or prolonged unexplained crying in infants",
+      "category": "digestive",
+      "name_bn": "উদরশূল",
+      "description_bn": "পেটে খিচুনির মতো ব্যথা, বা শিশুর অকারণ দীর্ঘ কান্না",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Itching",
+      "description_en": "Skin sensation that creates a strong urge to scratch",
+      "category": "skin",
+      "name_bn": "চুলকানি",
+      "description_bn": "ত্বকে চুলকানোর তীব্র ইচ্ছা সৃষ্টিকারী অনুভূতি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Palpitation",
+      "description_en": "Awareness of a fast, pounding, fluttering or irregular heartbeat",
+      "category": "cardiovascular",
+      "name_bn": "বুক ধড়ফড়",
+      "description_bn": "দ্রুত, জোরালো বা অনিয়মিত হৃদস্পন্দনের অনুভূতি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Restlessness",
+      "description_en": "Inability to stay still or relax, with purposeless movement and unease",
+      "category": "mental",
+      "name_bn": "অস্থিরতা",
+      "description_bn": "স্থির বা শিথিল থাকতে না পারা এবং উদ্দেশ্যহীন নড়াচড়া",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Neuralgia",
+      "description_en": "Sharp or burning pain along the path of an irritated nerve",
+      "category": "neurological",
+      "name_bn": "স্নায়ুশূল",
+      "description_bn": "উত্তেজিত স্নায়ুর পথ ধরে তীক্ষ্ণ বা জ্বালাপোড়া ব্যথা",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Rheumatism",
+      "description_en": "Umbrella term for painful conditions of the joints and connective tissue",
+      "category": "musculoskeletal",
+      "name_bn": "বাত",
+      "description_bn": "গাঁট ও সংযোজক কলার বেদনাদায়ক অবস্থার সাধারণ নাম",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Toothache",
+      "description_en": "Pain in or around a tooth, usually from decay, infection or gum disease",
+      "category": "ear_nose_throat",
+      "name_bn": "দাঁতের ব্যথা",
+      "description_bn": "দাঁতে বা দাঁতের চারপাশে ব্যথা, সাধারণত ক্ষয়, সংক্রমণ বা মাড়ির রোগ থেকে",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Irritability",
+      "description_en": "Tendency to become easily annoyed, angry or short-tempered",
+      "category": "mental",
+      "name_bn": "খিটখিটে মেজাজ",
+      "description_bn": "সহজে বিরক্ত, রাগান্বিত বা রুক্ষ হয়ে ওঠার প্রবণতা",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Depression",
+      "description_en": "Persistent low mood and loss of interest that disrupts daily life",
+      "category": "mental",
+      "name_bn": "বিষণ্নতা",
+      "description_bn": "দীর্ঘস্থায়ী মন খারাপ ও আগ্রহ হারানো যা দৈনন্দিন জীবনে বাধা দেয়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Flatulence",
+      "description_en": "Passing of gas from the bowel through the anus",
+      "category": "digestive",
+      "name_bn": "পেটে গ্যাস",
+      "description_bn": "অন্ত্র থেকে পায়ুপথে গ্যাস নির্গমন",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Leucorrhea",
+      "description_en": "Whitish or yellowish vaginal discharge, often from hormonal change or infection",
+      "category": "reproductive",
+      "name_bn": "শ্বেতপ্রদর",
+      "description_bn": "হরমোনের পরিবর্তন বা সংক্রমণজনিত সাদা বা হলদে যোনিস্রাব",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Dyspnea",
+      "description_en": "Uncomfortable feeling of being unable to breathe well enough",
+      "category": "respiratory",
+      "name_bn": "শ্বাসকষ্ট",
+      "description_bn": "পর্যাপ্ত শ্বাস নিতে না পারার অস্বস্তিকর অনুভূতি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Pneumonia",
+      "description_en": "Infection that inflames the lungs' air sacs, causing cough, fever and breathlessness",
+      "category": "respiratory",
+      "name_bn": "নিউমোনিয়া",
+      "description_bn": "ফুসফুসের বায়ুথলির সংক্রমণ ও প্রদাহ, যাতে কাশি, জ্বর ও শ্বাসকষ্ট হয়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Dysentery",
+      "description_en": "Intestinal infection causing diarrhoea with blood and mucus",
+      "category": "digestive",
+      "name_bn": "আমাশয়",
+      "description_bn": "অন্ত্রের সংক্রমণ যাতে রক্ত ও শ্লেষ্মাসহ পাতলা পায়খানা হয়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Eczema",
+      "description_en": "Inflamed, dry, itchy skin that can crack, weep or crust",
+      "category": "skin",
+      "name_bn": "একজিমা",
+      "description_bn": "প্রদাহযুক্ত, শুষ্ক ও চুলকানিযুক্ত ত্বক যা ফেটে যেতে, রস ঝরতে বা মামড়ি পড়তে পারে",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Hemorrhoids",
+      "description_en": "Swollen veins in or around the anus causing itching, discomfort or bleeding",
+      "category": "digestive",
+      "name_bn": "অর্শ",
+      "description_bn": "মলদ্বারের ভেতরে বা চারপাশের ফোলা শিরা যাতে চুলকানি, অস্বস্তি বা রক্তপাত হয়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Whooping Cough",
+      "description_en": "Contagious bacterial infection causing severe coughing fits with a gasping whoop",
+      "category": "respiratory",
+      "name_bn": "হুপিং কাশি",
+      "description_bn": "সংক্রামক ব্যাকটেরিয়াজনিত রোগ, তীব্র কাশির দমকের সঙ্গে হুপ শব্দ",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Epilepsy",
+      "description_en": "Brain disorder causing repeated unprovoked seizures",
+      "category": "neurological",
+      "name_bn": "মৃগীরোগ",
+      "description_bn": "মস্তিষ্কের রোগ যাতে বারবার কারণহীন খিঁচুনি হয়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Herpes",
+      "description_en": "Viral infection causing recurring blisters or sores on the mouth or genitals",
+      "category": "skin",
+      "name_bn": "হার্পিস",
+      "description_bn": "ভাইরাস সংক্রমণ যাতে মুখে বা যৌনাঙ্গে বারবার ফোসকা বা ঘা হয়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Boils",
+      "description_en": "Painful pus-filled lump forming in an infected hair follicle",
+      "category": "skin",
+      "name_bn": "ফোড়া",
+      "description_bn": "চুলের গোড়ার সংক্রমণে সৃষ্ট বেদনাদায়ক পুঁজভরা পিণ্ড",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Croup",
+      "description_en": "Viral infection of the windpipe causing a barking cough and noisy breathing in children",
+      "category": "respiratory",
+      "name_bn": "ক্রুপ",
+      "description_bn": "শিশুদের শ্বাসনালীর ভাইরাস সংক্রমণ, ঘেউ ঘেউ কাশি ও শব্দযুক্ত শ্বাস",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Hysteria",
+      "description_en": "Historical term for uncontrollable emotion or unexplained physical symptoms, now called functional or conversion disorder",
+      "category": "mental",
+      "name_bn": "হিস্টিরিয়া",
+      "description_bn": "অনিয়ন্ত্রিত আবেগ বা ব্যাখ্যাহীন শারীরিক উপসর্গের ঐতিহাসিক নাম, এখন ফাংশনাল বা কনভার্সন ডিসঅর্ডার",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Abscess",
+      "description_en": "Collection of pus in body tissue caused by infection",
+      "category": "skin",
+      "name_bn": "পুঁজ জমা (অ্যাবসেস)",
+      "description_bn": "সংক্রমণের কারণে শরীরের কলায় পুঁজ জমা",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Wounds",
+      "description_en": "Break or damage to the skin or underlying tissue",
+      "category": "skin",
+      "name_bn": "ক্ষত",
+      "description_bn": "ত্বক বা নিচের কলার ছিঁড়ে যাওয়া বা ক্ষতিগ্রস্ত হওয়া",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Measles",
+      "description_en": "Highly contagious viral illness causing fever, cough and a spreading red rash",
+      "category": "immune",
+      "name_bn": "হাম",
+      "description_bn": "অত্যন্ত সংক্রামক ভাইরাস রোগ, জ্বর, কাশি ও ছড়িয়ে পড়া লাল ফুসকুড়ি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Heartburn",
+      "description_en": "Burning feeling in the chest from stomach acid rising towards the throat",
+      "category": "digestive",
+      "name_bn": "বুক জ্বালা",
+      "description_bn": "পাকস্থলীর অ্যাসিড গলার দিকে উঠে আসায় বুকে জ্বালাপোড়া অনুভূতি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Sciatica",
+      "description_en": "Pain radiating from the lower back down the leg along the sciatic nerve",
+      "category": "musculoskeletal",
+      "name_bn": "সায়াটিকা",
+      "description_bn": "কোমর থেকে সায়াটিক স্নায়ু বরাবর পা বেয়ে নেমে আসা ব্যথা",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Urticaria",
+      "description_en": "Itchy raised welts on the skin that come and go",
+      "category": "skin",
+      "name_bn": "আমবাত",
+      "description_bn": "ত্বকে চুলকানিযুক্ত উঁচু দাগ যা আসে ও যায়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Grief",
+      "description_en": "Emotional reaction to loss, often the death of a loved one",
+      "category": "mental",
+      "name_bn": "শোক",
+      "description_bn": "প্রিয়জনের মৃত্যু বা অন্য ক্ষতির প্রতি মানসিক প্রতিক্রিয়া",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Influenza",
+      "description_en": "Contagious viral respiratory illness with fever, aches, cough and exhaustion",
+      "category": "respiratory",
+      "name_bn": "ইনফ্লুয়েঞ্জা",
+      "description_bn": "সংক্রামক ভাইরাস শ্বাসতন্ত্রের রোগ, জ্বর, গা ব্যথা, কাশি ও ক্লান্তি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Burns",
+      "description_en": "Skin or tissue damage caused by heat, chemicals, electricity or radiation",
+      "category": "skin",
+      "name_bn": "পোড়া",
+      "description_bn": "তাপ, রাসায়নিক, বিদ্যুৎ বা বিকিরণে ত্বক বা কলার ক্ষতি",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Cystitis",
+      "description_en": "Bladder inflammation, usually infection, causing painful, frequent urination",
+      "category": "urinary",
+      "name_bn": "মূত্রাশয় প্রদাহ",
+      "description_bn": "মূত্রথলির প্রদাহ, সাধারণত সংক্রমণজনিত, ঘন ঘন ও জ্বালাময় প্রস্রাব",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Laryngitis",
+      "description_en": "Inflammation of the voice box causing hoarseness or loss of voice",
+      "category": "ear_nose_throat",
+      "name_bn": "স্বরযন্ত্রের প্রদাহ",
+      "description_bn": "স্বরযন্ত্রের প্রদাহ যাতে গলা বসে যায় বা স্বর হারিয়ে যায়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Night Sweats",
+      "description_en": "Repeated episodes of heavy sweating during sleep that soak nightclothes or bedding",
+      "category": "general",
+      "name_bn": "রাতে ঘাম",
+      "description_bn": "ঘুমের মধ্যে বারবার প্রচুর ঘাম যাতে পোশাক বা বিছানা ভিজে যায়",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Conjunctivitis",
+      "description_en": "Inflammation of the thin membrane covering the white of the eye and eyelid",
+      "category": "ear_nose_throat",
+      "name_bn": "চোখ ওঠা",
+      "description_bn": "চোখের সাদা অংশ ও চোখের পাতা ঢাকা পাতলা পর্দার প্রদাহ",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Teething",
+      "description_en": "Process of a baby's first teeth breaking through the gums",
+      "category": "general",
+      "name_bn": "দাঁত ওঠা",
+      "description_bn": "শিশুর প্রথম দাঁত মাড়ি ভেদ করে ওঠার প্রক্রিয়া",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Tonsillitis",
+      "description_en": "Inflammation of the tonsils, usually from infection, causing sore throat",
+      "category": "ear_nose_throat",
+      "name_bn": "টনসিলের প্রদাহ",
+      "description_bn": "টনসিলের প্রদাহ, সাধারণত সংক্রমণজনিত, গলা ব্যথাসহ",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Hoarseness",
+      "description_en": "Raspy, breathy or strained voice from vocal cord irritation",
+      "category": "ear_nose_throat",
+      "name_bn": "স্বরভঙ্গ",
+      "description_bn": "স্বরতন্ত্রীর উত্তেজনায় কর্কশ, ফাঁপা বা চাপা কণ্ঠস্বর",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Migraine",
+      "description_en": "Recurring throbbing headaches, often one-sided, with nausea and light sensitivity",
+      "category": "neurological",
+      "name_bn": "মাইগ্রেন",
+      "description_bn": "বারবার হওয়া দপদপে মাথাব্যথা, প্রায়ই একপাশে, বমিভাব ও আলোতে অস্বস্তিসহ",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Hyperacidity",
+      "name_bn": "অম্বল / গ্যাস্ট্রাইটিস",
+      "description_en": "Burning sensation in the stomach and chest due to excess acid",
+      "description_bn": "অতিরিক্ত অ্যাসিডের কারণে পাকস্থলী ও বুকে জ্বালাপোড়া ভাব",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Hiccough",
+      "name_bn": "হেঁচকি",
+      "description_en": "Involuntary contractions of the diaphragm muscle",
+      "description_bn": "ডায়াফ্রামের অনৈচ্ছিক সংকোচন বা হেঁচকি ওঠা",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Loss of Appetite",
+      "name_bn": "অরুচি",
+      "description_en": "Aversion to food or lack of desire to eat",
+      "description_bn": "খাবারের প্রতি অনীহা বা খাওয়ার ইচ্ছে না থাকা",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Burning Palms and Soles",
+      "name_bn": "হাত ও পায়ের তালু জ্বালা",
+      "description_en": "Sensations of heat in hands and feet",
+      "description_bn": "হাত ও পায়ের তালুতে তীব্র গরম বা জ্বালাপোড়ার অনুভূতি",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Tremors",
+      "name_bn": "হাত-পা কাঁপা",
+      "description_en": "Involuntary shaking of hands, feet, or body parts",
+      "description_bn": "হাত, পা বা শরীরের বিভিন্ন অংশের অনৈচ্ছিক কাঁপুনি",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Abdominal Pain",
+      "name_bn": "পেটব্যথা",
+      "description_en": "Pain or discomfort in the area between the chest and pelvis.",
+      "description_bn": "বুক ও শ্রোণির মাঝের অংশে ব্যথা বা অস্বস্তি।",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Vomiting",
+      "name_bn": "বমি",
+      "description_en": "Forceful emptying of stomach contents through the mouth.",
+      "description_bn": "মুখ দিয়ে পাকস্থলীর উপাদান জোরে বেরিয়ে আসা।",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Chest Pain",
+      "name_bn": "বুকে ব্যথা",
+      "description_en": "Pain or discomfort in the chest, which can have many possible causes.",
+      "description_bn": "বুকে ব্যথা বা অস্বস্তি, যার বিভিন্ন সম্ভাব্য কারণ থাকতে পারে।",
+      "category": "cardiovascular",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Dizziness",
+      "name_bn": "মাথা ঘোরা",
+      "description_en": "Feeling lightheaded, unsteady, or faint; distinct from a spinning sensation (vertigo).",
+      "description_bn": "হালকা লাগা, ভারসাম্যহীনতা বা অজ্ঞান লাগার অনুভূতি; ঘূর্ণির অনুভূতি (ভার্টিগো) থেকে আলাদা।",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Chills",
+      "name_bn": "কাঁপুনি",
+      "description_en": "Feeling cold with shivering, sometimes occurring with fever.",
+      "description_bn": "ঠান্ডা লাগার সঙ্গে কাঁপুনি, যা কখনও জ্বরের সঙ্গে হতে পারে।",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Weakness",
+      "name_bn": "দুর্বলতা",
+      "description_en": "Reduced strength or energy that makes usual activities more difficult.",
+      "description_bn": "শক্তি বা কর্মক্ষমতা কমে যাওয়া, যাতে স্বাভাবিক কাজ কঠিন হয়।",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Painful Urination",
+      "name_bn": "প্রস্রাবে ব্যথা",
+      "description_en": "Pain, burning, or discomfort while urinating.",
+      "description_bn": "প্রস্রাবের সময় ব্যথা, জ্বালা বা অস্বস্তি।",
+      "category": "urinary",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Frequent Urination",
+      "name_bn": "ঘন ঘন প্রস্রাব",
+      "description_en": "Needing to urinate more often than usual.",
+      "description_bn": "স্বাভাবিকের চেয়ে বেশি ঘন ঘন প্রস্রাবের প্রয়োজন হওয়া।",
+      "category": "urinary",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Swelling (Edema)",
+      "name_bn": "ফোলা (ইডিমা)",
+      "description_en": "Abnormal fluid-related swelling in body tissues, such as the legs, hands, or face.",
+      "description_bn": "শরীরের কলায়, যেমন পা, হাত বা মুখে, অস্বাভাবিক তরলজনিত ফোলা।",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Abdominal Bloating",
+      "name_bn": "পেট ফাঁপা",
+      "description_en": "Feeling of pressure or fullness in the abdomen, often with visible distension.",
+      "description_bn": "পেটে চাপ বা ভরা ভাব, প্রায়ই পেট দৃশ্যত ফুলে থাকা।",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Urinary Retention",
+      "name_bn": "প্রস্রাব আটকে থাকা",
+      "description_en": "Difficulty emptying the bladder or being unable to urinate.",
+      "description_bn": "মূত্রথলি খালি করতে অসুবিধা হওয়া বা প্রস্রাব করতে না পারা।",
+      "category": "urinary",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Reduced Urination",
+      "name_bn": "প্রস্রাব কম হওয়া",
+      "description_en": "Passing less urine than usual.",
+      "description_bn": "স্বাভাবিকের তুলনায় কম প্রস্রাব হওয়া।",
+      "category": "urinary",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Blood in Urine",
+      "name_bn": "প্রস্রাবে রক্ত",
+      "description_en": "Blood present in the urine, which may or may not be visible.",
+      "description_bn": "প্রস্রাবে রক্ত থাকা, যা চোখে দেখা যেতে পারে বা নাও যেতে পারে।",
+      "category": "urinary",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Excessive Thirst",
+      "name_bn": "অতিরিক্ত তৃষ্ণা",
+      "description_en": "Unusually strong or persistent need to drink fluids.",
+      "description_bn": "অস্বাভাবিকভাবে বেশি বা স্থায়ীভাবে পানি পান করার তাগিদ।",
+      "category": "general",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Numbness",
+      "name_bn": "অবশভাব",
+      "description_en": "Reduced or absent feeling in part of the body.",
+      "description_bn": "শরীরের কোনো অংশে অনুভূতি কমে যাওয়া বা না থাকা।",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Paralysis",
+      "name_bn": "পক্ষাঘাত",
+      "description_en": "Loss of the ability to move one or more muscles voluntarily.",
+      "description_bn": "এক বা একাধিক পেশি ইচ্ছামতো নাড়ানোর ক্ষমতা হারানো।",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Memory Difficulty",
+      "name_bn": "স্মৃতিশক্তির সমস্যা",
+      "description_en": "Difficulty remembering information or events.",
+      "description_bn": "তথ্য বা ঘটনা মনে রাখতে অসুবিধা।",
+      "category": "neurological",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Difficulty Concentrating",
+      "name_bn": "মনোযোগে অসুবিধা",
+      "description_en": "Difficulty maintaining attention on a task or thought.",
+      "description_bn": "কোনো কাজ বা চিন্তায় মনোযোগ ধরে রাখতে অসুবিধা।",
+      "category": "mental",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Heavy Menstrual Bleeding",
+      "name_bn": "অতিরিক্ত মাসিক রক্তপাত",
+      "description_en": "Menstrual bleeding that is unusually heavy or lasts longer than usual.",
+      "description_bn": "স্বাভাবিকের তুলনায় অতিরিক্ত বা দীর্ঘস্থায়ী মাসিক রক্তপাত।",
+      "category": "reproductive",
+      "is_global": true,
+      "is_active": true
+    },
+    {
+      "name_en": "Bad Breath",
+      "name_bn": "মুখে দুর্গন্ধ",
+      "description_en": "Unpleasant odor coming from the mouth.",
+      "description_bn": "মুখ থেকে অপ্রীতিকর গন্ধ বের হওয়া।",
+      "category": "digestive",
+      "is_global": true,
+      "is_active": true
+    }
+  ]
+}

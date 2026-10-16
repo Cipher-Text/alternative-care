@@ -83,6 +83,8 @@ FastAPI + Next.js 16 SaaS for alternative medicine practitioners (Homeopathy, Ay
 - Security hardening (Rate limiting, HTTP headers, Password complexity) ✅
 - Platform Admin — dedicated module, KPI dashboard, tenant lifecycle, role management, tenant usage ✅
 
+**Catalogue data (2026-10-16):** 238 medicines, 97 symptoms, 300 aliases and 586 medicine↔symptom links, generated from `raw/` by `backend/scripts/catalogue` (`python -m scripts.catalogue.build`) and loaded by `scripts/seed.py`; see `backend/seed_data/README.md`.
+
 **Backend:** 15 routed modules, 176 endpoints (+ `/`, `/health`, `/metrics`), 38 table models
 **Frontend:** 132 source files, 11 top-level route groups (35 pages incl. dynamic routes)
 **Security:** unscored — the previous "A (95/100)" had no cited source, date, or method (see revision-2026-09.md §1)

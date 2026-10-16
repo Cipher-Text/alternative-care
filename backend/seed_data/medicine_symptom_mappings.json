@@ -1,0 +1,5302 @@
+{
+  "mappings": [
+    {
+      "medicine_name_en": "Abhayarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Abhayarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Abhayarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Abhayarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Abhayarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "oedema"
+      ]
+    },
+    {
+      "medicine_name_en": "Acidum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Fatigue",
+      "strength": 4,
+      "matched_terms": [
+        "fatigue"
+      ]
+    },
+    {
+      "medicine_name_en": "Acidum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Grief",
+      "strength": 3,
+      "matched_terms": [
+        "grief"
+      ]
+    },
+    {
+      "medicine_name_en": "Aconitum Napellus",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Aconitum Napellus",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Aconitum Napellus",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 3,
+      "matched_terms": [
+        "restlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Agaricus Muscarius",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 3,
+      "matched_terms": [
+        "chilliness"
+      ]
+    },
+    {
+      "medicine_name_en": "Agaricus Muscarius",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 4,
+      "matched_terms": [
+        "itching"
+      ]
+    },
+    {
+      "medicine_name_en": "Agaricus Muscarius",
+      "system": "homeopathy",
+      "symptom_name_en": "Tremors",
+      "strength": 4,
+      "matched_terms": [
+        "tremors"
+      ]
+    },
+    {
+      "medicine_name_en": "Agastya Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Agastya Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Bronchitis",
+      "strength": 4,
+      "matched_terms": [
+        "bronchitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Agastya Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Agastya Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Hiccough",
+      "strength": 4,
+      "matched_terms": [
+        "hiccup"
+      ]
+    },
+    {
+      "medicine_name_en": "Agastya Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Sinusitis",
+      "strength": 4,
+      "matched_terms": [
+        "sinusitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Aloe",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Aloe",
+      "system": "homeopathy",
+      "symptom_name_en": "Flatulence",
+      "strength": 3,
+      "matched_terms": [
+        "flatulence"
+      ]
+    },
+    {
+      "medicine_name_en": "Aloe",
+      "system": "homeopathy",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 3,
+      "matched_terms": [
+        "haemorrhoids"
+      ]
+    },
+    {
+      "medicine_name_en": "Alumina",
+      "system": "homeopathy",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Alumina",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 3,
+      "matched_terms": [
+        "itching"
+      ]
+    },
+    {
+      "medicine_name_en": "Ammonium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Asthma",
+      "strength": 3,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Ammonium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Bronchitis",
+      "strength": 3,
+      "matched_terms": [
+        "bronchitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Ammonium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Ammonium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Nosebleed",
+      "strength": 3,
+      "matched_terms": [
+        "nosebleed"
+      ]
+    },
+    {
+      "medicine_name_en": "Ammonium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Palpitation",
+      "strength": 3,
+      "matched_terms": [
+        "palpitations"
+      ]
+    },
+    {
+      "medicine_name_en": "Amritarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Amritarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Amritarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Influenza",
+      "strength": 4,
+      "matched_terms": [
+        "influenza"
+      ]
+    },
+    {
+      "medicine_name_en": "Anacardium Orientale",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Blood in Urine",
+      "strength": 4,
+      "matched_terms": [
+        "blood in urine"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Dysentery",
+      "strength": 4,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 3,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Joint Pain",
+      "strength": 3,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Anjabar",
+      "system": "unani",
+      "symptom_name_en": "Nausea",
+      "strength": 4,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Constipation",
+      "strength": 3,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhea"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Gout",
+      "strength": 3,
+      "matched_terms": [
+        "gout"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritable"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Rheumatism",
+      "strength": 3,
+      "matched_terms": [
+        "rheumatism"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Crudum",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Antimonium Tartaricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Apis Mellifica",
+      "system": "homeopathy",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "oedema"
+      ]
+    },
+    {
+      "medicine_name_en": "Apocynum Cannabinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Nausea",
+      "strength": 3,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Apocynum Cannabinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Reduced Urination",
+      "strength": 3,
+      "matched_terms": [
+        "reduced urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Apocynum Cannabinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Aralia Racemosa",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Argentum Nitricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Anxiety",
+      "strength": 4,
+      "matched_terms": [
+        "anxiety"
+      ]
+    },
+    {
+      "medicine_name_en": "Argentum Nitricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhea"
+      ]
+    },
+    {
+      "medicine_name_en": "Argentum Nitricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Argentum Nitricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Tremors",
+      "strength": 3,
+      "matched_terms": [
+        "trembling"
+      ]
+    },
+    {
+      "medicine_name_en": "Arjuna Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Diabetes Symptoms",
+      "strength": 4,
+      "matched_terms": [
+        "diabetes"
+      ]
+    },
+    {
+      "medicine_name_en": "Arjuna Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Excessive Thirst",
+      "strength": 3,
+      "matched_terms": [
+        "excessive thirst"
+      ]
+    },
+    {
+      "medicine_name_en": "Arjuna Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Arjunarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "High Blood Pressure",
+      "strength": 3,
+      "matched_terms": [
+        "hypertension"
+      ]
+    },
+    {
+      "medicine_name_en": "Arnica Montana",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Arnica Montana",
+      "system": "homeopathy",
+      "symptom_name_en": "Muscle Soreness",
+      "strength": 4,
+      "matched_terms": [
+        "muscle soreness"
+      ]
+    },
+    {
+      "medicine_name_en": "Arsenicum Album",
+      "system": "homeopathy",
+      "symptom_name_en": "Anxiety",
+      "strength": 4,
+      "matched_terms": [
+        "anxiety"
+      ]
+    },
+    {
+      "medicine_name_en": "Arsenicum Album",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Arsenicum Album",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 4,
+      "matched_terms": [
+        "restlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Arsenicum Album",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "symptom_name_en": "Anxiety",
+      "strength": 4,
+      "matched_terms": [
+        "anxiety"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "symptom_name_en": "Fatigue",
+      "strength": 4,
+      "matched_terms": [
+        "fatigue"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "symptom_name_en": "Insomnia",
+      "strength": 4,
+      "matched_terms": [
+        "insomnia"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "symptom_name_en": "Stress",
+      "strength": 4,
+      "matched_terms": [
+        "stress"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandha",
+      "system": "ayurveda",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandharishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Epilepsy",
+      "strength": 4,
+      "matched_terms": [
+        "epilepsy"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandharishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Ashwagandharishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Attees Shireen",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Attees Shireen",
+      "system": "unani",
+      "symptom_name_en": "Dysentery",
+      "strength": 4,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Attees Shireen",
+      "system": "unani",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Attees Shireen",
+      "system": "unani",
+      "symptom_name_en": "Vomiting",
+      "strength": 4,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Avipattikara Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Allergies",
+      "strength": 4,
+      "matched_terms": [
+        "allergic"
+      ]
+    },
+    {
+      "medicine_name_en": "Avipattikara Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Constipation",
+      "strength": 3,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Avipattikara Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Hyperacidity",
+      "strength": 2,
+      "matched_terms": [
+        "acidity"
+      ]
+    },
+    {
+      "medicine_name_en": "Avipattikara Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Urticaria",
+      "strength": 4,
+      "matched_terms": [
+        "urticaria"
+      ]
+    },
+    {
+      "medicine_name_en": "Bacillinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Bacillinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Dyspnea",
+      "strength": 3,
+      "matched_terms": [
+        "breathlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Bakayin",
+      "system": "unani",
+      "symptom_name_en": "Sciatica",
+      "strength": 4,
+      "matched_terms": [
+        "sciatica"
+      ]
+    },
+    {
+      "medicine_name_en": "Bakayin",
+      "system": "unani",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Balarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 3,
+      "matched_terms": [
+        "poor appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Balarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Baobarang",
+      "system": "unani",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Baptisia Tinctoria",
+      "system": "homeopathy",
+      "symptom_name_en": "Dysentery",
+      "strength": 3,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Baptisia Tinctoria",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fevers"
+      ]
+    },
+    {
+      "medicine_name_en": "Baptisia Tinctoria",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 3,
+      "matched_terms": [
+        "restless"
+      ]
+    },
+    {
+      "medicine_name_en": "Barium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 4,
+      "matched_terms": [
+        "poor memory"
+      ]
+    },
+    {
+      "medicine_name_en": "Barium Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Paralysis",
+      "strength": 3,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Basal",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Behman Safed",
+      "system": "unani",
+      "symptom_name_en": "Jaundice",
+      "strength": 3,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Behman Safed",
+      "system": "unani",
+      "symptom_name_en": "Palpitation",
+      "strength": 4,
+      "matched_terms": [
+        "palpitation"
+      ]
+    },
+    {
+      "medicine_name_en": "Behman Safed",
+      "system": "unani",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Behman Safed",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Behman Surkh",
+      "system": "unani",
+      "symptom_name_en": "Palpitation",
+      "strength": 4,
+      "matched_terms": [
+        "palpitation"
+      ]
+    },
+    {
+      "medicine_name_en": "Behman Surkh",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Belladonna",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Belladonna",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 4,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Belladonna",
+      "system": "homeopathy",
+      "symptom_name_en": "Nosebleed",
+      "strength": 3,
+      "matched_terms": [
+        "nosebleeds"
+      ]
+    },
+    {
+      "medicine_name_en": "Belladonna",
+      "system": "homeopathy",
+      "symptom_name_en": "Sore Throat",
+      "strength": 4,
+      "matched_terms": [
+        "sore throat"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahma Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahma Rasayana",
+      "system": "ayurveda",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi",
+      "system": "ayurveda",
+      "symptom_name_en": "Anxiety",
+      "strength": 4,
+      "matched_terms": [
+        "anxiety"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi",
+      "system": "ayurveda",
+      "symptom_name_en": "Difficulty Concentrating",
+      "strength": 4,
+      "matched_terms": [
+        "concentration",
+        "lack of concentration"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi",
+      "system": "ayurveda",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 4,
+      "matched_terms": [
+        "poor memory"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Depression",
+      "strength": 4,
+      "matched_terms": [
+        "depression"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Difficulty Concentrating",
+      "strength": 2,
+      "matched_terms": [
+        "concentration"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Epilepsy",
+      "strength": 3,
+      "matched_terms": [
+        "epilepsy"
+      ]
+    },
+    {
+      "medicine_name_en": "Brahmi Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 4,
+      "matched_terms": [
+        "poor memory"
+      ]
+    },
+    {
+      "medicine_name_en": "Bryonia Alba",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Calcarea Carbonica",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 4,
+      "matched_terms": [
+        "chilly"
+      ]
+    },
+    {
+      "medicine_name_en": "Calcarea Carbonica",
+      "system": "homeopathy",
+      "symptom_name_en": "Teething",
+      "strength": 2,
+      "matched_terms": [
+        "dentition"
+      ]
+    },
+    {
+      "medicine_name_en": "Calcarea Fluorica",
+      "system": "homeopathy",
+      "symptom_name_en": "Glandular Swelling",
+      "strength": 4,
+      "matched_terms": [
+        "glandular swellings"
+      ]
+    },
+    {
+      "medicine_name_en": "Calcarea Phosphorica",
+      "system": "homeopathy",
+      "symptom_name_en": "Teething",
+      "strength": 2,
+      "matched_terms": [
+        "dentition"
+      ]
+    },
+    {
+      "medicine_name_en": "Calcarea Phosphorica",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Calcarea Sulphurica",
+      "system": "homeopathy",
+      "symptom_name_en": "Boils",
+      "strength": 3,
+      "matched_terms": [
+        "boils"
+      ]
+    },
+    {
+      "medicine_name_en": "Cantharis",
+      "system": "homeopathy",
+      "symptom_name_en": "Burns",
+      "strength": 5,
+      "matched_terms": [
+        "burns",
+        "scalds"
+      ]
+    },
+    {
+      "medicine_name_en": "Cantharis",
+      "system": "homeopathy",
+      "symptom_name_en": "Reduced Urination",
+      "strength": 3,
+      "matched_terms": [
+        "scanty urine"
+      ]
+    },
+    {
+      "medicine_name_en": "Capsicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 4,
+      "matched_terms": [
+        "chilliness"
+      ]
+    },
+    {
+      "medicine_name_en": "Carbo Animalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "debility"
+      ]
+    },
+    {
+      "medicine_name_en": "Carbo Vegetabilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 4,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Carbo Vegetabilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Causticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Burns",
+      "strength": 3,
+      "matched_terms": [
+        "burns"
+      ]
+    },
+    {
+      "medicine_name_en": "Causticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "coughing"
+      ]
+    },
+    {
+      "medicine_name_en": "Causticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Hoarseness",
+      "strength": 4,
+      "matched_terms": [
+        "hoarseness"
+      ]
+    },
+    {
+      "medicine_name_en": "Causticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Paralysis",
+      "strength": 3,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Causticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Warts",
+      "strength": 3,
+      "matched_terms": [
+        "warts"
+      ]
+    },
+    {
+      "medicine_name_en": "Chamomile",
+      "system": "herbal",
+      "symptom_name_en": "Anxiety",
+      "strength": 4,
+      "matched_terms": [
+        "anxiety"
+      ]
+    },
+    {
+      "medicine_name_en": "Chamomile",
+      "system": "herbal",
+      "symptom_name_en": "Insomnia",
+      "strength": 4,
+      "matched_terms": [
+        "insomnia"
+      ]
+    },
+    {
+      "medicine_name_en": "Chamomile",
+      "system": "herbal",
+      "symptom_name_en": "Menstrual Cramps",
+      "strength": 4,
+      "matched_terms": [
+        "menstrual cramps"
+      ]
+    },
+    {
+      "medicine_name_en": "Chamomilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Colic",
+      "strength": 3,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Chamomilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 4,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Chamomilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Teething",
+      "strength": 3,
+      "matched_terms": [
+        "teething"
+      ]
+    },
+    {
+      "medicine_name_en": "Chanbeli",
+      "system": "unani",
+      "symptom_name_en": "Toothache",
+      "strength": 4,
+      "matched_terms": [
+        "toothache"
+      ]
+    },
+    {
+      "medicine_name_en": "Chandraprabha Vati",
+      "system": "ayurveda",
+      "symptom_name_en": "Diabetes Symptoms",
+      "strength": 3,
+      "matched_terms": [
+        "diabetes"
+      ]
+    },
+    {
+      "medicine_name_en": "Chandraprabha Vati",
+      "system": "ayurveda",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 3,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Chandraprabha Vati",
+      "system": "ayurveda",
+      "symptom_name_en": "Painful Urination",
+      "strength": 4,
+      "matched_terms": [
+        "painful urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Chelidonium Majus",
+      "system": "homeopathy",
+      "symptom_name_en": "Bronchitis",
+      "strength": 3,
+      "matched_terms": [
+        "bronchitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Chelidonium Majus",
+      "system": "homeopathy",
+      "symptom_name_en": "Jaundice",
+      "strength": 4,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Chelidonium Majus",
+      "system": "homeopathy",
+      "symptom_name_en": "Nausea",
+      "strength": 3,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Chelidonium Majus",
+      "system": "homeopathy",
+      "symptom_name_en": "Pneumonia",
+      "strength": 3,
+      "matched_terms": [
+        "pneumonia"
+      ]
+    },
+    {
+      "medicine_name_en": "Chelidonium Majus",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "China Officinalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 3,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "China Officinalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Chyavanaprasha",
+      "system": "ayurveda",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Chyavanaprasha",
+      "system": "ayurveda",
+      "symptom_name_en": "Bronchitis",
+      "strength": 4,
+      "matched_terms": [
+        "bronchitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Chyavanaprasha",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Cimicifuga",
+      "system": "homeopathy",
+      "symptom_name_en": "Back Pain",
+      "strength": 4,
+      "matched_terms": [
+        "back pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Cimicifuga",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 4,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Cina",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 4,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Cocculus Indicus",
+      "system": "homeopathy",
+      "symptom_name_en": "Anxiety",
+      "strength": 3,
+      "matched_terms": [
+        "anxious"
+      ]
+    },
+    {
+      "medicine_name_en": "Cocculus Indicus",
+      "system": "homeopathy",
+      "symptom_name_en": "Back Pain",
+      "strength": 3,
+      "matched_terms": [
+        "back pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Cocculus Indicus",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Cocculus Indicus",
+      "system": "homeopathy",
+      "symptom_name_en": "Nausea",
+      "strength": 4,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Cocculus Indicus",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 4,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Cocculus Indicus",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Coffea Cruda",
+      "system": "homeopathy",
+      "symptom_name_en": "Insomnia",
+      "strength": 4,
+      "matched_terms": [
+        "sleeplessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Coffea Cruda",
+      "system": "homeopathy",
+      "symptom_name_en": "Toothache",
+      "strength": 3,
+      "matched_terms": [
+        "toothache"
+      ]
+    },
+    {
+      "medicine_name_en": "Colocynthis",
+      "system": "homeopathy",
+      "symptom_name_en": "Colic",
+      "strength": 4,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Colocynthis",
+      "system": "homeopathy",
+      "symptom_name_en": "Neuralgia",
+      "strength": 3,
+      "matched_terms": [
+        "neuralgia"
+      ]
+    },
+    {
+      "medicine_name_en": "Colocynthis",
+      "system": "homeopathy",
+      "symptom_name_en": "Sciatica",
+      "strength": 3,
+      "matched_terms": [
+        "sciatica"
+      ]
+    },
+    {
+      "medicine_name_en": "Conium",
+      "system": "homeopathy",
+      "symptom_name_en": "Dizziness",
+      "strength": 4,
+      "matched_terms": [
+        "dizziness"
+      ]
+    },
+    {
+      "medicine_name_en": "Conium",
+      "system": "homeopathy",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Conium",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Croton Tiglium",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Croton Tiglium",
+      "system": "homeopathy",
+      "symptom_name_en": "Eczema",
+      "strength": 3,
+      "matched_terms": [
+        "eczema"
+      ]
+    },
+    {
+      "medicine_name_en": "Croton Tiglium",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 3,
+      "matched_terms": [
+        "itchy"
+      ]
+    },
+    {
+      "medicine_name_en": "Croton Tiglium",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Cuprum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Nausea",
+      "strength": 3,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "symptom_name_en": "Bad Breath",
+      "strength": 4,
+      "matched_terms": [
+        "bad breath"
+      ]
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "symptom_name_en": "Indigestion",
+      "strength": 3,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "symptom_name_en": "Urinary Retention",
+      "strength": 3,
+      "matched_terms": [
+        "urinary retention"
+      ]
+    },
+    {
+      "medicine_name_en": "Darchini",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoola Kashaya Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "^cold"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoola Kashaya Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoola Kashaya Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Influenza",
+      "strength": 4,
+      "matched_terms": [
+        "influenza"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoola Kashaya Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 4,
+      "matched_terms": [
+        "rheumatic",
+        "rheumatic complaints"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoolarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Bronchitis",
+      "strength": 4,
+      "matched_terms": [
+        "bronchitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoolarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoolarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Dyspnea",
+      "strength": 4,
+      "matched_terms": [
+        "dyspnoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoolarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Painful Urination",
+      "strength": 3,
+      "matched_terms": [
+        "painful urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoolarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 4,
+      "matched_terms": [
+        "rheumatic",
+        "rheumatic disorders"
+      ]
+    },
+    {
+      "medicine_name_en": "Dashamoolarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Dhanvantaram Gulika",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Dhanvantaram Gulika",
+      "system": "ayurveda",
+      "symptom_name_en": "Dyspnea",
+      "strength": 4,
+      "matched_terms": [
+        "dyspnoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Dhanvantaram Gulika",
+      "system": "ayurveda",
+      "symptom_name_en": "Hiccough",
+      "strength": 4,
+      "matched_terms": [
+        "hiccup"
+      ]
+    },
+    {
+      "medicine_name_en": "Dhanvantaram Gulika",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Dhanvantaram Gulika",
+      "system": "ayurveda",
+      "symptom_name_en": "Vomiting",
+      "strength": 4,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Dhanvantaram Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Digitalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Jaundice",
+      "strength": 3,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Digitalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Drakshadi Lehya",
+      "system": "ayurveda",
+      "symptom_name_en": "Fatigue",
+      "strength": 4,
+      "matched_terms": [
+        "fatigue"
+      ]
+    },
+    {
+      "medicine_name_en": "Drakshadi Lehya",
+      "system": "ayurveda",
+      "symptom_name_en": "Jaundice",
+      "strength": 4,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Drakshadi Lehya",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Drosera",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough",
+        "coughing"
+      ]
+    },
+    {
+      "medicine_name_en": "Drosera",
+      "system": "homeopathy",
+      "symptom_name_en": "Hoarseness",
+      "strength": 3,
+      "matched_terms": [
+        "hoarseness"
+      ]
+    },
+    {
+      "medicine_name_en": "Drosera",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Drosera",
+      "system": "homeopathy",
+      "symptom_name_en": "Whooping Cough",
+      "strength": 4,
+      "matched_terms": [
+        "whooping cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Echinacea",
+      "system": "herbal",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "colds"
+      ]
+    },
+    {
+      "medicine_name_en": "Eucalyptus",
+      "system": "homeopathy",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Eucalyptus",
+      "system": "homeopathy",
+      "symptom_name_en": "Bronchitis",
+      "strength": 4,
+      "matched_terms": [
+        "bronchitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Euphrasia",
+      "system": "homeopathy",
+      "symptom_name_en": "Cold",
+      "strength": 3,
+      "matched_terms": [
+        "colds"
+      ]
+    },
+    {
+      "medicine_name_en": "Euphrasia",
+      "system": "homeopathy",
+      "symptom_name_en": "Measles",
+      "strength": 3,
+      "matched_terms": [
+        "measles"
+      ]
+    },
+    {
+      "medicine_name_en": "Ferrum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Fatigue",
+      "strength": 4,
+      "matched_terms": [
+        "fatigue"
+      ]
+    },
+    {
+      "medicine_name_en": "Ferrum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Ferrum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "colds"
+      ]
+    },
+    {
+      "medicine_name_en": "Ferrum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever",
+        "fevers"
+      ]
+    },
+    {
+      "medicine_name_en": "Ferrum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Nosebleed",
+      "strength": 3,
+      "matched_terms": [
+        "nosebleeds"
+      ]
+    },
+    {
+      "medicine_name_en": "Funduq",
+      "system": "unani",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Funduq",
+      "system": "unani",
+      "symptom_name_en": "Palpitation",
+      "strength": 4,
+      "matched_terms": [
+        "palpitation"
+      ]
+    },
+    {
+      "medicine_name_en": "Funduq",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "symptom_name_en": "Anxiety",
+      "strength": 3,
+      "matched_terms": [
+        "anxiety"
+      ]
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "symptom_name_en": "Influenza",
+      "strength": 4,
+      "matched_terms": [
+        "influenza"
+      ]
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "symptom_name_en": "Tremors",
+      "strength": 4,
+      "matched_terms": [
+        "trembling"
+      ]
+    },
+    {
+      "medicine_name_en": "Gelsemium",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Ginger",
+      "system": "herbal",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "^cold"
+      ]
+    },
+    {
+      "medicine_name_en": "Ginger",
+      "system": "herbal",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Ginger",
+      "system": "herbal",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Ginger",
+      "system": "herbal",
+      "symptom_name_en": "Motion Sickness",
+      "strength": 4,
+      "matched_terms": [
+        "motion sickness"
+      ]
+    },
+    {
+      "medicine_name_en": "Ginger",
+      "system": "herbal",
+      "symptom_name_en": "Nausea",
+      "strength": 4,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Gokshura Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Blood in Urine",
+      "strength": 4,
+      "matched_terms": [
+        "blood in urine"
+      ]
+    },
+    {
+      "medicine_name_en": "Gokshura Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Cystitis",
+      "strength": 3,
+      "matched_terms": [
+        "cystitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Gokshura Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Painful Urination",
+      "strength": 3,
+      "matched_terms": [
+        "painful urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Gokshura Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "oedema"
+      ]
+    },
+    {
+      "medicine_name_en": "Graphites",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 3,
+      "matched_terms": [
+        "chilly"
+      ]
+    },
+    {
+      "medicine_name_en": "Graphites",
+      "system": "homeopathy",
+      "symptom_name_en": "Eczema",
+      "strength": 4,
+      "matched_terms": [
+        "eczema"
+      ]
+    },
+    {
+      "medicine_name_en": "Grindelia",
+      "system": "homeopathy",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Grindelia",
+      "system": "homeopathy",
+      "symptom_name_en": "Dyspnea",
+      "strength": 4,
+      "matched_terms": [
+        "difficulty breathing"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Diabetes Symptoms",
+      "strength": 4,
+      "matched_terms": [
+        "diabetes"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Jaundice",
+      "strength": 4,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 4,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchyadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchyadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Gout",
+      "strength": 4,
+      "matched_terms": [
+        "gout"
+      ]
+    },
+    {
+      "medicine_name_en": "Guduchyadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Haridrakhanda",
+      "system": "ayurveda",
+      "symptom_name_en": "Allergies",
+      "strength": 4,
+      "matched_terms": [
+        "allergic"
+      ]
+    },
+    {
+      "medicine_name_en": "Haridrakhanda",
+      "system": "ayurveda",
+      "symptom_name_en": "Itching",
+      "strength": 3,
+      "matched_terms": [
+        "itching"
+      ]
+    },
+    {
+      "medicine_name_en": "Haridrakhanda",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin disorders"
+      ]
+    },
+    {
+      "medicine_name_en": "Haridrakhanda",
+      "system": "ayurveda",
+      "symptom_name_en": "Urticaria",
+      "strength": 4,
+      "matched_terms": [
+        "urticaria"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 4,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Bad Breath",
+      "strength": 4,
+      "matched_terms": [
+        "bad breath"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "weak digestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Nausea",
+      "strength": 3,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Palpitation",
+      "strength": 4,
+      "matched_terms": [
+        "palpitation"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Heel Khurd",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Helleborus Niger",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhea"
+      ]
+    },
+    {
+      "medicine_name_en": "Helleborus Niger",
+      "system": "homeopathy",
+      "symptom_name_en": "Excessive Thirst",
+      "strength": 3,
+      "matched_terms": [
+        "great thirst"
+      ]
+    },
+    {
+      "medicine_name_en": "Helleborus Niger",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Helleborus Niger",
+      "system": "homeopathy",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 3,
+      "matched_terms": [
+        "dropsy",
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Hepar Sulphuris",
+      "system": "homeopathy",
+      "symptom_name_en": "Abscess",
+      "strength": 3,
+      "matched_terms": [
+        "abscesses"
+      ]
+    },
+    {
+      "medicine_name_en": "Hepar Sulphuris",
+      "system": "homeopathy",
+      "symptom_name_en": "Boils",
+      "strength": 3,
+      "matched_terms": [
+        "boils"
+      ]
+    },
+    {
+      "medicine_name_en": "Hepar Sulphuris",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Hepar Sulphuris",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Hinguvachadi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Abdominal Pain",
+      "strength": 3,
+      "matched_terms": [
+        "abdominal pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Hinguvachadi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Hinguvachadi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Hinguvachadi Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Hippocastanum",
+      "system": "homeopathy",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "haemorrhoids"
+      ]
+    },
+    {
+      "medicine_name_en": "Hummaz",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Hummaz",
+      "system": "unani",
+      "symptom_name_en": "Excessive Thirst",
+      "strength": 4,
+      "matched_terms": [
+        "excessive thirst"
+      ]
+    },
+    {
+      "medicine_name_en": "Hummaz",
+      "system": "unani",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Hummaz",
+      "system": "unani",
+      "symptom_name_en": "Nausea",
+      "strength": 4,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Hummaz",
+      "system": "unani",
+      "symptom_name_en": "Painful Urination",
+      "strength": 3,
+      "matched_terms": [
+        "painful urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Hummaz",
+      "system": "unani",
+      "symptom_name_en": "Vomiting",
+      "strength": 4,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Hyoscyamus",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 4,
+      "matched_terms": [
+        "restlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Ignatia",
+      "system": "homeopathy",
+      "symptom_name_en": "Grief",
+      "strength": 4,
+      "matched_terms": [
+        "grief"
+      ]
+    },
+    {
+      "medicine_name_en": "Ignatia",
+      "system": "homeopathy",
+      "symptom_name_en": "Hysteria",
+      "strength": 3,
+      "matched_terms": [
+        "hysterical"
+      ]
+    },
+    {
+      "medicine_name_en": "Ipecacuanha",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Ipecacuanha",
+      "system": "homeopathy",
+      "symptom_name_en": "Nausea",
+      "strength": 4,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Kababchini",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Kababchini",
+      "system": "unani",
+      "symptom_name_en": "Urinary Retention",
+      "strength": 4,
+      "matched_terms": [
+        "urinary retention"
+      ]
+    },
+    {
+      "medicine_name_en": "Kaishora Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Acne",
+      "strength": 3,
+      "matched_terms": [
+        "acne"
+      ]
+    },
+    {
+      "medicine_name_en": "Kaishora Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Kaishora Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Kaishora Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Wounds",
+      "strength": 5,
+      "matched_terms": [
+        "chronic wounds",
+        "wounds"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Bromatum",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 4,
+      "matched_terms": [
+        "restlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Bromatum",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Dyspnea",
+      "strength": 3,
+      "matched_terms": [
+        "breathlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Carbonicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Iodatum",
+      "system": "homeopathy",
+      "symptom_name_en": "Glandular Swelling",
+      "strength": 4,
+      "matched_terms": [
+        "glandular swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Iodatum",
+      "system": "homeopathy",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Muriaticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Glandular Swelling",
+      "strength": 3,
+      "matched_terms": [
+        "glandular swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Muriaticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Fatigue",
+      "strength": 4,
+      "matched_terms": [
+        "fatigue"
+      ]
+    },
+    {
+      "medicine_name_en": "Kali Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "symptom_name_en": "Allergies",
+      "strength": 4,
+      "matched_terms": [
+        "allergies"
+      ]
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "symptom_name_en": "Diabetes Symptoms",
+      "strength": 4,
+      "matched_terms": [
+        "diabetes"
+      ]
+    },
+    {
+      "medicine_name_en": "Kalonji",
+      "system": "unani",
+      "symptom_name_en": "High Blood Pressure",
+      "strength": 4,
+      "matched_terms": [
+        "hypertension"
+      ]
+    },
+    {
+      "medicine_name_en": "Kalyanaka Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Epilepsy",
+      "strength": 4,
+      "matched_terms": [
+        "epilepsy"
+      ]
+    },
+    {
+      "medicine_name_en": "Kamila",
+      "system": "unani",
+      "symptom_name_en": "Hiccough",
+      "strength": 4,
+      "matched_terms": [
+        "hiccups"
+      ]
+    },
+    {
+      "medicine_name_en": "Kamila",
+      "system": "unani",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Kanchanara Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Kaner",
+      "system": "unani",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Kantakaryavaleha",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Kantakaryavaleha",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Kantakaryavaleha",
+      "system": "ayurveda",
+      "symptom_name_en": "Hiccough",
+      "strength": 4,
+      "matched_terms": [
+        "hiccup"
+      ]
+    },
+    {
+      "medicine_name_en": "Khar-e-Khasak Khurd",
+      "system": "unani",
+      "symptom_name_en": "Painful Urination",
+      "strength": 4,
+      "matched_terms": [
+        "burning urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Khiyar Shamber",
+      "system": "unani",
+      "symptom_name_en": "Tonsillitis",
+      "strength": 4,
+      "matched_terms": [
+        "tonsillitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Khiyarzah",
+      "system": "unani",
+      "symptom_name_en": "Excessive Thirst",
+      "strength": 4,
+      "matched_terms": [
+        "excessive thirst"
+      ]
+    },
+    {
+      "medicine_name_en": "Khiyarzah",
+      "system": "unani",
+      "symptom_name_en": "Painful Urination",
+      "strength": 4,
+      "matched_terms": [
+        "burning urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Khubbazi",
+      "system": "unani",
+      "symptom_name_en": "Dysentery",
+      "strength": 3,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Khubbazi",
+      "system": "unani",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Kishmish",
+      "system": "unani",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Kishmish",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Kishmish",
+      "system": "unani",
+      "symptom_name_en": "Palpitation",
+      "strength": 3,
+      "matched_terms": [
+        "palpitation"
+      ]
+    },
+    {
+      "medicine_name_en": "Kishmish",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Kottamchukkadi Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Numbness",
+      "strength": 4,
+      "matched_terms": [
+        "numbness"
+      ]
+    },
+    {
+      "medicine_name_en": "Kottamchukkadi Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 4,
+      "matched_terms": [
+        "rheumatic",
+        "rheumatic complaints"
+      ]
+    },
+    {
+      "medicine_name_en": "Kottamchukkadi Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Kulthi",
+      "system": "unani",
+      "symptom_name_en": "Urinary Retention",
+      "strength": 4,
+      "matched_terms": [
+        "urinary retention"
+      ]
+    },
+    {
+      "medicine_name_en": "Kumaryasava",
+      "system": "ayurveda",
+      "symptom_name_en": "Colic",
+      "strength": 3,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Kumaryasava",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Kumaryasava",
+      "system": "ayurveda",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Kutajarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "loose stools"
+      ]
+    },
+    {
+      "medicine_name_en": "Kutajarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritable"
+      ]
+    },
+    {
+      "medicine_name_en": "Lasunadi Vati",
+      "system": "ayurveda",
+      "symptom_name_en": "Dysentery",
+      "strength": 4,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Ledum",
+      "system": "homeopathy",
+      "symptom_name_en": "Rheumatism",
+      "strength": 3,
+      "matched_terms": [
+        "rheumatic",
+        "rheumatic pains"
+      ]
+    },
+    {
+      "medicine_name_en": "Ledum",
+      "system": "homeopathy",
+      "symptom_name_en": "Wounds",
+      "strength": 4,
+      "matched_terms": [
+        "wounds"
+      ]
+    },
+    {
+      "medicine_name_en": "Lodh Pathani",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Lodh Pathani",
+      "system": "unani",
+      "symptom_name_en": "Heavy Menstrual Bleeding",
+      "strength": 4,
+      "matched_terms": [
+        "heavy menstrual bleeding",
+        "menstrual bleeding"
+      ]
+    },
+    {
+      "medicine_name_en": "Lodh Pathani",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Lodh Pathani",
+      "system": "unani",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 3,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Lohasava",
+      "system": "ayurveda",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Lohasava",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin disorders"
+      ]
+    },
+    {
+      "medicine_name_en": "Lycopodium",
+      "system": "homeopathy",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 4,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Magnesia Carbonica",
+      "system": "homeopathy",
+      "symptom_name_en": "Neuralgia",
+      "strength": 4,
+      "matched_terms": [
+        "neuralgia"
+      ]
+    },
+    {
+      "medicine_name_en": "Magnesia Carbonica",
+      "system": "homeopathy",
+      "symptom_name_en": "Toothache",
+      "strength": 4,
+      "matched_terms": [
+        "toothache"
+      ]
+    },
+    {
+      "medicine_name_en": "Magnesia Phosphorica",
+      "system": "homeopathy",
+      "symptom_name_en": "Colic",
+      "strength": 3,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Magnesia Phosphorica",
+      "system": "homeopathy",
+      "symptom_name_en": "Menstrual Cramps",
+      "strength": 3,
+      "matched_terms": [
+        "menstrual cramps"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahamasha Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Numbness",
+      "strength": 4,
+      "matched_terms": [
+        "numbness"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahamasha Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Paralysis",
+      "strength": 5,
+      "matched_terms": [
+        "hemiplegia",
+        "palsy",
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahamasha Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Sciatica",
+      "strength": 3,
+      "matched_terms": [
+        "sciatica"
+      ]
+    },
+    {
+      "medicine_name_en": "Maharasnadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Maharasnadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Maharasnadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 4,
+      "matched_terms": [
+        "rheumatic",
+        "rheumatic complaints"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahatiktaka Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Abscess",
+      "strength": 4,
+      "matched_terms": [
+        "abscess"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahatiktaka Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Boils",
+      "strength": 4,
+      "matched_terms": [
+        "boils"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahatiktaka Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Mahatiktaka Ghrita",
+      "system": "ayurveda",
+      "symptom_name_en": "Wounds",
+      "strength": 4,
+      "matched_terms": [
+        "chronic wounds",
+        "wounds"
+      ]
+    },
+    {
+      "medicine_name_en": "Mainphal",
+      "system": "unani",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 4,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Mainphal",
+      "system": "unani",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Mainphal",
+      "system": "unani",
+      "symptom_name_en": "Boils",
+      "strength": 4,
+      "matched_terms": [
+        "boils"
+      ]
+    },
+    {
+      "medicine_name_en": "Mainphal",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Mainphal",
+      "system": "unani",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Mauz",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Mauz",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Mauz",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Mazoo",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Mazoo",
+      "system": "unani",
+      "symptom_name_en": "Dysentery",
+      "strength": 4,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Mazoo",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Mazoo",
+      "system": "unani",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 3,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Medorrhinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 3,
+      "matched_terms": [
+        "restless"
+      ]
+    },
+    {
+      "medicine_name_en": "Mercurius Solubilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Dysentery",
+      "strength": 3,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Mercurius Solubilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Excessive Thirst",
+      "strength": 3,
+      "matched_terms": [
+        "great thirst"
+      ]
+    },
+    {
+      "medicine_name_en": "Mercurius Solubilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Glandular Swelling",
+      "strength": 4,
+      "matched_terms": [
+        "glandular swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Mercurius Solubilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Mercurius Solubilis",
+      "system": "homeopathy",
+      "symptom_name_en": "Tremors",
+      "strength": 3,
+      "matched_terms": [
+        "trembling"
+      ]
+    },
+    {
+      "medicine_name_en": "Mezereum",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 4,
+      "matched_terms": [
+        "itchy"
+      ]
+    },
+    {
+      "medicine_name_en": "Mezereum",
+      "system": "homeopathy",
+      "symptom_name_en": "Neuralgia",
+      "strength": 3,
+      "matched_terms": [
+        "neuralgia"
+      ]
+    },
+    {
+      "medicine_name_en": "Mezereum",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Mulsari",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Mulsari",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "debility"
+      ]
+    },
+    {
+      "medicine_name_en": "Muqil",
+      "system": "unani",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 4,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Muqil",
+      "system": "unani",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Muqil",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 3,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Muqil",
+      "system": "unani",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Musta Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Musta Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Dysentery",
+      "strength": 4,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Musta Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Musta Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Narayana Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Back Pain",
+      "strength": 5,
+      "matched_terms": [
+        "back pain",
+        "lumbago"
+      ]
+    },
+    {
+      "medicine_name_en": "Narayana Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Narayana Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "hemiplegia"
+      ]
+    },
+    {
+      "medicine_name_en": "Narayana Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Sciatica",
+      "strength": 4,
+      "matched_terms": [
+        "sciatica"
+      ]
+    },
+    {
+      "medicine_name_en": "Natrum Muriaticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Grief",
+      "strength": 4,
+      "matched_terms": [
+        "grief"
+      ]
+    },
+    {
+      "medicine_name_en": "Natrum Muriaticum",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 4,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Natrum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Hyperacidity",
+      "strength": 4,
+      "matched_terms": [
+        "sour eructations"
+      ]
+    },
+    {
+      "medicine_name_en": "Natrum Phosphoricum",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 3,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Neem Gum",
+      "system": "unani",
+      "symptom_name_en": "Boils",
+      "strength": 4,
+      "matched_terms": [
+        "boils"
+      ]
+    },
+    {
+      "medicine_name_en": "Neem Gum",
+      "system": "unani",
+      "symptom_name_en": "Hiccough",
+      "strength": 3,
+      "matched_terms": [
+        "hiccups"
+      ]
+    },
+    {
+      "medicine_name_en": "Neem Gum",
+      "system": "unani",
+      "symptom_name_en": "Itching",
+      "strength": 4,
+      "matched_terms": [
+        "itchy"
+      ]
+    },
+    {
+      "medicine_name_en": "Neem Gum",
+      "system": "unani",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Nimbadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Abscess",
+      "strength": 4,
+      "matched_terms": [
+        "abscess"
+      ]
+    },
+    {
+      "medicine_name_en": "Nimbadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Moschata",
+      "system": "homeopathy",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 3,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "symptom_name_en": "Abdominal Pain",
+      "strength": 3,
+      "matched_terms": [
+        "abdominal pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "hemorrhoids",
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "symptom_name_en": "Insomnia",
+      "strength": 4,
+      "matched_terms": [
+        "insomnia"
+      ]
+    },
+    {
+      "medicine_name_en": "Nux Vomica",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 4,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Ood-e-Saleeb",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Ood-e-Saleeb",
+      "system": "unani",
+      "symptom_name_en": "Epilepsy",
+      "strength": 4,
+      "matched_terms": [
+        "epilepsy"
+      ]
+    },
+    {
+      "medicine_name_en": "Ood-e-Saleeb",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Ood-e-Saleeb",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Ood-e-Saleeb",
+      "system": "unani",
+      "symptom_name_en": "Whooping Cough",
+      "strength": 4,
+      "matched_terms": [
+        "whooping cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Opium",
+      "system": "homeopathy",
+      "symptom_name_en": "Constipation",
+      "strength": 3,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Pambadana",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "debility"
+      ]
+    },
+    {
+      "medicine_name_en": "Petha",
+      "system": "unani",
+      "symptom_name_en": "Excessive Thirst",
+      "strength": 4,
+      "matched_terms": [
+        "excessive thirst"
+      ]
+    },
+    {
+      "medicine_name_en": "Petha",
+      "system": "unani",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Petha",
+      "system": "unani",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Petha",
+      "system": "unani",
+      "symptom_name_en": "Painful Urination",
+      "strength": 4,
+      "matched_terms": [
+        "burning urination"
+      ]
+    },
+    {
+      "medicine_name_en": "Petha",
+      "system": "unani",
+      "symptom_name_en": "Palpitation",
+      "strength": 4,
+      "matched_terms": [
+        "palpitation"
+      ]
+    },
+    {
+      "medicine_name_en": "Petroleum",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Petroleum",
+      "system": "homeopathy",
+      "symptom_name_en": "Eczema",
+      "strength": 4,
+      "matched_terms": [
+        "eczema"
+      ]
+    },
+    {
+      "medicine_name_en": "Petroleum",
+      "system": "homeopathy",
+      "symptom_name_en": "Heartburn",
+      "strength": 3,
+      "matched_terms": [
+        "heartburn"
+      ]
+    },
+    {
+      "medicine_name_en": "Petroleum",
+      "system": "homeopathy",
+      "symptom_name_en": "Hoarseness",
+      "strength": 3,
+      "matched_terms": [
+        "hoarseness"
+      ]
+    },
+    {
+      "medicine_name_en": "Petroleum",
+      "system": "homeopathy",
+      "symptom_name_en": "Motion Sickness",
+      "strength": 4,
+      "matched_terms": [
+        "motion sickness"
+      ]
+    },
+    {
+      "medicine_name_en": "Petroleum",
+      "system": "homeopathy",
+      "symptom_name_en": "Nausea",
+      "strength": 3,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Phosphorus",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Phytolacca",
+      "system": "homeopathy",
+      "symptom_name_en": "Glandular Swelling",
+      "strength": 3,
+      "matched_terms": [
+        "swollen glands"
+      ]
+    },
+    {
+      "medicine_name_en": "Phytolacca",
+      "system": "homeopathy",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Phytolacca",
+      "system": "homeopathy",
+      "symptom_name_en": "Sore Throat",
+      "strength": 4,
+      "matched_terms": [
+        "sore throat"
+      ]
+    },
+    {
+      "medicine_name_en": "Pippali Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Pippali Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Pista",
+      "system": "unani",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 4,
+      "matched_terms": [
+        "poor memory"
+      ]
+    },
+    {
+      "medicine_name_en": "Pista",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "debility",
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Podophyllum",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Podophyllum",
+      "system": "homeopathy",
+      "symptom_name_en": "Teething",
+      "strength": 3,
+      "matched_terms": [
+        "teething"
+      ]
+    },
+    {
+      "medicine_name_en": "Post-e-Gular",
+      "system": "unani",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Post-e-Gular",
+      "system": "unani",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Post-e-Gular",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 3,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Post-e-Gular",
+      "system": "unani",
+      "symptom_name_en": "Indigestion",
+      "strength": 3,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Post-e-Gular",
+      "system": "unani",
+      "symptom_name_en": "Reduced Urination",
+      "strength": 3,
+      "matched_terms": [
+        "scanty urine"
+      ]
+    },
+    {
+      "medicine_name_en": "Post-e-Gular",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "debility"
+      ]
+    },
+    {
+      "medicine_name_en": "Psorinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 3,
+      "matched_terms": [
+        "chilliness"
+      ]
+    },
+    {
+      "medicine_name_en": "Psorinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 4,
+      "matched_terms": [
+        "itchy"
+      ]
+    },
+    {
+      "medicine_name_en": "Psorinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Psorinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Pulsatilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Ear Infection",
+      "strength": 4,
+      "matched_terms": [
+        "ear infections"
+      ]
+    },
+    {
+      "medicine_name_en": "Pulsatilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritable"
+      ]
+    },
+    {
+      "medicine_name_en": "Pulsatilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Sinusitis",
+      "strength": 4,
+      "matched_terms": [
+        "sinusitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Punarnava Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Back Pain",
+      "strength": 4,
+      "matched_terms": [
+        "lumbago"
+      ]
+    },
+    {
+      "medicine_name_en": "Punarnava Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Punarnava Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 4,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Punarnava Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Swelling (Edema)",
+      "strength": 2,
+      "matched_terms": [
+        "swelling"
+      ]
+    },
+    {
+      "medicine_name_en": "Punarnava Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 4,
+      "matched_terms": [
+        "rheumatic",
+        "rheumatic complaints"
+      ]
+    },
+    {
+      "medicine_name_en": "Punarnava Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Sciatica",
+      "strength": 4,
+      "matched_terms": [
+        "sciatica"
+      ]
+    },
+    {
+      "medicine_name_en": "Pushyanuga Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Dysentery",
+      "strength": 3,
+      "matched_terms": [
+        "dysentery"
+      ]
+    },
+    {
+      "medicine_name_en": "Pushyanuga Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Heavy Menstrual Bleeding",
+      "strength": 4,
+      "matched_terms": [
+        "heavy menstrual bleeding",
+        "menstrual bleeding"
+      ]
+    },
+    {
+      "medicine_name_en": "Pushyanuga Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 3,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Pushyanuga Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 4,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Pushyanuga Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Nosebleed",
+      "strength": 3,
+      "matched_terms": [
+        "nosebleed"
+      ]
+    },
+    {
+      "medicine_name_en": "Pyrogenium",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 3,
+      "matched_terms": [
+        "restlessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Qinnab",
+      "system": "unani",
+      "symptom_name_en": "Colic",
+      "strength": 3,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Qinnab",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Qinnab",
+      "system": "unani",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Qinnab",
+      "system": "unani",
+      "symptom_name_en": "Heavy Menstrual Bleeding",
+      "strength": 4,
+      "matched_terms": [
+        "heavy menstrual bleeding",
+        "menstrual bleeding"
+      ]
+    },
+    {
+      "medicine_name_en": "Qinnab",
+      "system": "unani",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Qirfa",
+      "system": "unani",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "common cold"
+      ]
+    },
+    {
+      "medicine_name_en": "Qirfa",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Qirfa",
+      "system": "unani",
+      "symptom_name_en": "Joint Pain",
+      "strength": 3,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Qirfa",
+      "system": "unani",
+      "symptom_name_en": "Urinary Retention",
+      "strength": 4,
+      "matched_terms": [
+        "urinary retention"
+      ]
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 3,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "symptom_name_en": "Bad Breath",
+      "strength": 4,
+      "matched_terms": [
+        "bad breath"
+      ]
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "symptom_name_en": "Colic",
+      "strength": 3,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Quaranful",
+      "system": "unani",
+      "symptom_name_en": "Toothache",
+      "strength": 4,
+      "matched_terms": [
+        "toothache"
+      ]
+    },
+    {
+      "medicine_name_en": "Qurtum",
+      "system": "unani",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Qust",
+      "system": "unani",
+      "symptom_name_en": "Gout",
+      "strength": 4,
+      "matched_terms": [
+        "gout"
+      ]
+    },
+    {
+      "medicine_name_en": "Qust",
+      "system": "unani",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Qust",
+      "system": "unani",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Qust",
+      "system": "unani",
+      "symptom_name_en": "Tremors",
+      "strength": 4,
+      "matched_terms": [
+        "tremor"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Gout",
+      "strength": 5,
+      "matched_terms": [
+        "gout",
+        "gouty"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Joint Pain",
+      "strength": 3,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 3,
+      "matched_terms": [
+        "poor memory"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Neuralgia",
+      "strength": 3,
+      "matched_terms": [
+        "neuralgia"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhododendron Chrysanthum",
+      "system": "homeopathy",
+      "symptom_name_en": "Toothache",
+      "strength": 3,
+      "matched_terms": [
+        "toothache"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "symptom_name_en": "Abdominal Pain",
+      "strength": 3,
+      "matched_terms": [
+        "abdominal pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "symptom_name_en": "Muscle Soreness",
+      "strength": 3,
+      "matched_terms": [
+        "muscle soreness"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "rashes"
+      ]
+    },
+    {
+      "medicine_name_en": "Rhus Toxicodendron",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Sabadilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 3,
+      "matched_terms": [
+        "chilliness"
+      ]
+    },
+    {
+      "medicine_name_en": "Sabadilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Sore Throat",
+      "strength": 3,
+      "matched_terms": [
+        "sore throat"
+      ]
+    },
+    {
+      "medicine_name_en": "Sanjeevani Vati",
+      "system": "ayurveda",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Saraswatarishta",
+      "system": "ayurveda",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 4,
+      "matched_terms": [
+        "poor memory"
+      ]
+    },
+    {
+      "medicine_name_en": "Sarpagandha Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "High Blood Pressure",
+      "strength": 4,
+      "matched_terms": [
+        "high blood pressure"
+      ]
+    },
+    {
+      "medicine_name_en": "Sarpagandha Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Insomnia",
+      "strength": 4,
+      "matched_terms": [
+        "insomnia"
+      ]
+    },
+    {
+      "medicine_name_en": "Sarsaparilla",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Selenium",
+      "system": "homeopathy",
+      "symptom_name_en": "Fatigue",
+      "strength": 4,
+      "matched_terms": [
+        "fatigue"
+      ]
+    },
+    {
+      "medicine_name_en": "Senna",
+      "system": "unani",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Sepia",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritability"
+      ]
+    },
+    {
+      "medicine_name_en": "Shalgum",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Shalgum",
+      "system": "unani",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Shalgum",
+      "system": "unani",
+      "symptom_name_en": "Urinary Retention",
+      "strength": 4,
+      "matched_terms": [
+        "urinary retention"
+      ]
+    },
+    {
+      "medicine_name_en": "Shatavari Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Diabetes Symptoms",
+      "strength": 4,
+      "matched_terms": [
+        "diabetes"
+      ]
+    },
+    {
+      "medicine_name_en": "Shatavari Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Leucorrhea",
+      "strength": 4,
+      "matched_terms": [
+        "leucorrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Silicea",
+      "system": "homeopathy",
+      "symptom_name_en": "Abscess",
+      "strength": 4,
+      "matched_terms": [
+        "abscesses"
+      ]
+    },
+    {
+      "medicine_name_en": "Silicea",
+      "system": "homeopathy",
+      "symptom_name_en": "Boils",
+      "strength": 4,
+      "matched_terms": [
+        "boils"
+      ]
+    },
+    {
+      "medicine_name_en": "Silicea",
+      "system": "homeopathy",
+      "symptom_name_en": "Chills",
+      "strength": 4,
+      "matched_terms": [
+        "chilly"
+      ]
+    },
+    {
+      "medicine_name_en": "Spigelia",
+      "system": "homeopathy",
+      "symptom_name_en": "Neuralgia",
+      "strength": 4,
+      "matched_terms": [
+        "neuralgic pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Spongia Tosta",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Spongia Tosta",
+      "system": "homeopathy",
+      "symptom_name_en": "Hoarseness",
+      "strength": 4,
+      "matched_terms": [
+        "hoarseness"
+      ]
+    },
+    {
+      "medicine_name_en": "Stannum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Chest Pain",
+      "strength": 4,
+      "matched_terms": [
+        "chest discomfort"
+      ]
+    },
+    {
+      "medicine_name_en": "Stannum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Stannum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Staphisagria",
+      "system": "homeopathy",
+      "symptom_name_en": "Eczema",
+      "strength": 3,
+      "matched_terms": [
+        "eczema"
+      ]
+    },
+    {
+      "medicine_name_en": "Staphisagria",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 3,
+      "matched_terms": [
+        "itchy"
+      ]
+    },
+    {
+      "medicine_name_en": "Stramonium",
+      "system": "homeopathy",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fevers"
+      ]
+    },
+    {
+      "medicine_name_en": "Sudarshana Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Sudarshana Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Sudarshana Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Influenza",
+      "strength": 4,
+      "matched_terms": [
+        "influenza"
+      ]
+    },
+    {
+      "medicine_name_en": "Sudarshana Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Jaundice",
+      "strength": 4,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Sudarshana Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin disorders"
+      ]
+    },
+    {
+      "medicine_name_en": "Sulphur",
+      "system": "homeopathy",
+      "symptom_name_en": "Burning Palms and Soles",
+      "strength": 3,
+      "matched_terms": [
+        "burning of soles"
+      ]
+    },
+    {
+      "medicine_name_en": "Sulphur",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 3,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Sulphur",
+      "system": "homeopathy",
+      "symptom_name_en": "Itching",
+      "strength": 4,
+      "matched_terms": [
+        "itching"
+      ]
+    },
+    {
+      "medicine_name_en": "Sulphur",
+      "system": "homeopathy",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "eruptions"
+      ]
+    },
+    {
+      "medicine_name_en": "Sumbul-ut-Teeb",
+      "system": "unani",
+      "symptom_name_en": "Abdominal Bloating",
+      "strength": 4,
+      "matched_terms": [
+        "bloating"
+      ]
+    },
+    {
+      "medicine_name_en": "Sumbul-ut-Teeb",
+      "system": "unani",
+      "symptom_name_en": "Cystitis",
+      "strength": 4,
+      "matched_terms": [
+        "bladder inflammation"
+      ]
+    },
+    {
+      "medicine_name_en": "Sumbul-ut-Teeb",
+      "system": "unani",
+      "symptom_name_en": "Headache",
+      "strength": 4,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Sumbul-ut-Teeb",
+      "system": "unani",
+      "symptom_name_en": "Jaundice",
+      "strength": 4,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Symphytum",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritable"
+      ]
+    },
+    {
+      "medicine_name_en": "Tagar",
+      "system": "unani",
+      "symptom_name_en": "Epilepsy",
+      "strength": 4,
+      "matched_terms": [
+        "epilepsy"
+      ]
+    },
+    {
+      "medicine_name_en": "Tagar",
+      "system": "unani",
+      "symptom_name_en": "Jaundice",
+      "strength": 4,
+      "matched_terms": [
+        "jaundice"
+      ]
+    },
+    {
+      "medicine_name_en": "Tagar",
+      "system": "unani",
+      "symptom_name_en": "Memory Difficulty",
+      "strength": 4,
+      "matched_terms": [
+        "forgetfulness"
+      ]
+    },
+    {
+      "medicine_name_en": "Tagar",
+      "system": "unani",
+      "symptom_name_en": "Numbness",
+      "strength": 4,
+      "matched_terms": [
+        "numbness"
+      ]
+    },
+    {
+      "medicine_name_en": "Tagar",
+      "system": "unani",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Thuja Occidentalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Constipation",
+      "strength": 3,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Thuja Occidentalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Headache",
+      "strength": 3,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Thuja Occidentalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Irritability",
+      "strength": 3,
+      "matched_terms": [
+        "irritable"
+      ]
+    },
+    {
+      "medicine_name_en": "Thuja Occidentalis",
+      "system": "homeopathy",
+      "symptom_name_en": "Warts",
+      "strength": 4,
+      "matched_terms": [
+        "warts"
+      ]
+    },
+    {
+      "medicine_name_en": "Trikatu Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "colds"
+      ]
+    },
+    {
+      "medicine_name_en": "Trikatu Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Indigestion",
+      "strength": 4,
+      "matched_terms": [
+        "indigestion"
+      ]
+    },
+    {
+      "medicine_name_en": "Trikatu Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Loss of Appetite",
+      "strength": 4,
+      "matched_terms": [
+        "loss of appetite"
+      ]
+    },
+    {
+      "medicine_name_en": "Trikatu Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin disease"
+      ]
+    },
+    {
+      "medicine_name_en": "Triphala",
+      "system": "ayurveda",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Triphala Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "haemorrhoids"
+      ]
+    },
+    {
+      "medicine_name_en": "Triphaladi Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Ear Infection",
+      "strength": 3,
+      "matched_terms": [
+        "middle-ear infection"
+      ]
+    },
+    {
+      "medicine_name_en": "Triphaladi Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Headache",
+      "strength": 4,
+      "matched_terms": [
+        "headache"
+      ]
+    },
+    {
+      "medicine_name_en": "Triphaladi Taila",
+      "system": "ayurveda",
+      "symptom_name_en": "Sinusitis",
+      "strength": 4,
+      "matched_terms": [
+        "sinusitis"
+      ]
+    },
+    {
+      "medicine_name_en": "Tuberculinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Night Sweats",
+      "strength": 3,
+      "matched_terms": [
+        "night sweats"
+      ]
+    },
+    {
+      "medicine_name_en": "Tuberculinum",
+      "system": "homeopathy",
+      "symptom_name_en": "Weakness",
+      "strength": 2,
+      "matched_terms": [
+        "weakness"
+      ]
+    },
+    {
+      "medicine_name_en": "Tulsi",
+      "system": "ayurveda",
+      "symptom_name_en": "Cold",
+      "strength": 4,
+      "matched_terms": [
+        "^cold"
+      ]
+    },
+    {
+      "medicine_name_en": "Tulsi",
+      "system": "ayurveda",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Tulsi",
+      "system": "ayurveda",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Tulsi",
+      "system": "ayurveda",
+      "symptom_name_en": "Stress",
+      "strength": 4,
+      "matched_terms": [
+        "stress"
+      ]
+    },
+    {
+      "medicine_name_en": "Turanj",
+      "system": "unani",
+      "symptom_name_en": "Fever",
+      "strength": 2,
+      "matched_terms": [
+        "fever"
+      ]
+    },
+    {
+      "medicine_name_en": "Turanj",
+      "system": "unani",
+      "symptom_name_en": "Motion Sickness",
+      "strength": 4,
+      "matched_terms": [
+        "motion sickness"
+      ]
+    },
+    {
+      "medicine_name_en": "Turanj",
+      "system": "unani",
+      "symptom_name_en": "Nausea",
+      "strength": 4,
+      "matched_terms": [
+        "nausea"
+      ]
+    },
+    {
+      "medicine_name_en": "Turanj",
+      "system": "unani",
+      "symptom_name_en": "Vomiting",
+      "strength": 4,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Turmeric",
+      "system": "herbal",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Urtica Urens",
+      "system": "homeopathy",
+      "symptom_name_en": "Burns",
+      "strength": 4,
+      "matched_terms": [
+        "burns",
+        "scalds"
+      ]
+    },
+    {
+      "medicine_name_en": "Urtica Urens",
+      "system": "homeopathy",
+      "symptom_name_en": "Gout",
+      "strength": 4,
+      "matched_terms": [
+        "gouty"
+      ]
+    },
+    {
+      "medicine_name_en": "Urtica Urens",
+      "system": "homeopathy",
+      "symptom_name_en": "Urticaria",
+      "strength": 4,
+      "matched_terms": [
+        "hives"
+      ]
+    },
+    {
+      "medicine_name_en": "Vacha Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Colic",
+      "strength": 4,
+      "matched_terms": [
+        "colic"
+      ]
+    },
+    {
+      "medicine_name_en": "Vacha Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Constipation",
+      "strength": 4,
+      "matched_terms": [
+        "constipation"
+      ]
+    },
+    {
+      "medicine_name_en": "Vacha Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Flatulence",
+      "strength": 4,
+      "matched_terms": [
+        "flatulence"
+      ]
+    },
+    {
+      "medicine_name_en": "Valeriana",
+      "system": "homeopathy",
+      "symptom_name_en": "Insomnia",
+      "strength": 4,
+      "matched_terms": [
+        "sleeplessness"
+      ]
+    },
+    {
+      "medicine_name_en": "Varanadi Kashayam",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 3,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Veratrum Album",
+      "system": "homeopathy",
+      "symptom_name_en": "Diarrhea",
+      "strength": 4,
+      "matched_terms": [
+        "diarrhoea"
+      ]
+    },
+    {
+      "medicine_name_en": "Veratrum Album",
+      "system": "homeopathy",
+      "symptom_name_en": "Vomiting",
+      "strength": 4,
+      "matched_terms": [
+        "vomiting"
+      ]
+    },
+    {
+      "medicine_name_en": "Vidangadi Gulika",
+      "system": "ayurveda",
+      "symptom_name_en": "Menstrual Cramps",
+      "strength": 5,
+      "matched_terms": [
+        "dysmenorrhoea",
+        "painful menstruation"
+      ]
+    },
+    {
+      "medicine_name_en": "Viola Tricolor",
+      "system": "homeopathy",
+      "symptom_name_en": "Eczema",
+      "strength": 4,
+      "matched_terms": [
+        "eczema"
+      ]
+    },
+    {
+      "medicine_name_en": "Yashtimadhu Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Hoarseness",
+      "strength": 4,
+      "matched_terms": [
+        "hoarseness"
+      ]
+    },
+    {
+      "medicine_name_en": "Yashtimadhu Churna",
+      "system": "ayurveda",
+      "symptom_name_en": "Wounds",
+      "strength": 4,
+      "matched_terms": [
+        "wounds"
+      ]
+    },
+    {
+      "medicine_name_en": "Yogaraja Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Epilepsy",
+      "strength": 3,
+      "matched_terms": [
+        "epilepsy"
+      ]
+    },
+    {
+      "medicine_name_en": "Yogaraja Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Hemorrhoids",
+      "strength": 4,
+      "matched_terms": [
+        "piles"
+      ]
+    },
+    {
+      "medicine_name_en": "Yogaraja Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "arthritis"
+      ]
+    },
+    {
+      "medicine_name_en": "Yogaraja Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Rheumatism",
+      "strength": 2,
+      "matched_terms": [
+        "rheumatic"
+      ]
+    },
+    {
+      "medicine_name_en": "Yogaraja Guggulu",
+      "system": "ayurveda",
+      "symptom_name_en": "Skin Rash",
+      "strength": 2,
+      "matched_terms": [
+        "skin diseases"
+      ]
+    },
+    {
+      "medicine_name_en": "Zaqoom",
+      "system": "unani",
+      "symptom_name_en": "Asthma",
+      "strength": 4,
+      "matched_terms": [
+        "asthma"
+      ]
+    },
+    {
+      "medicine_name_en": "Zaqoom",
+      "system": "unani",
+      "symptom_name_en": "Cough",
+      "strength": 2,
+      "matched_terms": [
+        "cough"
+      ]
+    },
+    {
+      "medicine_name_en": "Zaqoom",
+      "system": "unani",
+      "symptom_name_en": "Gout",
+      "strength": 4,
+      "matched_terms": [
+        "gout"
+      ]
+    },
+    {
+      "medicine_name_en": "Zaqoom",
+      "system": "unani",
+      "symptom_name_en": "Joint Pain",
+      "strength": 4,
+      "matched_terms": [
+        "joint pain"
+      ]
+    },
+    {
+      "medicine_name_en": "Zaqoom",
+      "system": "unani",
+      "symptom_name_en": "Paralysis",
+      "strength": 4,
+      "matched_terms": [
+        "paralysis"
+      ]
+    },
+    {
+      "medicine_name_en": "Zaqoom",
+      "system": "unani",
+      "symptom_name_en": "Sciatica",
+      "strength": 4,
+      "matched_terms": [
+        "sciatica"
+      ]
+    },
+    {
+      "medicine_name_en": "Zincum Metallicum",
+      "system": "homeopathy",
+      "symptom_name_en": "Restlessness",
+      "strength": 4,
+      "matched_terms": [
+        "restlessness"
+      ]
+    }
+  ]
+}
